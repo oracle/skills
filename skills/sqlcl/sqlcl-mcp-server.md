@@ -49,7 +49,7 @@ SQLcl's MCP server works as follows:
 
 ### SQLcl Version Requirement
 
-The MCP server feature requires **SQLcl 24.3 or later**. Earlier versions do not include the `mcp` command. Always verify before configuring AI clients:
+The MCP server feature requires **SQLcl 24.3 or later**. Earlier versions do not support the `-mcp` startup flag. Always verify before configuring AI clients:
 
 ```shell
 sql -v
@@ -76,61 +76,12 @@ java -version
 
 ### Starting the MCP Server
 
-#### Interactive Mode
+The MCP server is always started via the **`-mcp` startup flag** passed when launching SQLcl. There is no interactive command to type at the `SQL>` prompt — the flag must be present at launch time. SQLcl connects to the database, then immediately enters MCP server mode, reading protocol messages on stdin and writing responses on stdout.
 
-Connect to the database and start the MCP server from within the SQLcl session:
-
-```shell
-sql username/password@//hostname:1521/service_name
-```
-
-Once connected, at the SQLcl prompt:
-
-```sql
-mcp
-```
-
-This starts the MCP server using `stdio` transport by default. SQLcl will block, handling MCP protocol messages on stdin/stdout.
-
-#### Command-Line (Non-Interactive) Mode
-
-For use with AI clients that manage the server process lifecycle (the standard approach with Claude Desktop and Claude Code), pass the connection string and start MCP directly:
+#### Basic Connection (Easy Connect)
 
 ```shell
 sql username/password@//hostname:1521/service_name -mcp
-```
-
-Or using `/nolog` with deferred connect:
-
-```shell
-sql /nolog
-```
-
-Then within the session:
-
-```sql
-connect username/password@//hostname:1521/service_name
-mcp
-```
-
-#### Using a Wallet (ATP / ADW / mTLS)
-
-For Oracle Autonomous Database (ATP, ADW) or any connection requiring a wallet:
-
-```shell
-sql /nolog
-```
-
-```sql
-set cloudconfig /path/to/wallet.zip
-connect username/password@tns_alias
-mcp
-```
-
-Or as a one-liner for use in config files (see Section 3):
-
-```shell
-sql -cloudconfig /path/to/wallet.zip username/password@tns_alias -mcp
 ```
 
 #### TNS-Based Connection
@@ -141,11 +92,15 @@ sql username/password@tns_alias -mcp
 
 Requires `TNS_ADMIN` environment variable to point to the directory containing `tnsnames.ora` and `sqlnet.ora`.
 
-#### Easy Connect String
+#### Using a Wallet (ATP / ADW / mTLS)
+
+For Oracle Autonomous Database (ATP, ADW) or any mTLS connection:
 
 ```shell
-sql username/password@hostname:1521/service_name -mcp
+sql -cloudconfig /path/to/wallet.zip username/password@tns_alias -mcp
 ```
+
+The `-cloudconfig` flag must come before the connection string. The wallet zip provides the TLS certificates and `tnsnames.ora`.
 
 ### Transport Options
 
@@ -604,9 +559,9 @@ Find the absolute path with:
 which sql
 ```
 
-**Error: `mcp: command not found` (within SQLcl)**
-- SQLcl version is older than 24.3.
-- Fix: `brew upgrade sqlcl` or download the latest version.
+**Error: SQLcl starts but immediately exits instead of staying in MCP mode**
+- SQLcl version is older than 24.3 and does not recognise the `-mcp` flag — it is silently ignored and SQLcl exits normally.
+- Fix: `brew upgrade sqlcl` or download the latest version, then verify with `sql -v`.
 
 **MCP server starts but AI reports "no tools available"**
 - The connection to the database failed silently, so no tools could be registered.
@@ -663,7 +618,7 @@ MCP is designed for **interactive, query-driven workflows** — not bulk data tr
 | Hardcoding passwords in `claude_desktop_config.json` | Credentials visible in plaintext config file | Use wallet authentication or environment variables |
 | Using SSE transport without TLS | MCP traffic (including SQL results) transmitted in plaintext | Add a TLS-terminating reverse proxy in front of the SSE endpoint |
 | Running MCP against production with a read-write user | AI could accidentally modify production data | Use read-only user for production; read-write only for dev/test |
-| Not checking SQLcl version before configuring | `mcp` command silently unavailable | Always run `sql -v` first |
+| Not checking SQLcl version before configuring | `-mcp` flag silently ignored, server never starts | Always run `sql -v` and confirm 24.3+ before configuring AI clients |
 | Using relative paths for the wallet in config | Config breaks when run from different directories | Always use absolute paths for wallet, `sql` binary, and config files |
 | Pointing MCP at a table with PII | Customer data enters the AI context window | Use VPD, column masking, or restrict MCP user's table grants |
 
