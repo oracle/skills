@@ -14,7 +14,7 @@ MCP is an open protocol, originally introduced by Anthropic, that defines a stan
 
 - The **MCP client** is the AI assistant or IDE plugin (e.g., Claude Desktop, Claude Code CLI, VS Code with Copilot).
 - The **MCP server** is a process that exposes a set of named tools the AI can invoke. The server receives tool-call requests, executes them, and returns structured results.
-- Communication happens over a **transport layer** — either standard I/O (`stdio`, suitable for local use) or HTTP with Server-Sent Events (`SSE`, suitable for remote or multi-client deployments).
+- Communication happens over **standard I/O (`stdio`)** — the AI client spawns SQLcl as a subprocess and communicates via stdin/stdout.
 
 ### Why MCP Matters for AI + Database Integration
 
@@ -102,18 +102,9 @@ sql -cloudconfig /path/to/wallet.zip username/password@tns_alias -mcp
 
 The `-cloudconfig` flag must come before the connection string. The wallet zip provides the TLS certificates and `tnsnames.ora`.
 
-### Transport Options
+### Transport
 
-| Transport | Flag | Best For |
-|-----------|------|----------|
-| `stdio` | (default) | Local AI clients (Claude Desktop, Claude Code) — safest, no network exposure |
-| `sse` | `--transport sse --port 8080` | Remote or shared MCP server; requires TLS + authentication in production |
-
-For SSE transport:
-
-```shell
-sql username/password@//hostname:1521/service_name -mcp --transport sse --port 8080
-```
+SQLcl MCP uses **`stdio` only**. The AI client (Claude Desktop, Claude Code, etc.) spawns SQLcl as a child process and communicates via stdin/stdout. There is no HTTP, SSE, or network port involved.
 
 ---
 
@@ -399,12 +390,11 @@ Using an Oracle wallet eliminates the need for passwords in config files or comm
 
 Note the empty password (`/@`) — the wallet provides the credential.
 
-### Transport Security: stdio vs SSE/HTTP
+### Transport Security
 
-| Transport | Exposure | Recommendation |
-|-----------|----------|----------------|
-| `stdio` | Local only — the AI client starts and owns the SQLcl process | Use for all local AI clients (Claude Desktop, Claude Code CLI). No network port opened. |
-| `SSE/HTTP` | Network-accessible | Only use behind a TLS-terminating reverse proxy (nginx, Caddy). Add authentication (API key or OAuth token) at the proxy layer. Never expose raw MCP HTTP to the internet or untrusted networks. |
+SQLcl MCP uses `stdio` only — the AI client spawns SQLcl as a subprocess. No network port is opened. Security is entirely determined by:
+- The OS user running the AI client process (controls who can start the MCP server)
+- The Oracle database user SQLcl connects as (controls what the AI can do in the DB)
 
 ### What an AI Assistant Can and Cannot Do via MCP
 
@@ -607,7 +597,7 @@ MCP is designed for **interactive, query-driven workflows** — not bulk data tr
 
 - **Row limits:** `execute_query` and `get_table_data` return a bounded number of rows (typically 100-500). Do not use MCP to export large datasets.
 - **Query timeout:** Long-running queries will block the MCP server. Add `FETCH FIRST N ROWS ONLY` to queries when exploring unknown table sizes.
-- **Concurrent calls:** The default SQLcl MCP server handles one request at a time (synchronous). For multi-user or concurrent AI client scenarios, use the SSE transport with multiple SQLcl instances behind a load balancer.
+- **Concurrent calls:** Each AI client session spawns its own SQLcl process. Multiple users each need their own independently configured MCP server entry pointing to their own SQLcl subprocess.
 - **Schema dumps:** `get_schema` on a large schema (thousands of objects) can take several seconds and produce a large response that consumes significant AI context window. Filter by object type or name prefix when possible.
 
 ### Common Mistakes and How to Avoid Them
@@ -616,7 +606,7 @@ MCP is designed for **interactive, query-driven workflows** — not bulk data tr
 |---------|-------------|-----|
 | Using `SYS` or `SYSTEM` as the MCP user | AI has full DBA access to the database | Create a dedicated least-privilege user |
 | Hardcoding passwords in `claude_desktop_config.json` | Credentials visible in plaintext config file | Use wallet authentication or environment variables |
-| Using SSE transport without TLS | MCP traffic (including SQL results) transmitted in plaintext | Add a TLS-terminating reverse proxy in front of the SSE endpoint |
+| Expecting SQLcl MCP to support HTTP/SSE | SQLcl MCP is stdio only — there is no network transport option | Use stdio; each AI client manages its own SQLcl subprocess |
 | Running MCP against production with a read-write user | AI could accidentally modify production data | Use read-only user for production; read-write only for dev/test |
 | Not checking SQLcl version before configuring | `-mcp` flag silently ignored, server never starts | Always run `sql -v` and confirm 24.3+ before configuring AI clients |
 | Using relative paths for the wallet in config | Config breaks when run from different directories | Always use absolute paths for wallet, `sql` binary, and config files |
