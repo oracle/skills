@@ -659,3 +659,11 @@ END;
 | Large `BULK COLLECT` without `LIMIT` | PGA exhaustion on tables with millions of rows | Always use `LIMIT c_limit` in a fetch loop |
 | Package state in connection pools | Session variable holds value from previous user's session | Initialize package state at request start via an initialization call |
 | Using `PRAGMA AUTONOMOUS_TRANSACTION` for business logic | Hides changes from the calling transaction; makes rollback impossible | Use autonomous transactions only for logging/auditing |
+
+---
+
+## Sources
+
+- [Oracle Database 19c PL/SQL Language Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/)
+- [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)
+- [Oracle Database 19c PL/SQL Packages and Types Reference (ARPLS)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/)

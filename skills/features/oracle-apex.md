@@ -248,8 +248,8 @@ ORDS serves two functions in an APEX context: it is the APEX runtime host, and i
 ### Installing and Configuring ORDS
 
 ```bash
-# Install ORDS against a pluggable database
-java -jar ords.war install \
+# Install ORDS against a pluggable database (ORDS 22+ CLI syntax)
+ords --config /opt/oracle/ords/config install \
   --admin-user SYS \
   --db-hostname db-host.company.com \
   --db-port 1521 \
@@ -258,10 +258,9 @@ java -jar ords.war install \
   --feature-apex-rest true
 
 # Start ORDS as a standalone server (for development)
-java -jar ords.war standalone \
+ords --config /opt/oracle/ords/config serve \
   --port 8080 \
-  --secure-port 8443 \
-  --certificate-hostname db-host.company.com
+  --secure-port 8443
 ```
 
 ### Enabling ORDS and APEX for a Schema
@@ -542,3 +541,13 @@ ORDS uses a JDBC connection pool. The default pool size is often too small for p
 
 **Mistake 6: Assuming APEX auto-REST is production-ready without authentication**
 Auto-REST with `p_auto_rest_auth => FALSE` makes all CRUD operations publicly accessible. In production, always require OAuth2 tokens or custom privilege checks on REST endpoints, and audit REST handler access via ORDS access logging.
+
+---
+
+## Sources
+
+- [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/apex/)
+- [Oracle APEX Application Builder User's Guide](https://docs.oracle.com/en/database/oracle/apex/24.1/htmdb/index.html)
+- [Oracle REST Data Services Installation and Configuration Guide](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/)
+- [APEX_INSTANCE_ADMIN Package Reference](https://docs.oracle.com/en/database/oracle/apex/24.1/aeapi/APEX_INSTANCE_ADMIN.html)
+- [APEX_WEB_SERVICE Package Reference](https://docs.oracle.com/en/database/oracle/apex/24.1/aeapi/APEX_WEB_SERVICE.html)

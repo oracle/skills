@@ -523,3 +523,11 @@ ORDS.DEFINE_HANDLER(
 - **Setting `:status_code` after writing to HTP**: Status codes must be set before any HTP output. Writing headers (implicitly via HTP) before setting status code has no effect.
 - **Expecting automatic COMMIT in `plsql/block` handlers**: Unlike `dml` source type, `plsql/block` does NOT auto-commit. Always include an explicit `COMMIT` (or `ROLLBACK` in exception blocks) in DML operations within PL/SQL handlers.
 - **Using `DBMS_SQL.RETURN_RESULT` in a non-plsql/block context**: Implicit results only work with `source_type_plsql`. They are ignored by `collection_feed` and `collection_item` source types.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — Developing PL/SQL-Based REST Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
+- [Oracle REST Data Services Handler Source Types Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [ORDS Implicit Parameters Reference (status_code, body, forward_location)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)

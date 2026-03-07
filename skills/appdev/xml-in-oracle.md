@@ -519,3 +519,11 @@ WHERE spec_xml = XMLType('<Specification>...')
 WHERE XMLCast(XMLQuery('/Specification/ProductId/text()'
                        PASSING spec_xml RETURNING CONTENT) AS NUMBER) = 101
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c XML Developer's Kit Programmer's Guide (ADXDK)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adxdk/)
+- [Oracle Database 19c SQL Language Reference — XML Functions](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
+- [Oracle XML DB Developer's Guide (ADXDB)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adxdb/)

@@ -634,3 +634,11 @@ A row count match guarantees only that the right number of rows exists. Rows cou
 
 **Pitfall 5 — Partitioned table stats lag:**
 Oracle's `ALL_TAB_PARTITIONS.NUM_ROWS` is populated from statistics, not a live count. Use `COUNT(*)` for validation, not the statistics-based NUM_ROWS, until fresh stats are gathered post-load.
+
+---
+
+## Sources
+
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_CRYPTO (for hash functions)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_CRYPTO.html)
+- [Oracle Database 19c Reference — DBA_TABLES (NUM_ROWS, AVG_ROW_LEN)](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_TABLES.html)
+- [Oracle Database 19c SQL Language Reference — DBMS_SQLHASH](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQLHASH.html)

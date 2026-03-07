@@ -204,15 +204,26 @@ Oracle 12c+ includes the `DBMS_PRIVILEGE_CAPTURE` package, which lets you captur
 ```sql
 -- Step 1: Create a capture policy
 -- Capture type options: G_DATABASE (all), G_ROLE, G_CONTEXT, G_ROLE_AND_CONTEXT
+-- The roles parameter is only meaningful when type = G_ROLE or G_ROLE_AND_CONTEXT.
+-- For G_DATABASE, omit roles (or pass NULL).
 BEGIN
   DBMS_PRIVILEGE_CAPTURE.CREATE_CAPTURE(
     name        => 'app_privs_capture',
     description => 'Capture privileges used by the orders app',
-    type        => DBMS_PRIVILEGE_CAPTURE.G_DATABASE,
-    roles       => role_name_list('ORDERS_APP_ROLE')
+    type        => DBMS_PRIVILEGE_CAPTURE.G_DATABASE
   );
 END;
 /
+
+-- To capture only privileges used via a specific role, use G_ROLE:
+-- BEGIN
+--   DBMS_PRIVILEGE_CAPTURE.CREATE_CAPTURE(
+--     name  => 'role_privs_capture',
+--     type  => DBMS_PRIVILEGE_CAPTURE.G_ROLE,
+--     roles => role_name_list('ORDERS_APP_ROLE')
+--   );
+-- END;
+-- /
 
 -- Step 2: Enable the capture
 EXEC DBMS_PRIVILEGE_CAPTURE.ENABLE_CAPTURE('app_privs_capture');
@@ -538,3 +549,12 @@ ORDER BY grantee, privilege;
 ```
 
 > **Critical**: The `EXEMPT ACCESS POLICY` privilege bypasses all Virtual Private Database (VPD) row-level security policies. It should never be granted to any user except for specific, documented ETL or DBA accounts, and its use must be heavily audited.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Security Guide (DBSEG)](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/)
+- [Oracle Database 19c SQL Language Reference — GRANT](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/GRANT.html)
+- [DBA_SYS_PRIVS — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_SYS_PRIVS.html)
+- [DBMS_PRIVILEGE_CAPTURE — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_PRIVILEGE_CAPTURE.html)

@@ -185,6 +185,8 @@ Fine-Grained Auditing (FGA) allows you to audit SELECT statements that access sp
 
 ```sql
 -- Audit SELECT on sensitive columns with query capture
+-- Note: the audit_trail parameter is desupported in Oracle 23ai.
+-- All FGA records are written to UNIFIED_AUDIT_TRAIL automatically.
 BEGIN
   DBMS_FGA.ADD_POLICY(
     object_schema    => 'HR',
@@ -193,8 +195,6 @@ BEGIN
     audit_column     => 'SALARY,COMMISSION_PCT',  -- Fire only when these are referenced
     audit_condition  => NULL,  -- NULL = always audit
     statement_types  => 'SELECT',
-    audit_trail      => DBMS_FGA.DB + DBMS_FGA.EXTENDED,
-    -- EXTENDED captures the full SQL text and bind variables
     enable           => TRUE
   );
 END;
@@ -208,8 +208,7 @@ BEGIN
     policy_name     => 'AUDIT_HIGH_SALARY_ACCESS',
     audit_column    => 'SALARY',
     audit_condition => 'SALARY > 100000',
-    statement_types => 'SELECT',
-    audit_trail     => DBMS_FGA.DB + DBMS_FGA.EXTENDED
+    statement_types => 'SELECT'
   );
 END;
 /
@@ -237,7 +236,6 @@ BEGIN
     object_schema    => 'FINANCE',
     object_name      => 'WIRE_TRANSFERS',
     policy_name      => 'ALERT_WIRE_ACCESS',
-    audit_trail      => DBMS_FGA.DB + DBMS_FGA.EXTENDED,
     handler_schema   => 'SECURITY',
     handler_module   => 'SECURITY_ALERT',  -- Called when policy fires
     enable           => TRUE
@@ -265,21 +263,23 @@ The `UNIFIED_AUDIT_TRAIL` view is the central query point for all audit records.
 | `DBUSERNAME` | Database username |
 | `OS_USERNAME` | Operating system username |
 | `USERHOST` | Client host name |
-| `CLIENT_IP` | Client IP address |
 | `UNIFIED_AUDIT_POLICIES` | Which audit policy triggered this record |
 | `ACTION_NAME` | The SQL action (SELECT, INSERT, LOGON, etc.) |
 | `OBJECT_SCHEMA` | Schema of the accessed object |
 | `OBJECT_NAME` | Name of the accessed object |
-| `SQL_TEXT` | The actual SQL statement (for FGA EXTENDED) |
+| `SQL_TEXT` | The actual SQL statement (stored as CLOB) |
 | `RETURN_CODE` | Oracle error code (0 = success) |
-| `AUTHENTICATION_TYPE` | How the user authenticated |
-| `AUTHENTICATION_PRIVILEGE` | Privilege used for authentication (e.g., SYSDBA) |
+| `AUTHENTICATION_TYPE` | Authentication method and client address details (contains embedded client IP in format `(CLIENT ADDRESS=((PROTOCOL=...)(HOST=ip)(PORT=port)))`) |
+| `SYSTEM_PRIVILEGE_USED` | System privileges used to execute the audited action (e.g., `SYSDBA`) |
+
+> **Note:** `UNIFIED_AUDIT_TRAIL` does **not** have a `CLIENT_IP` column. Client IP is embedded inside the `AUTHENTICATION_TYPE` string. There is also no `AUTHENTICATION_PRIVILEGE` column — use `SYSTEM_PRIVILEGE_USED` to find SYSDBA/SYSOPER usage.
 
 ### Common Audit Trail Queries
 
 ```sql
 -- Recent login failures (brute force detection)
-SELECT event_timestamp, dbusername, client_ip, userhost, return_code
+-- Note: UNIFIED_AUDIT_TRAIL has no CLIENT_IP column; client IP is inside AUTHENTICATION_TYPE
+SELECT event_timestamp, dbusername, userhost, return_code, authentication_type
 FROM unified_audit_trail
 WHERE action_name = 'LOGON'
   AND return_code != 0
@@ -287,7 +287,7 @@ WHERE action_name = 'LOGON'
 ORDER BY event_timestamp DESC;
 
 -- Users who accessed salary data today
-SELECT event_timestamp, dbusername, client_ip, action_name, sql_text
+SELECT event_timestamp, dbusername, userhost, action_name, sql_text
 FROM unified_audit_trail
 WHERE object_name = 'EMPLOYEES'
   AND object_schema = 'HR'
@@ -296,7 +296,7 @@ WHERE object_name = 'EMPLOYEES'
 ORDER BY event_timestamp DESC;
 
 -- DDL changes in the last 7 days
-SELECT event_timestamp, dbusername, client_ip, action_name,
+SELECT event_timestamp, dbusername, userhost, action_name,
        object_schema, object_name, sql_text
 FROM unified_audit_trail
 WHERE action_name IN ('CREATE TABLE', 'DROP TABLE', 'ALTER TABLE',
@@ -305,7 +305,7 @@ WHERE action_name IN ('CREATE TABLE', 'DROP TABLE', 'ALTER TABLE',
 ORDER BY event_timestamp DESC;
 
 -- Privilege grants (SOX: who changed access?)
-SELECT event_timestamp, dbusername, client_ip, action_name, sql_text
+SELECT event_timestamp, dbusername, userhost, action_name, sql_text
 FROM unified_audit_trail
 WHERE action_name IN ('GRANT', 'REVOKE', 'CREATE ROLE', 'DROP ROLE',
                       'CREATE USER', 'DROP USER', 'ALTER USER')
@@ -313,15 +313,16 @@ WHERE action_name IN ('GRANT', 'REVOKE', 'CREATE ROLE', 'DROP ROLE',
 ORDER BY event_timestamp DESC;
 
 -- All actions by SYS or SYSDBA in the last week
-SELECT event_timestamp, dbusername, os_username, client_ip,
-       action_name, object_name, sql_text
+-- Use SYSTEM_PRIVILEGE_USED to detect SYSDBA logins (no AUTHENTICATION_PRIVILEGE column)
+SELECT event_timestamp, dbusername, os_username, userhost,
+       action_name, object_name, sql_text, system_privilege_used
 FROM unified_audit_trail
-WHERE (dbusername = 'SYS' OR authentication_privilege = 'SYSDBA')
+WHERE (dbusername = 'SYS' OR system_privilege_used LIKE '%SYSDBA%')
   AND event_timestamp > SYSDATE - 7
 ORDER BY event_timestamp DESC;
 
 -- Failed access attempts (possible SQL injection or unauthorized access)
-SELECT event_timestamp, dbusername, client_ip, action_name,
+SELECT event_timestamp, dbusername, userhost, action_name,
        object_name, return_code, sql_text
 FROM unified_audit_trail
 WHERE return_code NOT IN (0, 1403)  -- Exclude NOT FOUND (1403)
@@ -365,21 +366,21 @@ NOAUDIT POLICY audit_salary_changes BY specific_user;
 DROP AUDIT POLICY audit_salary_changes;
 
 -- Purge old audit records (requires AUDIT_ADMIN role or DBA)
--- Purge all records before a specific timestamp
-BEGIN
-  DBMS_AUDIT_MGMT.CLEAN_AUDIT_TRAIL(
-    audit_trail_type        => DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
-    use_last_arch_timestamp => FALSE,
-    delete_timestamp        => SYSTIMESTAMP - INTERVAL '90' DAY
-  );
-END;
-/
-
--- Set up automatic purge (keep 90 days)
+-- CLEAN_AUDIT_TRAIL has no delete_timestamp parameter.
+-- To purge records older than 90 days: first set the archive timestamp, then call CLEAN.
 BEGIN
   DBMS_AUDIT_MGMT.SET_LAST_ARCHIVE_TIMESTAMP(
     audit_trail_type  => DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
     last_archive_time => SYSTIMESTAMP - INTERVAL '90' DAY
+  );
+END;
+/
+
+-- Then purge records older than the archive timestamp
+BEGIN
+  DBMS_AUDIT_MGMT.CLEAN_AUDIT_TRAIL(
+    audit_trail_type        => DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
+    use_last_arch_timestamp => TRUE   -- Deletes records older than the timestamp set above
   );
 END;
 /
@@ -442,7 +443,7 @@ ORDER BY audit_day;
 
 3. **Audit all privilege and role grants**: These are change events in your access control model. Under SOX and PCI, these must be reviewed.
 
-4. **Use `DBMS_FGA` for sensitive column access**: When you need to know exactly which query accessed salary data and what it returned, FGA with `EXTENDED` mode is the right tool.
+4. **Use `DBMS_FGA` for sensitive column access**: When you need to know exactly which query accessed salary data, FGA is the right tool. SQL text is captured in `UNIFIED_AUDIT_TRAIL.SQL_TEXT`. Note: the `audit_trail` parameter (DBMS_FGA.DB + DBMS_FGA.EXTENDED) is desupported in Oracle 23ai — all FGA records automatically land in the unified audit trail.
 
 5. **Store audit records separately from the database being audited**: Ideally, ship audit records to a SIEM or separate audit database in real time. A DBA who can delete audit records can cover their tracks.
 
@@ -498,12 +499,11 @@ SELECT * FROM unified_audit_trail
 WHERE event_timestamp < SYSTIMESTAMP - INTERVAL '90' DAY;
 COMMIT;
 
--- Then purge
+-- Then purge records older than the archive timestamp just set
 BEGIN
   DBMS_AUDIT_MGMT.CLEAN_AUDIT_TRAIL(
-    audit_trail_type  => DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
-    use_last_arch_timestamp => FALSE,
-    delete_timestamp  => SYSTIMESTAMP - INTERVAL '90' DAY
+    audit_trail_type        => DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
+    use_last_arch_timestamp => TRUE
   );
 END;
 /
@@ -515,12 +515,12 @@ END;
 -- BAD: Knows that user accessed the table, not what they queried
 CREATE AUDIT POLICY audit_emp ACTIONS SELECT ON hr.employees;
 
--- GOOD: Use FGA EXTENDED to capture the actual SQL text
+-- GOOD: Use FGA to capture the actual SQL text (stored in UNIFIED_AUDIT_TRAIL.SQL_TEXT)
+-- The audit_trail parameter is desupported in 23ai; all records go to UNIFIED_AUDIT_TRAIL
 BEGIN
   DBMS_FGA.ADD_POLICY(
     object_schema => 'HR', object_name => 'EMPLOYEES',
-    policy_name   => 'FGA_EMP_SELECT',
-    audit_trail   => DBMS_FGA.DB + DBMS_FGA.EXTENDED  -- Captures SQL text
+    policy_name   => 'FGA_EMP_SELECT'
   );
 END;
 /
@@ -554,12 +554,12 @@ CREATE AUDIT POLICY pci_cardholder_audit
 
 AUDIT POLICY pci_cardholder_audit;
 
--- Supplemental FGA to capture query text
+-- Supplemental FGA to capture query text (records go to UNIFIED_AUDIT_TRAIL.SQL_TEXT)
+-- audit_trail parameter is desupported in 23ai
 BEGIN
   DBMS_FGA.ADD_POLICY(
     object_schema => 'PAYMENTS', object_name => 'CARD_DATA',
-    policy_name   => 'PCI_FGA_CARD_DATA',
-    audit_trail   => DBMS_FGA.DB + DBMS_FGA.EXTENDED
+    policy_name   => 'PCI_FGA_CARD_DATA'
   );
 END;
 /
@@ -570,3 +570,13 @@ END;
 - Audit logs must include user ID, date, time, and type of access
 - Logs must be reviewed regularly (typically weekly/monthly)
 - Audit logs must be retained for at least 6 years
+
+---
+
+## Sources
+
+- [Oracle Database Security Guide 19c — Introduction to Auditing](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/introduction-to-auditing.html)
+- [Oracle Database Security Guide 19c — Administering the Audit Trail](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/administering-the-audit-trail.html)
+- [Oracle Database Reference 19c — UNIFIED_AUDIT_TRAIL](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/UNIFIED_AUDIT_TRAIL.html)
+- [Oracle PL/SQL Packages Reference 19c — DBMS_FGA](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_FGA.html)
+- [Oracle PL/SQL Packages Reference 19c — DBMS_AUDIT_MGMT](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_AUDIT_MGMT.html)

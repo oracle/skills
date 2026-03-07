@@ -510,3 +510,11 @@ Aggregation:            GET    /v1/departments/:id/headcount
 - **Not handling NULL bind variables in SQL WHERE clauses**: `WHERE dept_id = :dept_id` returns no rows when `:dept_id` is NULL. Use `WHERE (:dept_id IS NULL OR dept_id = :dept_id)` for optional filtering.
 - **Mixing URL template types**: A template pattern `employees/:id/` (with trailing slash) and `employees/:id` (without) are different patterns. Be consistent.
 - **Over-using `plsql/block` for SELECT operations**: Many developers use PL/SQL blocks with manual cursor loops for simple queries. Use `collection_feed` instead — it's more efficient and provides automatic pagination.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — Creating and Editing REST APIs](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
+- [Oracle REST Data Services PL/SQL API Reference — ORDS.DEFINE_MODULE](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [ORDS Implicit Parameters Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)

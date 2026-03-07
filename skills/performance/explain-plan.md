@@ -127,8 +127,10 @@ SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(FORMAT => 'ALLSTATS LAST'));
 
 Retrieves historical plans stored in AWR. Useful when a plan was used in the past but is no longer in the shared pool.
 
+> Note: In Oracle Database 23c and later, `DISPLAY_AWR` is deprecated. The replacement is `DBMS_XPLAN.DISPLAY_WORKLOAD_REPOSITORY`, which has the same intent but a slightly different signature (`dbid` is the last parameter and the parameter is named `dbid` not `db_id`). `DISPLAY_AWR` continues to function for backward compatibility but new code should prefer `DISPLAY_WORKLOAD_REPOSITORY`.
+
 ```sql
--- All plans for a SQL_ID from AWR
+-- All plans for a SQL_ID from AWR (use DISPLAY_WORKLOAD_REPOSITORY in 23c+)
 SELECT * FROM TABLE(
   DBMS_XPLAN.DISPLAY_AWR(
     sql_id          => 'abc123xyz789',
@@ -395,3 +397,13 @@ END;
 | Ignoring Predicate Information | Miss filter vs. access predicate distinction | Always read predicate section |
 | Confusing cumulative A-Time | Each row's time includes child rows | A-Time at parent minus children = step time |
 | Over-indexing to fix every FTS | May hurt DML, use more space | Verify FTS is actually the bottleneck first |
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)
+- [DBMS_XPLAN — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_XPLAN.html)
+- [V$SQL — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SQL.html)
+- [DBMS_SPM — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SPM.html)
+- [PLAN_TABLE — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/PLAN_TABLE.html)

@@ -654,3 +654,12 @@ WHERE s.username IS NOT NULL
   );
 -- This should return 0 in a compliant environment
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c Security Guide (DBSEG)](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/)
+- [Oracle Database 19c Net Services Administrator's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/netag/)
+- [Oracle Database 19c Net Services Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/netrf/)
+- [DBMS_NETWORK_ACL_ADMIN — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_NETWORK_ACL_ADMIN.html)

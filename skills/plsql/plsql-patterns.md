@@ -583,3 +583,11 @@ For most cases, `FORALL` with static SQL is cleaner and faster than `DBMS_SQL` p
 - **Oracle 12c+**: Implicit result sets (`DBMS_SQL.RETURN_RESULT`) for compatibility with SQL Server style result set return from procedures.
 - **Oracle 18c+**: Polymorphic table functions (`PTIF`) using `DBMS_TF` package — a major extension of the pipelined function concept that allows the return schema to be defined at runtime.
 - **Oracle 21c+**: Full JSON support in object types for document-relational hybrid patterns.
+
+---
+
+## Sources
+
+- [Oracle Database PL/SQL Language Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/) — TAPI patterns, autonomous transactions, pipelined functions, object types
+- [Oracle Database PL/SQL Language Reference 19c — PIPELINED Clause](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/CREATE-FUNCTION-statement.html) — pipelined table functions, NO_DATA_NEEDED
+- [DBMS_SQL (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQL.html) — parse-once execute-many pattern

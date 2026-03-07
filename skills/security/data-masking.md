@@ -310,23 +310,23 @@ END;
 /
 
 -- Disable a policy (suspend redaction)
+-- DBMS_REDACT.DISABLE_POLICY is a standalone procedure, NOT an ALTER_POLICY action constant
 BEGIN
-  DBMS_REDACT.ALTER_POLICY(
+  DBMS_REDACT.DISABLE_POLICY(
     object_schema   => 'HR',
     object_name     => 'EMPLOYEES',
-    policy_name     => 'REDACT_SALARY_FULL',
-    action          => DBMS_REDACT.DISABLE_POLICY
+    policy_name     => 'REDACT_SALARY_FULL'
   );
 END;
 /
 
 -- Re-enable a policy
+-- DBMS_REDACT.ENABLE_POLICY is a standalone procedure, NOT an ALTER_POLICY action constant
 BEGIN
-  DBMS_REDACT.ALTER_POLICY(
+  DBMS_REDACT.ENABLE_POLICY(
     object_schema   => 'HR',
     object_name     => 'EMPLOYEES',
-    policy_name     => 'REDACT_SALARY_FULL',
-    action          => DBMS_REDACT.ENABLE_POLICY
+    policy_name     => 'REDACT_SALARY_FULL'
   );
 END;
 /
@@ -567,3 +567,12 @@ END;
 - Personal data must not be more available than necessary for its stated purpose.
 - Data Redaction helps enforce purpose limitation at the database layer.
 - For the right to erasure, permanent deletion or permanent masking is required — not dynamic redaction.
+
+---
+
+## Sources
+
+- [Oracle PL/SQL Packages Reference 19c — DBMS_REDACT](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_REDACT.html)
+- [Oracle Database Advanced Security Guide 19c — Configuring Oracle Data Redaction Policies](https://docs.oracle.com/en/database/oracle/oracle-database/19/asoag/configuring-oracle-data-redaction-policies.html)
+- [Oracle Database Reference 19c — REDACTION_POLICIES](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/REDACTION_POLICIES.html)
+- [Oracle Data Safe Documentation](https://docs.oracle.com/en/cloud/paas/data-safe/index.html)

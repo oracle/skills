@@ -422,3 +422,13 @@ DRCP resets session state between uses. Do not use DRCP if your application:
 ### Mistake 5: Wrong Service vs. SID
 
 Always connect to a **SERVICE_NAME**, not a **SID**. Services support TAF, load balancing, and connection-time failover. SIDs are deprecated for client connections.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Application Developer's Guide (ADFNS)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adfns/)
+- [DBMS_CONNECTION_POOL — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_CONNECTION_POOL.html)
+- [V$CPOOL_STATS — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-CPOOL_STATS.html)
+- [Universal Connection Pool Developer's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/jjucp/)
+- [python-oracledb Documentation](https://python-oracledb.readthedocs.io/en/latest/)

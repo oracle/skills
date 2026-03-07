@@ -428,3 +428,11 @@ ORA-01555 can also result from application bugs (uncommitted transactions held o
 
 **Mistake: Assuming the XML and text alert logs are always in sync.**
 In rare cases (system crashes, disk issues), they can diverge. The XML log is the authoritative source; use `adrci` when precision matters.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Administrator's Guide — Diagnosing and Resolving Problems](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/diagnosing-and-resolving-problems.html)
+- [Oracle Database 19c Reference — V$DIAG_ALERT_EXT](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-DIAG_ALERT_EXT.html)
+- [Oracle Database 19c Reference — V$DIAG_INFO](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-DIAG_INFO.html)

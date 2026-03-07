@@ -460,3 +460,11 @@ FROM dba_ords_enabled_schemas;
 - **Assuming `{id}` always matches the column name**: The URL segment maps to the primary key, not a column named `id`. If the PK column is `employee_id`, the correct URL is `/employees/101`, not `/employees/?employee_id=101`.
 - **Exposing tables with sensitive columns (passwords, PII) via AutoREST**: All columns are exposed by default. Audit your table structure before enabling AutoREST on any table containing sensitive data.
 - **Not accounting for NULL primary keys**: Rows with NULL primary keys cannot be addressed by item URLs. Ensure your tables have `NOT NULL` primary key constraints.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — AutoREST](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
+- [Oracle REST Data Services PL/SQL API Reference — ORDS.ENABLE_OBJECT](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [ORDS REST API Collection Query Syntax (q parameter)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)

@@ -583,3 +583,15 @@ SELECT ISNULL(phone, 'N/A') FROM contacts;
 SELECT NVL(phone, 'N/A') FROM contacts;
 SELECT COALESCE(phone, 'N/A') FROM contacts;
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c PL/SQL Language Reference — PL/SQL Language Fundamentals](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-language-fundamentals.html)
+- [Oracle Database 19c PL/SQL Language Reference — Error Handling (RAISE_APPLICATION_ERROR)](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-error-handling.html)
+- [Oracle Database 19c SQL Language Reference — CREATE GLOBAL TEMPORARY TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [AWS Schema Conversion Tool User Guide — SAP ASE to Oracle](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html)

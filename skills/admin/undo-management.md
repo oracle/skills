@@ -366,3 +366,11 @@ A non-zero `NOSPACEERRCNT` means transactions are failing with ORA-30036. This o
 
 **Manually deleting undo extents or segments**
 Never manually drop or alter undo segments in an AUM environment. Oracle manages them automatically. Manual interference causes corruption.
+
+---
+
+## Sources
+
+- [Oracle Database Administrator's Guide 19c — Managing Undo](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-undo.html)
+- [Oracle Database 19c Reference — V$UNDOSTAT](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-UNDOSTAT.html)
+- [Oracle Database 19c Reference — DBA_UNDO_EXTENTS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_UNDO_EXTENTS.html)

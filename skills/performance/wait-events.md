@@ -78,7 +78,7 @@ SELECT event,
        total_waits,
        total_timeouts,
        time_waited_micro / 1e6              AS time_waited_sec,
-       ROUND(average_wait * 10, 3)          AS avg_wait_ms,  -- centiseconds → ms
+       ROUND(average_wait * 10, 3)          AS avg_wait_ms,  -- AVERAGE_WAIT is in centiseconds (hundredths of a second); × 10 converts to ms
        ROUND(time_waited_micro / 1e6 /
              NULLIF(total_waits, 0) * 1000, 3) AS avg_wait_ms_v2
 FROM   v$system_event
@@ -114,13 +114,17 @@ Single-block physical I/O. The session is waiting for exactly one database block
 
 ```sql
 -- Diagnose: which objects are causing the most sequential reads right now?
+-- P1 = file# (absolute file number), P2 = block#, P3 = blocks
+-- Join through DBA_EXTENTS to map file#+block# to the owning segment
 SELECT o.owner,
        o.object_name,
        o.object_type,
        COUNT(*) AS waits
 FROM   v$session_wait sw
 JOIN   v$session s ON sw.sid = s.sid
-JOIN   dba_objects o ON o.data_object_id = sw.p1  -- P1 = file#, P2 = block#
+JOIN   dba_extents e ON e.file_id  = sw.p1
+                    AND sw.p2 BETWEEN e.block_id AND e.block_id + e.blocks - 1
+JOIN   dba_objects o ON o.object_id = e.object_id
 WHERE  sw.event = 'db file sequential read'
 GROUP  BY o.owner, o.object_name, o.object_type
 ORDER  BY waits DESC;
@@ -504,3 +508,13 @@ ORDER  BY l.block DESC, l.sid;
 | Ignoring P1/P2/P3 parameters | Miss object-level diagnosis | Look up parameter meanings in Oracle docs |
 | Confusing `db file sequential read` with always-bad | It is normal for index-based OLTP | Check if the access path is correct first |
 | Treating `log file sync` only as a storage issue | May be commit frequency issue | Check commits/sec from Load Profile first |
+
+---
+
+## Sources
+
+- [Oracle Database 19c Performance Tuning Guide (TGDBA)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgdba/)
+- [V$SESSION_WAIT — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SESSION_WAIT.html)
+- [V$SYSTEM_EVENT — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SYSTEM_EVENT.html)
+- [V$EVENT_HISTOGRAM — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-EVENT_HISTOGRAM.html)
+- [V$LOCK — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-LOCK.html)

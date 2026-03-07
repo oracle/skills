@@ -448,3 +448,11 @@ fi
 - **Trivadis Guidelines**: Updated regularly; current version covers Oracle through 21c. Available at https://trivadis.github.io/plsql-and-sql-coding-guidelines/
 - **PL/SQL Cop**: Version 6.x supports Oracle 12c through 21c patterns.
 - **SonarQube PL/SQL**: Available in Developer Edition and above; rules updated with each SonarQube release.
+
+---
+
+## Sources
+
+- [Trivadis PL/SQL and SQL Coding Guidelines](https://trivadis.github.io/plsql-and-sql-coding-guidelines/) — naming conventions, anti-patterns, complexity metrics
+- [Oracle Database PL/SQL Language Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/) — language features referenced in quality guidelines
+- [Oracle Database Reference 19c — USER_ERRORS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/USER_ERRORS.html) — compile error detection

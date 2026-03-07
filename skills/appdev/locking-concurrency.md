@@ -517,3 +517,12 @@ EXCEPTION WHEN OTHERS THEN
 ### Mistake 4: Escalating to Table Locks Prematurely
 
 Some developers use `LOCK TABLE IN EXCLUSIVE MODE` to "be safe" during batch updates. This serializes all processing, destroying any benefit from parallel execution. Use row-level locking and batch commits instead.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Concepts (CNCPT) — Data Concurrency and Consistency](https://docs.oracle.com/en/database/oracle/oracle-database/19/cncpt/)
+- [Oracle Database 19c Application Developer's Guide (ADFNS)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adfns/)
+- [V$LOCK — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-LOCK.html)
+- [V$SESSION — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SESSION.html)

@@ -8,7 +8,7 @@ Statistics include:
 - **Table statistics:** row count, block count, average row length
 - **Column statistics:** number of distinct values (NDV), nulls count, low/high value, histograms
 - **Index statistics:** clustering factor, leaf blocks, index height
-- **System statistics:** CPU speed, I/O throughput (multiblock read cost, ingleblock read cost)
+- **System statistics:** CPU speed, I/O throughput (multiblock read cost, single-block read cost)
 
 The primary tool for managing statistics is the `DBMS_STATS` package.
 
@@ -515,3 +515,13 @@ END;
 | Disabling autostats globally without a replacement | Stats go stale; plan regressions over time | Replace with a custom job; never just disable |
 | Not locking stats on small lookup tables | Stats change unpredictably; optimizer changes join order | Lock stats for stable small tables |
 | Histograms on columns with bind variables | Bind peeking + histogram can cause plan instability | Use `SIZE 1` (no histogram) or `CURSOR_SHARING=FORCE` carefully |
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)
+- [DBMS_STATS — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_STATS.html)
+- [DBMS_AUTO_TASK_ADMIN — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_AUTO_TASK_ADMIN.html)
+- [DBA_TAB_STATISTICS — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_TAB_STATISTICS.html)
+- [DBA_HISTOGRAMS — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_HISTOGRAMS.html)

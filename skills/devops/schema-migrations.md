@@ -620,3 +620,12 @@ Rollbacks are only useful if they work. Include rollback testing in CI by applyi
 
 **Mistake: Running migrations synchronously with application deployment.**
 In high-availability deployments, the application and database versions may be temporarily mismatched. Design migrations to be backward-compatible: add columns as nullable before backfilling, do not drop columns until the old application version is fully retired.
+
+---
+
+## Sources
+
+- [Liquibase Documentation](https://docs.liquibase.com/) — changelog structure, changeset anatomy, Oracle data type mappings, rollback
+- [Flyway Documentation](https://documentation.red-gate.com/flyway) — versioned vs. repeatable migrations, flyway.toml, PL/SQL delimiter configuration
+- [Oracle Database SQL Language Reference 19c — CREATE SEQUENCE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-SEQUENCE.html) — CACHE, NOORDER, RESTART (18c+)
+- [Oracle Database Development Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/adfns/) — Oracle-specific migration considerations

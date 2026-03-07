@@ -496,3 +496,12 @@ Storage Indexes are rebuilt in memory as data is accessed. After a large bulk lo
 ### Mistake 5: Running Exadata Diagnostics Only at the Database Layer
 
 Exadata performance problems often originate in the storage cells (CELLSRV process, Flash Cache, disk I/O). Cell-level diagnostics require `CellCLI` access or Exadata Metrics available through OCI console. Always check cell-level metrics alongside `V$SYSSTAT` before concluding a performance issue is query-related.
+
+---
+
+## Sources
+
+- [Oracle Exadata Database Machine System Overview](https://docs.oracle.com/en/engineered-systems/exadata-database-machine/) — Smart Scan, Storage Indexes, HCC, IORM
+- [Oracle Database SQL Language Reference 19c — COMPRESS clause](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html) — HCC compression levels
+- [DBMS_RESOURCE_MANAGER (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_RESOURCE_MANAGER.html) — IORM plan directives
+- [Oracle Exadata System Software User's Guide](https://docs.oracle.com/en/engineered-systems/exadata-database-machine/sagug/) — CellCLI, IORM configuration

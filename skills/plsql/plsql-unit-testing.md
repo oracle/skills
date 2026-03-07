@@ -575,3 +575,11 @@ jobs:
 | Using `WHEN OTHERS THEN NULL` in tests | Test always passes even when code throws | Never swallow exceptions in test procedures |
 | Asserting only COUNT(*) | Doesn't validate actual data values | Use cursor assertions for full content validation |
 | Not testing edge cases | Happy-path-only coverage | Add tests for NULL inputs, empty sets, boundary values |
+
+---
+
+## Sources
+
+- [utPLSQL Documentation](https://utplsql.org/utPLSQL/latest/) — annotations, assertion API, reporters, coverage, mocking
+- [utPLSQL GitHub Repository](https://github.com/utPLSQL/utPLSQL) — installation, v3.x release notes
+- [utPLSQL-cli GitHub Repository](https://github.com/utPLSQL/utPLSQL-cli) — CLI runner, JUnit XML output

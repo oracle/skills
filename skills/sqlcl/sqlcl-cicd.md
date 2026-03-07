@@ -50,8 +50,12 @@ sql -S username/password@service @/path/to/script.sql
 
 ### Command-line -c Flag (Inline Command)
 
+> ⚠️ Unverified: The `-c` flag for passing an inline SQL command is not listed in the official SQLcl 25.2 startup flags documentation (`-H[ELP]`, `-V[ERSION]`, `-C[OMPATIBILITY]`, `-L[OGON]`, `-NOLOGINTIME`, `-R[ESTRICT]`, `-S[ILENT]`, `-mcp`). Use stdin or a script file instead.
+
 ```shell
-sql -S username/password@service -c "SELECT SYSDATE FROM DUAL; EXIT;"
+# Preferred: use stdin or a script file
+echo "SELECT SYSDATE FROM DUAL; EXIT;" | sql -S username/password@service
+sql -S username/password@service @script.sql
 ```
 
 ---
@@ -673,3 +677,12 @@ Using a DBA or ADMIN account for routine deployments is a security risk and make
 
 **Mistake: Liquibase changes not rolled back on pipeline failure**
 `WHENEVER SQLERROR EXIT ... ROLLBACK` only rolls back uncommitted DML transactions. Liquibase DDL changes (CREATE TABLE, ALTER TABLE) are auto-committed by Oracle and cannot be rolled back transactionally. Always use `lb rollback -tag` for schema rollbacks after a failed deployment.
+
+---
+
+## Sources
+
+- [Starting and Leaving SQLcl — startup flags reference](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/startup-sqlcl-settings.html)
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [SQLcl Release Notes 25.2](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.html)
+- [Oracle SQLcl Releases index](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/index.html)

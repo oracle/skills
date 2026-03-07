@@ -400,29 +400,35 @@ FETCH FIRST 5 ROWS ONLY;
 
 ## Encryption
 
-RMAN can encrypt backup sets so that backup pieces are unreadable without the correct key. Encryption requires Oracle Advanced Security (included in Enterprise Edition in modern releases).
+RMAN can encrypt backup sets so that backup pieces are unreadable without the correct key. Transparent (keystore-based) encryption of backups to disk requires the **Oracle Advanced Security** option. Password-based encryption does not require Advanced Security.
 
 ```sql
--- Configure transparent encryption (uses wallet password)
+-- Configure transparent encryption (uses keystore/wallet — requires Advanced Security)
 CONFIGURE ENCRYPTION FOR DATABASE ON;
 
--- Configure password-based encryption (no wallet required, specify at restore too)
+-- Configure password-only encryption (no keystore required; password must be supplied at restore too)
+SET ENCRYPTION ON IDENTIFIED BY <backup_password> ONLY;
+BACKUP DATABASE;
+
+-- Configure dual-mode encryption (both keystore and password)
 SET ENCRYPTION ON IDENTIFIED BY <backup_password>;
 BACKUP DATABASE;
 
--- Configure dual-mode encryption (both wallet and password)
+-- Set encryption algorithm (default is AES128; AES256 is stronger)
 CONFIGURE ENCRYPTION ALGORITHM 'AES256';
 
 -- Turn off encryption
 CONFIGURE ENCRYPTION FOR DATABASE OFF;
 ```
 
-For transparent encryption, an Oracle Wallet must be open before running backups:
+For transparent (keystore-based) encryption, the Oracle Wallet (TDE keystore) must be open before running backups:
 
 ```sql
--- Open the wallet (on the database server)
-ALTER SYSTEM SET WALLET OPEN IDENTIFIED BY <wallet_password>;
+-- Open the software keystore (correct syntax since Oracle 12c)
+ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY <wallet_password>;
 ```
+
+> ⚠️ Unverified: The older `ALTER SYSTEM SET WALLET OPEN` syntax is not documented in Oracle 19c; use `ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN` instead — check official docs before use.
 
 ---
 
@@ -559,3 +565,13 @@ Without a catalog, backup records in the control file can be overwritten. The de
 ```sql
 ALTER SYSTEM SET CONTROL_FILE_RECORD_KEEP_TIME = 31 SCOPE=BOTH;
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c Backup and Recovery User's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/bradv/)
+- [Oracle Database 19c RMAN Reference — BACKUP command](https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/BACKUP.html)
+- [Oracle Database 19c RMAN Reference — CONFIGURE command](https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/CONFIGURE.html)
+- [Oracle Database 19c RMAN Reference — RESTORE command](https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/RESTORE.html)
+- [Oracle Database 19c RMAN Reference — RECOVER command](https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/RECOVER.html)

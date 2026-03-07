@@ -535,3 +535,11 @@ END;
 | Running DDL inside a loop | Each DDL auto-commits and causes a hard parse | Move DDL outside loops; batch DDL at schema setup time |
 | Calling `EXECUTE IMMEDIATE` for every row in a DML loop | One hard parse per iteration (if string changes) or one parse + execute per row | Use `FORALL` with `EXECUTE IMMEDIATE` or DBMS_SQL parse-once/execute-many |
 | Not matching USING argument count to bind variable count | `ORA-01008: not all variables bound` | Count placeholders in the SQL string and ensure USING has exactly that many arguments |
+
+---
+
+## Sources
+
+- [Oracle Database 19c PL/SQL Language Reference (LNPLS)](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/)
+- [DBMS_SQL — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQL.html)
+- [DBMS_ASSERT — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_ASSERT.html)

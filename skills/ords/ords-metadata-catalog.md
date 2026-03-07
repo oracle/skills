@@ -464,3 +464,11 @@ This generates a script that calls all the necessary `ORDS.DEFINE_MODULE`, `ORDS
 - **Editing OpenAPI JSON directly**: The metadata-catalog endpoint is generated dynamically from ORDS_METADATA tables. Edits to the JSON output are discarded on next request. Edit the source definitions instead.
 - **Forgetting that metadata-catalog URLs are case-sensitive in module names**: `metadata-catalog/HR.Employees/` and `metadata-catalog/hr.employees/` may return different results. Module names are stored as defined (often lowercase). Be consistent.
 - **Using the metadata endpoint as a health check**: The metadata catalog requires DB access. Use `/ords/_/db-api/stable/database/` for health checks instead, as it has a simpler response and lower overhead.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — OpenAPI and Metadata Catalog](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
+- [Oracle REST Data Services PL/SQL API Reference — ORDS.DEFINE_PARAMETER](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [ORDS CLI Reference — rest export and rest import](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/ords-command-line-interface.html)

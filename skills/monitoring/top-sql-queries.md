@@ -552,3 +552,13 @@ AWR `_delta` values accumulate over the snapshot interval. A snapshot covering 2
 
 **Mistake: Relying solely on AWR for real-time diagnosis.**
 AWR snapshots are typically taken every hour. During a live performance crisis, use `V$SQL`, `V$SESSION`, `V$SESSION_WAIT`, and `V$SQL_MONITOR` for real-time data. AWR is for trend analysis and post-incident review.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Tuning Guide — Identifying High-Load SQL](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/identifying-high-load-sql.html)
+- [Oracle Database 19c Reference — V$SQLAREA](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SQLAREA.html)
+- [Oracle Database 19c Reference — V$SQL_MONITOR](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SQL_MONITOR.html)
+- [Oracle Database 19c Reference — DBA_HIST_SQLSTAT](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_HIST_SQLSTAT.html)
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_SQLTUNE (report_sql_monitor)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQLTUNE.html)

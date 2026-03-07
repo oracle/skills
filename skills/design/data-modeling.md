@@ -140,7 +140,7 @@ CREATE TABLE DIM_DATE (
     CONSTRAINT pk_dim_date PRIMARY KEY (date_key)
 )
 TABLESPACE dw_data
-COMPRESS FOR QUERY HIGH;  -- Oracle Advanced Compression for dimension tables
+COMPRESS FOR QUERY HIGH;  -- Hybrid Columnar Compression (HCC) — requires Exadata or Oracle ZFS/ODA storage
 
 -- Dimension: Customer (denormalized — city/state/country collapsed in)
 CREATE TABLE DIM_CUSTOMER (
@@ -213,6 +213,8 @@ CREATE BITMAP INDEX BIX_FS_PRODUCT  ON FACT_SALES (product_key)  LOCAL TABLESPAC
 ```
 
 **Note:** Bitmap indexes are ideal for data warehouse FK columns (low cardinality, read-heavy, infrequent DML). Never use bitmap indexes on OLTP tables with high concurrent writes — they cause severe lock contention.
+
+> **Important:** `COMPRESS FOR QUERY HIGH` uses Oracle Hybrid Columnar Compression (HCC). HCC is **not** a general Advanced Compression feature — it requires Exadata, Oracle ZFS Storage Appliance, Oracle Database Appliance (ODA), or another HCC-compatible engineered system. On standard server storage, this clause will not achieve columnar compression. For non-Exadata environments use `ROW STORE COMPRESS ADVANCED` (Advanced Row Compression, requires Advanced Compression option) or `COMPRESS BASIC` (direct-path inserts only, all editions).
 
 ---
 
@@ -467,7 +469,8 @@ CREATE TABLE ORDERS (
 ROW STORE COMPRESS ADVANCED
 TABLESPACE users_data;
 
--- Advanced Query Compression (Exadata/In-Memory Option) — highest DW compression
+-- Hybrid Columnar Compression — REQUIRES Exadata, ZFS Storage Appliance, or ODA
+-- Not available on standard server/SAN storage; will silently fall back to no compression
 CREATE TABLE FACT_SALES (
     date_key    NUMBER(8),
     amount      NUMBER(14,2)
@@ -475,10 +478,10 @@ CREATE TABLE FACT_SALES (
 COMPRESS FOR QUERY HIGH
 TABLESPACE dw_data;
 
--- In-Memory Compression (12c+) — in-memory columnar store
+-- In-Memory Compression (12c 12.1.0.2+) — in-memory columnar store
+-- MEMCOMPRESS and PRIORITY must be combined in a single INMEMORY clause
 ALTER TABLE FACT_SALES
-    INMEMORY MEMCOMPRESS FOR QUERY HIGH
-    INMEMORY PRIORITY CRITICAL;
+    INMEMORY MEMCOMPRESS FOR QUERY HIGH PRIORITY CRITICAL;
 ```
 
 ### Parallel Query Configuration
@@ -509,7 +512,7 @@ ORDER  BY d.year_number;
 - **Separate OLTP and DW schemas** into different tablespaces (and ideally different databases or PDBs) to isolate I/O profiles and backup strategies.
 - **Use surrogate keys in dimension tables**, never business/natural keys as dimension primary keys. Natural keys change; surrogate keys never do.
 - **Pre-aggregate judiciously.** Oracle materialized views can serve as pre-aggregated summaries that the query optimizer uses automatically (query rewrite).
-- **Apply compression to data warehouse tables.** `COMPRESS FOR QUERY HIGH` routinely achieves 4:1 to 10:1 compression ratios on fact tables, dramatically reducing I/O.
+- **Apply compression to data warehouse tables.** On Exadata (HCC), `COMPRESS FOR QUERY HIGH` achieves 10x or more compression on fact tables. On non-Exadata environments, use `ROW STORE COMPRESS ADVANCED` (Advanced Compression option required) which typically achieves 2:1 to 4:1 ratios for DW bulk loads.
 - **Design for ETL patterns.** Include audit columns (`LOAD_DATE`, `SOURCE_SYSTEM`, `BATCH_ID`) in every DW table from day one — retrofitting them is expensive.
 - **Avoid triggers on DW fact tables.** High-volume bulk loads with row-level triggers destroy performance. Use ETL logic in the load process instead.
 - **Document the grain** of every fact table explicitly — the grain is the most precise level of detail the fact table records (e.g., "one row per order line item per day").
@@ -550,3 +553,16 @@ Bitmap indexes lock at the bitmap segment level during DML — a single insert o
 ### Mistake 6: Storing Calculated Fields Without Documentation
 
 Storing pre-calculated values (gross profit, discounts) is sometimes valid for performance, but without documenting the formula, discrepancies between source and derived values are inevitable. Use virtual columns where possible, or document the formula as a column comment.
+
+---
+
+## Sources
+
+- [Oracle Database 23ai Concepts Guide](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/)
+- [Oracle Database 23ai SQL Language Reference — CREATE TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 23ai VLDB and Partitioning Guide](https://docs.oracle.com/en/database/oracle/oracle-database/23/vldbg/)
+- [Oracle Advanced Compression FAQ (oracle.com)](https://www.oracle.com/a/ocom/docs/database/advanced-compression-faq.pdf)
+- [Oracle Exadata Hybrid Columnar Compression (docs.oracle.com)](https://docs.oracle.com/en/engineered-systems/exadata-database-machine/sagug/exadata-hybrid-columnar-compression.html)
+- [Oracle Database 12c R1 — In-Memory Column Store (oracle-base.com)](https://oracle-base.com/articles/12c/in-memory-column-store-12cr1)
+- [Oracle Database 19c — Enabling Objects for In-Memory Population](https://docs.oracle.com/en/database/oracle/oracle-database/19/inmem/populating-objects-in-memory.html)
+- [Oracle Database 23ai PL/SQL Packages and Types Reference — DBMS_SPACE](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/DBMS_SPACE.html)

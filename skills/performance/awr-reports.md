@@ -386,3 +386,15 @@ ORDER  BY space_usage_kbytes DESC;
 | Not checking SQL execution count | A "slow" SQL may run 1 million times cheaply | Multiply avg elapsed × executions for total impact |
 | Treating Buffer Cache Hit % as gospel | A 99% hit ratio can still have I/O problems if the workload is huge | Check physical reads per second in absolute terms |
 | Using AWR for sub-minute incidents | Insufficient granularity | Use ASH (V$ACTIVE_SESSION_HISTORY) for real-time drilldown |
+
+---
+
+## Sources
+
+- [Oracle Database 19c Performance Tuning Guide (TGDBA)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgdba/)
+- [DBMS_WORKLOAD_REPOSITORY — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_WORKLOAD_REPOSITORY.html)
+- [DBA_HIST_SNAPSHOT — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_HIST_SNAPSHOT.html)
+- [DBA_HIST_WR_CONTROL — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_HIST_WR_CONTROL.html)
+- [DBA_HIST_SQLSTAT — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_HIST_SQLSTAT.html)
+- [V$LIBRARYCACHE — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-LIBRARYCACHE.html)
+- [V$ROWCACHE — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-ROWCACHE.html)

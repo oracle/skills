@@ -702,3 +702,12 @@ If the code under test changes its interface (renamed parameter, changed type), 
 
 **Mistake: Running tests against a production database.**
 utPLSQL tests insert, update, and delete data. They should never run against production — not even with careful cleanup. Use dedicated test environments or ephemeral CI containers.
+
+---
+
+## Sources
+
+- [utPLSQL Documentation](https://utplsql.org/utPLSQL/latest/) — test package annotations, assertion API, reporters, coverage
+- [utPLSQL GitHub Repository](https://github.com/utPLSQL/utPLSQL) — installation, version 3.x architecture
+- [utPLSQL-cli GitHub Repository](https://github.com/utPLSQL/utPLSQL-cli) — Java CLI client for test execution
+- [DBMS_PLSQL_CODE_COVERAGE (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_PLSQL_CODE_COVERAGE.html) — code coverage infrastructure used by utPLSQL

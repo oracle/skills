@@ -391,8 +391,9 @@ TABLESPACE orders_idx;
 ALTER TABLE ORDERS DROP PARTITION p_2020
 UPDATE GLOBAL INDEXES;  -- keeps global indexes valid; slower but avoids rebuilds
 
--- Or mark global indexes UNUSABLE and rebuild asynchronously
-ALTER TABLE ORDERS DROP PARTITION p_2020 INVALIDATE GLOBAL INDEXES;
+-- Or let global indexes go UNUSABLE (default when no index clause is specified) then rebuild
+-- NOTE: there is no INVALIDATE GLOBAL INDEXES clause; omitting the clause causes indexes to become UNUSABLE
+ALTER TABLE ORDERS DROP PARTITION p_2020;
 ALTER INDEX UX_ORDERS_ORDER_NUM REBUILD;
 ```
 
@@ -533,3 +534,17 @@ Even on a partitioned table, if queries filter by non-partition key columns, you
 ### Mistake 6: Choosing the Wrong Partition Key
 
 The partition key must align with the most common query filter. A table partitioned by `LOAD_DATE` but queried by `TRANSACTION_DATE` will never prune. Analyze actual query patterns before choosing the partition key — this decision is difficult to reverse in production.
+
+---
+
+## Sources
+
+- [Oracle Database 23ai VLDB and Partitioning Guide — Partition Concepts](https://docs.oracle.com/en/database/oracle/oracle-database/23/vldbg/partition-concepts.html)
+- [Oracle Database 23ai VLDB and Partitioning Guide — Partition Administration](https://docs.oracle.com/en/database/oracle/oracle-database/23/vldbg/)
+- [Oracle Database 23ai VLDB and Partitioning Guide — Partition Pruning](https://docs.oracle.com/en/database/oracle/oracle-database/21/vldbg/partition-pruning.html)
+- [Oracle Database 12c R2 — Automatic List Partitioning (oracle-base.com)](https://oracle-base.com/articles/12c/automatic-list-partitioning-12cr2)
+- [Oracle Database 11g R1 — Interval Partitioning (oracle-base.com)](https://oracle-base.com/articles/11g/partitioning-enhancements-11gr1)
+- [Oracle Database 12c R2 — Partitioning Enhancements (oracle-base.com)](https://oracle-base.com/articles/12c/partitioning-enhancements-12cr2)
+- [Oracle Database 12c R1 — Asynchronous Global Index Maintenance (oracle-base.com)](https://oracle-base.com/articles/12c/asynchronous-global-index-maintenance-for-drop-and-truncate-partition-12cr1)
+- [Oracle Database 23ai SQL Language Reference — ALTER TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/)
+- [Oracle Database Partitioning Option licensing](https://www.oracle.com/database/technologies/partitioning.html)

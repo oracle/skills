@@ -418,3 +418,12 @@ Without Flashback, reinstating the old primary after failover requires a full re
 
 **Treating the standby as a permanent reporting database without ADG license**
 Opening a standby read-only and suspending apply is not Active Data Guard. You need the ADG license to keep apply running while the database is open.
+
+---
+
+## Sources
+
+- [Oracle Data Guard Concepts and Administration 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/)
+- [Oracle Database 19c SQL Language Reference — ALTER DATABASE (Data Guard clauses)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html)
+- [Oracle Data Guard Broker 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dgbkr/)
+- [Oracle Database 19c Reference — V$DATAGUARD_STATS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-DATAGUARD_STATS.html)

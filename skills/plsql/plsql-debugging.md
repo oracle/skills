@@ -492,3 +492,13 @@ tkprof /path/to/trace.trc output.txt explain=myuser/mypass sys=no sort=prsela,ex
 - **Oracle 12c+**: Improved SQL Developer debugger with better handling of 12c features.
 - **Oracle 18c+**: Cloud-compatible tracing with Automatic Diagnostic Repository (ADR) improvements.
 - **All versions**: `DBMS_OUTPUT.ENABLE(NULL)` for unlimited buffer available since 10g.
+
+---
+
+## Sources
+
+- [DBMS_OUTPUT (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_OUTPUT.html) — PUT_LINE, PUT, NEW_LINE, ENABLE
+- [DBMS_APPLICATION_INFO (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_APPLICATION_INFO.html) — SET_MODULE, SET_ACTION, SET_SESSION_LONGOPS
+- [UTL_FILE (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/UTL_FILE.html) — FOPEN, PUT_LINE, FCLOSE, IS_OPEN, exception types
+- [DBMS_TRACE (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_TRACE.html) — SET_PLSQL_TRACE, CLEAR_PLSQL_TRACE, trace constants
+- [Oracle Database SQL Trace Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/performing-application-tracing.html) — event 10046, tkprof

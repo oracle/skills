@@ -604,3 +604,11 @@ FROM   articles
 WHERE  CONTAINS(content, 'database', 1) > 0
 ORDER  BY rel DESC;
 ```
+
+---
+
+## Sources
+
+- [Oracle Text Reference 19c (CCREF)](https://docs.oracle.com/en/database/oracle/oracle-database/19/ccref/)
+- [Oracle Text Application Developer's Guide 19c (CCAPP)](https://docs.oracle.com/en/database/oracle/oracle-database/19/ccapp/)
+- [Oracle Database 19c SQL Language Reference — CONTAINS](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)

@@ -512,3 +512,11 @@ Data Pump defaults to the CDB root when run from the OS. Always connect through 
 ### Mistake 5: Cloning a PDB Without Verifying the Compatibility Report
 
 Plugging a PDB from a lower version CDB into a higher version CDB without running `DBMS_PDB.CHECK_PLUG_COMPATIBILITY` and resolving violations results in an incompatible PDB that either fails to open or opens with errors. Always review `PDB_PLUG_IN_VIOLATIONS` before opening a newly plugged PDB.
+
+---
+
+## Sources
+
+- [Oracle Multitenant Administrator's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/multi/) — CDB/PDB architecture, creating and managing PDBs, cloning, plugging/unplugging, common users, Application Containers
+- [DBMS_PDB (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_PDB.html) — CHECK_PLUG_COMPATIBILITY procedure
+- [DBMS_RESOURCE_MANAGER (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_RESOURCE_MANAGER.html) — CREATE_CDB_PLAN, CREATE_CDB_PLAN_DIRECTIVE procedures

@@ -511,3 +511,13 @@ SELECT object_type, COUNT(*) FROM dba_objects WHERE owner = 'APP_USER' GROUP BY 
 
 **CDB: Creating local users in CDB$ROOT**
 Local users (without `C##`) created in CDB$ROOT are technically common users without the prefix enforcement. They cause confusion and management complexity. Always create application users as local users inside the appropriate PDB.
+
+---
+
+## Sources
+
+- [Oracle Database Security Guide 19c — Managing Security for Oracle Database Users](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/managing-security-for-oracle-database-users.html)
+- [Oracle Database 19c SQL Language Reference — CREATE USER](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-USER.html)
+- [Oracle Database 19c SQL Language Reference — ALTER USER](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-USER.html)
+- [Oracle Database 19c SQL Language Reference — CREATE PROFILE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-PROFILE.html)
+- [Oracle Database 19c Reference — DBA_USERS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_USERS.html)

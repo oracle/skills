@@ -195,16 +195,18 @@ Health checks run asynchronously by default. Poll for completion:
 
 ```sql
 -- Check run status
-SELECT run_name,
-       check_name,
-       status,           -- RUNNING, COMPLETED, INTERRUPTED
-       start_time,
-       end_time,
-       ROUND((end_time - start_time) * 86400, 1) AS duration_sec,
-       num_findings,
-       num_incidents
-FROM   v$hm_run
-ORDER BY start_time DESC
+-- V$HM_RUN column for the run identifier is NAME (not RUN_NAME)
+-- STATUS values: INITIAL, EXECUTING, INTERRUPTED, TIMEDOUT, CANCELLED, COMPLETED, ERROR
+-- V$HM_RUN does not have a NUM_FINDINGS column; use NUM_INCIDENT instead
+SELECT r.name          AS run_name,
+       r.check_name,
+       r.status,
+       r.start_time,
+       r.end_time,
+       ROUND((CAST(r.end_time AS DATE) - CAST(r.start_time AS DATE)) * 86400, 1) AS duration_sec,
+       r.num_incident
+FROM   v$hm_run r
+ORDER BY r.start_time DESC
 FETCH FIRST 20 ROWS ONLY;
 ```
 
@@ -585,3 +587,13 @@ These schemas contain internal Oracle objects that should not be shrunk or moved
 
 **Mistake: Over-relying on Memory Advisor estimates on mixed workload databases.**
 The advisors model the current workload. If your database has significant workload variation (e.g., batch at night, OLTP during the day), the advisor snapshot may not represent the workload you actually need to optimize for. Run advisors during representative peak periods.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Administrator's Guide — Monitoring Database Operations](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/monitoring-database-operations.html)
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_HM](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_HM.html)
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_SQLTUNE](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQLTUNE.html)
+- [Oracle Database 19c Reference — V$HM_CHECK](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-HM_CHECK.html)
+- [Oracle Database 19c Reference — V$SGA_TARGET_ADVICE](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SGA_TARGET_ADVICE.html)

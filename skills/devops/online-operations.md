@@ -472,3 +472,11 @@ Leaving `ROW MOVEMENT ENABLED` permanently means ROWIDs are not stable. Any appl
 
 **Mistake: Relying on SET UNUSED for data security.**
 `SET UNUSED COLUMN` makes the column invisible to normal SQL but does not physically remove the data. The column data still exists in the data files. For sensitive data (PII, credentials), use a proper DELETE or UPDATE to nullify the column values before marking it unused.
+
+---
+
+## Sources
+
+- [DBMS_REDEFINITION (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_REDEFINITION.html) — START_REDEF_TABLE, FINISH_REDEF_TABLE, ABORT_REDEF_TABLE, SYNC_INTERIM_TABLE, COPY_TABLE_DEPENDENTS, CAN_REDEF_TABLE parameters and constants
+- [Oracle Database Administrator's Guide 19c — Online Operations](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-tables.html) — ALTER TABLE ONLINE, shrink, unused columns
+- [Oracle Database SQL Language Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/) — CREATE INDEX ONLINE, REBUILD ONLINE, ALTER TABLE SET UNUSED

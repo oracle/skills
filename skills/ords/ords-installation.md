@@ -412,3 +412,11 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 - **Running ORDS as root**: Always run ORDS as a dedicated OS user (`oracle` or `ords`) with no unnecessary privileges.
 - **Forgetting to open firewall ports**: ORDS standalone defaults to port 8080 (HTTP) and 8443 (HTTPS). Ensure these are allowed through OS firewall and cloud security groups.
 - **Installing into the CDB root**: Always install ORDS into a PDB, not the CDB root. ORDS_METADATA in CDB root causes schema resolution issues.
+
+---
+
+## Sources
+
+- [Oracle REST Data Services Installation and Configuration Guide](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/index.html)
+- [ORDS CLI Reference — ords install](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/installing-oracle-rest-data-services.html)
+- [ORDS Configuration Settings Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)

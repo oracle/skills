@@ -42,15 +42,21 @@ END;
 ### Privilege with Required Roles
 
 ```sql
+DECLARE
+  l_roles owa.vc_arr;
 BEGIN
   -- Define roles first
-  ORDS.CREATE_ROLE('HR_MANAGER');
-  ORDS.CREATE_ROLE('HR_ADMIN');
+  ORDS.CREATE_ROLE(p_role_name => 'HR_MANAGER');
+  ORDS.CREATE_ROLE(p_role_name => 'HR_ADMIN');
 
   -- Define privilege requiring HR_MANAGER or HR_ADMIN role
+  -- p_roles is owa.vc_arr (not ORDS_TYPES.T_ORDS_STR_LIST)
+  l_roles(1) := 'HR_MANAGER';
+  l_roles(2) := 'HR_ADMIN';
+
   ORDS.DEFINE_PRIVILEGE(
     p_privilege_name => 'hr.employees.write',
-    p_roles          => ORDS_TYPES.T_ORDS_STR_LIST('HR_MANAGER', 'HR_ADMIN'),
+    p_roles          => l_roles,
     p_label          => 'HR Employee Write',
     p_description    => 'Create, update, and delete HR employee records'
   );
@@ -409,3 +415,11 @@ END;
 - **Not URL-encoding the Authorization Code redirect URI**: The `redirect_uri` in the authorization code exchange must exactly match the registered URI, including trailing slashes and encoding.
 - **Exposing `client_secret` in client-side code**: For browser-based apps (SPAs), use PKCE (if ORDS supports it for your version) or a backend-for-frontend pattern. Never put client secrets in JavaScript.
 - **Assuming roles in JWT match ORDS privilege names**: JWT roles are mapped to ORDS roles, and ORDS roles are associated with ORDS privileges. They are distinct levels. Configure the mapping carefully.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — Securing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
+- [Oracle REST Data Services PL/SQL API Reference — OAUTH and ORDS Packages](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [ORDS OAuth2 Client Credentials Flow](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/rest-enabled-sql-service.html)

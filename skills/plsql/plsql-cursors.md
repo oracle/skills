@@ -485,3 +485,11 @@ BEGIN
 END get_dept_report;
 /
 ```
+
+---
+
+## Sources
+
+- [Oracle Database PL/SQL Language Reference 19c — Cursors](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/static-sql.html) — implicit cursors, explicit cursors, cursor FOR loops, REF CURSORs
+- [DBMS_SQL (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQL.html) — RETURN_RESULT (12c+), TO_REFCURSOR (11gR2+)
+- [Oracle Database Reference 19c — V$OPEN_CURSOR](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-OPEN_CURSOR.html) — monitoring open cursors

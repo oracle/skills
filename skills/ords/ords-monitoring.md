@@ -59,7 +59,7 @@ For production: `INFO` level. For troubleshooting: `FINE` or `FINER`.
 Request logging records each HTTP request with URL, method, status code, response time, and client info.
 
 ```shell
-# Enable request logging in ords.xml
+# Configure external error path via the ORDS CLI
 ords --config /opt/oracle/ords/config config set error.externalPath /var/log/ords/errors
 ```
 
@@ -516,3 +516,11 @@ Common validation failures:
 - **Running with FINE log level in production**: DEBUG/FINE level logging can produce hundreds of MB of log per hour under load, filling disks and impacting performance.
 - **Not monitoring for ORA-28000 (account locked)**: If ORDS_PUBLIC_USER exceeds failed login attempts (e.g., due to a password rotation not applied to ORDS), the account locks and all ORDS requests fail with 503.
 - **Assuming ORDS health check verifies REST API handlers**: The `/ords/` health check only confirms ORDS is running and can serve HTTP. It does not verify DB connectivity or that REST modules are working. Use `/ords/_/db-api/stable/database/` for full health verification.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — Monitoring and Diagnosing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
+- [ORDS Configuration Settings Reference — Logging and Performance](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
+- [ORDS CLI Reference — ords validate](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/ords-command-line-interface.html)

@@ -359,7 +359,7 @@ For databases with complex SQLite-specific data or type coercions, a Python scri
 
 ```python
 import sqlite3
-import cx_Oracle
+import oracledb  # python-oracledb (successor to cx_Oracle; install with: pip install oracledb)
 from datetime import datetime
 
 # Connect to source
@@ -367,8 +367,8 @@ src_conn = sqlite3.connect('myapp.db')
 src_conn.row_factory = sqlite3.Row
 src_cur = src_conn.cursor()
 
-# Connect to target
-tgt_conn = cx_Oracle.connect('user/pass@localhost:1521/ORCL')
+# Connect to target (thin mode — no Oracle Client libs required)
+tgt_conn = oracledb.connect(user='user', password='pass', dsn='localhost:1521/ORCL')
 tgt_cur = tgt_conn.cursor()
 
 # Migrate products
@@ -501,3 +501,14 @@ WHERE filename LIKE '%.pdf'
 -- Or with regex for exact match:
 WHERE REGEXP_LIKE(filename, '\.pdf$', 'i')
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c SQL Language Reference — Row Limiting (FETCH FIRST)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/SELECT.html)
+- [Oracle Database 19c SQL Language Reference — MERGE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/MERGE.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [python-oracledb documentation](https://python-oracledb.readthedocs.io/en/latest/)

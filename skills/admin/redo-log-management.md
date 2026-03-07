@@ -451,3 +451,12 @@ If `LOG_ARCHIVE_DEST_1` is not set and there is no FRA, Oracle will archive to a
 
 **Dropping a log group while it is ACTIVE**
 This fails with ORA-00350. Issue `ALTER SYSTEM CHECKPOINT` first to advance the checkpoint and transition the group to INACTIVE before dropping.
+
+---
+
+## Sources
+
+- [Oracle Database Administrator's Guide 19c — Managing the Redo Log](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-the-redo-log.html)
+- [Oracle Database 19c Reference — V$LOG](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-LOG.html)
+- [Oracle Database 19c Reference — V$LOGFILE](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-LOGFILE.html)
+- [Oracle Database 19c Reference — V$LOG_HISTORY](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-LOG_HISTORY.html)

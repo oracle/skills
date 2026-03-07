@@ -230,22 +230,24 @@ WHERE  table_name = 'EMPLOYEES';
 
 Oracle can track whether an index has been used (accessed by the optimizer during query execution). This helps identify unused indexes that can be dropped to reduce DML overhead.
 
-### 12c+ (Automatic Monitoring via V$INDEX_USAGE_INFO)
+### 12c+ (Automatic Monitoring via DBA_INDEX_USAGE)
 
 In Oracle 12c Release 2 and later, index usage is automatically tracked without enabling explicit monitoring.
+Statistics are flushed from `V$INDEX_USAGE_INFO` (an instance-level control view) to `DBA_INDEX_USAGE`
+approximately every 15 minutes.
 
 ```sql
--- Check index usage statistics (12cR2+)
-SELECT index_name,
+-- Check index usage statistics (12cR2+) — query DBA_INDEX_USAGE, not V$INDEX_USAGE_INFO
+-- V$INDEX_USAGE_INFO is a control/status view; DBA_INDEX_USAGE holds the per-index stats
+SELECT name            AS index_name,
        total_access_count,
        total_exec_count,
        last_used
-FROM   v$index_usage_info
-WHERE  object_id IN (
-  SELECT object_id FROM user_objects WHERE object_name IN (
+FROM   dba_index_usage
+WHERE  owner = 'HR'
+  AND  name IN (
     SELECT index_name FROM user_indexes WHERE table_name = 'EMPLOYEES'
-  )
-);
+  );
 ```
 
 ### Pre-12c Monitoring (ALTER INDEX MONITORING USAGE)
@@ -380,3 +382,13 @@ WHERE  ac.constraint_type = 'R'  -- Referential (FK)
 | Rebuilding all indexes on schedule | Wasted maintenance window; no real benefit | Rebuild only when fragmentation is confirmed |
 | Dropping an index without testing | May cause performance regression | Make invisible first; test; then drop |
 | Creating duplicate indexes | DML overhead; storage waste | Check existing indexes before creating new ones |
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)
+- [Oracle Database 19c Performance Tuning Guide (TGDBA)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgdba/)
+- [USER_INDEXES / DBA_INDEXES — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/USER_INDEXES.html)
+- [DBA_INDEX_USAGE — Oracle Database 19c Reference (12cR2+)](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_INDEX_USAGE.html)
+- [V$OBJECT_USAGE — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-OBJECT_USAGE.html)

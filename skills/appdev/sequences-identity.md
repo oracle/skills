@@ -416,3 +416,11 @@ When using `GENERATED ALWAYS`, Data Pump exports include the sequence definition
 SELECT max(employee_id) FROM employees;  -- say it's 5432
 ALTER TABLE employees MODIFY employee_id GENERATED ALWAYS AS IDENTITY (START WITH 5433);
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — CREATE SEQUENCE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-SEQUENCE.html)
+- [Oracle Database 19c SQL Language Reference — Identity Columns](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c Application Developer's Guide (ADFNS)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adfns/)

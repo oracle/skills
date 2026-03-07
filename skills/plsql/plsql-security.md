@@ -179,11 +179,11 @@ END;
 | Function | Purpose | Raises |
 |---|---|---|
 | `SIMPLE_SQL_NAME(str)` | Validates name has no special chars, spaces, or SQL keywords | ORA-44003 |
-| `QUALIFIED_SQL_NAME(str)` | Validates schema.object[.subobject] format | ORA-44003 |
+| `QUALIFIED_SQL_NAME(str)` | Validates schema.object[.subobject] format | ORA-44004 |
 | `SQL_OBJECT_NAME(str)` | Validates name AND verifies the object exists | ORA-44002 |
 | `SCHEMA_NAME(str)` | Validates and verifies the schema exists | ORA-44001 |
-| `ENQUOTE_LITERAL(str)` | Quotes string as a literal value (single quotes, escapes embedded quotes) | ORA-44003 |
-| `ENQUOTE_NAME(str, capitalize)` | Quotes identifier with double quotes | ORA-44003 |
+| `ENQUOTE_LITERAL(str)` | Quotes string as a literal value (single quotes, escapes embedded quotes) | None documented |
+| `ENQUOTE_NAME(str, capitalize)` | Quotes identifier with double quotes | None documented |
 | `NOOP(str)` | Returns string unchanged; documents that no validation was performed | Never |
 
 ### Safe Dynamic DDL Pattern
@@ -360,3 +360,12 @@ END app_logon_trigger;
 - **Oracle 12c+**: `DBMS_PRIVILEGE_CAPTURE` enables privilege analysis — identifies which privileges are actually used, helping implement least privilege.
 - **Oracle 18c+**: `DEFAULT COLLATION` and `COLLATION` on individual columns can affect string comparison in dynamic SQL — validate that DBMS_ASSERT behavior is consistent with collation settings.
 - **All versions**: `DBMS_ASSERT` has been available since Oracle 10.2; use it consistently in all PL/SQL handling user-supplied identifiers in dynamic SQL.
+
+---
+
+## Sources
+
+- [Oracle Database PL/SQL Language Reference 19c — AUTHID Clause](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/AUTHID-clause.html) — definer rights vs invoker rights
+- [DBMS_ASSERT (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_ASSERT.html) — SQL_OBJECT_NAME, SIMPLE_SQL_NAME, ENQUOTE_LITERAL, NOOP
+- [Oracle Database Security Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/) — privilege analysis, application context, RLS
+- [Oracle Database PL/SQL Language Reference 19c — ACCESSIBLE BY Clause](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/ACCESSIBLE-BY-clause.html) — 12.2+ compile-time access control

@@ -405,6 +405,16 @@ END;
 ## Oracle-Specific Notes
 
 - The `OPTIMIZER_ADAPTIVE_PLANS` parameter (default ON in 12c+) allows Oracle to switch join methods mid-execution based on actual row counts. This helps but can cause surprising plan changes.
-- `OPTIMIZER_STATISTICS_ADVISOR` (19c+) runs automatically during the maintenance window and recommends statistics gathering changes.
+- `OPTIMIZER_STATISTICS_ADVISOR` (12.2+) runs automatically during the maintenance window and recommends statistics gathering changes.
 - On Exadata, `CELL_OFFLOAD_PROCESSING` in the plan indicates Smart Scan is active — full scans on Exadata can be very fast due to storage cell processing.
 - The `/*+ GATHER_PLAN_STATISTICS */` hint adds `A-Rows` and `A-Time` to any query without needing autotrace — useful in application code testing.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)
+- [Oracle Database 19c SQL Language Reference (SQLRF)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
+- [DBMS_XPLAN — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_XPLAN.html)
+- [DBMS_SQLTUNE — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQLTUNE.html)
+- [DBMS_SPM — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SPM.html)

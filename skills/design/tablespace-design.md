@@ -82,7 +82,7 @@ CREATE TABLESPACE users_data
     SEGMENT SPACE MANAGEMENT AUTO;
 ```
 
-### Bigfile Tablespaces (11g+)
+### Bigfile Tablespaces (10g+)
 
 - Exactly **1 data file** per tablespace
 - Data file up to **4 billion blocks** (32 TB with 8K blocks, up to 128 TB with 32K blocks)
@@ -359,14 +359,24 @@ DATAFILE '/u01/oradata/ORCL/app_data_01.dbf'
 
 ```sql
 -- Estimate segment size before creation
-SELECT DBMS_SPACE.CREATE_TABLE_COST(
-    tablespace_name  => 'USERS_DATA',
-    avg_row_size     => 250,     -- average bytes per row
-    row_count        => 10000000, -- expected row count
-    pct_free         => 10,
-    used_bytes       => :used_bytes,
-    alloc_bytes      => :alloc_bytes
-) FROM DUAL;
+-- DBMS_SPACE.CREATE_TABLE_COST is a PROCEDURE with OUT parameters, not a function.
+-- It cannot be called in a SELECT statement; use a PL/SQL block or bind variables.
+DECLARE
+    v_used_bytes  NUMBER;
+    v_alloc_bytes NUMBER;
+BEGIN
+    DBMS_SPACE.CREATE_TABLE_COST(
+        tablespace_name => 'USERS_DATA',
+        avg_row_size    => 250,      -- average bytes per row
+        row_count       => 10000000, -- expected row count
+        pct_free        => 10,
+        used_bytes      => v_used_bytes,
+        alloc_bytes     => v_alloc_bytes
+    );
+    DBMS_OUTPUT.PUT_LINE('Used bytes:  ' || v_used_bytes);
+    DBMS_OUTPUT.PUT_LINE('Alloc bytes: ' || v_alloc_bytes);
+END;
+/
 ```
 
 **Monitor existing tablespace usage:**
@@ -607,3 +617,16 @@ An undersized undo tablespace causes `ORA-01555: snapshot too old` errors for lo
 | Online Tablespace Migration to LMT | 10g |
 | Automatic Bigfile Tablespace default (Autonomous DB) | 19c (ADB) |
 | In-Memory tablespace (IM_IMCU_POOL) | 12c |
+
+---
+
+## Sources
+
+- [Oracle Database 23ai Administrator's Guide — Managing Tablespaces](https://docs.oracle.com/en/database/oracle/oracle-database/23/admin/managing-tablespaces.html)
+- [Oracle Database 23ai Concepts — Logical Storage Structures](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/logical-storage-structures.html)
+- [Oracle Database 19c Administrator's Guide — Managing Tablespaces](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-tablespaces.html)
+- [Oracle Database 23ai PL/SQL Packages and Types Reference — DBMS_SPACE](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/DBMS_SPACE.html)
+- [Oracle Database 19c PL/SQL Packages and Types Reference — DBMS_SERVER_ALERT](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SERVER_ALERT.html)
+- [Oracle Bigfile Tablespace (oracle-faq.com)](https://www.orafaq.com/wiki/Bigfile_tablespace)
+- [Oracle Database 12c R2 — Online Table Move (oracle-base.com)](https://oracle-base.com/articles/12c/online-move-table-12cr2)
+- [Oracle ALTER TABLE SHRINK SPACE — Online Segment Shrink (oracle-base.com)](https://oracle-base.com/articles/misc/alter-table-shrink-space-online)

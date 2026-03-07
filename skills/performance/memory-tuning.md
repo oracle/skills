@@ -130,13 +130,18 @@ SELECT name, value
 FROM   v$sysstat
 WHERE  name LIKE '%shared pool%';
 
--- Large shared pool chunks (healthy = a few large free chunks)
-SELECT chunk_size,
-       chunk_type,
-       COUNT(*) AS chunk_count
-FROM   v$shared_pool_reserved
-UNION ALL
-SELECT free_space, 'FREE_TOTAL', NULL FROM v$shared_pool_reserved;
+-- Shared pool reserved area stats (V$SHARED_POOL_RESERVED)
+-- Key columns: FREE_SPACE, USED_SPACE, REQUEST_FAILURES, LAST_FAILURE_SIZE
+-- (V$SHARED_POOL_RESERVED does NOT have CHUNK_SIZE or CHUNK_TYPE columns)
+SELECT free_space,
+       avg_free_size,
+       free_count,
+       used_space,
+       avg_used_size,
+       used_count,
+       request_failures,
+       last_failure_size
+FROM   v$shared_pool_reserved;
 
 -- Pin objects in shared pool to prevent eviction and reduce fragmentation
 -- (for frequently used PL/SQL packages)
@@ -505,3 +510,14 @@ ORDER  BY shared_pool_size_for_estimate;
 | Pinning everything in shared pool | Evicts needed objects; wastes space | Only pin large, frequently invalidated packages |
 | Setting individual SGA component sizes with ASMM enabled | Creates rigid sub-limits; defeats ASMM flexibility | If using ASMM, set only minimum sizes as guards |
 | Forgetting to resize `/dev/shm` on Linux after increasing MEMORY_TARGET | ORA-00845 on startup | Increase `/dev/shm` to >= MEMORY_MAX_TARGET |
+
+---
+
+## Sources
+
+- [Oracle Database 19c Performance Tuning Guide (TGDBA)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgdba/)
+- [V$SGA — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SGA.html)
+- [V$PGASTAT — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-PGASTAT.html)
+- [V$DB_CACHE_ADVICE — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-DB_CACHE_ADVICE.html)
+- [V$PGA_TARGET_ADVICE — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-PGA_TARGET_ADVICE.html)
+- [DBMS_SHARED_POOL — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SHARED_POOL.html)

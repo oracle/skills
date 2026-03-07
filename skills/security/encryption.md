@@ -9,7 +9,7 @@ Oracle provides two primary encryption mechanisms:
 - **Transparent Data Encryption (TDE)**: Encrypts datafiles, tablespaces, and individual columns on disk. The encryption and decryption is transparent to applications — queries, DML, and DDL work exactly as before.
 - **DBMS_CRYPTO**: A PL/SQL API for encrypting specific values in application logic, useful for cases where the application needs to control the encryption beyond what TDE provides.
 
-TDE is included in **Oracle Database Enterprise Edition** with the **Advanced Security Option** (licensed separately in versions prior to 19c, included in all EE editions from 19c onward in the cloud, and available in 21c+).
+TDE requires the **Oracle Advanced Security Option**, which is a separately licensed extra-cost option for Oracle Database Enterprise Edition in on-premises deployments (including 19c). It is included without extra charge in certain Oracle Cloud database service tiers (BaseDB EE-HP, BaseDB EE-EP, ExaDB). Always verify current licensing with Oracle's official Licensing Information User Manual for your specific version and deployment type.
 
 ---
 
@@ -41,9 +41,11 @@ The **Master Encryption Key (MEK)** is stored in the Oracle Wallet (a password-p
 --   (SOURCE = (METHOD = FILE)
 --     (METHOD_DATA = (DIRECTORY = /opt/oracle/admin/ORCL/wallet)))
 
--- In 12c+, can also be set with WALLET_ROOT initialization parameter:
+-- In 19c+, use the WALLET_ROOT initialization parameter (recommended):
+-- ENCRYPTION_WALLET_LOCATION in sqlnet.ora is deprecated as of Oracle 19c.
 ALTER SYSTEM SET wallet_root = '/opt/oracle/admin/ORCL/wallet' SCOPE = SPFILE;
--- Requires restart; wallet_root supersedes sqlnet.ora setting in 12c+
+-- Requires restart; when WALLET_ROOT is set it takes precedence over sqlnet.ora
+-- ENCRYPTION_WALLET_LOCATION. Use TDE_CONFIGURATION alongside WALLET_ROOT.
 
 -- Set the TDE configuration (keystore type)
 ALTER SYSTEM SET tde_configuration = 'KEYSTORE_CONFIGURATION=FILE' SCOPE = BOTH;
@@ -215,12 +217,14 @@ ORDER BY owner, table_name, column_name;
 |---|---|---|
 | `AES128` | 128-bit | Acceptable; NIST approved |
 | `AES192` | 192-bit | Good choice |
-| `AES256` | 256-bit | Recommended; FIPS 140-2 compliant |
+| `AES256` | 256-bit | Recommended; FIPS 140-2 compliant; default in 23ai |
 | `3DES168` | 168-bit | Legacy; not recommended for new deployments |
 | `ARIA128` | 128-bit | Korean standard; for regulatory compliance in KR |
 | `ARIA192` | 192-bit | Korean standard |
 | `ARIA256` | 256-bit | Korean standard |
-| `GOST256` | 256-bit | Russian standard; for regulatory compliance in RU |
+| `GOST256` | 256-bit | Russian standard — **deprecated in Oracle 23c; desupported and removed in Oracle 26ai**. Do not use for new deployments. |
+
+> **Note on ARIA and GOST:** ARIA was added in Oracle 19c for offline tablespace encryption. GOST was also added in 19c but is deprecated in 23c and fully removed in Oracle 26ai. Use AES256 for all new deployments.
 
 ---
 
@@ -507,3 +511,15 @@ expdp system/password FULL=Y \
   # In sqlnet.ora:
   SQLNET.FIPS_140 = TRUE
   ```
+
+---
+
+## Sources
+
+- [Oracle Database Advanced Security Guide 19c — Using Transparent Data Encryption](https://docs.oracle.com/en/database/oracle/oracle-database/19/asoag/using-transparent-data-encryption.html)
+- [Oracle Database Advanced Security Guide 19c — Changes in 19c (ARIA, GOST added)](https://docs.oracle.com/en/database/oracle/oracle-database/19/asoag/release-changes.html)
+- [Oracle Database Reference 19c — WALLET_ROOT Parameter](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/WALLET_ROOT.html)
+- [Oracle Database 19c Licensing Information User Manual](https://docs.oracle.com/en/database/oracle/oracle-database/19/dblic/Licensing-Information.html)
+- [Oracle PL/SQL Packages Reference 19c — DBMS_CRYPTO](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_CRYPTO.html)
+- [Oracle Database 19c New Features Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/newft/)
+- [Oracle Support Note: How to Convert From SQLNET.ENCRYPTION_WALLET_LOCATION to WALLET_ROOT (Doc ID 2642694.1)](https://support.oracle.com/knowledge/Oracle%20Database%20Products/2642694_1.html)

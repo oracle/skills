@@ -171,11 +171,11 @@ EXEC DBMS_INMEMORY.POPULATE(schema_name => 'SCOTT', table_name => 'SALES');
 EXEC DBMS_INMEMORY.POPULATE(
     schema_name    => 'SCOTT',
     table_name     => 'SALES',
-    partition_name => 'SALES_202503'
+    subobject_name => 'SALES_202503'
 );
 
 -- Repopulate (useful after bulk DML that caused stale segments)
-EXEC DBMS_INMEMORY.REPOPULATE(schema_name => 'SCOTT', table_name => 'SALES');
+EXEC DBMS_INMEMORY.REPOPULATE(schema_name => 'SCOTT', table_name => 'SALES', force => FALSE);
 ```
 
 ---
@@ -384,13 +384,9 @@ WHERE  owner = 'SCOTT'
   AND  segment_name IN ('SALES', 'ORDERS', 'PRODUCTS')
 GROUP  BY table_name;
 
--- Use DBMS_INMEMORY_ADMIN to get more accurate estimates (19c+)
--- This populates actual IMCS data and measures it
-EXEC DBMS_INMEMORY_ADMIN.IMCS_BEGIN;
--- ... populate tables, run workload ...
-EXEC DBMS_INMEMORY_ADMIN.IMCS_END;
-
 -- After actual population, measure actual IMCS footprint
+-- (DBMS_INMEMORY_ADMIN does not have IMCS_BEGIN/IMCS_END procedures;
+--  use POPULATE_WAIT or enable INMEMORY on objects and monitor V$IM_SEGMENTS)
 SELECT SUM(inmemory_size) / 1024 / 1024 / 1024 AS total_imcs_gb
 FROM   v$im_segments;
 
@@ -501,7 +497,7 @@ After a large `INSERT /*+ APPEND */` or partition exchange operation, the IMCS c
 EXEC DBMS_INMEMORY.REPOPULATE(
     schema_name    => 'DW_OWNER',
     table_name     => 'FACT_SALES',
-    partition_name => 'SALES_202503'
+    subobject_name => 'SALES_202503'
 );
 
 -- Monitor completion
@@ -510,3 +506,12 @@ FROM   v$im_segments
 WHERE  segment_name = 'FACT_SALES'
   AND  partition_name = 'SALES_202503';
 ```
+
+---
+
+## Sources
+
+- [Oracle Database In-Memory Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/inmem/) — IMCS architecture, MEMCOMPRESS levels, population, monitoring
+- [DBMS_INMEMORY (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_INMEMORY.html) — POPULATE and REPOPULATE procedures (parameter is `subobject_name`, not `partition_name`)
+- [DBMS_INMEMORY_ADMIN (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_INMEMORY_ADMIN.html) — AIM parameters, FastStart, IME_CAPTURE_EXPRESSIONS
+- [Oracle Database Reference 19c — V$IM_SEGMENTS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-IM_SEGMENTS.html) — In-Memory segment monitoring view

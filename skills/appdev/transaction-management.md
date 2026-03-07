@@ -462,3 +462,11 @@ connection.commit();  // or connection.rollback() in catch block
 ### Mistake 4: Misunderstanding Statement-Level vs. Transaction-Level Rollback
 
 When a DML statement fails with an exception, only that statement is rolled back. The transaction remains open. If you catch the exception and do nothing, the prior statements in the transaction are still uncommitted and their locks are still held.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Concepts (CNCPT) — Transactions](https://docs.oracle.com/en/database/oracle/oracle-database/19/cncpt/)
+- [Oracle Database 19c Application Developer's Guide (ADFNS)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adfns/)
+- [Oracle Database 19c PL/SQL Language Reference — Transaction Processing](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/)

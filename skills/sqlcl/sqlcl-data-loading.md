@@ -437,3 +437,12 @@ If the target table has foreign key constraints pointing to tables not yet popul
 
 **Mistake: Not specifying TRUNCATE or APPEND explicitly for repeated loads**
 The default behavior is APPEND. Running a load script twice will create duplicate rows. For idempotent loads (safe to run multiple times), use `TRUNCATE ON` to clear the table first, or use a staging-plus-merge pattern with a unique key.
+
+---
+
+## Sources
+
+- [Loading a File — Oracle SQLcl Docs](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/23.1/sqcug/loading-file.html)
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [SQLcl: Unload and Load Table Data — ORACLE-BASE](https://oracle-base.com/articles/misc/sqlcl-unload-and-load-table-data)
+- [Loading Data into Oracle with SQLcl — ThatJeffSmith](https://www.thatjeffsmith.com/archive/2020/08/loading-data-into-oracle-with-sqlcl/)

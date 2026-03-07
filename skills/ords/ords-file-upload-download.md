@@ -398,7 +398,7 @@ For files larger than available memory, always stream in chunks. The chunk appro
 ORDS configuration for large uploads (adjust JVM memory and request limits):
 
 ```shell
-# Increase max request size in ords/conf/ords.xml
+# Adjust pagination and request limits via the ORDS CLI
 ords --config /opt/oracle/ords/config config set misc.pagination.maxRows 1000
 ```
 
@@ -450,3 +450,11 @@ ORDS.DEFINE_HANDLER(
 - **Loading entire BLOB into memory**: `SELECT file_content INTO l_blob FROM ...` loads the full BLOB pointer, but actual data is not fully read until accessed. Use `DBMS_LOB.READ` in a loop for large files to avoid OOM errors.
 - **Encoding filenames with special characters in headers**: Filenames with spaces, accents, or non-ASCII characters in Content-Disposition headers must be RFC 5987 encoded. Plain `filename="résumé.pdf"` will be garbled in some clients.
 - **Using BASICFILE LOB for new tables**: BASICFILE is legacy. Always specify `STORE AS SECUREFILE` for BLOB columns in new tables to benefit from better performance and storage options.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — Handling BLOBs and Binary Data](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
+- [Oracle Database SecureFiles and Large Objects Developer's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/adlob/index.html)
+- [ORDS Implicit Parameters Reference (:body, :content_type)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)

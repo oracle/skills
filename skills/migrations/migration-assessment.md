@@ -366,15 +366,17 @@ Rate each risk factor on a 1–5 scale for Likelihood and Impact. Multiply to ge
 
 ---
 
-## Oracle Database Migration Assessment Tool (DMAF)
+## Oracle Database Migration Assessment Resources
 
-Oracle provides the **Database Migration Assessment Framework (DMAF)**, also accessible through **Oracle Cloud Migration Advisor** for cloud-target migrations.
+> ⚠️ Unverified: The term "Database Migration Assessment Framework (DMAF)" refers to an **AWS** open-source tool, not an Oracle product. Oracle does not publish a product by that name. Oracle's migration assessment resources are provided through Oracle SQL Developer Migration Workbench (built-in assessment), AWS SCT assessment reports (for cross-RDBMS), and the **Oracle Cloud Migration Advisor** for cloud-target migrations.
 
 ### Oracle Cloud Migration Advisor
 
 If the target is OCI (Oracle Autonomous Database or DBCS), use the Oracle Cloud Migration Advisor:
 
-1. Install the **AWR Warehouse** or **Oracle Cloud Database Migration** service
+> ⚠️ Unverified: The exact step-by-step setup process for Oracle Cloud Migration Advisor may differ by OCI region and service generation — check the current OCI documentation before use.
+
+1. Install the **Oracle Cloud Database Migration** service or use the built-in OCI migration tooling
 2. Connect the advisor to the source database
 3. Run the workload capture to collect SQL and schema metadata
 4. Review the advisor report for:
@@ -480,3 +482,11 @@ A complete migration assessment should produce the following deliverables:
 7. **Go/No-Go Criteria:** Specific, measurable criteria that must be met before production cutover.
 
 8. **Rollback Plan:** Step-by-step procedure for reverting to the source database if migration fails.
+
+---
+
+## Sources
+
+- [Oracle SQL Developer Migration documentation](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)
+- [AWS Schema Conversion Tool — Assessment Reports](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_AssessmentReport.html)
+- [Oracle Database 19c — DBMS_METADATA package](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_METADATA.html)

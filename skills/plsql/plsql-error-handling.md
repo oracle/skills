@@ -476,7 +476,7 @@ EXCEPTION
 
 ## Version Notes
 
-- **Oracle 12c+**: `UTL_CALL_STACK` package provides a structured API to inspect the call stack, error stack, and backtrace programmatically — more powerful than `DBMS_UTILITY` string functions.
+- **Oracle 12c+**: `UTL_CALL_STACK` package provides a structured API to inspect the call stack, error stack, and backtrace programmatically — more powerful than `DBMS_UTILITY` string functions. Available functions confirmed in 19c docs: `ERROR_DEPTH`, `ERROR_NUMBER`, `ERROR_MSG`, `BACKTRACE_DEPTH`, `BACKTRACE_UNIT`, `BACKTRACE_LINE`, `DYNAMIC_DEPTH`, `SUBPROGRAM`, `OWNER`, `UNIT_LINE`.
 - **All versions**: `DBMS_UTILITY.FORMAT_ERROR_BACKTRACE` requires the exception to be currently active (called from within the exception handler, or the backtrace is reset).
 - **Oracle 10g+**: `DBMS_UTILITY.FORMAT_ERROR_BACKTRACE` was introduced. Before 10g, line numbers were unavailable without the PL/SQL Debugger.
 
@@ -500,3 +500,12 @@ EXCEPTION
     END LOOP;
 END;
 ```
+
+---
+
+## Sources
+
+- Oracle Database 19c PL/SQL Language Reference — Exception Handling: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-error-handling.html
+- Oracle Database 19c PL/SQL Language Reference — Predefined Exceptions: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/predefined-exceptions.html
+- Oracle Database 19c PL/SQL Packages Reference — DBMS_UTILITY: https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_UTILITY.html
+- Oracle Database 19c PL/SQL Packages Reference — UTL_CALL_STACK: https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/UTL_CALL_STACK.html

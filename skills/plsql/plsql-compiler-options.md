@@ -12,10 +12,10 @@ Controls the aggressiveness of the PL/SQL optimizer. Higher levels produce faste
 
 | Level | Name | Description |
 |---|---|---|
-| 0 | None | No optimization. Code executes in source order. Use only for debugging. |
-| 1 | Basic | Removes dead code, simplifies simple expressions. Preserves line numbers for debuggers. |
-| 2 | Standard | Default. Significant optimizations including inlining, loop transformations, and expression folding. |
-| 3 | Aggressive | Adds function inlining. Oracle may inline subprogram calls to eliminate call overhead. |
+| 0 | None | Maintains Oracle9i evaluation order, side effects, exceptions, and package initializations. Use only for debugging compatibility with very old code. |
+| 1 | Basic | Applies wide-range optimizations including elimination of unnecessary computations and exceptions, but generally preserves original source order. Good balance for rapid development. |
+| 2 | Standard | **Default.** Applies modern optimization techniques beyond level 1, including code movement optimizations. Best execution performance for most code. |
+| 3 | Aggressive | Applies advanced optimizations beyond level 2 including automatic subprogram inlining. `PRAGMA INLINE 'YES'` at this level marks calls as high-priority for inlining. |
 
 ```sql
 -- Set at session level (affects all subsequent compilations in session)
@@ -29,16 +29,19 @@ ALTER SYSTEM SET PLSQL_OPTIMIZE_LEVEL = 2 SCOPE = BOTH;
 
 -- Set in DDL for individual objects
 CREATE OR REPLACE PROCEDURE fast_proc IS
-  PRAGMA INLINE(helper_func, 'YES');  -- at level 3, inline this call
+  PRAGMA INLINE(helper_func, 'YES');  -- at level 2+, inline this call
 BEGIN
   helper_func(42);
 END fast_proc;
 /
 ```
 
-### PRAGMA INLINE (Optimizer Level 3)
+### PRAGMA INLINE (Optimizer Level 2+)
 
-At level 3, `PRAGMA INLINE` can direct the optimizer to inline (or not inline) specific function calls:
+`PRAGMA INLINE` can direct the optimizer to inline (or not inline) specific function calls. It is effective at **optimizer level 2 and above**:
+
+- At level 2: `'YES'` causes the call to be inlined; `'NO'` prevents inlining.
+- At level 3: `'YES'` marks the call as high-priority for inlining (compiler still makes final decision); `'NO'` prevents inlining.
 
 ```sql
 CREATE OR REPLACE FUNCTION calculate_tax(p_amount NUMBER) RETURN NUMBER IS
@@ -292,20 +295,24 @@ BEGIN
 END version_compatible_proc;
 /
 
--- DBMS_DB_VERSION constants available:
+-- DBMS_DB_VERSION constants available (confirmed in Oracle 19c documentation):
 -- DBMS_DB_VERSION.VERSION       -- major version number (e.g., 19)
 -- DBMS_DB_VERSION.RELEASE       -- release number (e.g., 0)
 -- DBMS_DB_VERSION.VER_LE_9      -- Oracle <= 9
+-- DBMS_DB_VERSION.VER_LE_9_1    -- Oracle <= 9.1
+-- DBMS_DB_VERSION.VER_LE_9_2    -- Oracle <= 9.2
+-- DBMS_DB_VERSION.VER_LE_10     -- Oracle <= 10
 -- DBMS_DB_VERSION.VER_LE_10_1   -- Oracle <= 10.1
 -- DBMS_DB_VERSION.VER_LE_10_2   -- Oracle <= 10.2
--- DBMS_DB_VERSION.VER_LE_11     -- Oracle <= 11.1
+-- DBMS_DB_VERSION.VER_LE_11     -- Oracle <= 11
+-- DBMS_DB_VERSION.VER_LE_11_1   -- Oracle <= 11.1
 -- DBMS_DB_VERSION.VER_LE_11_2   -- Oracle <= 11.2
--- DBMS_DB_VERSION.VER_LE_12     -- Oracle <= 12.1
+-- DBMS_DB_VERSION.VER_LE_12     -- Oracle <= 12
 -- DBMS_DB_VERSION.VER_LE_12_1   -- Oracle <= 12.1
 -- DBMS_DB_VERSION.VER_LE_12_2   -- Oracle <= 12.2
 -- DBMS_DB_VERSION.VER_LE_18     -- Oracle <= 18c
--- DBMS_DB_VERSION.VER_LE_19     -- Oracle <= 19c (19.0)
--- DBMS_DB_VERSION.VER_LE_21     -- Oracle <= 21c
+-- DBMS_DB_VERSION.VER_LE_19     -- Oracle <= 19c
+-- Note: VER_LE_21 is NOT present in Oracle 19c DBMS_DB_VERSION; available only in 21c+ installations
 ```
 
 ---
@@ -400,5 +407,14 @@ END;
 - **Oracle 10gR2+**: Conditional compilation (`$IF`, `$THEN`, `$ELSE`, `$END`, `PLSQL_CCFLAGS`) introduced.
 - **Oracle 11gR2+**: Edition-Based Redefinition (EBR) for zero-downtime upgrades.
 - **Oracle 12.2+**: `$$PLSQL_UNIT_OWNER` and `$$PLSQL_UNIT_TYPE` inquiry directives added.
-- **Oracle 12cR1+**: `PRAGMA INLINE` for manual inlining hints at optimize level 3.
-- **Oracle 19c+**: `DBMS_DB_VERSION.VER_LE_19` and later constants added. Native compilation matured for cloud deployments.
+- **Oracle 12cR1+**: `PRAGMA INLINE` for manual inlining hints — effective at optimizer level 2 (`'YES'` inlines the call) and level 3 (`'YES'` marks as high-priority for inlining).
+- **Oracle 19c+**: `DBMS_DB_VERSION.VER_LE_19` is the highest VER_LE constant confirmed in 19c documentation. `VER_LE_21` is available only in 21c+ installations.
+
+---
+
+## Sources
+
+- Oracle Database 19c Reference — PLSQL_OPTIMIZE_LEVEL: https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/PLSQL_OPTIMIZE_LEVEL.html
+- Oracle Database 19c PL/SQL Language Reference — INLINE Pragma: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/INLINE-pragma.html
+- Oracle Database 19c PL/SQL Packages Reference — DBMS_DB_VERSION: https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_DB_VERSION.html
+- Oracle Database 19c PL/SQL Language Reference — Conditional Compilation: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-language-fundamentals.html

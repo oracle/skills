@@ -294,3 +294,11 @@ Always check the [ORDS Release Notes](https://docs.oracle.com/en/database/oracle
 - **Conflating schema alias with schema name**: The schema alias in the URL (e.g., `/ords/hr/`) is set when enabling the schema and can differ from the database username. Mismatches cause 404 errors.
 - **Assuming ORDS and APEX require the same version**: ORDS and APEX have independent version dependencies. Check APEX release notes for required ORDS minimum version.
 - **Not configuring HTTPS**: ORDS defaults to HTTP in standalone mode. Always configure HTTPS for any non-development deployment.
+
+---
+
+## Sources
+
+- [Oracle REST Data Services Documentation](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/)
+- [ORDS Developer's Guide — Architecture Overview](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/index.html)
+- [ORDS Release Notes](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/)

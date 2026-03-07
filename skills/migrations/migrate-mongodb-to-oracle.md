@@ -458,7 +458,7 @@ For complex document structures requiring transformation:
 
 ```python
 from pymongo import MongoClient
-import cx_Oracle
+import oracledb  # python-oracledb (successor to cx_Oracle; install with: pip install oracledb)
 import json
 from bson import ObjectId
 from datetime import datetime
@@ -467,8 +467,8 @@ from datetime import datetime
 mongo = MongoClient("mongodb://localhost:27017/")
 db = mongo["myapp"]
 
-# Target
-ora = cx_Oracle.connect("user/pass@localhost:1521/ORCL")
+# Target (thin mode — no Oracle Client libs required)
+ora = oracledb.connect(user="user", password="pass", dsn="localhost:1521/ORCL")
 ora_cur = ora.cursor()
 
 # Stage 1: Load raw documents into staging JSON table
@@ -573,3 +573,13 @@ MongoDB field names are case-sensitive. Oracle column names are case-insensitive
 
 **Pitfall 6 — Date timezone handling:**
 MongoDB BSON Date is always UTC. Oracle TIMESTAMP stores without timezone; TIMESTAMP WITH TIME ZONE stores the offset. Load as `TIMESTAMP WITH TIME ZONE` to preserve UTC intent, then let the application convert to local time as needed.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — JSON_TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/JSON_TABLE.html)
+- [Oracle Database 19c SQL Language Reference — JSON_VALUE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/JSON_VALUE.html)
+- [Oracle Database 19c JSON Developer's Guide — Overview of Oracle Database Support for JSON](https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/json-in-oracle-database.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE (JSON column)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [python-oracledb documentation](https://python-oracledb.readthedocs.io/en/latest/)

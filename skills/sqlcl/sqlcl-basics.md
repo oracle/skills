@@ -4,7 +4,7 @@
 
 SQLcl (SQL Command Line) is Oracle's modern replacement for SQL*Plus. It is a free, Java-based command-line interface for Oracle Database that ships with Oracle Database installations and is also available as a standalone download. SQLcl offers significant improvements over SQL*Plus including tab completion, command history, in-line editing, built-in Liquibase support, a JavaScript scripting engine, and richer output formatting options.
 
-SQLcl is distributed as a single ZIP file (no installer required) and runs on any platform with a JDK 11 or newer. It is also available via Homebrew on macOS. The executable is named `sql` (not `sqlcl`) to ease migration from SQL*Plus.
+SQLcl is distributed as a single ZIP file (no installer required) and runs on any platform with a JDK 17 or newer (JDK 21 recommended). It is also available via Homebrew on macOS. The executable is named `sql` (not `sqlcl`) to ease migration from SQL*Plus.
 
 ---
 
@@ -31,18 +31,18 @@ After installation, the command is available as `sql`. Homebrew manages updates 
    ```
 4. Verify the installation:
    ```shell
-   sql -v
+   sql -V
    ```
 
 ### Verify Java
 
-SQLcl requires JDK 11+. If you have multiple JDKs, ensure the correct one is on your PATH:
+SQLcl 25.2 and later requires JDK 17 or JDK 21. Java 11 support was dropped in SQLcl 25.2. If you have multiple JDKs, ensure the correct one is on your PATH:
 
 ```shell
 java -version
 ```
 
-SQLcl bundles its own JVM in newer releases (21+), so a system JDK is not always required.
+> ⚠️ Unverified: Whether any current SQLcl release bundles its own JVM — check the official release notes before assuming a system JDK is not required.
 
 ---
 
@@ -418,3 +418,13 @@ Tab completion requires the terminal to be in a mode that passes control charact
 
 **Mistake: Using SQL*Plus executable path in scripts**
 After migrating to SQLcl, update your scripts and aliases to use `sql` instead of `sqlplus`. The behavior is nearly identical for standard SQL and PL/SQL execution.
+
+---
+
+## Sources
+
+- [Oracle SQLcl Product Page](https://www.oracle.com/database/sqldeveloper/technologies/sqlcl/)
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [Starting and Leaving SQLcl — startup flags and version flag](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/startup-sqlcl-settings.html)
+- [SQLcl Release Notes 25.2](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.html)
+- [SQLcl Release Notes 25.2.1 — Java 17/21 requirement confirmed](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.1.html)

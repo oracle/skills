@@ -78,23 +78,20 @@ By default, the `DDL` command produces clean, portable DDL with minimal storage 
 
 ### SHOW Options
 
-The `DDL` command accepts option flags that control what is included in or excluded from the output:
+The `DDL` command output is primarily controlled through `SET DDL` session-level settings (see below). The exact inline flag syntax (`SHOW STORAGE`, `SHOW SEGMENT`, `NOSCHEMA`) for the `DDL` command varies between SQLcl versions.
+
+> ⚠️ Unverified: The inline `DDL ... SHOW STORAGE`, `DDL ... SHOW SEGMENT`, and `DDL ... NOSCHEMA` flag syntax — these are not consistently documented across official Oracle SQLcl release docs. Use the session-level `SET DDL` commands instead, which are officially documented and reliably available.
+
+The recommended approach for controlling DDL output is via session settings:
 
 ```sql
--- Default: clean DDL without storage or segment attributes
+-- Turn off storage/segment/tablespace for all DDL in this session
+SET DDL STORAGE OFF
+SET DDL SEGMENT_ATTRIBUTES OFF
+SET DDL TABLESPACE OFF
+
+-- Then simply run:
 DDL employees
-
--- Include storage clauses (STORAGE, PCTFREE, INITRANS, etc.)
-DDL employees TABLE SHOW STORAGE
-
--- Include segment creation clause (SEGMENT CREATION IMMEDIATE/DEFERRED)
-DDL employees TABLE SHOW SEGMENT
-
--- Include all physical and storage attributes
-DDL employees TABLE SHOW STORAGE SHOW SEGMENT SHOW TABLESPACE
-
--- Suppress the schema name prefix in output (useful for cross-schema portability)
-DDL employees TABLE NOSCHEMA
 ```
 
 ### Configuring DDL Behavior Globally
@@ -552,3 +549,12 @@ Oracle auto-generates constraint names like `SYS_C00789123` for unnamed constrai
 
 **Mistake: Capturing DDL for objects with compile errors**
 `DBMS_METADATA.GET_DDL` will still return DDL for invalid objects, but deploying invalid PL/SQL DDL will produce objects in `INVALID` status. Run `SELECT object_name, status FROM user_objects WHERE status = 'INVALID'` first and fix all invalid objects before capturing baseline DDL.
+
+---
+
+## Sources
+
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [Configuring Your Generated DDL in SQL Developer and SQLcl — ThatJeffSmith](https://www.thatjeffsmith.com/archive/2016/05/configuring-your-generated-ddl-in-sql-developer-and-sqlcl/)
+- [Generating Table DDL in Oracle Database — Oracle Developers Blog](https://blogs.oracle.com/developers/generating-table-ddl-in-oracle-database)
+- [Working with Oracle SQLcl (DDL command reference)](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/19.4/sqcug/working-sqlcl.html)

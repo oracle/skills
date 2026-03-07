@@ -654,3 +654,11 @@ The `logging_level` on the job class controls what is recorded. A class with `LO
 
 **Mistake 6: Running privileged operations in jobs owned by application schemas**
 Jobs run with the privileges of their owner schema. A job owned by `APPSCHEMA` cannot call `DBMS_STATS.GATHER_DATABASE_STATS` unless `APPSCHEMA` has the `ANALYZE ANY` privilege. Create DBA-owned jobs for operations requiring elevated privileges, or grant only the minimum necessary privilege to the application schema.
+
+---
+
+## Sources
+
+- [DBMS_SCHEDULER — Oracle Database PL/SQL Packages and Types Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SCHEDULER.html)
+- [Oracle Database Administrator's Guide: Scheduling Jobs with Oracle Scheduler 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/scheduling-jobs-with-oracle-scheduler.html)
+- [Oracle Scheduler Concepts — Oracle Database 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/oracle-scheduler-concepts.html)

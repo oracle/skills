@@ -72,7 +72,7 @@ CORS (Cross-Origin Resource Sharing) controls which browser origins are allowed 
 
 ### Configure CORS in ORDS
 
-CORS settings are configured in `ords/conf/ords.xml` or via the CLI:
+CORS settings are configured via the ORDS CLI:
 
 ```shell
 # Allow specific origins
@@ -83,7 +83,7 @@ ords --config /opt/oracle/ords/config config set security.allowedCORSOrigins \
   "https://app.example.com,https://admin.example.com"
 ```
 
-Configure via the ORDS CLI:
+Set all CORS parameters via the ORDS CLI:
 
 ```shell
 ords --config /opt/oracle/ords/config config set \
@@ -287,22 +287,7 @@ OCI_SECRET=$(oci secrets secret-bundle get \
   --query 'data."secret-bundle-content".content' \
   --raw-output | base64 --decode)
 
-ords --config /opt/oracle/ords/config secrets set db.password \
-  --password-stdin <<< "$OCI_SECRET"
-```
-
-### OCI Vault Integration
-
-For cloud deployments, retrieve secrets from OCI Vault at startup:
-
-```shell
-# In startup script, retrieve secret from OCI Vault and pipe to ORDS
-OCI_SECRET=$(oci secrets secret-bundle get \
-  --secret-id ocid1.vaultsecret.oc1... \
-  --query 'data."secret-bundle-content".content' \
-  --raw-output | base64 --decode)
-
-ords --config /opt/oracle/ords/config config set db.password \
+ords --config /opt/oracle/ords/config config secret set db.password \
   --password-stdin <<< "$OCI_SECRET"
 ```
 
@@ -475,3 +460,11 @@ add_header Permissions-Policy        "geolocation=(), microphone=()" always;
 - **Using the same OAuth client for all services**: If a shared client is compromised, all services lose access. Use one OAuth client per service/application.
 - **Not testing authentication on every endpoint after a schema change**: Adding a new module does not automatically protect it. Verify each new endpoint requires the expected authentication.
 - **Ignoring ORA-00942 and ORA-04043 errors in ORDS logs**: These indicate missing objects or privileges — potential indicators of misconfiguration or privilege escalation attempts.
+
+---
+
+## Sources
+
+- [ORDS Developer's Guide — Securing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
+- [ORDS Configuration Settings Reference — Security Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
+- [Oracle Database Vault Administrator's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dvadm/index.html)

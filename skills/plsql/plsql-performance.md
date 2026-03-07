@@ -449,8 +449,9 @@ WHERE  type = 'Result' AND name LIKE '%GET_TAX_RATE%';
 
 - **Oracle 11g+**: `RESULT_CACHE` for functions introduced. `RELIES_ON` still required in 11gR1; auto-detected in 11gR2+.
 - **Oracle 12c+**: `PRAGMA UDF` (User Defined Function) hint reduces context switch overhead when a PL/SQL function is called from SQL. Apply when you cannot use SQL expressions instead.
-- **Oracle 21c+**: `PRAGMA SUPPRESSES_WARNING_6009` for functions that may return null from a pipelined context.
 - **All versions**: `BULK COLLECT` and `FORALL` are available since Oracle 9i and remain the primary bulk operation tools.
+
+> ⚠️ Unverified: `PRAGMA SUPPRESSES_WARNING_6009` for pipelined functions — this pragma does not appear in Oracle 19c documentation. Check official docs for your specific version before use.
 
 ```sql
 -- Oracle 12c+: PRAGMA UDF reduces context switch for SQL-called functions
@@ -464,3 +465,12 @@ BEGIN
 END calculate_bonus;
 /
 ```
+
+---
+
+## Sources
+
+- Oracle Database 19c PL/SQL Language Reference — Optimization and Tuning: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-optimization-and-tuning.html
+- Oracle Database 19c PL/SQL Packages Reference — DBMS_RESULT_CACHE: https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_RESULT_CACHE.html
+- Oracle Database 19c Reference — PLSQL_OPTIMIZE_LEVEL: https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/PLSQL_OPTIMIZE_LEVEL.html
+- Oracle Database 19c PL/SQL Language Reference — INLINE Pragma: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/INLINE-pragma.html

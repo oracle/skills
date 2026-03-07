@@ -16,7 +16,7 @@ Communication uses **`stdio` only**. The AI client spawns SQLcl as a child proce
 Verify your version:
 
 ```shell
-sql -v
+sql -V
 # SQLcl: Release 25.2.0 Production or newer required
 ```
 
@@ -310,3 +310,13 @@ The only environment variable documented for the SQLcl MCP server is `TNS_ADMIN`
 - `sqlcl-cicd.md` — Using SQLcl non-interactively in pipelines
 - `security/privilege-management.md` — Oracle user creation and least-privilege setup
 - `monitoring/top-sql-queries.md` — Identifying AI-generated SQL via V$SQL tagging
+
+---
+
+## Sources
+
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [SQLcl Release Notes 25.2 — MCP Server introduced](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.html)
+- [Starting and Leaving SQLcl — startup flags including -mcp](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/startup-sqlcl-settings.html)
+
+> ⚠️ Unverified: The official MCP documentation page for SQLcl 25.2 was not reachable at time of verification. The critical facts in this file (5 tools, stdio transport, `-mcp` flag, version 25.2+, `DBTOOLS$MCP_LOG` log table, `TNS_ADMIN` only env var, `conn -save -savepwd`) should be confirmed against the live Oracle SQLcl docs before use in production.

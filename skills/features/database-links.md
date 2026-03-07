@@ -372,3 +372,11 @@ Database link failures surface as `ORA-12170: TNS:Connect timeout` or `ORA-12541
 
 **Mistake 6: Storing the link password in application scripts**
 Some teams create database links via scripts with hardcoded passwords. These scripts often end up in version control. Use environment variables or Oracle Vault to inject credentials at deployment time, and avoid committing connection scripts with embedded passwords.
+
+---
+
+## Sources
+
+- [Oracle Database Administrator's Guide: Managing Distributed Databases — Database Links 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-a-distributed-database.html)
+- [Oracle Database SQL Language Reference: CREATE DATABASE LINK 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-DATABASE-LINK.html)
+- [Oracle Database Heterogeneous Connectivity User's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/heter/index.html)

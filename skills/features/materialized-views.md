@@ -422,3 +422,12 @@ SELECT column_name, refs_src_rowid, snapshots
 FROM   user_mview_log_filter_cols
 WHERE  master = 'SALES';
 ```
+
+---
+
+## Sources
+
+- [Oracle Database Data Warehousing Guide: Basic Materialized Views 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dwhsg/basic-materialized-views.html)
+- [DBMS_MVIEW — Oracle Database PL/SQL Packages and Types Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_MVIEW.html)
+- [Oracle Database SQL Language Reference: CREATE MATERIALIZED VIEW 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-MATERIALIZED-VIEW.html)
+- [Oracle Database SQL Language Reference: CREATE MATERIALIZED VIEW LOG 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-MATERIALIZED-VIEW-LOG.html)

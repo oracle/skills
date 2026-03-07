@@ -488,3 +488,15 @@ CREATE TABLE employees (...) COMPRESS FOR OLTP;
 
 **Pitfall 6 — BTEQ error handling:**
 BTEQ error handling via `.IF ERRORCODE <> 0 THEN .QUIT n` does not translate to SQL*Plus or SQLcl directly. Use `WHENEVER SQLERROR EXIT n ROLLBACK` and `WHENEVER OSERROR EXIT n` in SQL*Plus for equivalent behavior.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c SQL Language Reference — Analytic Functions (QUALIFY equivalent patterns)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Analytic-Functions.html)
+- [Oracle Database 19c SQL Language Reference — LISTAGG](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/LISTAGG.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [Oracle Database 19c Utilities — Data Pump Export (expdp)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-data-pump-export-utility.html)
+- [Oracle SQL Developer Migration Workbench](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)

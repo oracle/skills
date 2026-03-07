@@ -433,3 +433,12 @@ END;
 
 **Mistake 6: Ignoring propagation failures**
 Propagation schedules silently accumulate failure counts when the remote database or network is unavailable. Set up a job that queries `DBA_QUEUE_SCHEDULES.FAILURES > 0` and alerts the operations team.
+
+---
+
+## Sources
+
+- [DBMS_AQADM — Oracle Database PL/SQL Packages and Types Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_AQADM.html)
+- [DBMS_AQ — Oracle Database PL/SQL Packages and Types Reference 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_AQ.html)
+- [Oracle Database Advanced Queuing User's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/adque/index.html)
+- [Transactional Event Queues and Advanced Queuing — Oracle 21c](https://docs.oracle.com/en/database/oracle/oracle-database/21/adque/index.html)

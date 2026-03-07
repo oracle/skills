@@ -365,7 +365,7 @@ ALTER DATABASE OPEN RESETLOGS;
 
 ## Best Practices
 
-- **Enable control file autobackup** — this is the most critical setting; it ensures RMAN can recover the control file even without a catalog.
+- **Enable control file autobackup** — ensures RMAN can recover the control file even without a catalog. Note: autobackup is `ON` by default for databases with `COMPATIBLE` set to 12.2 or higher; verify the setting in older-compatibility databases.
   ```sql
   CONFIGURE CONTROLFILE AUTOBACKUP ON;
   CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/backup/ctl_%F';
@@ -445,3 +445,12 @@ STARTUP MOUNT;
 ALTER DATABASE ARCHIVELOG;
 ALTER DATABASE OPEN;
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c Backup and Recovery User's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/bradv/)
+- [Oracle Database 19c RMAN Reference — BACKUP command](https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/BACKUP.html)
+- [Oracle Database 19c RMAN Reference — CONFIGURE command](https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/CONFIGURE.html)
+- [Oracle Database 19c Reference — CONTROL_FILE_RECORD_KEEP_TIME](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/CONTROL_FILE_RECORD_KEEP_TIME.html)

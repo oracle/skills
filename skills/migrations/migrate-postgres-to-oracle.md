@@ -289,7 +289,7 @@ SELECT setval('orders_seq', 1000);
 -- Oracle
 SELECT orders_seq.NEXTVAL FROM DUAL;
 SELECT orders_seq.CURRVAL FROM DUAL;
--- Reset sequence (Oracle 18c+):
+-- Reset sequence using RESTART (available in Oracle 18c+, documented in 19c):
 ALTER SEQUENCE orders_seq RESTART START WITH 1000;
 -- Pre-18c workaround:
 ALTER SEQUENCE orders_seq INCREMENT BY (1000 - orders_seq.CURRVAL);
@@ -468,22 +468,11 @@ UNION ALL SELECT 'orders', COUNT(*) FROM orders
 UNION ALL SELECT 'products', COUNT(*) FROM products;
 ```
 
-### Using ora2pg for Automated Migration
+### Automated Schema Conversion with SQL Developer Migration Workbench
 
-```bash
-# Install ora2pg (Perl-based tool)
-# Configure ora2pg.conf with PostgreSQL DSN pointing at PG via DBD::Pg
+Oracle SQL Developer Migration Workbench supports PostgreSQL as a source and can automate much of the schema conversion to Oracle. Use it instead of ora2pg when Oracle is the target.
 
-# Export schema
-ora2pg -c ora2pg.conf -t TABLE -o tables.sql
-
-# Export data to Oracle INSERT statements or CSV
-ora2pg -c ora2pg.conf -t COPY -o data.sql
-
-# Export sequences, indexes, constraints
-ora2pg -c ora2pg.conf -t SEQUENCE -o sequences.sql
-ora2pg -c ora2pg.conf -t INDEX -o indexes.sql
-```
+> ⚠️ **ora2pg direction warning:** ora2pg migrates Oracle databases **to PostgreSQL** — it is not a tool for migrating PostgreSQL to Oracle. Do not use ora2pg when Oracle is the migration target. References to using ora2pg for this direction in other guides are incorrect. Use SQL Developer Migration Workbench or AWS SCT for PostgreSQL → Oracle schema conversion.
 
 ---
 
@@ -550,3 +539,14 @@ SELECT SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)
        OVER (PARTITION BY customer_id)
 FROM orders;
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE (GENERATED AS IDENTITY)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c SQL Language Reference — Analytic Functions](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Analytic-Functions.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [Oracle SQL Developer Migration Workbench](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)
+- [AWS Schema Conversion Tool User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html)

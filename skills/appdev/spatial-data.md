@@ -531,3 +531,10 @@ A polygon's first and last coordinate pairs must be identical to close the ring.
 ### Mistake 5: Wrong Tolerance for Coordinate System
 
 Using a very small tolerance (e.g., 0.000001) with projected coordinates in meters (where units are large numbers) causes nearly every operation to return unexpected results. Match tolerance to the unit scale of the SRID.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Spatial and Graph Developer's Guide (SPATL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/spatl/)
+- [Oracle Database 19c SQL Multimedia and Image Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/imref/)

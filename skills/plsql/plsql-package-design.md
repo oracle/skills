@@ -407,3 +407,11 @@ AS
 END order_internals_pkg;
 /
 ```
+
+---
+
+## Sources
+
+- [Oracle Database PL/SQL Language Reference 19c — Packages](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-packages.html) — package structure, spec vs body, overloading, forward declarations, initialization
+- [Oracle Database PL/SQL Language Reference 19c — ACCESSIBLE BY Clause](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/ACCESSIBLE-BY-clause.html) — 12.2+ access control
+- [DBMS_SESSION (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SESSION.html) — SET_CONTEXT for application context

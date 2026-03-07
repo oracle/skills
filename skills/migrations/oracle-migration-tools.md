@@ -10,7 +10,7 @@ Understanding which tool to use — and for which phase — is as important as k
 
 ## Oracle SQL Developer Migration Workbench
 
-Oracle SQL Developer includes a built-in Migration Workbench that supports migrations from MySQL, SQL Server, Sybase ASE, DB2, Access, and generic JDBC-connected databases.
+Oracle SQL Developer includes a built-in Migration Workbench that supports migrations from MySQL, SQL Server, Sybase ASE, DB2, Microsoft Access, PostgreSQL, and Teradata (using their respective JDBC drivers).
 
 ### Step-by-Step: SQL Server to Oracle Migration
 
@@ -175,9 +175,9 @@ This allows converted code to call these functions without rewriting every occur
 
 ## SSMA (SQL Server Migration Assistant) for Oracle
 
-Microsoft's SSMA is designed to migrate SQL Server schemas and data to Oracle. It is free and available from the Microsoft Download Center.
+> ⚠️ **Direction Correction:** SSMA for Oracle migrates FROM Oracle TO SQL Server (not the reverse). The section title can be misleading. This tool is not used when Oracle is the migration target.
 
-Note: SSMA for Oracle migrates FROM Oracle TO SQL Server. For the reverse direction (SQL Server to Oracle), use SSMA for SQL Server which has an Oracle target option, or use AWS SCT.
+Note: SSMA for Oracle migrates FROM Oracle TO SQL Server. For SQL Server-to-Oracle migrations, use AWS SCT or SQL Developer Migration Workbench instead. The note in the `migrate-sqlserver-to-oracle.md` guide referencing "SSMA for Oracle" as enabling SQL Server → Oracle should be understood to mean using AWS SCT or SQL Developer, not SSMA for Oracle specifically.
 
 The SSMA family includes:
 - SSMA for Oracle (Oracle → SQL Server)
@@ -198,97 +198,14 @@ For SQL Server → Oracle migration specifically, AWS SCT or SQL Developer Migra
 
 ---
 
-## ora2pg — PostgreSQL/MySQL to Oracle
+## ora2pg — Oracle/MySQL to PostgreSQL (NOT an Oracle target tool)
 
-ora2pg is an open-source Perl tool that converts PostgreSQL or MySQL schemas and data to Oracle format. Despite the name, it supports both PostgreSQL AND MySQL as sources.
+> ⚠️ **Direction Correction:** ora2pg is an open-source Perl tool that migrates **Oracle** (or MySQL) databases **to PostgreSQL**. It is **not** a tool for migrating to Oracle. The source is Oracle or MySQL; the target is always PostgreSQL. Do not use ora2pg when Oracle is the migration target. For PostgreSQL-to-Oracle migrations use SQL Developer Migration Workbench or manual export/SQL*Loader workflows instead.
 
-### Installation
+ora2pg is listed here for completeness, as it is sometimes relevant when an organization is migrating away from Oracle to PostgreSQL (the reverse of the focus of this guide). Its assessment report format is also a useful reference for complexity estimation methodology.
 
-```bash
-# Install Perl dependencies
-cpan DBD::Pg     # for PostgreSQL source
-cpan DBD::mysql  # for MySQL source
+### Assessment Report Format (for reference)
 
-# Install ora2pg
-cpan Ora2Pg
-
-# Or via distribution package
-apt-get install ora2pg  # Debian/Ubuntu
-yum install ora2pg      # RHEL/CentOS (via EPEL)
-```
-
-### Configuration File (ora2pg.conf)
-
-```ini
-# Source database type
-TYPE            POSTGRES   # or MYSQL
-
-# PostgreSQL source connection
-PG_DSN          dbi:Pg:database=mydb;host=localhost;port=5432
-PG_USER         myuser
-PG_PWD          mypassword
-
-# Oracle target connection
-ORACLE_DSN      dbi:Oracle:host=orahost;sid=ORCL;port=1521
-ORACLE_USER     orauser
-ORACLE_PWD      orapassword
-
-# Output settings
-SCHEMA          myschema        # Source schema to migrate
-FILE_PER_TABLE  1              # One output file per table
-OUTPUT_DIR      /tmp/ora2pg_output/
-NLS_LANG        AMERICAN_AMERICA.AL32UTF8
-
-# Data type mapping overrides
-DATA_TYPE       TEXT:CLOB,BYTEA:BLOB,BOOL:NUMBER(1)
-
-# Objects to export
-EXPORT_TYPE     TABLE,SEQUENCE,INDEX,CONSTRAINT,VIEW,PROCEDURE,FUNCTION,TRIGGER
-```
-
-### Running ora2pg
-
-```bash
-# Assess migration complexity
-ora2pg -t SHOW_REPORT -c ora2pg.conf --estimate_cost
-
-# Export table DDL
-ora2pg -t TABLE -o tables.sql -c ora2pg.conf
-
-# Export data as Oracle INSERT statements
-ora2pg -t COPY -o data/ -c ora2pg.conf
-
-# Export sequences
-ora2pg -t SEQUENCE -o sequences.sql -c ora2pg.conf
-
-# Export indexes
-ora2pg -t INDEX -o indexes.sql -c ora2pg.conf
-
-# Export constraints
-ora2pg -t PKEY -o primary_keys.sql -c ora2pg.conf
-ora2pg -t FKEY -o foreign_keys.sql -c ora2pg.conf
-ora2pg -t CHECK -o check_constraints.sql -c ora2pg.conf
-
-# Export views
-ora2pg -t VIEW -o views.sql -c ora2pg.conf
-
-# Export stored procedures
-ora2pg -t PROCEDURE -o procedures.sql -c ora2pg.conf
-
-# Export triggers
-ora2pg -t TRIGGER -o triggers.sql -c ora2pg.conf
-
-# Full migration assessment
-ora2pg -c ora2pg.conf --estimate_cost > assessment_report.txt
-```
-
-### Migration Assessment Report
-
-```bash
-ora2pg -t SHOW_REPORT -c ora2pg.conf --estimate_cost 2>&1
-```
-
-Sample output:
 ```
 -------------------------------------------------------------------------------
 Ora2Pg migration level : B-5
@@ -309,26 +226,18 @@ TRIGGER     |     18 |       0 |              8 |
 -------------------------------------------------------------------------------
 ```
 
-### ora2pg Strengths
+### ora2pg Notes
 
-- Excellent PostgreSQL and MySQL support
-- Free and open source
-- Migration complexity assessment
-- Handles large data volumes via COPY format
-- Actively maintained
-
-### ora2pg Limitations
-
-- Requires Perl and DBI drivers
-- Stored procedure conversion quality varies
-- Not GUI-based; command-line only
-- PostgreSQL to Oracle is better supported than MySQL to Oracle
+- Migrates Oracle → PostgreSQL (and MySQL → PostgreSQL); Oracle is the **source**, not the target
+- Free and open source; actively maintained
+- Provides a migration complexity assessment report
+- Not applicable for any migration where Oracle is the destination
 
 ---
 
 ## Oracle Zero Downtime Migration (ZDM)
 
-Oracle Zero Downtime Migration is Oracle's enterprise tool for migrating Oracle databases to Oracle Cloud Infrastructure (OCI) with minimal or zero downtime. It uses Oracle GoldenGate for continuous replication during the migration cutover window.
+Oracle Zero Downtime Migration is Oracle's enterprise tool for migrating Oracle databases to Oracle-hosted targets — including Oracle Cloud Infrastructure (OCI), Oracle Database@Azure, Oracle Database@Google Cloud, Oracle Database@AWS, Exadata Cloud at Customer, and on-premises Exadata — with minimal or zero downtime. It uses Oracle GoldenGate for continuous replication during the online migration cutover window. The source database can be on-premises, on OCI, or on a third-party cloud.
 
 ### ZDM Architecture
 
@@ -398,8 +307,8 @@ zdmcli migrate database -sourcedb ORCL \
 ### ZDM Limitations
 
 - Only migrates Oracle-to-Oracle (not cross-RDBMS)
-- Requires OCI as target (not arbitrary Oracle installations)
-- GoldenGate licensing required for online migration
+- Supported targets are Oracle-branded cloud and on-premises Exadata platforms; not arbitrary on-premises Oracle installations on commodity hardware
+- GoldenGate licensing required for online (near-zero downtime) migration; offline migration does not require GoldenGate
 - Complex setup for first-time users
 
 ---
@@ -408,20 +317,21 @@ zdmcli migrate database -sourcedb ORCL \
 
 | Capability | SQL Dev Workbench | AWS SCT | ora2pg | ZDM | GoldenGate |
 |---|---|---|---|---|---|
-| PostgreSQL → Oracle | Partial | Yes | Excellent | No | No |
-| MySQL → Oracle | Yes | Yes | Yes | No | Yes |
+| PostgreSQL → Oracle | Yes | Yes | No (wrong direction) | No | No |
+| MySQL → Oracle | Yes | Yes | No (wrong direction) | No | Yes |
 | SQL Server → Oracle | Yes | Yes | No | No | Yes |
 | Sybase → Oracle | Yes | Yes | No | No | No |
 | DB2 → Oracle | Yes | No | No | No | No |
-| Teradata → Oracle | No | No | No | No | No |
+| Teradata → Oracle | Yes | No | No | No | No |
+| Oracle → PostgreSQL | No | No | Yes (primary use case) | No | No |
 | Oracle → Oracle | No | No | No | Yes | Yes |
-| Schema conversion | Yes | Yes | Yes | No | No |
-| Data migration | Yes (slow) | No | Yes | Yes | Yes |
-| Assessment report | Basic | Detailed | Detailed | Validation | No |
+| Schema conversion | Yes | Yes | Yes (Oracle→PG only) | No | No |
+| Data migration | Yes (slow) | No | Yes (Oracle→PG only) | Yes | Yes |
+| Assessment report | Basic | Detailed | Detailed (Oracle→PG) | Validation | No |
 | Near-zero downtime | No | No | No | Yes | Yes |
 | Cost | Free | Free | Free | Included w/OCI | Licensed |
 | GUI | Yes | Yes | No (CLI) | CLI | Yes |
-| Stored procedure conversion | Good | Excellent | Fair | N/A | N/A |
+| Stored procedure conversion | Good | Excellent | N/A for Oracle target | N/A | N/A |
 
 ---
 
@@ -435,13 +345,13 @@ zdmcli migrate database -sourcedb ORCL \
 
 ### For PostgreSQL → Oracle
 
-1. **ora2pg** for schema conversion and initial data load assessment
-2. **SQL*Loader** with CSV export for bulk data
-3. **ora2pg** COPY format for direct data migration
+1. **SQL Developer Migration Workbench** for schema conversion (tables, indexes, views, procedures)
+2. **SQL*Loader** with CSV export (`\COPY` to CSV) for bulk data loading
+3. **AWS SCT** as an alternative for schema conversion with a more detailed assessment report
 
 ### For MySQL → Oracle
 
-1. **SQL Developer Migration Workbench** or **ora2pg** for schema conversion
+1. **SQL Developer Migration Workbench** for schema conversion
 2. **SQL*Loader** with CSV export for data migration
 
 ### For Oracle → Oracle (Cloud Migration)
@@ -473,3 +383,13 @@ No dedicated tool; use a combination of:
 5. **Use PARALLEL and DIRECT PATH options for data loads.** When loading large datasets with SQL*Loader, always use `DIRECT=TRUE` and `PARALLEL=TRUE` for maximum throughput.
 
 6. **Validate after every load.** Run row count and hash-based validation queries after each table migration. See `migration-data-validation.md` for full validation patterns.
+
+---
+
+## Sources
+
+- [Oracle SQL Developer Migration Workbench documentation](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)
+- [Oracle Zero Downtime Migration (ZDM) documentation](https://docs.oracle.com/en/database/oracle/zero-downtime-migration/index.html)
+- [AWS Schema Conversion Tool User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [Oracle Database 19c Utilities — Data Pump Export/Import](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/datapump-overview.html)

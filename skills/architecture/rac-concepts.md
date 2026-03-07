@@ -31,7 +31,7 @@ Grid Infrastructure (GI) is the cluster software stack that underpins RAC. It mu
 | CSS (Cluster Synchronization Services) | Heartbeat and membership management |
 | CRS (Cluster Ready Services) | Resource management — starts/stops/monitors DB, VIPs, SCAN |
 | CTSS (Cluster Time Synchronization Service) | Keeps node clocks synchronized if NTP is not used |
-| SCAN (Single Client Access Name) | Single hostname resolving to 3 IPs for client connection load balancing |
+| SCAN (Single Client Access Name) | Single hostname resolving to 1–3 IPs for client connection load balancing (Oracle recommends 3) |
 
 ### Instance Components Unique to RAC
 
@@ -42,7 +42,7 @@ Each RAC instance has background processes beyond those found in single-instance
 | LMS (Lock Manager Server) | Serves block transfer requests from other nodes; multiple LMS processes per instance |
 | LMD (Lock Manager Daemon) | Manages enqueue requests; communicates with remote LMDs |
 | LCK (Lock Process) | Handles instance locks (non-PCM) |
-| LMON (Lock Monitor) | Monitors cluster reconfiguration events; handles instance recovery |
+| LMON (Global Enqueue Service Monitor) | Monitors cluster reconfiguration events; handles global enqueue recovery and instance recovery |
 | DIAG (Diagnosability Process) | Captures diagnostic data for global resource issues |
 | RMSn (RAC Management Server) | Manages Oracle resources in the cluster |
 
@@ -337,7 +337,7 @@ FCF uses Oracle Notification Service (ONS) and is configured in JDBC Thin driver
 
 ### Application Continuity (AC) and Transparent Application Continuity (TAC)
 
-Application Continuity (introduced in 12c) extends TAF concepts to transparently replay in-flight transactions, including DML, after a recoverable error. TAC (19c+) does this without any application configuration.
+Application Continuity (introduced in Oracle Database 12c Release 1) extends TAF concepts to transparently replay in-flight transactions, including DML, after a recoverable error. TAC (introduced in 18c, expanded in 19c) does this without any application configuration by using `failover_type => 'AUTO'` on the service (rather than `'TRANSACTION'` for standard AC).
 
 ```sql
 -- Check if Application Continuity is enabled for a service
@@ -345,11 +345,12 @@ SELECT name, failover_type, failover_method, goal, commit_outcome, retention_tim
 FROM   dba_services
 WHERE  name = 'OLTP_SVC';
 
--- Enable Application Continuity on a service
+-- Enable Application Continuity on a service (failover_type => 'TRANSACTION' = AC)
+-- For Transparent Application Continuity (TAC, 18c+), use failover_type => 'AUTO'
 BEGIN
     DBMS_SERVICE.MODIFY_SERVICE(
         service_name    => 'OLTP_SVC',
-        failover_type   => 'TRANSACTION',  -- enables AC
+        failover_type   => 'TRANSACTION',  -- enables AC; use 'AUTO' for TAC (18c+)
         commit_outcome  => TRUE,
         retention_timeout => 86400
     );
@@ -470,3 +471,14 @@ Always analyze `cssd.log`, `alert_<sid>.log`, and CHM data together before concl
 ### Mistake 5: Applying Patches Without Running `opatchauto`
 
 In a RAC environment, GI and RAC patches must be applied with `opatchauto` in a rolling manner. Manually applying patches without `opatchauto` can leave GI and DB homes in an inconsistent state across nodes, leading to split-brain scenarios.
+
+---
+
+## Sources
+
+- [Oracle Real Application Clusters Administration and Deployment Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/) — RAC architecture, background processes, GCS/GES, services, TAF, CVU
+- [Oracle RAC 19c Glossary](https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/glossary.html) — LMON (Global Enqueue Service Monitor), LMSn, LMD, Cache Fusion, GCS, GES, SCAN, OCR, CSS, CTSS definitions
+- [About RAC Background Processes (12c doc, applies to 19c)](https://docs.oracle.com/database/121/RACAD/GUID-AEBD3F49-4F10-4BDE-9008-DC1AF8E7DB42.htm) — LMS, LMD, LCK, LMON, DIAG, RMSn descriptions
+- [About Connecting to an Oracle RAC Database Using SCANs](https://docs.oracle.com/en/database/oracle/oracle-database/19/rilin/about-connecting-to-an-oracle-rac-database-using-scans.html) — SCAN resolves to 1–3 IPs; Oracle recommends 3
+- [Ensuring Application Continuity (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/ensuring-application-continuity.html) — AC introduced in 12c R1; TAC introduced in 18c; FAILOVER_TYPE values
+- [DBMS_SERVICE (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SERVICE.html) — failover_type valid values (TRANSACTION, SELECT, SESSION, NONE)

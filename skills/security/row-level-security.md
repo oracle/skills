@@ -381,8 +381,16 @@ BEGIN
 END;
 /
 
--- Activate a group for the current session
-EXEC DBMS_RLS.SET_CONTEXT('HR', 'EMPLOYEES', 'INTERNAL_GROUP');
+-- Associate a driving application context with the policy groups on this object.
+-- Oracle reads the context value at runtime to determine the active policy group.
+-- Use DBMS_RLS.ADD_POLICY_CONTEXT to register which context attribute drives group selection:
+EXEC DBMS_RLS.ADD_POLICY_CONTEXT('HR', 'EMPLOYEES', 'HR_APP_CTX', 'POLICY_GROUP');
+
+-- Then, at session time, set the context value to the desired group name:
+EXEC DBMS_SESSION.SET_CONTEXT('HR_APP_CTX', 'POLICY_GROUP', 'INTERNAL_GROUP');
+
+-- There is no DBMS_RLS.SET_CONTEXT procedure. Policy group activation is driven by
+-- an application context value registered via ADD_POLICY_CONTEXT.
 ```
 
 ---
@@ -534,3 +542,11 @@ BEGIN
 END entity_isolation_policy;
 /
 ```
+
+---
+
+## Sources
+
+- [Oracle Database Security Guide 19c — Using Oracle VPD to Control Data Access](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/using-oracle-vpd-to-control-data-access.html)
+- [Oracle PL/SQL Packages Reference 19c — DBMS_RLS](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_RLS.html)
+- [Oracle Database Reference 19c — DBA_POLICIES](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_POLICIES.html)

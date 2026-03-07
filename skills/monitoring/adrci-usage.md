@@ -74,8 +74,11 @@ adrci
 # Start and execute a single command non-interactively
 adrci exec="SHOW ALERT -TAIL 50"
 
-# Start with a specific ADR base (useful in scripts)
-adrci HOMEPATH=diag/rdbms/orcl/orcl
+# Execute multiple commands non-interactively (semicolon-separated)
+adrci exec="SET HOMEPATH diag/rdbms/orcl/orcl; SHOW ALERT -TAIL 50"
+
+# Run adrci commands from a script file
+adrci script=/path/to/adrci_commands.sql
 ```
 
 ---
@@ -116,7 +119,7 @@ SHOW ALERT
 SHOW ALERT -TAIL 100
 
 # Show last N lines and continue watching (tail -f equivalent)
-SHOW ALERT -TAIL 50 -FOLLOW
+SHOW ALERT -TAIL 50 -F
 
 # Filter alert log by predicate (WHERE clause syntax)
 SHOW ALERT -P "MESSAGE_TEXT LIKE '%ORA-%'"
@@ -127,11 +130,11 @@ SHOW ALERT -P "ORIGINATING_TIMESTAMP > TIMESTAMP '2026-03-06 08:00:00'"
 # Combine predicates
 SHOW ALERT -P "ORIGINATING_TIMESTAMP > TIMESTAMP '2026-03-06 00:00:00' AND MESSAGE_TEXT LIKE '%ORA-00600%'"
 
-# Output to a file instead of terminal
-SHOW ALERT -OUT /tmp/alert_extract.txt
+# Output to terminal (default behaviour when no pager is set)
+SHOW ALERT -TERM
 
-# Show alert with time filter and write to file
-SHOW ALERT -TAIL 200 -OUT /tmp/recent_alert.txt
+# Specify an alert file outside ADR
+SHOW ALERT -FILE /path/to/alert_file
 ```
 
 The predicate language in `adrci` uses column names from the underlying XML schema. Key columns for `SHOW ALERT` filtering:
@@ -316,12 +319,16 @@ ADR data accumulates over time. Oracle has default retention policies, but DBAs 
 
 ### Default Retention Policies
 
-| Data Type | Default Retention |
-|-----------|------------------|
-| Incidents | 1 year |
-| Alert log (XML) | 1 year |
-| Trace files | 30 days |
-| Core dumps | 1 day |
+These defaults map to the `LONGP_POLICY` (long-lived content, default 8760 hours = 1 year) and `SHORTP_POLICY` (short-lived content, default 720 hours = 30 days) settings visible in `SHOW CONTROL`.
+
+| Data Type | Default Retention | Policy |
+|-----------|------------------|--------|
+| Incidents | 1 year (8760 hours) | LONGP_POLICY |
+| Alert log (XML) | 1 year (8760 hours) | LONGP_POLICY |
+| Trace files | 30 days (720 hours) | SHORTP_POLICY |
+| Core dumps | 30 days (720 hours) | SHORTP_POLICY |
+
+> **Note:** Run `SHOW CONTROL` inside `adrci` to see the current values for your environment. Defaults may vary by Oracle version and patch level.
 
 ### Viewing and Changing Retention Policies
 
@@ -329,13 +336,19 @@ ADR data accumulates over time. Oracle has default retention policies, but DBAs 
 # Show current retention policies
 SHOW CONTROL
 
-# Change incident retention to 180 days (in minutes: 180 * 24 * 60 = 259200)
-SET CONTROL (SHORTP_POLICY=43200)   -- 30 days in minutes for short-lived data
-SET CONTROL (LONGP_POLICY=259200)   -- 180 days in minutes for incidents/alert
+# Change short-term retention to 30 days (in hours: 30 * 24 = 720)
+# SHORTP_POLICY covers trace files, core dumps, and packaging info
+SET CONTROL (SHORTP_POLICY=720)     -- 30 days in hours (default)
+
+# Change long-term retention to 180 days (in hours: 180 * 24 = 4320)
+# LONGP_POLICY covers incident data, incident dumps, and alert logs
+SET CONTROL (LONGP_POLICY=4320)     -- 180 days in hours
 
 # Show current ADR home disk usage
 SHOW CONTROL
 ```
+
+> **Note:** `SET CONTROL` values are in **hours**, not minutes. Default `SHORTP_POLICY` = 720 hours (30 days); default `LONGP_POLICY` = 8760 hours (365 days).
 
 ### Purging Specific Data
 
@@ -343,18 +356,15 @@ SHOW CONTROL
 # Purge all data older than the retention policy (automatic purge)
 PURGE
 
-# Purge data older than a specific timestamp
+# Purge data older than a specific age (-AGE value is in MINUTES)
 PURGE -AGE 10080 -TYPE INCIDENT     -- Incidents older than 10080 minutes (7 days)
-PURGE -AGE 43200 -TYPE TRACE        -- Trace files older than 30 days
+PURGE -AGE 43200 -TYPE TRACE        -- Trace files older than 43200 minutes (30 days)
 
 # Purge a specific incident (removes incident directory and its trace files)
 PURGE -I 12344
 
-# Purge all data for a problem (all incidents with that problem key)
-# First get the problem ID
-SHOW PROBLEM
-# Then purge each incident manually or use:
-PURGE -P "CREATE_TIME < TIMESTAMP '2026-01-01 00:00:00'"
+# Purge a range of incidents
+PURGE -I 12340 12344
 ```
 
 ### Automated Purging via Script
@@ -362,7 +372,7 @@ PURGE -P "CREATE_TIME < TIMESTAMP '2026-01-01 00:00:00'"
 ```bash
 #!/bin/bash
 # purge_adr.sh — Run weekly via cron to keep ADR lean
-# Purge incidents older than 90 days, traces older than 30 days
+# Purge incidents older than 90 days (129600 min), traces older than 30 days (43200 min)
 
 ORACLE_SID=orcl
 export ORACLE_SID ORACLE_BASE=/u01/app/oracle
@@ -427,7 +437,7 @@ SHOW INCIDENT -MODE DETAIL -P "CREATE_TIME > TIMESTAMP '2026-03-06 00:00:00'"
 
 2. **Set up automatic purging.** Without regular purging, the ADR can consume tens or hundreds of gigabytes on a busy system. Schedule a weekly `PURGE` command and consider lowering retention for trace files if disk is constrained.
 
-3. **Use the `-FOLLOW` option during live troubleshooting.** `SHOW ALERT -TAIL 20 -FOLLOW` is the `adrci` equivalent of `tail -f` and is more reliable because it reads from the XML format, not a file descriptor that might roll over.
+3. **Use the `-F` option with `-TAIL` during live troubleshooting.** `SHOW ALERT -TAIL 20 -F` is the `adrci` equivalent of `tail -f` and is more reliable because it reads from the XML format, not a file descriptor that might roll over.
 
 4. **Always note the incident ID when an ORA-00600 or ORA-07445 occurs.** The incident ID links the alert log entry to the trace file directory, simplifying later analysis and IPS packaging.
 
@@ -454,7 +464,21 @@ The minimal package (`CORRELATE BASIC` or no correlation) often misses critical 
 Without a target path, the ZIP file is created in the current directory, which may not have enough space or may be a temporary location that gets cleaned up. Always specify an explicit destination path with sufficient free space.
 
 **Mistake: Assuming `SHOW ALERT` shows real-time data.**
-`adrci` reads from the XML alert log, which is updated synchronously with the text log. However, on very high-activity systems, there can be a brief lag. For live monitoring, use `-FOLLOW` or poll with a short-interval script.
+`adrci` reads from the XML alert log, which is updated synchronously with the text log. However, on very high-activity systems, there can be a brief lag. For live monitoring, use `SHOW ALERT -TAIL -F` or poll with a short-interval script.
 
 **Mistake: Forgetting that `PURGE -AGE` uses minutes, not days.**
 `PURGE -AGE 30` purges data older than 30 minutes, not 30 days. Convert: 30 days = 43,200 minutes. Always double-check the unit before running purge commands in production.
+
+**Mistake: Confusing `PURGE -AGE` units with `SET CONTROL` units.**
+`PURGE -AGE` is in **minutes**; `SET CONTROL (SHORTP_POLICY/LONGP_POLICY)` is in **hours**. These are different units for two different commands.
+
+---
+
+## Sources
+
+- [Oracle Database 19c Administrator's Guide — Managing Diagnostic Data](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/diagnosing-and-resolving-problems.html)
+- [Oracle Database 19c Utilities — ADRCI: ADR Command Interpreter](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-adr-command-interpreter-adrci.html)
+- [ADRCI SHOW ALERT syntax (12c reference, applies to 19c)](https://docs.oracle.com/database/121/SUTIL/GUID-8D62D6A0-99F4-465C-B088-5CCF259B7D80.htm)
+- [ADRCI PURGE syntax](https://docs.oracle.com/database/121/SUTIL/GUID-92DD451B-C3A1-48D7-A147-3296E75572CB.htm)
+- [ADRCI SET CONTROL syntax](https://docs.oracle.com/database/121/SUTIL/GUID-68ED8877-1132-45F1-8297-E1CCF8D34D98.htm)
+- [Oracle Database 19c Reference — V$DIAG_INFO](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-DIAG_INFO.html)

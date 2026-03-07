@@ -481,3 +481,12 @@ WHERE JSON_VALUE(order_data, '$.total') > 100  -- string comparison!
 -- RIGHT
 WHERE JSON_VALUE(order_data, '$.total' RETURNING NUMBER) > 100
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c JSON Developer's Guide (ADJSN)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/)
+- [Oracle Database 19c SQL Language Reference — JSON Functions](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
+- [Oracle Database 21c — JSON Data Type](https://docs.oracle.com/en/database/oracle/oracle-database/21/adjsn/)
+- [Oracle Database 23c — JSON Relational Duality Views](https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/)

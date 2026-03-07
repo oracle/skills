@@ -485,3 +485,15 @@ In Snowflake, a VARIANT column can contain both SQL NULL (absence of value) and 
 
 **Pitfall 6 — Snowflake Iceberg tables:**
 If the Snowflake account uses Apache Iceberg tables backed by S3/Azure, the data files (Parquet) can be read directly by Oracle External Tables using Oracle's ORC/Parquet access driver, bypassing Snowflake entirely for the extraction phase.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — JSON_VALUE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/JSON_VALUE.html)
+- [Oracle Database 19c SQL Language Reference — JSON_TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/JSON_TABLE.html)
+- [Oracle Database 19c JSON Developer's Guide — Overview of Oracle Database Support for JSON](https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/json-in-oracle-database.html)
+- [Oracle Database 19c Administrator's Guide — Using Oracle Flashback Technology](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/using-oracle-flashback-technology.html)
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_SCHEDULER](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SCHEDULER.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)

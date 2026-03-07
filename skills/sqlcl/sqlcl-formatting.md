@@ -321,7 +321,7 @@ SET LINESIZE 32767      -- Maximum; effectively disables wrapping
 For terminal output, match LINESIZE to your terminal width:
 
 ```sql
--- Auto-detect terminal width (SQLcl 22+)
+-- Auto-detect terminal width
 SET LINESIZE WINDOW
 ```
 
@@ -523,7 +523,7 @@ SPOOL OFF
 ## Tips for Readable Terminal Output
 
 - Use `SET SQLFORMAT ANSICONSOLE` as your default interactive format — it auto-sizes columns to content rather than to the declared data type width, dramatically reducing wasted whitespace.
-- Set `SET LINESIZE WINDOW` (SQLcl 22+) to automatically match your terminal width.
+- Set `SET LINESIZE WINDOW` to automatically match your terminal width.
 - Use `SET TIMING ON` during interactive work to see query execution time after every statement.
 - For wide tables, use `SET WRAP OFF` and `SET LINESIZE 300` to see each row on one line, then scroll horizontally.
 - Use `COLUMN ... FORMAT A30 TRUNCATE` for very long text columns that are not the focus of your query.
@@ -560,3 +560,12 @@ If you set `SQLFORMAT ANSICONSOLE` in `login.sql` but forget to switch to `DEFAU
 
 **Mistake: `SET PAGESIZE 0` removing the header from CSV output**
 In `DEFAULT` format, `PAGESIZE 0` removes headers. In `CSV` format, the header row is controlled by `SET HEADING`. Use `SET HEADING ON` with `SET PAGESIZE 0` for headered CSV without page breaks.
+
+---
+
+## Sources
+
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [SQLcl: Format Query Results with SET SQLFORMAT — ORACLE-BASE](https://oracle-base.com/articles/misc/sqlcl-format-query-results-with-the-set-sqlformat-command)
+- [SQLcl Formatting Options — oracle-db-tools GitHub](https://github.com/oracle/oracle-db-tools/blob/master/sqlcl/FORMATTING.md)
+- [Working with Oracle SQLcl (19.4 reference for SQLFORMAT values)](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/19.4/sqcug/working-sqlcl.html)

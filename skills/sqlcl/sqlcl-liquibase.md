@@ -485,3 +485,12 @@ Liquibase splits SQL on semicolons by default. PL/SQL bodies contain semicolons 
 
 **Mistake: Not committing the `DATABASECHANGELOG` to version control**
 The `DATABASECHANGELOG` lives in the database, not in version control. Do not try to commit it. What you commit is the changelog files. The database table is Liquibase's runtime state.
+
+---
+
+## Sources
+
+- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
+- [Using Liquibase with SQLcl — Oracle Docs 19.2](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/19.2/sqcug/using-liquibase-sqlcl.html)
+- [SQLcl Liquibase Automating Deployments — ORACLE-BASE](https://oracle-base.com/articles/misc/sqlcl-automating-your-database-deployments-using-sqlcl-and-liquibase)
+- [Oracle SQLcl Releases index](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/index.html)

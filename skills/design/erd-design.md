@@ -124,7 +124,7 @@ CREATE TABLE CATEGORY (
 );
 ```
 
-Traversing this hierarchy in Oracle uses `CONNECT BY` or recursive CTEs (12c+):
+Traversing this hierarchy in Oracle uses `CONNECT BY` or recursive CTEs (11g R2+):
 
 ```sql
 -- Oracle hierarchical query
@@ -513,11 +513,26 @@ status_code   CHAR(1)      NOT NULL   -- 'A'ctive, 'I'nactive, 'S'uspended
 |---|---|
 | Identity columns | 12c (12.1) |
 | Invisible columns | 12c (12.1) |
-| In-memory column store | 12c (12.1) |
+| In-memory column store | 12c (12.1.0.2 patchset) |
 | Polymorphic table functions | 18c |
 | Automatic indexing | 19c |
-| Blockchain tables | 20c / 21c |
+| Blockchain tables | 21c (20c was preview only; backported to 19.10+) |
 | Object name length 128 bytes | 12.2 |
 | `WITH FUNCTION` inline SQL functions | 12c (12.1) |
 
 For pre-12c systems, replace identity columns with sequences and before-insert triggers, and keep object names to 30 characters maximum.
+
+---
+
+## Sources
+
+- [Oracle Database 23ai SQL Language Reference — Database Object Names and Qualifiers](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Database-Object-Names-and-Qualifiers.html)
+- [Oracle Database 23ai Concepts — Tables and Table Clusters](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/tables-and-table-clusters.html)
+- [Oracle Database 12c R1 — Identity Columns (oracle-base.com)](https://oracle-base.com/articles/12c/identity-columns-in-oracle-12cr1)
+- [Oracle Database 12c R1 — Invisible Columns (oracle-base.com)](https://oracle-base.com/articles/12c/invisible-columns-12cr1)
+- [Oracle Database 12c R1 — In-Memory Column Store (oracle-base.com)](https://oracle-base.com/articles/12c/in-memory-column-store-12cr1)
+- [Oracle Database 12c R1 — WITH Clause Enhancements (oracle-base.com)](https://oracle-base.com/articles/12c/with-clause-enhancements-12cr1)
+- [Oracle Database 18c — Polymorphic Table Functions (oracle-base.com)](https://oracle-base.com/articles/18c/polymorphic-table-functions-18c)
+- [Oracle Database 19c — Automatic Indexing (oracle-base.com)](https://oracle-base.com/articles/19c/automatic-indexing-19c)
+- [Oracle Database 21c — Blockchain Tables (oracle-base.com)](https://oracle-base.com/articles/21c/blockchain-tables-21c)
+- [Oracle Database 11g R2 — Recursive Subquery Factoring (oracle-base.com)](https://oracle-base.com/articles/11g/recursive-subquery-factoring-11gr2)

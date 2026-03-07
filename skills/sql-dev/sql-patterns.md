@@ -545,3 +545,11 @@ ORDER BY year;
 | Using `LEVEL` in `WHERE` instead of `START WITH` | Filters on `LEVEL` still traverse the whole tree | Put root conditions in `START WITH` |
 | Over-using MODEL clause | Complex, slow, hard to maintain | Use analytic functions or PL/SQL for most problems; MODEL for genuine cell-reference needs |
 | CTEs with window functions on large intermediate sets | Materializing a large CTE can be expensive | Analyze the plan; consider pushing predicates or using `INLINE` hint |
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference (SQLRF)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
+- [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)
+- [Oracle Database 19c Data Warehousing Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/dwhsg/)

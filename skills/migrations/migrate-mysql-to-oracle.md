@@ -492,7 +492,7 @@ Key transformations to automate or perform:
 - Remove `ENGINE=InnoDB`, `CHARSET=utf8mb4`, and similar MySQL options
 - Replace `TINYINT(1)` with `NUMBER(1)`
 
-The **ora2pg** tool automates much of this (see `oracle-migration-tools.md`).
+The **SQL Developer Migration Workbench** automates much of this schema conversion (see `oracle-migration-tools.md`). Note: ora2pg migrates Oracle to PostgreSQL and is not applicable for MySQL-to-Oracle migrations.
 
 ### Step 3 — Load Data with SQL*Loader
 
@@ -605,3 +605,14 @@ SELECT CASE WHEN status = 'active' THEN 'Yes' ELSE 'No' END FROM customers;
 -- Or using DECODE:
 SELECT DECODE(status, 'active', 'Yes', 'No') FROM customers;
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE (GENERATED AS IDENTITY)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c SQL Language Reference — String Functions (LISTAGG)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/LISTAGG.html)
+- [Oracle Database 19c PL/SQL Language Reference — Control Structures](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-control-statements.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [Oracle SQL Developer Migration Workbench](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)

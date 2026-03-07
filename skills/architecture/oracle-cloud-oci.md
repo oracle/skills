@@ -467,3 +467,12 @@ ATP and ADW do not allow modification of most `init.ora` parameters. Workloads t
 ### Mistake 5: Ignoring Egress Costs When Loading Data
 
 Downloading large datasets from Autonomous Database to on-premises incurs OCI egress charges. Use OCI Object Storage as an intermediate stage (egress between ADB and OCI Object Storage in the same region is free) and then transfer from Object Storage to on-premises.
+
+---
+
+## Sources
+
+- [Oracle Autonomous Database Documentation](https://docs.oracle.com/en/cloud/paas/autonomous-database/) — ATP, ADW, auto-scaling, auto-backup, wallet connections
+- [Oracle Base Database Service Documentation](https://docs.oracle.com/en/cloud/paas/base-database/) — DBCS provisioning, VM vs. BM, patching
+- [Oracle Exadata Cloud Service Documentation](https://docs.oracle.com/en/engineered-systems/exadata-cloud-service/) — ExaCS infrastructure options
+- [OCI CLI Reference](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/) — autonomous-database commands

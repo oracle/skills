@@ -397,10 +397,11 @@ ORDER  SIBLINGS BY session_id;
 - **Do not purge ASH data unnecessarily.** Since it samples 1-in-10 for disk storage, every row is precious for historical analysis.
 - **Always filter `session_type = 'FOREGROUND'`** unless you specifically need background process analysis. Background waits often reflect system housekeeping rather than user-visible performance.
 - **Account for the 10x multiplier** when comparing in-memory vs. disk-based ASH. `V$ACTIVE_SESSION_HISTORY` has all samples; `DBA_HIST` has 1/10th.
-- **Combine with SQL execution plans.** Once you identify the top SQL_ID from ASH, use `DBMS_XPLAN.DISPLAY_AWR` to pull the historical plan.
+- **Combine with SQL execution plans.** Once you identify the top SQL_ID from ASH, use `DBMS_XPLAN.DISPLAY_AWR` (or `DISPLAY_WORKLOAD_REPOSITORY` in 23c+) to pull the historical plan.
 
 ```sql
 -- Pull a historical execution plan for a SQL found in ASH
+-- Note: DISPLAY_AWR is deprecated in Oracle 23c+; use DISPLAY_WORKLOAD_REPOSITORY for new code
 SELECT * FROM TABLE(
   DBMS_XPLAN.DISPLAY_AWR(
     sql_id        => 'abc123xyz',
@@ -423,3 +424,13 @@ SELECT * FROM TABLE(
 | Treating every ASH sample as 1 second exactly | Sampling jitter exists (GC pauses, heavy load) | Use time-range aggregation, not per-row timing |
 | Ignoring `CURRENT_OBJ#` for I/O waits | Miss the hot object | Join to `DBA_OBJECTS` to identify hot segments |
 | Confusing `BLOCKING_SESSION` with root cause | Blocker may itself be blocked | Trace the full chain; the root is a session not waiting on another session |
+
+---
+
+## Sources
+
+- [Oracle Database 19c Performance Tuning Guide (TGDBA)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgdba/)
+- [V$ACTIVE_SESSION_HISTORY — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-ACTIVE_SESSION_HISTORY.html)
+- [DBA_HIST_ACTIVE_SESS_HISTORY — Oracle Database 19c Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_HIST_ACTIVE_SESS_HISTORY.html)
+- [DBMS_WORKLOAD_REPOSITORY — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_WORKLOAD_REPOSITORY.html)
+- [DBMS_XPLAN — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_XPLAN.html)

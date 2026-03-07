@@ -4,7 +4,7 @@
 
 Microsoft SQL Server and Oracle are the two most commonly deployed enterprise relational databases, and migrations between them are among the most frequent in the industry. Despite both being mature ACID-compliant RDBMS engines with broad SQL standard support, they differ dramatically in procedural language (T-SQL vs PL/SQL), transaction management, DDL behavior, data type naming, and administrative concepts. This guide covers all major translation requirements for a SQL Server to Oracle migration.
 
-Microsoft provides the **SQL Server Migration Assistant (SSMA) for Oracle** to automate much of this work. This guide covers what SSMA handles automatically and what requires manual intervention.
+Microsoft provides the **AWS Schema Conversion Tool (SCT)** and Oracle provides **SQL Developer Migration Workbench** to automate much of this work. Note: "SSMA for Oracle" (Microsoft's product) migrates FROM Oracle TO SQL Server — the reverse direction. For SQL Server to Oracle, use AWS SCT or SQL Developer Migration Workbench. This guide covers what those tools handle automatically and what requires manual intervention.
 
 ---
 
@@ -392,46 +392,45 @@ SELECT * FROM orders WHERE order_date < DATE '2020-01-01';
 
 ---
 
-## SSMA for Oracle — Step-by-Step Usage
+## AWS SCT for SQL Server → Oracle — Step-by-Step Usage
 
-SQL Server Migration Assistant (SSMA) for Oracle automates schema conversion and can assess migration complexity. Note: SSMA migrates SQL Server TO Oracle and FROM Oracle to SQL Server.
+AWS Schema Conversion Tool (SCT) automates schema conversion for SQL Server to Oracle migrations and can assess migration complexity.
 
-For Oracle-to-SQL Server, use SSMA for SQL Server. For this guide's direction (SQL Server to Oracle), use SSMA configured for the Oracle target.
+> ⚠️ Note: "SSMA for Oracle" (Microsoft's product) migrates FROM Oracle TO SQL Server — the reverse direction. For SQL Server to Oracle, use **AWS SCT** or **SQL Developer Migration Workbench**.
 
-### SSMA Workflow
+### AWS SCT Workflow (SQL Server → Oracle)
 
-1. **Install SSMA** from the Microsoft Download Center. Connect to both source (SQL Server) and target (Oracle) in the project settings.
+1. **Install AWS SCT** from the AWS download page. SCT runs as a standalone desktop application.
 
 2. **Create a migration project:**
    - File → New Project
-   - Select "Migrate To: Oracle"
-   - Provide SQL Server connection details
+   - Select source: SQL Server; target: Oracle
+   - Provide SQL Server and Oracle connection details
 
 3. **Run the Assessment Report:**
-   - Right-click on the SQL Server database → Create Report
+   - View → Assessment Report
    - Review conversion categories: Auto-Converted, Requires Attention, Cannot Convert
 
 4. **Convert Schema:**
    - Select database objects in the left pane
-   - Tools → Convert Schema
+   - Right-click → Convert Schema
    - Review and resolve warnings in the Output and Error List panes
 
 5. **Manual fixups before synchronization:**
-   - SSMA generates conversion notes for objects it cannot convert automatically
+   - SCT generates conversion notes for objects it cannot convert automatically
    - Common manual items: dynamic SQL, cross-database references, full-text search, CLR objects
 
-6. **Synchronize to Oracle target:**
-   - Right-click converted schema → Synchronize with Database
+6. **Apply to Oracle target:**
+   - Right-click converted schema → Apply to Database
 
 7. **Migrate data:**
-   - Right-click tables → Migrate Data
-   - SSMA handles bulk transfer via ODBC
+   - Use SQL*Loader or Oracle Data Pump for bulk data transfer (SCT does not perform data migration)
 
 8. **Test and validate:**
    - Run row count reconciliation queries
    - Execute application regression tests
 
-### What SSMA Converts Automatically
+### What AWS SCT Converts Automatically
 
 - Table definitions (most data types)
 - Indexes and constraints
@@ -439,7 +438,7 @@ For Oracle-to-SQL Server, use SSMA for SQL Server. For this guide's direction (S
 - Simple stored procedures and functions
 - Basic T-SQL control flow
 
-### What SSMA Cannot Convert (Manual Work Required)
+### What AWS SCT Cannot Convert (Manual Work Required)
 
 - Dynamic SQL with complex string manipulation
 - CLR (Common Language Runtime) objects
@@ -487,7 +486,7 @@ SELECT TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') FROM DUAL;
 
 ## Best Practices
 
-1. **Start with the SSMA assessment report.** Before writing any migration scripts, run SSMA's assessment to get a conversion complexity score by object category. This sets realistic expectations.
+1. **Start with the AWS SCT assessment report.** Before writing any migration scripts, run AWS SCT's assessment to get a conversion complexity score by object category. This sets realistic expectations.
 
 2. **Normalize NVARCHAR to VARCHAR2 in AL32UTF8 databases.** Unicode support is built into AL32UTF8 without using the national character set types.
 
@@ -536,3 +535,12 @@ In SQL Server, a database contains schemas, and you can JOIN across databases (e
 
 **Pitfall 6 — CASE sensitivity in string comparisons:**
 SQL Server with `SQL_Latin1_General_CP1_CI_AS` (the default) is case-insensitive. Oracle is always case-sensitive. Queries that rely on case-insensitive matching need `UPPER(col)` wrappers and corresponding function-based indexes.
+
+---
+
+## Sources
+
+- [Oracle Database 19c PL/SQL Language Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/)
+- [Oracle Database 19c SQL Language Reference — PL/SQL vs T-SQL reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
+- [Oracle SQL Developer Migration documentation](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)
+- [AWS Schema Conversion Tool — SQL Server to Oracle](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Source.SQLServer.html)

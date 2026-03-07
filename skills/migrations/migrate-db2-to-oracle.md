@@ -420,9 +420,9 @@ SELECT INSTR(col, 'foo') FROM t;
 
 ---
 
-## TPT to Oracle SQL*Loader / Data Pump
+## DB2 Bulk Export to Oracle SQL*Loader / Data Pump
 
-IBM Teradata Parallel Transporter (TPT) is specific to Teradata, not DB2. For DB2, the primary bulk export tools are:
+IBM Teradata Parallel Transporter (TPT) is specific to Teradata, not DB2 — the section heading was incorrect. For DB2, the primary bulk export tools are:
 
 - `db2move` — exports schema and data in DB2's internal format
 - `EXPORT TO` command — exports query results to CSV/IXF/DEL format
@@ -433,19 +433,17 @@ IBM Teradata Parallel Transporter (TPT) is specific to Teradata, not DB2. For DB
 **Step 1: Export from DB2**
 
 ```bash
-# Export table to delimited file
-db2 "EXPORT TO /tmp/customers.del OF DEL MODIFIED BY COLDEL, CHARDEL\" \
-    SELECT * FROM customers"
+# Export table to comma-delimited file (DEL format, comma delimiter, double-quote char delimiter)
+db2 "EXPORT TO /tmp/customers.del OF DEL MODIFIED BY COLDEL, CHARDEL\" SELECT * FROM customers"
 
-# Export with CSV format and headers
-db2 "EXPORT TO /tmp/customers.csv OF DEL \
-    MODIFIED BY COLDEL, CHARDEL\" NOCHARDEL CHARDELIM\" \
-    DECPLUSBLANK TIMESTAMPFORMAT=\"YYYY-MM-DD HH:MM:SS\" \
-    SELECT customer_id, first_name, last_name, email, created_date FROM customers"
+# Export specific columns with timestamp format
+db2 "EXPORT TO /tmp/customers.csv OF DEL MODIFIED BY COLDEL, TIMESTAMPFORMAT='YYYY-MM-DD HH:MM:SS' SELECT customer_id, first_name, last_name, email, created_date FROM customers"
 
 # Export DDL using db2look
 db2look -d mydb -e -o schema.ddl -a
 ```
+
+> ⚠️ Unverified: DB2 EXPORT command option syntax (NOCHARDEL, CHARDELIM, exact modifier spelling) varies across DB2 versions. Verify the exact modifiers against the IBM Db2 documentation for your version before use.
 
 **Step 2: Translate DDL**
 
@@ -524,3 +522,15 @@ DB2 `CONCAT(a, b)` only takes two arguments. Oracle's `CONCAT` also takes only t
 
 **Pitfall 6 — Isolation level compatibility:**
 DB2's `WITH UR` (dirty read) has no Oracle equivalent since Oracle's MVCC prevents dirty reads by design. Remove all isolation hints; queries will be non-blocking by default.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c PL/SQL Language Reference — PL/SQL Language Fundamentals](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-language-fundamentals.html)
+- [Oracle Database 19c Administrator's Guide — Managing Schema Objects (ALTER TABLE MOVE)](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-schema-objects.html)
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_STATS](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_STATS.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [Oracle SQL Developer Migration Workbench](https://docs.oracle.com/en/database/oracle/sql-developer/23.1/rptug/migration-workbench.html)

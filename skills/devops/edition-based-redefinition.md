@@ -44,10 +44,12 @@ Not all database objects are editionable. Only the following object types can ha
 | PROCEDURE | TABLE |
 | FUNCTION | INDEX |
 | PACKAGE (spec + body) | SEQUENCE |
-| TRIGGER | SYNONYM (unless editioning-schema) |
-| TYPE (spec + body) | MATERIALIZED VIEW |
-| VIEW | GRANT |
-| SYNONYM (with editions enabled on schema) | DATABASE LINK |
+| TRIGGER | MATERIALIZED VIEW |
+| TYPE (spec + body) | GRANT |
+| VIEW | DATABASE LINK |
+| SYNONYM | |
+| LIBRARY | |
+| SQL Translation Profile | |
 
 Tables, indexes, and sequences are shared across all editions. This is fundamental to the design: EBR manages code versioning, not data versioning.
 
@@ -402,3 +404,11 @@ EBR is designed for relational, SQL-based object models. XML DB, Spatial, and ot
 
 **Mistake: Conflating EBR with a general-purpose schema versioning tool.**
 EBR manages concurrent code versions. It does not replace schema migration tools like Liquibase or Flyway. The typical production pattern uses both: Flyway/Liquibase for base table DDL changes (additive only, forward-compatible), and EBR for PL/SQL and view versioning during hot rollovers.
+
+---
+
+## Sources
+
+- [Oracle Database Development Guide 19c — Using Edition-Based Redefinition](https://docs.oracle.com/en/database/oracle/oracle-database/19/adfns/editions.html) — EBR introduced in 11gR2; editionable types (SYNONYM, VIEW, PROCEDURE, FUNCTION, PACKAGE, TRIGGER, TYPE, LIBRARY, SQL Translation Profile); crossedition triggers; editioning views
+- [Oracle Database SQL Language Reference 19c — CREATE EDITION](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-EDITION.html) — edition creation and hierarchy
+- [Oracle Database Reference 19c — DBA_EDITIONS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_EDITIONS.html) — edition catalog view

@@ -138,7 +138,7 @@ Bind variables protect data values but cannot protect dynamic SQL structure elem
 | `DBMS_ASSERT.ENQUOTE_LITERAL(str)` | Returns the string as a properly quoted SQL string literal (escapes single quotes) |
 | `DBMS_ASSERT.NOOP(str)` | Returns the string unchanged — used as a documentation marker only, no validation |
 
-All functions raise `ORA-44001` through `ORA-44003` on validation failure.
+Validation functions raise specific errors on failure: `SCHEMA_NAME` raises `ORA-44001`, `SQL_OBJECT_NAME` raises `ORA-44002`, `SIMPLE_SQL_NAME` raises `ORA-44003`, and `QUALIFIED_SQL_NAME` raises `ORA-44004`.
 
 ### Dynamic Table Name — Vulnerable vs. Safe
 
@@ -169,7 +169,7 @@ BEGIN
   DBMS_OUTPUT.PUT_LINE('Count: ' || v_count);
 EXCEPTION
   WHEN OTHERS THEN
-    IF SQLCODE IN (-44001, -44002, -44003) THEN
+    IF SQLCODE IN (-44001, -44002, -44003, -44004) THEN
       RAISE_APPLICATION_ERROR(-20001, 'Invalid table name provided.');
     ELSE
       RAISE;
@@ -424,3 +424,12 @@ GRANT SELECT, INSERT, UPDATE ON hr.employees TO app_user;
 - Oracle **Label Security** and **Database Vault** provide additional controls for environments with strict data segregation requirements.
 - The `CURSOR_SHARING = FORCE` parameter can force bind variable use system-wide at the cost of some optimizer accuracy — it is a last resort, not a substitute for proper bind variable use in application code.
 - Oracle **SQL Firewall** (21c+) can whitelist exactly which SQL statements are permitted from each database account, blocking any SQL that doesn't match the learned baseline.
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference (SQLRF)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
+- [DBMS_ASSERT — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_ASSERT.html)
+- [DBMS_SQL — Oracle Database 19c PL/SQL Packages and Types Reference](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQL.html)
+- [Oracle Database Security Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/)

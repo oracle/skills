@@ -462,3 +462,15 @@ SELECT ZEROIFNULL(revenue) FROM sales;
 SELECT NVL(revenue, 0) FROM sales;
 SELECT COALESCE(revenue, 0) FROM sales;
 ```
+
+---
+
+## Sources
+
+- [Oracle Database 19c SQL Language Reference — Data Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Types.html)
+- [Oracle Database 19c SQL Language Reference — CREATE TABLE (Partitioning)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database 19c VLDB and Partitioning Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/vldbg/)
+- [Oracle Database 19c In-Memory Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/inmem/)
+- [Oracle Database 19c PL/SQL Packages Reference — DBMS_RESOURCE_MANAGER](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_RESOURCE_MANAGER.html)
+- [Oracle Database 19c Utilities — SQL*Loader](https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/oracle-sql-loader.html)
+- [Oracle Database 19c Administrator's Guide — External Tables](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-tables.html)

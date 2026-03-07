@@ -562,3 +562,12 @@ Unlimited autoextend datafiles can fill an entire file system, taking down the O
 
 **Mistake: Ignoring undo tablespace space.**
 Undo tablespace behaves differently—Oracle manages retention automatically, but a very long-running transaction can cause the undo tablespace to grow dramatically. Include the undo tablespace in space monitoring and set a reasonable `UNDO_RETENTION`.
+
+---
+
+## Sources
+
+- [Oracle Database Administrator's Guide 19c — Managing Tablespaces](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-tablespaces.html)
+- [Oracle Database 19c Reference — DBA_TABLESPACE_USAGE_METRICS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_TABLESPACE_USAGE_METRICS.html)
+- [Oracle Database 19c Reference — V$SORT_USAGE](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-SORT_USAGE.html)
+- [Oracle Database 19c SQL Language Reference — ALTER TABLE (SHRINK SPACE)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-TABLE.html)

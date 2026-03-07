@@ -333,3 +333,11 @@ Sorting on an unindexed virtual column forces Oracle to evaluate the expression 
 
 **Mistake 5: Referencing the virtual column in the same table's trigger**
 `BEFORE INSERT OR UPDATE` triggers fire before the virtual column value is accessible. If your trigger tries to read a virtual column, it may see NULL or stale data. Use the base column expressions directly in trigger logic instead.
+
+---
+
+## Sources
+
+- [Oracle Database SQL Language Reference: Virtual Columns 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLE.html)
+- [Oracle Database Administrator's Guide: Managing Tables — Virtual Columns 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/managing-tables.html)
+- [Oracle Database VLDB and Partitioning Guide: Partitioning by Virtual Column](https://docs.oracle.com/en/database/oracle/oracle-database/19/vldbg/partition-virtual-column.html)

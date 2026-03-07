@@ -529,3 +529,11 @@ ORDER BY executions DESC;
 - **Oracle 12cR1+**: `DBMS_SQL.RETURN_RESULT` for implicit result sets from procedures.
 - **Oracle 21c+**: Improved JSON support in dynamic SQL construction patterns.
 - **All versions**: `DBMS_ASSERT` available since 10.2 — use consistently for all dynamic identifier validation.
+
+---
+
+## Sources
+
+- [Oracle Database PL/SQL Language Reference 19c — Dynamic SQL](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/dynamic-sql.html) — EXECUTE IMMEDIATE, OPEN...FOR, USING clause
+- [DBMS_SQL (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_SQL.html) — DBMS_SQL package, TO_REFCURSOR, RETURN_RESULT
+- [DBMS_ASSERT (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_ASSERT.html) — SQL_OBJECT_NAME, SIMPLE_SQL_NAME for injection prevention

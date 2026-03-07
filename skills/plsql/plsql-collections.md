@@ -435,3 +435,10 @@ END;
 - **Oracle 10g+**: String-indexed associative arrays (`INDEX BY VARCHAR2(n)`) fully supported.
 - **Oracle 12c+**: `ACCESSIBLE BY` can restrict which units can use package-level collection types.
 - **Oracle 21c+**: Improved JSON integration with collections for document-style data.
+
+---
+
+## Sources
+
+- [Oracle Database PL/SQL Language Reference 19c — Collection Types](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-collections-and-records.html) — associative arrays, nested tables, varrays, BULK COLLECT, FORALL, INDICES OF
+- [Oracle Database PL/SQL Language Reference 19c — FORALL Statement](https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/FORALL-statement.html) — INDICES OF, VALUES OF, sparse collection handling

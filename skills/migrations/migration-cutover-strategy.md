@@ -520,3 +520,11 @@ Application users need appropriate privileges in Oracle. A common oversight is f
 
 **Pitfall 5 — Performance regression on first production queries.**
 Oracle's optimizer builds statistics over time. The first executions of complex queries may use non-optimal plans because statistics are based on the initial data load, not the pattern of production queries. Monitor the top wait events in V$SESSION_WAIT immediately after cutover and address any slow queries proactively.
+
+---
+
+## Sources
+
+- [Oracle Zero Downtime Migration documentation](https://docs.oracle.com/en/database/oracle/zero-downtime-migration/index.html)
+- [Oracle GoldenGate 19c documentation](https://docs.oracle.com/en/middleware/goldengate/core/19.1/index.html)
+- [Oracle Database 19c SQL Language Reference — ALTER TABLE (MODIFY GENERATED AS IDENTITY)](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-TABLE.html)

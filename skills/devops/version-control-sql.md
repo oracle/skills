@@ -587,3 +587,11 @@ DDL files that contain `CREATE TABLE APP_OWNER.ORDERS` are tied to a specific sc
 
 **Mistake: Treating the repository as append-only for PL/SQL.**
 Some teams only add new migration files and never update the standalone package/procedure files, letting them fall out of sync with the database. Establish a process: when a package changes via migration, also update the corresponding `.pks` / `.pkb` file in the same commit so the repository always reflects the current state.
+
+---
+
+## Sources
+
+- [DBMS_METADATA (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_METADATA.html) — GET_DDL, SET_TRANSFORM_PARAM, SESSION_TRANSFORM, supported object types
+- [Oracle Database Reference 19c — DBA_OBJECTS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_OBJECTS.html) — LAST_DDL_TIME for drift detection
+- [Oracle Database Reference 19c — DBA_TAB_PRIVS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_TAB_PRIVS.html) — grant tracking
