@@ -40,6 +40,11 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `spatial-data.md` — SDO_GEOMETRY, spatial indexes, query patterns
 - [x] `oracle-text.md` — Full-text search, CONTEXT indexes, CONTAINS queries
 - [x] `sql-property-graph.md` — SQL Property Graph DDL, GRAPH_TABLE, MATCH patterns, quantified paths (23ai+)
+- [x] `python-oracledb.md` — python-oracledb driver, thin/thick mode, bind variables, pooling, async
+- [x] `java-oracle-jdbc.md` — JDBC thin driver, UCP, PreparedStatement, batch, Spring Boot
+- [x] `nodejs-oracledb.md` — node-oracledb driver, async/await, pools, result sets, LOBs
+- [x] `dotnet-oracle.md` — ODP.NET managed driver, EF Core, array binding, OracleParameter
+- [x] `golang-oracle.md` — godror driver, database/sql interface, named binds, REF CURSORs
 
 ## Security
 - [x] `privilege-management.md` — Least privilege, roles, system vs object privileges

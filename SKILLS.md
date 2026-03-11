@@ -1,6 +1,6 @@
 # Oracle DB Skills
 
-103 Oracle Database reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
+108 Oracle Database reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
 
 **Install:** `npx skills add krisrice/oracle-db-skills`
 
@@ -33,6 +33,11 @@
 | `skills/appdev/spatial-data.md` | appdev | SDO_GEOMETRY, spatial indexes, SDO_RELATE, coordinate systems |
 | `skills/appdev/oracle-text.md` | appdev | CONTEXT/CTXCAT indexes, CONTAINS, fuzzy/stemming, HIGHLIGHT/SNIPPET |
 | `skills/appdev/sql-property-graph.md` | appdev | SQL Property Graph DDL, GRAPH_TABLE operator, MATCH patterns, quantified paths (23ai+) |
+| `skills/appdev/python-oracledb.md` | appdev | python-oracledb driver, thin/thick mode, bind variables, pooling, async |
+| `skills/appdev/java-oracle-jdbc.md` | appdev | JDBC thin driver, UCP, PreparedStatement, batch, Spring Boot |
+| `skills/appdev/nodejs-oracledb.md` | appdev | node-oracledb driver, async/await, pools, result sets, LOBs |
+| `skills/appdev/dotnet-oracle.md` | appdev | ODP.NET managed driver, EF Core, array binding, OracleParameter |
+| `skills/appdev/golang-oracle.md` | appdev | godror driver, database/sql interface, named binds, REF CURSORs |
 | `skills/security/privilege-management.md` | security | Least privilege, roles, DBMS_PRIVILEGE_CAPTURE, avoiding PUBLIC grants |
 | `skills/security/row-level-security.md` | security | VPD/FGAC, DBMS_RLS, application contexts, all policy types |
 | `skills/security/data-masking.md` | security | Oracle Data Redaction (DBMS_REDACT), full/partial/regexp/random redaction |

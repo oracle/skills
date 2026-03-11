@@ -24,7 +24,7 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 | [Database Design & Modeling](#database-design--modeling) | 4 | `skills/design/` |
 | [SQL Development](#sql-development) | 5 | `skills/sql-dev/` |
 | [Performance & Tuning](#performance--tuning) | 7 | `skills/performance/` |
-| [Application Development](#application-development) | 8 | `skills/appdev/` |
+| [Application Development](#application-development) | 14 | `skills/appdev/` |
 | [Security](#security) | 6 | `skills/security/` |
 | [Administration](#administration) | 6 | `skills/admin/` |
 | [Monitoring & Diagnostics](#monitoring--diagnostics) | 5 | `skills/monitoring/` |
@@ -95,6 +95,12 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 | `xml-in-oracle.md` | XMLType storage, XQuery, XMLTable, XML indexes, XMLDB repository |
 | `spatial-data.md` | SDO_GEOMETRY, spatial indexes, SDO_RELATE, coordinate systems |
 | `oracle-text.md` | CONTEXT/CTXCAT indexes, CONTAINS, fuzzy/stemming, HIGHLIGHT/SNIPPET |
+| `sql-property-graph.md` | SQL Property Graph DDL, GRAPH_TABLE, MATCH patterns, quantified paths (23ai+) |
+| `python-oracledb.md` | python-oracledb driver, thin/thick mode, bind variables, pooling, async |
+| `java-oracle-jdbc.md` | JDBC thin driver, UCP, PreparedStatement, array binding, Spring Boot |
+| `nodejs-oracledb.md` | node-oracledb driver, async/await, pools, result sets, LOBs |
+| `dotnet-oracle.md` | ODP.NET managed driver, EF Core, array binding, OracleParameter |
+| `golang-oracle.md` | godror driver, database/sql interface, named binds, REF CURSORs |
 
 ---
 
