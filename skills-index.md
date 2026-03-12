@@ -15,6 +15,7 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `tablespace-design.md` — Sizing, storage layout, bigfile vs smallfile
 
 ## SQL Development
+- [x] `sql-best-practices.md` — Set-based SQL, bind variables, joins, row limiting, data types, virtual columns
 - [x] `sql-tuning.md` — Execution plans, hints, optimizer statistics
 - [x] `sql-injection-avoidance.md` — Bind variables, dynamic SQL safety, DBMS_ASSERT
 - [x] `pl-sql-best-practices.md` — Bulk operations, exception handling, cursor management

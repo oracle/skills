@@ -12,6 +12,7 @@
 | `skills/design/data-modeling.md` | design | Logical vs physical modeling, star/snowflake schemas, ODS, SCD types |
 | `skills/design/partitioning-strategy.md` | design | Range, list, hash, composite partitioning, partition pruning, local vs global indexes |
 | `skills/design/tablespace-design.md` | design | Sizing, bigfile vs smallfile, ASSM vs MSSM, production layout patterns |
+| `skills/sql-dev/sql-best-practices.md` | sql-dev | Set-based SQL, bind variables, joins, row limiting, data types, virtual columns |
 | `skills/sql-dev/sql-tuning.md` | sql-dev | Execution plans, optimizer hints, SQL profiles, plan baselines |
 | `skills/sql-dev/sql-injection-avoidance.md` | sql-dev | Bind variables, DBMS_ASSERT, safe dynamic SQL patterns |
 | `skills/sql-dev/pl-sql-best-practices.md` | sql-dev | BULK COLLECT/FORALL, exception handling, cursor management, package structure |

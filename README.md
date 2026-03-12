@@ -22,7 +22,7 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 | Category | Files | Path |
 |----------|-------|------|
 | [Database Design & Modeling](#database-design--modeling) | 4 | `skills/design/` |
-| [SQL Development](#sql-development) | 5 | `skills/sql-dev/` |
+| [SQL Development](#sql-development) | 6 | `skills/sql-dev/` |
 | [Performance & Tuning](#performance--tuning) | 7 | `skills/performance/` |
 | [Application Development](#application-development) | 14 | `skills/appdev/` |
 | [Security](#security) | 6 | `skills/security/` |
@@ -57,6 +57,7 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 
 | File | Description |
 |------|-------------|
+| `sql-best-practices.md` | Set-based SQL, bind variables, joins, row limiting, data types, virtual columns |
 | `sql-tuning.md` | Execution plans, optimizer hints, SQL profiles, plan baselines |
 | `sql-injection-avoidance.md` | Bind variables, DBMS_ASSERT, safe dynamic SQL patterns |
 | `pl-sql-best-practices.md` | BULK COLLECT/FORALL, exception handling, cursor management, package structure |

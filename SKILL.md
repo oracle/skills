@@ -1,11 +1,11 @@
 ---
 name: oracle-db-skills
-description: 103 Oracle Database reference guides covering SQL, PL/SQL, performance tuning, security, ORDS, SQLcl, migrations, and more. Load individual skill files on demand for expert guidance on any Oracle topic.
+description: 108 Oracle Database reference guides covering SQL, PL/SQL, performance tuning, security, ORDS, SQLcl, migrations, and more. Load individual skill files on demand for expert guidance on any Oracle topic.
 ---
 
 # Oracle DB Skills
 
-A collection of 103 standalone reference guides for Oracle Database. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
+A collection of 108 standalone reference guides for Oracle Database. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
 
 ## How to Use
 
