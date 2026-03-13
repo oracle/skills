@@ -1,6 +1,6 @@
 # Oracle DB Skills
 
-Oracle DB Skills is a curated library of 129 practical, documentation-backed guides for working with Oracle Database and Oracle Container Registry database-category images, organized by domain: SQL and PL/SQL development, performance tuning, security, administration, monitoring, architecture, DevOps, migrations, SQLcl, ORDS, Oracle-specific features, and container-image repositories. The guides include actionable examples, best practices, common pitfalls, sources, and Oracle version compatibility notes where relevant.
+Oracle DB Skills is a curated library of 128 practical, documentation-backed guides for working with Oracle Database and Oracle Container Registry database-category images, organized by domain: SQL and PL/SQL development, performance tuning, security, administration, monitoring, architecture, DevOps, migrations, SQLcl, ORDS, Oracle-specific features, and container-image repositories. The guides include actionable examples, best practices, common pitfalls, sources, and Oracle version compatibility notes where relevant.
 
 ## Version Coverage Standard
 
@@ -35,7 +35,7 @@ Oracle DB Skills is a curated library of 129 practical, documentation-backed gui
 | [Oracle-Specific Features](#oracle-specific-features) | 6 | `skills/features/` |
 | [SQLcl](#sqlcl) | 8 | `skills/sqlcl/` |
 | [ORDS (Oracle REST Data Services)](#ords-oracle-rest-data-services) | 10 | `skills/ords/` |
-| [Container Images](#container-images) | 21 | `skills/containers/` |
+| [Container Images](#container-images) | 20 | `skills/containers/` |
 
 ---
 
@@ -287,7 +287,6 @@ Common container skills in the primary index:
 | `free.md` | Oracle AI Database 26ai Free container image |
 | `instantclient.md` | Oracle Instant Client container image with Basic, SDK, and SQL*Plus packages |
 | `ords.md` | Oracle REST Data Services container image repository |
-| `ords-developer.md` | Deprecated ORDS Developer image repository with migration note to `ords` |
 | `rac.md` | Oracle Real Application Clusters container image guidance for Podman deployments |
 | `rac_ru.md` | Oracle RAC release-update container image repository |
 | `sqlcl.md` | Oracle SQL Command Line (SQLcl) container image repository |

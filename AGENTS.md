@@ -1,6 +1,6 @@
 # Oracle DB Skills — Agent Instructions
 
-This repository is a collection of 129 standalone reference guides for Oracle Database and Oracle Container Registry database-category images. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
+This repository is a collection of 128 standalone reference guides for Oracle Database and Oracle Container Registry database-category images. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
 
 ## How to Use This Collection
 

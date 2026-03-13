@@ -12,7 +12,6 @@ Complete index for container-related skills in `skills/containers/`.
 | `free.md` | Oracle AI Database 26ai Free container image |
 | `instantclient.md` | Oracle Instant Client container image with Basic, SDK, and SQL*Plus packages |
 | `ords.md` | Oracle REST Data Services container image repository |
-| `ords-developer.md` | Deprecated ORDS Developer image repository with migration note to `ords` |
 | `rac.md` | Oracle RAC container deployment guidance for Podman |
 | `rac_ru.md` | Oracle RAC release-update container image repository |
 | `sqlcl.md` | Oracle SQL Command Line (SQLcl) container image repository |

@@ -24,7 +24,7 @@ The OCR detail page tracks ORDS image releases instead of a 19c-versus-26ai data
 ## When to Use / When Not to Use
 
 - **Use this image when:** Use for supported ORDS container deployments.
-- **Use another image when:** Avoid ords-developer for net-new work; it is deprecated.
+- **Use another image when:** Avoid deprecated/legacy ORDS container lines for new deployments.
 - **Cross-image decision aid:** `skills/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern

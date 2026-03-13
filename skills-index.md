@@ -160,7 +160,6 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `observability-exporter.md` — Unified observability exporter image for Oracle Database metrics, logs, and tracing
 - [x] `operator.md` — Oracle Database Operator for Kubernetes image repository
 - [x] `ords.md` — Oracle REST Data Services container image repository
-- [x] `ords-developer.md` — Deprecated ORDS Developer image repository with migration note to `ords`
 - [x] `otmm.md` — Oracle Transaction Manager for Microservices Free image repository
 - [x] `sqlcl.md` — Oracle SQL Command Line (SQLcl) container image repository
 - [x] `enterprise_ru.md` — Oracle Database Enterprise Edition CPU release-update image repository

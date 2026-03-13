@@ -1,6 +1,6 @@
 # Oracle DB Skills
 
-129 Oracle Database and OCR container reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
+128 Oracle Database and OCR container reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
 
 **Install:** `npx skills add krisrice/oracle-db-skills`
 
@@ -130,7 +130,6 @@
 | `skills/containers/observability-exporter.md` | containers | Unified observability exporter image for Oracle Database metrics, logs, and tracing |
 | `skills/containers/operator.md` | containers | Oracle Database Operator for Kubernetes image repository |
 | `skills/containers/ords.md` | containers | Oracle REST Data Services container image repository |
-| `skills/containers/ords-developer.md` | containers | Deprecated ORDS Developer image repository with migration note to `ords` |
 | `skills/containers/otmm.md` | containers | Oracle Transaction Manager for Microservices Free image repository |
 | `skills/containers/sqlcl.md` | containers | Oracle SQL Command Line (SQLcl) container image repository |
 | `skills/containers/enterprise_ru.md` | containers | Oracle Database Enterprise Edition CPU release-update image repository |

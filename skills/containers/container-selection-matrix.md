@@ -19,8 +19,7 @@ Use this guide to quickly choose the right Oracle Container Registry (OCR) datab
 | `database/cman` | You need Oracle Connection Manager as a proxy/gateway for DB clients | You only need direct client-to-DB connectivity | Connection brokering/proxy image for DB network paths |
 | `database/instantclient` | You need client-only tooling/libraries (OCI/OCCI/SQL*Plus) in containers | You need a full database server container | Instant Client packages (Basic/SDK/SQL*Plus) |
 | `database/sqlcl` | You need SQLcl CLI in containerized automation or CI jobs | You need ORDS or database server runtime | SQL Command Line image with scriptable CLI workflows |
-| `database/ords` | You need supported ORDS container CLI/runtime image | You need legacy ORDS+APEX bundle (`ords-developer`) | Current ORDS container image line |
-| `database/ords-developer` | You are temporarily maintaining older ORDS developer image workflows | You need forward-looking support (use `ords`) | Deprecated ORDS Developer image (includes APEX) |
+| `database/ords` | You need supported ORDS container CLI/runtime image | You need a non-deprecated ORDS image line for new deployments | Current ORDS container image line |
 | `database/operator` | You run Oracle DB lifecycle through Kubernetes operator patterns | You are not using Kubernetes operator model | Oracle Database Operator image for Kubernetes automation |
 | `database/observability-exporter` | You need metrics/logs/traces export for Oracle DB observability | You need a DB server image | OpenTelemetry-style exporter tooling image |
 | `database/private-ai` | You need Oracle Private AI Services container deployment | You only need base database without Private AI service layer | Private AI service runtime with secure/non-secure setup modes |
@@ -68,7 +67,6 @@ OCR container repositories are split across product lines, not a single unified 
 - https://container-registry.oracle.com/ords/ocr/ba/database/instantclient
 - https://container-registry.oracle.com/ords/ocr/ba/database/sqlcl
 - https://container-registry.oracle.com/ords/ocr/ba/database/ords
-- https://container-registry.oracle.com/ords/ocr/ba/database/ords-developer
 - https://container-registry.oracle.com/ords/ocr/ba/database/operator
 - https://container-registry.oracle.com/ords/ocr/ba/database/observability-exporter
 - https://container-registry.oracle.com/ords/ocr/ba/database/private-ai
