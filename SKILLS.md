@@ -1,6 +1,6 @@
 # Oracle DB Skills
 
-128 Oracle Database and OCR container reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
+130 Oracle Database and OCR container reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
 
 **Install:** `npx skills add krisrice/oracle-db-skills`
 
@@ -39,6 +39,8 @@
 | `skills/appdev/nodejs-oracledb.md` | appdev | node-oracledb driver, async/await, pools, result sets, LOBs |
 | `skills/appdev/dotnet-oracle.md` | appdev | ODP.NET managed driver, EF Core, array binding, OracleParameter |
 | `skills/appdev/golang-oracle.md` | appdev | godror driver, database/sql interface, named binds, REF CURSORs |
+| `skills/ai/ai-vector-search.md` | ai | `VECTOR` data type, similarity search, distance metrics, vector indexes, hybrid search |
+| `skills/ai/select-ai.md` | ai | AI profiles, `DBMS_CLOUD_AI`, `SELECT AI` actions, prompt augmentation, metadata controls |
 | `skills/security/privilege-management.md` | security | Least privilege, roles, DBMS_PRIVILEGE_CAPTURE, avoiding PUBLIC grants |
 | `skills/security/row-level-security.md` | security | VPD/FGAC, DBMS_RLS, application contexts, all policy types |
 | `skills/security/data-masking.md` | security | Oracle Data Redaction (DBMS_REDACT), full/partial/regexp/random redaction |

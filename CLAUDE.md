@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repository Is
 
-A library of 128 standalone Oracle Database and OCR container reference guides (skill files) organized by category under `skills/`. Each file covers one topic with explanations, examples, and version-specific notes. There is no build system, test suite, or compilation step — this is a pure Markdown content library.
+A library of 130 standalone Oracle Database and OCR container reference guides (skill files) organized by category under `skills/`. Each file covers one topic with explanations, examples, and version-specific notes. There is no build system, test suite, or compilation step — this is a pure Markdown content library.
 
 ## Adding or Modifying Skill Files
 
@@ -43,6 +43,7 @@ When adding a new skill file, update all four of these files.
 | Topic | Directory |
 |-------|-----------|
 | Backup, recovery, RMAN, redo/undo, users | `skills/admin/` |
+| Select AI, AI Vector Search, vector indexes, semantic search, RAG on Oracle AI Database | `skills/ai/` |
 | JDBC, connection pooling, JSON, XML, spatial, full-text, transactions, property graphs | `skills/appdev/` |
 | RAC, CDB/PDB, Exadata, In-Memory, OCI, ATP/ADW, Data Guard | `skills/architecture/` |
 | ERD, data modeling, partitioning, tablespaces | `skills/design/` |
@@ -60,6 +61,7 @@ When adding a new skill file, update all four of these files.
 
 ## Key Starting Points
 
+- [skills/ai/ai-vector-search.md](skills/ai/ai-vector-search.md) — foundation for Oracle AI Vector Search concepts and indexing choices
 - [skills/sqlcl/sqlcl-mcp-server.md](skills/sqlcl/sqlcl-mcp-server.md) — connecting AI assistants to Oracle via the SQLcl MCP server
 - [skills/migrations/migration-assessment.md](skills/migrations/migration-assessment.md) — start here for any migration project
 - [skills/performance/explain-plan.md](skills/performance/explain-plan.md) — foundation for SQL performance work

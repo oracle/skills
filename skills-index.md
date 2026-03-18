@@ -47,6 +47,10 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `dotnet-oracle.md` — ODP.NET managed driver, EF Core, array binding, OracleParameter
 - [x] `golang-oracle.md` — godror driver, database/sql interface, named binds, REF CURSORs
 
+## AI Database
+- [x] `ai-vector-search.md` — `VECTOR` data type, similarity search, distance metrics, vector indexes, hybrid search
+- [x] `select-ai.md` — AI profiles, `DBMS_CLOUD_AI`, `SELECT AI` actions, prompt augmentation, metadata controls
+
 ## Security
 - [x] `privilege-management.md` — Least privilege, roles, system vs object privileges
 - [x] `row-level-security.md` — VPD/FGAC, RLS policies, application contexts
