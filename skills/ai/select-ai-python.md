@@ -170,7 +170,7 @@ df = await async_profile.run_sql("How many promotions?")
 response = await async_profile.show_sql("How many promotions?")
 ```
 
-Use the async surface when the application is already structured around `async` and `await`. Oracle documents Python 3.11 or higher for async APIs.
+Use the async surface when the application is already structured around `async` and `await`. Current Oracle documentation explicitly notes Python 3.14 support for Select AI for Python.
 
 ---
 
@@ -243,7 +243,7 @@ Oracle documents certification for Autonomous Database 19c and Autonomous AI Dat
 
 - **Oracle Database 19c (generic):** `select_ai` is not a generic 19c baseline feature.
 - **Autonomous Database 19c:** Oracle documents Select AI for Python as certified.
-- **Autonomous AI Database 26ai:** Oracle documents Select AI for Python as certified and documents the broadest current Python surface, including async, vector-index, feedback, synthetic-data, and agent workflows.
+- **Autonomous AI Database 26ai:** Oracle documents Select AI for Python as certified. Current 26ai-era documentation includes async, vector-index, feedback, synthetic-data, and agent workflows.
 - **Other platforms:** Oracle states that Select AI for Python may work on other platforms, but it is not certified there.
 
 ---
