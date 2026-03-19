@@ -331,7 +331,7 @@ SQL Monitoring was introduced in Oracle 11g and provides real-time, per-executio
 - Uses parallel execution, **or**
 - Has the `MONITOR` hint applied
 
-**Requires:** Oracle Diagnostics Pack and Tuning Pack licenses.
+**Requires:** Oracle Tuning Pack. In practice, pack access is controlled through `CONTROL_MANAGEMENT_PACK_ACCESS`, where Tuning Pack implies Diagnostics Pack.
 
 ### Viewing Active Monitored SQL
 
@@ -548,7 +548,7 @@ High `LOADS` or `INVALIDATIONS` counts in `V$SQLAREA` indicate that cursors are 
 AWR `_delta` values accumulate over the snapshot interval. A snapshot covering 2 hours has twice as many delta values as one covering 1 hour. Normalize by dividing by the interval duration when comparing across snapshots of different lengths.
 
 **Mistake: Forgetting that SQL Monitoring requires licensing.**
-`V$SQL_MONITOR` and `DBMS_SQLTUNE.report_sql_monitor` require the Oracle Diagnostics Pack and Tuning Pack. In unlicensed environments, use `V$SQL` and `DBMS_XPLAN.display_cursor` instead—these do not require additional licensing.
+`V$SQL_MONITOR` and `DBMS_SQLTUNE.report_sql_monitor` are Tuning Pack features, and Tuning Pack requires Diagnostics Pack to be enabled via `CONTROL_MANAGEMENT_PACK_ACCESS`. In unlicensed environments, use `V$SQL` and `DBMS_XPLAN.display_cursor` instead.
 
 **Mistake: Relying solely on AWR for real-time diagnosis.**
 AWR snapshots are typically taken every hour. During a live performance crisis, use `V$SQL`, `V$SESSION`, `V$SESSION_WAIT`, and `V$SQL_MONITOR` for real-time data. AWR is for trend analysis and post-incident review.

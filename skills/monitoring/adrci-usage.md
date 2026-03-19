@@ -481,6 +481,10 @@ Without a target path, the ZIP file is created in the current directory, which m
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
 
+## See Also
+
+- [Alert Log Analysis](../monitoring/alert-log-analysis.md) — Interpreting alert log entries and ORA- errors
+
 ## Sources
 
 - [Oracle Database 19c Administrator's Guide — Managing Diagnostic Data](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/diagnosing-and-resolving-problems.html)

@@ -470,7 +470,7 @@ EXEC DBMS_AUTO_INDEX.CONFIGURE('AUTO_INDEX_MODE', 'IMPLEMENT');
 - Does not create **bitmap indexes**, **function-based indexes**, **IOT indexes**, or **cluster indexes** — only B-tree.
 - Does not index columns on **index-organized tables** or **external tables**.
 - Requires **Diagnostics Pack** + **Tuning Pack** licenses (on-premises).
-- On Autonomous Database, it is always enabled and cannot be fully disabled (only set to REPORT ONLY).
+- On Autonomous Database, automatic indexing is configurable with `DBMS_AUTO_INDEX`; `OFF`, `REPORT ONLY`, and `IMPLEMENT` are supported.
 - Auto-created indexes are prefixed with `SYS_AI_` and visible in `DBA_AUTO_INDEXES`.
 
 ### When to Use vs. Manual Indexing

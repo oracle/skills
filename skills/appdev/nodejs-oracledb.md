@@ -7,6 +7,8 @@
 - **Thin mode** (default): pure JavaScript, no Oracle Client required. Supports most features.
 - **Thick mode**: requires Oracle Instant Client. Needed for Advanced Queuing, Sharding, and some proxy auth scenarios.
 
+Unless a snippet shows its own wrapper, JavaScript examples below assume they are running inside an `async` function and that `conn` is an open connection acquired earlier.
+
 ```bash
 npm install oracledb
 ```
@@ -45,7 +47,7 @@ run();
 ### TNS Alias
 
 ```js
-conn = await oracledb.getConnection({
+const conn = await oracledb.getConnection({
   user:          'hr',
   password:      'password',
   connectString: 'mydb_high'  // alias from tnsnames.ora
@@ -55,7 +57,7 @@ conn = await oracledb.getConnection({
 ### Wallet / mTLS (Autonomous Database)
 
 ```js
-conn = await oracledb.getConnection({
+const conn = await oracledb.getConnection({
   user:           'admin',
   password:       'password',
   connectString:  'myatp_high',

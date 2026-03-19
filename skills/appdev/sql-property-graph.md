@@ -10,7 +10,7 @@ The core components are:
 
 This guide covers SQL Property Graph only. For PGX (in-memory graph analytics using PGQL), see the Oracle Graph Server documentation.
 
-> ⚠️ SQL Property Graph (`CREATE PROPERTY GRAPH`, `GRAPH_TABLE`) requires Oracle Database 23ai (23c) or later. It is not available in Oracle 19c.
+> Note: SQL Property Graph (`CREATE PROPERTY GRAPH`, `GRAPH_TABLE`) requires Oracle Database 23ai (23c) or later. It is not available in Oracle 19c.
 
 ---
 
@@ -301,7 +301,7 @@ FROM GRAPH_TABLE (students_graph
 );
 ```
 
-> ⚠️ Version-sensitive: SQL graph query limitations (for example, support around path constructs and advanced clauses) can vary by release update. Confirm against your exact version's "Supported Features and Limitations for Querying a SQL Property Graph" page.
+> Note: SQL graph query limitations (for example, support around path constructs and advanced clauses) can vary by release update. Confirm against your exact version's "Supported Features and Limitations for Querying a SQL Property Graph" page.
 
 ---
 
@@ -580,7 +580,7 @@ CREATE PROPERTY GRAPH age_graph
   ...;
 ```
 
-> ⚠️ `ENFORCED MODE` is not supported when using views as graph element tables. Use `TRUSTED MODE` (the default) and ensure uniqueness manually.
+> Note: `ENFORCED MODE` is not supported when using views as graph element tables. Use `TRUSTED MODE` (the default) and ensure uniqueness manually.
 
 ---
 

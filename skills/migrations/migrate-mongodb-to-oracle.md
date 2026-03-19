@@ -86,7 +86,7 @@ VALUES ('65a1234567890abcdef12345',
 
 ### Strategy 3 — Oracle JSON Duality Views (23c) — Best of Both Worlds
 
-JSON Relational Duality Views in Oracle 23c let you treat a relational schema as a document store. Applications can read and write JSON documents while Oracle stores data relationally. This is the most powerful approach for new Oracle-target migrations.
+JSON Relational Duality Views, introduced in Oracle 23ai, let you treat a relational schema as a document store. Applications can read and write JSON documents while Oracle stores data relationally. This is the most powerful approach for new Oracle-target migrations.
 
 ```sql
 -- Underlying relational tables
@@ -141,7 +141,7 @@ SELECT doc FROM customers_dv WHERE json_value(doc, '$._id') = '42';
 | `Number (int64)` | `NUMBER(19)` | |
 | `Number (double)` | `BINARY_DOUBLE` | IEEE 754 64-bit |
 | `Number (Decimal128)` | `NUMBER(38,18)` | High-precision decimal |
-| `Boolean` | `NUMBER(1)` with CHECK (0,1) | Or Oracle 23c BOOLEAN |
+| `Boolean` | `NUMBER(1)` with CHECK (0,1) | Or Oracle 23ai/26ai BOOLEAN |
 | `Date` | `TIMESTAMP WITH TIME ZONE` | BSON Date is UTC milliseconds since epoch |
 | `Null` | `NULL` | |
 | `Array` | Child table (normalized) or JSON array in JSON column | |
@@ -534,7 +534,7 @@ ora.close()
    ])
    ```
 
-4. **Consider Oracle JSON Duality Views for applications needing document-style access.** If your application was written expecting MongoDB's document API, Duality Views (Oracle 23c) allow you to keep the JSON interface while storing data relationally.
+4. **Consider Oracle JSON Duality Views for applications needing document-style access.** If your application was written expecting MongoDB's document API, Duality Views (introduced in Oracle 23ai, available in 26ai) allow you to keep the JSON interface while storing data relationally.
 
 5. **Handle missing fields gracefully.** MongoDB documents may be missing fields that others have. In Oracle, these become NULL. Use `JSON_VALUE(doc, '$.field' DEFAULT NULL ON ERROR)` for safe extraction.
 

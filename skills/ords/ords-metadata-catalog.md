@@ -249,7 +249,7 @@ BEGIN
     p_method             => 'GET',
     p_name               => 'dept_id',
     p_bind_variable_name => 'dept_id',
-    p_source_type        => 'HEADER',   -- URI, HEADER, or RESPONSE
+    p_source_type        => 'URI',      -- Query-string and path params are URI sourced
     p_param_type         => 'INT',      -- Informs OpenAPI type
     p_access_method      => 'IN',
     p_comments           => 'Filter employees by department ID'
@@ -419,29 +419,32 @@ ORDER  BY s.schema, m.name;
 
 ## Exporting and Importing REST Definitions
 
-### Export via SQL Script
+### Export via ORDS_EXPORT
 
 ```sql
--- Generate a re-runnable SQL script for all REST definitions in current schema
-SELECT DBMS_METADATA.GET_DDL('ORDS', m.name)
-FROM   user_ords_modules m;
+-- Export a single module from the current schema as a rerunnable script
+SELECT ORDS_EXPORT.EXPORT_MODULE(
+         p_module_name           => 'hr.employees',
+         p_include_enable_schema => TRUE,
+         p_include_privs         => TRUE,
+         p_export_date           => FALSE
+       ) AS ddl
+FROM   dual;
+
+-- DBA export for an entire schema
+SELECT ORDS_EXPORT_ADMIN.EXPORT_SCHEMA(
+         p_schema                => 'HR',
+         p_include_enable_schema => TRUE,
+         p_include_privileges    => TRUE,
+         p_include_roles         => TRUE,
+         p_include_modules       => TRUE,
+         p_include_rest_objects  => TRUE,
+         p_export_date           => FALSE
+       ) AS ddl
+FROM   dual;
 ```
 
-### Export via ORDS CLI
-
-```shell
-# Export REST definitions for a schema to a SQL file
-ords --config /opt/oracle/ords/config rest export \
-  --schema HR \
-  --output /opt/backup/hr-rest-export.sql
-
-# Import REST definitions
-ords --config /opt/oracle/ords/config rest import \
-  --schema HR \
-  --input /opt/backup/hr-rest-export.sql
-```
-
-This generates a script that calls all the necessary `ORDS.DEFINE_MODULE`, `ORDS.DEFINE_TEMPLATE`, and `ORDS.DEFINE_HANDLER` calls. Use this for:
+The exported CLOB contains rerunnable `ORDS.DEFINE_MODULE`, `ORDS.DEFINE_TEMPLATE`, and `ORDS.DEFINE_HANDLER` calls. Use it for:
 - Version-controlling REST API definitions
 - Migrating from DEV to TEST to PROD environments
 - Documenting REST API changes in source control
@@ -471,4 +474,4 @@ This generates a script that calls all the necessary `ORDS.DEFINE_MODULE`, `ORDS
 
 - [ORDS Developer's Guide — OpenAPI and Metadata Catalog](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
 - [Oracle REST Data Services PL/SQL API Reference — ORDS.DEFINE_PARAMETER](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
-- [ORDS CLI Reference — rest export and rest import](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/ords-command-line-interface.html)
+- [Oracle REST Data Services PL/SQL API Reference — ORDS_EXPORT and ORDS_EXPORT_ADMIN](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html)

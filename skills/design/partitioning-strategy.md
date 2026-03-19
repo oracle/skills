@@ -157,7 +157,7 @@ PARTITION BY LIST (payment_type) AUTOMATIC  -- new partitions created on-the-fly
 ### Syntax
 
 ```sql
--- Number of partitions MUST be a power of 2 for even distribution
+-- Power-of-2 partition counts are common, but not required
 CREATE TABLE SESSION_EVENTS (
     event_id     NUMBER        NOT NULL,
     session_id   VARCHAR2(64)  NOT NULL,  -- hash key: evenly distributed
@@ -167,7 +167,7 @@ CREATE TABLE SESSION_EVENTS (
     CONSTRAINT pk_session_events PRIMARY KEY (event_id)
 )
 PARTITION BY HASH (session_id)
-PARTITIONS 16  -- power of 2: 2, 4, 8, 16, 32, 64...
+PARTITIONS 16
 STORE IN (hash_ts_1, hash_ts_2, hash_ts_3, hash_ts_4);  -- 16 partitions distributed across 4 tablespaces
 ```
 
@@ -503,13 +503,13 @@ AND    order_date <  DATE '2024-02-01';
 
 ### Mistake 2: Non-Power-of-2 Hash Partition Count
 
-Hash partitions must be a power of 2 for guaranteed even distribution. While Oracle accepts any count, uneven distribution degrades the I/O balancing benefit.
+Hash partition counts do not need to be powers of 2. Use a partition count that matches operational needs, expected data volume, and desired parallelism. Power-of-2 counts are a common convention, not a requirement.
 
 ```sql
--- BAD: uneven distribution
+-- Acceptable
 PARTITION BY HASH (user_id) PARTITIONS 10;
 
--- GOOD: power of 2
+-- Also acceptable
 PARTITION BY HASH (user_id) PARTITIONS 16;
 ```
 

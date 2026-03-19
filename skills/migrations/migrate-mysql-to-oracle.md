@@ -204,11 +204,11 @@ CREATE TABLE IF NOT EXISTS audit_log (id INT PRIMARY KEY, action VARCHAR(100));
 DROP TABLE IF EXISTS temp_staging;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT;
 
--- Oracle 23c+ (natively supported)
+-- Oracle 23ai+ (natively supported)
 CREATE TABLE IF NOT EXISTS audit_log (id NUMBER PRIMARY KEY, action VARCHAR2(100));
 DROP TABLE IF EXISTS temp_staging;
 
--- Oracle pre-23c: use PL/SQL exception handling
+-- Oracle pre-23ai: use PL/SQL exception handling
 BEGIN
     EXECUTE IMMEDIATE 'DROP TABLE temp_staging';
 EXCEPTION

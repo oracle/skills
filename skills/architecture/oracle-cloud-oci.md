@@ -59,16 +59,14 @@ FROM   user_indexes
 WHERE  auto = 'YES'
 ORDER  BY table_name;
 
--- Auto-partitioning: ATP can automatically partition tables to improve performance
--- Check auto-partitioning candidates and status
-SELECT table_name, partition_count, strategy, status, last_analyzed
-FROM   dba_auto_partition_config
+-- Check which visible tables are partitioned
+SELECT table_name, partitioned
+FROM   user_tables
 ORDER  BY table_name;
 
--- View auto-partitioning history
-SELECT report_date, table_owner, table_name, partition_count, status
-FROM   dba_auto_partition_history
-ORDER  BY report_date DESC;
+SELECT table_name, partitioning_type, subpartitioning_type
+FROM   user_part_tables
+ORDER  BY table_name;
 
 -- Machine Learning features in ATP
 -- Oracle ML is pre-installed
@@ -314,10 +312,10 @@ ORDER  BY name;
 -- JDBC Easy Connect Plus syntax (no wallet, TLS only)
 -- jdbc:oracle:thin:@myatp.adb.us-ashburn-1.oraclecloud.com:1522/dbname_tp.adb.oraclecloud.com
 
--- Verify TLS settings
-SELECT name, value
-FROM   v$parameter
-WHERE  name IN ('ssl_version', 'sqlnet.encryption_server', 'sqlnet.authentication_services');
+-- Verify the current session's network service banner
+SELECT network_service_banner
+FROM   v$session_connect_info
+WHERE  sid = SYS_CONTEXT('USERENV', 'SID');
 ```
 
 ### Private Endpoint Connections
@@ -366,13 +364,10 @@ WHERE  name IN ('cpu_count', 'sga_max_size', 'pga_aggregate_target')
 ORDER  BY name;
 
 -- Free Tier comes with Oracle APEX pre-installed
-SELECT version, status
+SELECT version_no
 FROM   apex_release;
 
--- ORDS (Oracle REST Data Services) is pre-enabled in Free Tier
--- Check ORDS configuration
-SELECT *
-FROM   user_ords_schemas;
+-- ORDS is pre-enabled in Free Tier; verify access via the APEX / Database Actions URLs in OCI Console
 ```
 
 ---

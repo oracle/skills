@@ -28,8 +28,10 @@ SELECT value FROM v$option WHERE parameter = 'Unified Auditing';
 SHOW PARAMETER audit_trail;
 -- In pure unified auditing, this parameter is ignored
 
--- Check which audit features are enabled
-SELECT * FROM v$unified_audit_trail_exists;
+-- Check which unified audit policies are currently enabled
+SELECT policy_name, enabled_option, entity_name
+FROM   audit_unified_enabled_policies
+ORDER  BY policy_name, entity_name;
 ```
 
 ---
@@ -104,8 +106,9 @@ CREATE AUDIT POLICY audit_schema_ddl
   ACTIONS CREATE TABLE, ALTER TABLE, DROP TABLE,
           CREATE INDEX, DROP INDEX,
           CREATE VIEW, DROP VIEW,
-          CREATE PROCEDURE, ALTER PROCEDURE, DROP PROCEDURE
-  ON hr.employees;
+          CREATE PROCEDURE, ALTER PROCEDURE, DROP PROCEDURE;
+
+AUDIT POLICY audit_schema_ddl BY hr;
 
 -- Audit EXECUTE on a sensitive package
 CREATE AUDIT POLICY audit_payroll_pkg

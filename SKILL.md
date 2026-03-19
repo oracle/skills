@@ -1,11 +1,13 @@
 ---
 name: oracle-db-skills
-description: 128 Oracle Database and OCR container reference guides covering SQL, PL/SQL, performance tuning, security, ORDS, SQLcl, container images, migrations, and more. Load individual skill files on demand for expert guidance on any Oracle topic.
+description: 117 Oracle Database reference guides covering SQL, PL/SQL, performance tuning, security, ORDS, SQLcl, migrations, and more. Load individual skill files on demand for expert guidance on any Oracle topic.
+version: 1.0.0
+repository: https://github.com/krisrice/oracle-db-skills
 ---
 
 # Oracle DB Skills
 
-A collection of 128 standalone reference guides for Oracle Database and OCR database-category container images. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
+A collection of 103 standalone reference guides for Oracle Database. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
 
 ## How to Use
 
@@ -17,9 +19,9 @@ A collection of 128 standalone reference guides for Oracle Database and OCR data
 
 | User asks about… | Read from |
 |------------------|-----------|
-| Backup, recovery, RMAN, redo/undo logs, users | `skills/admin/` |
-| JDBC, connection pooling, JSON, XML, spatial, full-text, transactions, property graphs | `skills/appdev/` |
-| RAC, CDB/PDB, Exadata, In-Memory, OCI, ATP/ADW, Data Guard | `skills/architecture/` |
+| Backup, recovery, RMAN, Data Guard, redo/undo logs, users | `skills/admin/` |
+| JDBC, connection pooling, JSON, XML, spatial, full-text, transactions | `skills/appdev/` |
+| RAC, CDB/PDB, Exadata, In-Memory, OCI, ATP/ADW | `skills/architecture/` |
 | ERD, data modeling, partitioning, tablespaces | `skills/design/` |
 | Liquibase, Flyway, online operations, EBR, utPLSQL, git for SQL | `skills/devops/` |
 | Advanced Queuing, DBMS_SCHEDULER, materialized views, DBLinks, APEX | `skills/features/` |
@@ -31,7 +33,6 @@ A collection of 128 standalone reference guides for Oracle Database and OCR data
 | Privileges, VPD, TDE, encryption, auditing, network security | `skills/security/` |
 | SQL patterns, window functions, CTEs, dynamic SQL, injection | `skills/sql-dev/` |
 | SQLcl commands, scripting, Liquibase CLI, MCP server, CI/CD | `skills/sqlcl/` |
-| Oracle Container Registry images, container pull commands, tags, and OCR repository selection | `skills/containers/` |
 
 ## Skills Directory
 
@@ -40,7 +41,6 @@ skills/
 ├── admin/          Database administration (backup, recovery, users, redo/undo)
 ├── appdev/         Application development (JSON, XML, spatial, text, pooling)
 ├── architecture/   Infrastructure (RAC, Multitenant, Exadata, In-Memory, OCI)
-├── containers/     OCR Database-category container repositories
 ├── design/         Schema design (ERD, modeling, partitioning, tablespaces)
 ├── devops/         CI/CD and DevOps (migrations, EBR, testing, version control)
 ├── features/       Oracle features (AQ, Scheduler, MVs, DBLinks, APEX)
@@ -61,4 +61,3 @@ skills/
 - **`skills/performance/explain-plan.md`** — foundation for all SQL performance work
 - **`skills/plsql/plsql-package-design.md`** — foundation for PL/SQL architecture questions
 - **`skills/devops/schema-migrations.md`** — Liquibase/Flyway with Oracle in CI/CD pipelines
-- **`skills/containers/container-selection-matrix.md`** — quick decision matrix for choosing the right OCR database-category image

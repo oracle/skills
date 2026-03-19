@@ -246,27 +246,28 @@ IORM plans are configured at three levels:
 BEGIN
     DBMS_RESOURCE_MANAGER.CREATE_PENDING_AREA();
 
-    -- Create an I/O plan for the database
-    DBMS_RESOURCE_MANAGER.CREATE_PLAN(
+    -- Create a CDB plan for Exadata resource management
+    DBMS_RESOURCE_MANAGER.CREATE_CDB_PLAN(
         plan    => 'EXADATA_IO_PLAN',
         comment => 'Exadata I/O resource plan'
     );
 
-    -- Assign I/O shares to consumer groups
-    DBMS_RESOURCE_MANAGER.CREATE_PLAN_DIRECTIVE(
-        plan             => 'EXADATA_IO_PLAN',
-        group_or_subplan => 'OLTP_GROUP',
-        mgmt_p1          => 70,
-        limit_io_megabytes_per_second => 5000  -- MB/s cap
+    -- Assign shares to PDBs; shares and utilization_limit are used by Exadata IORM
+    DBMS_RESOURCE_MANAGER.CREATE_CDB_PLAN_DIRECTIVE(
+        plan               => 'EXADATA_IO_PLAN',
+        pluggable_database => 'OLTP_PDB',
+        shares             => 4,
+        utilization_limit  => 80
     );
 
-    DBMS_RESOURCE_MANAGER.CREATE_PLAN_DIRECTIVE(
-        plan             => 'EXADATA_IO_PLAN',
-        group_or_subplan => 'BATCH_GROUP',
-        mgmt_p2          => 30,
-        limit_io_megabytes_per_second => 2000
+    DBMS_RESOURCE_MANAGER.CREATE_CDB_PLAN_DIRECTIVE(
+        plan               => 'EXADATA_IO_PLAN',
+        pluggable_database => 'BATCH_PDB',
+        shares             => 2,
+        utilization_limit  => 40
     );
 
+    DBMS_RESOURCE_MANAGER.VALIDATE_PENDING_AREA();
     DBMS_RESOURCE_MANAGER.SUBMIT_PENDING_AREA();
 END;
 /
@@ -274,13 +275,8 @@ END;
 -- Activate the plan
 ALTER SYSTEM SET RESOURCE_MANAGER_PLAN = 'EXADATA_IO_PLAN' SCOPE = BOTH;
 
--- Monitor I/O throughput per consumer group
-SELECT consumer_group_name,
-       io_requests,
-       io_service_time,
-       io_service_waits
-FROM   v$rsrc_consumer_group
-ORDER  BY io_requests DESC;
+-- Verify the active resource plan
+SHOW PARAMETER resource_manager_plan;
 ```
 
 ---

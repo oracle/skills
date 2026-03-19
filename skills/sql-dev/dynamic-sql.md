@@ -535,15 +535,99 @@ END;
 | Running DDL inside a loop | Each DDL auto-commits and causes a hard parse | Move DDL outside loops; batch DDL at schema setup time |
 | Calling `EXECUTE IMMEDIATE` for every row in a DML loop | One hard parse per iteration (if string changes) or one parse + execute per row | Use `FORALL` with `EXECUTE IMMEDIATE` or DBMS_SQL parse-once/execute-many |
 | Not matching USING argument count to bind variable count | `ORA-01008: not all variables bound` | Count placeholders in the SQL string and ensure USING has exactly that many arguments |
+| Exposing SQL text in error messages | Reveals schema structure to attackers | Log SQL internally; return a generic error message to callers |
 
 ---
 
+## EXECUTE IMMEDIATE with RETURNING INTO
+
+`EXECUTE IMMEDIATE` supports the `RETURNING INTO` clause for DML statements that return column values from the affected row:
+
+```plsql
+DECLARE
+  l_new_id   NUMBER;
+  l_created  DATE;
+BEGIN
+  EXECUTE IMMEDIATE
+    'INSERT INTO orders (customer_id, status) VALUES (:1, :2)
+     RETURNING order_id, created_at INTO :3, :4'
+    USING 12345, 'PENDING'
+    RETURNING INTO l_new_id, l_created;
+
+  DBMS_OUTPUT.PUT_LINE('Created order: ' || l_new_id || ' at ' || l_created);
+END;
+/
+```
+
+The `RETURNING INTO` bind positions are OUT binds and appear after the `USING` clause, not inside it.
+
+---
+
+## Column Whitelist Pattern Using the Data Dictionary
+
+`DBMS_ASSERT.SIMPLE_SQL_NAME` confirms a string is a legal SQL identifier but does not confirm the column exists in the target table. For maximum security when column names come from user input, validate against the data dictionary:
+
+```plsql
+FUNCTION is_valid_column(
+  p_table  IN VARCHAR2,
+  p_column IN VARCHAR2
+) RETURN BOOLEAN IS
+  l_count PLS_INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO l_count
+  FROM   all_tab_columns
+  WHERE  owner       = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
+    AND  table_name  = UPPER(p_table)
+    AND  column_name = UPPER(p_column);
+  RETURN l_count > 0;
+END is_valid_column;
+/
+```
+
+Use this before concatenating a column name into a dynamic ORDER BY, SELECT list, or WHERE clause.
+
+---
+
+## Monitoring Dynamic SQL Performance
+
+### Hard Parse Ratio
+
+Every unique SQL string causes a hard parse. Monitor the ratio of hard parses to total parses; in well-tuned OLTP systems it should be below 1%:
+
+```sql
+SELECT name, value
+FROM   v$sysstat
+WHERE  name IN ('parse count (hard)', 'parse count (total)');
+```
+
+### Identifying High-Parse Cursors
+
+Dynamic SQL that produces many unique SQL strings fragments the shared pool. Use this query to identify cursors with a high parse-to-execute ratio, which signals missing bind variables:
+
+```sql
+SELECT sql_text,
+       executions,
+       parse_calls,
+       ROUND(parse_calls / NULLIF(executions, 0) * 100, 1) AS parse_pct
+FROM   v$sql
+WHERE  parsing_schema_name = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
+  AND  executions > 0
+  AND  ROUND(parse_calls / NULLIF(executions, 0) * 100, 1) > 50
+ORDER BY executions DESC;
+```
+
+---
 
 ## Oracle Version Notes (19c vs 26ai)
 
 - Baseline guidance in this file is valid for Oracle Database 19c unless a newer minimum version is explicitly called out.
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
+- **Oracle 8i+**: `EXECUTE IMMEDIATE` and `OPEN cursor FOR dynamic_sql USING` introduced; replaced the older `DBMS_SQL` for most use cases.
+- **Oracle 11gR2+**: `DBMS_SQL.TO_REFCURSOR` and `DBMS_SQL.TO_CURSOR_NUMBER` allow conversion between `DBMS_SQL` and `REF CURSOR` types.
+- **Oracle 12cR1+**: `DBMS_SQL.RETURN_RESULT` for implicit result sets from stored procedures.
+- **Oracle 21c+**: Improved JSON support in dynamic SQL construction patterns.
+- **All versions**: `DBMS_ASSERT` available since 10.2 — use consistently for all dynamic identifier validation.
 
 ## Sources
 

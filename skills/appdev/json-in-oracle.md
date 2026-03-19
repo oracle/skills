@@ -2,7 +2,7 @@
 
 ## Overview
 
-Oracle has evolved from treating JSON as a string stored in VARCHAR2 or BLOB columns (12c) to providing a dedicated native JSON data type with deep query integration, indexing, and schema enforcement (21c+). In Oracle 26ai, JSON Relational Duality Views represent a paradigm shift — allowing the same data to be accessed and modified as both JSON documents and relational rows simultaneously.
+Oracle has evolved from treating JSON as a string stored in VARCHAR2 or CLOB columns (12c) to providing a dedicated native JSON data type with deep query integration, indexing, and schema enforcement (21c+). In Oracle 23ai, JSON Relational Duality Views represent a paradigm shift — allowing the same data to be accessed and modified as both JSON documents and relational rows simultaneously.
 
 This guide covers the full spectrum: storage options, the complete SQL/JSON function set, indexing strategies, and the modern JSON Duality View architecture.
 
@@ -10,7 +10,7 @@ This guide covers the full spectrum: storage options, the complete SQL/JSON func
 
 ## JSON Storage Options
 
-### Pre-21c: VARCHAR2 / BLOB with IS JSON Constraint
+### Pre-21c: VARCHAR2 / CLOB with IS JSON Constraint
 
 ```sql
 -- VARCHAR2 for small JSON documents (≤32767 bytes)
@@ -21,27 +21,25 @@ CREATE TABLE product_catalog (
         CONSTRAINT chk_attributes_json CHECK (attributes IS JSON)
 );
 
--- BLOB for large documents (up to 2GB)
+-- CLOB for large documents
 CREATE TABLE event_log (
     event_id     NUMBER PRIMARY KEY,
-    event_data   BLOB
+    event_data   CLOB
         CONSTRAINT chk_event_json CHECK (event_data IS JSON)
-)
-LOB(event_data) store as (cache);
+);
 
 -- LAX vs STRICT JSON validation
 -- LAX (default): allows duplicate keys, trailing commas, unquoted keys
 -- STRICT: enforces strict JSON syntax
 CREATE TABLE strict_json_table (
     id   NUMBER PRIMARY KEY,
-    data BLOB CONSTRAINT chk_strict CHECK (data IS JSON STRICT)
-)
-LOB(data) store as (cache);
+    data CLOB CONSTRAINT chk_strict CHECK (data IS JSON STRICT)
+);
 ```
 
 ### 21c+: Native JSON Data Type
 
-The native `JSON` type stores JSON in a compact binary OSON (Oracle Serialized Object Notation) format. Benefits over BLOB/VARCHAR2:
+The native `JSON` type stores JSON in a compact binary OSON (Oracle Serialized Object Notation) format. Benefits over CLOB/VARCHAR2:
 - No need to parse JSON on every access
 - Smaller storage footprint
 - Faster query execution
@@ -69,22 +67,12 @@ VALUES (42, JSON('{"status": "pending",
 INSERT INTO orders (customer_id, order_data)
 VALUES (43, '{"status": "shipped", "items": [{"sku": "WGT-002", "qty": 3, "price": 19.99}]}');
 ```
-Remark:
-- In 19c, the OSON format is supported with BLOB columns on [Autonomous databases](https://docs.oracle.com/en/cloud/paas/autonomous-json-database/ajdug/work-json-documents-autonomous-database.html) by using a specific syntax:
-
-```sql
--- Syntax for Autonomous database 19c only
-CREATE TABLE my_table (
-    id NUMBER, 
-    json_doc BLOB CHECK (json_doc IS JSON FORMAT OSON)
-);
-```
 
 ---
 
 ## Dot Notation Access (Simplified SQL/JSON)
 
-Oracle's dot notation provides a concise, readable way to navigate JSON paths. It works on both VARCHAR2/BLOB columns (with IS JSON constraint) and native JSON columns.
+Oracle's dot notation provides a concise, readable way to navigate JSON paths. It works on both VARCHAR2/CLOB columns (with IS JSON constraint) and native JSON columns.
 
 ```sql
 -- Simple dot notation
@@ -296,7 +284,7 @@ CREATE INDEX idx_order_ship_method
 SELECT order_id FROM orders
 WHERE  JSON_VALUE(order_data, '$.status' RETURNING VARCHAR2(20)) = 'pending';
 -- Or with dot notation
-SELECT order_id FROM orders o WHERE o.order_data.status = 'pending';
+SELECT order_id FROM orders WHERE order_data.status = 'pending';
 ```
 
 ### JSON Search Index (Oracle Text Full-Text)
@@ -330,9 +318,9 @@ CREATE INDEX idx_cust_status ON orders (
 
 ---
 
-## JSON Duality Views (23c)
+## JSON Duality Views (23ai/26ai)
 
-JSON Relational Duality Views are one of Oracle 23c's flagship features. They expose relational table data as JSON documents that can be fully queried and modified through either a JSON or SQL interface. This eliminates the impedance mismatch between application objects and database rows.
+JSON Relational Duality Views are one of Oracle 23ai's flagship features, available in 26ai. They expose relational table data as JSON documents that can be fully queried and modified through either a JSON or SQL interface. This eliminates the impedance mismatch between application objects and database rows.
 
 ### Creating a Duality View
 
@@ -448,8 +436,8 @@ CREATE INDEX idx_products_color
 
 ## Best Practices
 
-- **Use native JSON type (21c+)** for new schemas. The binary OSON format is significantly faster than BLOB-based storage.
-- **Add IS JSON constraints** on VARCHAR2/BLOB columns in pre-21c databases to validate at insert time.
+- **Use native JSON type (21c+)** for new schemas. The binary OSON format is significantly faster than CLOB-based storage.
+- **Add IS JSON constraints** on VARCHAR2/CLOB columns in pre-21c databases to validate at insert time.
 - **Create functional indexes on frequently-queried JSON paths** rather than full-text search indexes for single-path queries.
 - **Use JSON_TABLE in FROM clause** rather than JSON_VALUE in SELECT for array expansion — it's set-based and optimizable.
 - **Store scalar values that appear in WHERE clauses as relational columns** with standard indexes. JSON path queries, even with indexes, cannot match the efficiency of a B-tree on a typed column.
@@ -462,7 +450,7 @@ CREATE INDEX idx_products_color
 
 ### Mistake 1: Using VARCHAR2 for Large JSON
 
-VARCHAR2 is limited to 32,767 bytes in PL/SQL and 4,000 bytes in SQL (unless `MAX_STRING_SIZE=EXTENDED`). Use BLOB or native JSON for documents that could exceed this.
+VARCHAR2 is limited to 32,767 bytes in PL/SQL and 4,000 bytes in SQL (unless `MAX_STRING_SIZE=EXTENDED`). Use CLOB or native JSON for documents that could exceed this.
 
 ### Mistake 2: No Index on Queried JSON Paths
 
@@ -508,4 +496,4 @@ WHERE JSON_VALUE(order_data, '$.total' RETURNING NUMBER) > 100
 - [Oracle Database 19c JSON Developer's Guide (ADJSN)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/)
 - [Oracle Database 19c SQL Language Reference — JSON Functions](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
 - [Oracle Database 21c — JSON Data Type](https://docs.oracle.com/en/database/oracle/oracle-database/21/adjsn/)
-- [Oracle Database 23c — JSON Relational Duality Views](https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/)
+- [Oracle Database 23ai — JSON Relational Duality Views](https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/)

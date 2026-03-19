@@ -1,5 +1,8 @@
 # Oracle DB Skills Index
 
+**Repository:** https://github.com/krisrice/oracle-db-skills
+**Version:** 1.0.0
+
 A tracking file for skills.md topics to create for working with Oracle DB.
 
 ## Status Legend
@@ -15,7 +18,6 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `tablespace-design.md` — Sizing, storage layout, bigfile vs smallfile
 
 ## SQL Development
-- [x] `sql-best-practices.md` — Set-based SQL, bind variables, joins, row limiting, data types, virtual columns
 - [x] `sql-tuning.md` — Execution plans, hints, optimizer statistics
 - [x] `sql-injection-avoidance.md` — Bind variables, dynamic SQL safety, DBMS_ASSERT
 - [x] `pl-sql-best-practices.md` — Bulk operations, exception handling, cursor management
@@ -57,6 +59,7 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 
 ## Administration
 - [x] `backup-recovery.md` — RMAN strategy, backup sets, recovery scenarios
+- [x] `dataguard.md` — Standby setup, switchover, failover, lag monitoring
 - [x] `rman-basics.md` — Common RMAN commands, incremental backups, catalog
 - [x] `undo-management.md` — Undo retention, ORA-01555 avoidance, sizing
 - [x] `redo-log-management.md` — Log sizing, archivelog mode, log switches
@@ -70,7 +73,6 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `top-sql-queries.md` — Finding expensive SQL, V$ views for diagnostics
 
 ## Architecture & Infrastructure
-- [x] `dataguard.md` — Physical/logical standby, Data Guard Broker, switchover vs failover, protection modes, Active Data Guard
 - [x] `rac-concepts.md` — Real Application Clusters, interconnect, services
 - [x] `multitenant.md` — CDB/PDB architecture, pluggable databases, cloning
 - [x] `oracle-cloud-oci.md` — ATP, ADW, Exadata Cloud, cloud-specific features
@@ -106,10 +108,8 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `plsql-performance.md` — Context switch minimization, BULK COLLECT/FORALL, pipelined functions, NOCOPY, result cache (RESULT_CACHE), deterministic functions
 - [x] `plsql-collections.md` — Associative arrays, nested tables, varrays — declarations, methods (COUNT, FIRST, LAST, NEXT, DELETE), bulk operations, TABLE() function
 - [x] `plsql-cursors.md` — Implicit vs explicit cursors, cursor FOR loops, parameterized cursors, REF CURSORs (strong/weak), SYS_REFCURSOR, cursor variables across call boundaries
-- [x] `plsql-dynamic-sql.md` — EXECUTE IMMEDIATE, DBMS_SQL, bind variables in dynamic SQL, dynamic DDL patterns, avoiding injection
 - [x] `plsql-security.md` — AUTHID CURRENT_USER vs DEFINER rights, SQL injection in PL/SQL, DBMS_ASSERT, secure coding checklist
 - [x] `plsql-debugging.md` — DBMS_OUTPUT, DBMS_APPLICATION_INFO, SQL Developer debugger, compile warnings (PLSQL_WARNINGS), runtime errors tracing
-- [x] `plsql-unit-testing.md` — utPLSQL framework, writing test packages, assertions, mocking dependencies, CI integration, code coverage
 - [x] `plsql-patterns.md` — Row pipelining, autonomous transactions for logging, table API (TAPI) pattern, object types in PL/SQL, PL/SQL records
 - [x] `plsql-compiler-options.md` — PLSQL_OPTIMIZE_LEVEL, PLSQL_CODE_TYPE (native vs interpreted), conditional compilation ($$PLSQL_LINE, $IF), edition-based compilation
 - [x] `plsql-code-quality.md` — Naming conventions, code review checklist, avoiding anti-patterns (WHEN OTHERS NULL, hardcoded literals, magic numbers), static analysis with PL/SQL Cop / Trivadis guidelines
@@ -136,6 +136,17 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `ords-security.md` — Securing endpoints, HTTPS, CORS configuration, rate limiting, allowed origins, privilege checking
 - [x] `ords-monitoring.md` — ORDS logs, request logging, performance tuning, connection pool monitoring, error diagnosis
 
+## Frameworks
+- [x] `sqlalchemy-oracle.md` — SQLAlchemy ORM/Core dialect, engine setup, models, sequences, bulk ops
+- [x] `django-oracle.md` — Django ORM backend, settings, migrations, Oracle quirks (empty string, ROWNUM)
+- [x] `pandas-oracle.md` — read_sql, to_sql, chunked reads, bulk load via executemany, dtype mapping
+- [x] `spring-data-jpa-oracle.md` — Hibernate Oracle dialect, @SequenceGenerator, native queries, PL/SQL calls
+- [x] `mybatis-oracle.md` — Mapper XML, #{} binds, dynamic SQL, CALLABLE statements, sequences
+- [x] `typeorm-oracle.md` — TypeORM entities, QueryBuilder, migrations, NestJS integration
+- [x] `sequelize-oracle.md` — Sequelize model definition, field mapping, sequence hooks, raw SQL
+- [x] `dapper-oracle.md` — Dapper Query<T>, DynamicParameters, OUT params, multi-mapping
+- [x] `gorm-oracle.md` — GORM models, BeforeCreate sequence hook, scopes, transactions
+
 ## Oracle-Specific Features
 - [x] `advanced-queuing.md` — AQ/TQ messaging, producers/consumers
 - [x] `dbms-scheduler.md` — Job scheduling, chains, event-based jobs
@@ -143,26 +154,17 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `materialized-views.md` — MV refresh strategies, query rewrite
 - [x] `database-links.md` — DBLinks, distributed queries, risks
 - [x] `oracle-apex.md` — Low-code app dev on Oracle
+- [x] `vector-search.md` — VECTOR type, HNSW/IVF indexes, VECTOR_DISTANCE(), RAG patterns (26ai)
+- [x] `select-ai.md` — SELECT AI natural language to SQL, AI profiles, actions (26ai)
+- [x] `dbms-vector.md` — DBMS_VECTOR and DBMS_VECTOR_CHAIN, embedding pipelines (26ai)
+- [x] `ai-profiles.md` — AI provider profile configuration: OpenAI, Cohere, OCI GenAI, Anthropic (26ai)
 
-## Container Images
-- [x] `SKILLS.md` — Full container skills index (common and advanced/niche)
-- [x] `cman.md` — Oracle Connection Manager container repository and OCR pull guidance
-- [x] `enterprise.md` — Oracle AI Database Server Release 26ai Enterprise Edition container image
-- [x] `graph-quickstart.md` — Property Graph quickstart image built on Oracle AI Database 26ai Free
-- [x] `gsm.md` — Oracle Global Service Manager container for Globally Distributed Database deployments
-- [x] `instantclient.md` — Oracle Instant Client container image with Basic, SDK, and SQL*Plus packages
-- [x] `microtx-ee-console.md` — Oracle Transaction Manager for Microservices Console container image
-- [x] `microtx-ee-coordinator.md` — Oracle Transaction Manager for Microservices Enterprise Edition coordinator image
-- [x] `rac.md` — Oracle RAC container deployment guidance for Podman
-- [x] `private-ai.md` — Oracle Private AI Services container image and setup guidance
-- [x] `adb-free.md` — Oracle Autonomous Database Free container image with ADW/ATP guidance
-- [x] `free.md` — Oracle AI Database 26ai Free container image
-- [x] `observability-exporter.md` — Unified observability exporter image for Oracle Database metrics, logs, and tracing
-- [x] `operator.md` — Oracle Database Operator for Kubernetes image repository
-- [x] `ords.md` — Oracle REST Data Services container image repository
-- [x] `otmm.md` — Oracle Transaction Manager for Microservices Free image repository
-- [x] `sqlcl.md` — Oracle SQL Command Line (SQLcl) container image repository
-- [x] `enterprise_ru.md` — Oracle Database Enterprise Edition CPU release-update image repository
-- [x] `gsm_ru.md` — Oracle Global Service Manager CPU repository stream
-- [x] `rac_ru.md` — Oracle RAC release-update container image repository
-- [x] `container-selection-matrix.md` — Decision matrix for choosing the right OCR database-category container image
+## Agent & AI Assistant Patterns
+- [x] `safe-dml-patterns.md` — Always-WHERE guards, dry run, count before delete, bulk DML safety
+- [x] `destructive-op-guards.md` — Pre-flight checks before DROP/TRUNCATE: dependencies, locks, DDL snapshot
+- [x] `idempotency-patterns.md` — MERGE over INSERT, CREATE OR REPLACE, retry-safe migration patterns
+- [x] `nl-to-sql-patterns.md` — NL phrasings mapped to Oracle SQL constructs
+- [x] `schema-discovery.md` — Agent startup queries: tables, columns, constraints, privileges
+- [x] `intent-disambiguation.md` — When to ask for clarification; safe defaults; question templates
+- [x] `client-identification.md` — DBMS_APPLICATION_INFO, CLIENT_IDENTIFIER for agent traceability
+- [x] `ora-error-catalog.md` — Top 25 ORA- errors with root cause and corrective action

@@ -548,10 +548,13 @@ END;
 
 -- Email notification on job failure using DBMS_SCHEDULER notifications
 BEGIN
-    DBMS_SCHEDULER.ADD_EVENT_OPERATION(
-        rule_set_name => NULL,
-        subscription_name => 'JOB_FAILURE_ALERT',
-        queue_name    => 'SYS.SCHEDULER$_SCHED_STAT_QUEUE'
+    DBMS_SCHEDULER.ADD_JOB_EMAIL_NOTIFICATION(
+        job_name   => 'NIGHTLY_ETL_JOB',
+        recipients => 'dba@example.com',
+        sender     => 'oracle@example.com',
+        subject    => 'Scheduler job failed: %job_name%',
+        body       => 'Job %job_name% failed at %event_timestamp%. Error: %error_message%',
+        events     => 'JOB_FAILED'
     );
 END;
 /
@@ -638,7 +641,7 @@ END;
 ## Common Mistakes and How to Avoid Them
 
 **Mistake 1: Using `DBMS_JOB` in new code**
-`DBMS_JOB` still works but is a legacy interface with no support for most advanced features. Always use `DBMS_SCHEDULER` in new development. Migrate existing `DBMS_JOB` entries using `DBMS_IJOB.JOB_TO_SCHEDULER_JOB` (internal) or by recreating them manually.
+`DBMS_JOB` still works but is a legacy interface with no support for most advanced features. Always use `DBMS_SCHEDULER` in new development. Migrate existing `DBMS_JOB` entries by recreating them as `DBMS_SCHEDULER` jobs rather than relying on undocumented internal packages.
 
 **Mistake 2: Not specifying time zones in `start_date`**
 Calendar expressions are evaluated relative to the time zone in `start_date`. If you create a job with a bare `SYSDATE` (no time zone), behavior during daylight saving transitions is undefined. Always use `SYSTIMESTAMP` or a `TIMESTAMP WITH TIME ZONE` literal with an explicit offset.

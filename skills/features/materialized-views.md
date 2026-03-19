@@ -9,7 +9,7 @@ Materialized views serve two broad purposes in Oracle:
 1. **Query rewrite** — The optimizer transparently rewrites a user query to read from a fast, pre-aggregated MV instead of expensive base tables, without any application code change.
 2. **Data replication** — Pushing a summarized or filtered copy of data to a different schema, database, or reporting tier for independent consumption.
 
-Materialized views were introduced in Oracle 8i as a replacement for the older snapshot mechanism and have been continuously enhanced through 23ai.
+Materialized views were introduced in Oracle 8i as a replacement for the older snapshot mechanism and have been continuously enhanced through 26ai.
 
 ---
 
@@ -251,7 +251,7 @@ END;
 BEGIN
     FOR mv IN (SELECT mview_name FROM user_mviews) LOOP
         BEGIN
-            DBMS_MVIEW.REFRESH(mv.mview_name, method => '?');
+            DBMS_MVIEW.REFRESH(mv.mview_name, method => 'C');  -- complete refresh
         EXCEPTION
             WHEN OTHERS THEN
                 DBMS_OUTPUT.PUT_LINE('Failed: ' || mv.mview_name || ' — ' || SQLERRM);

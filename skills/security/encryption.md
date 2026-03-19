@@ -33,15 +33,15 @@ The **Master Encryption Key (MEK)** is stored in the Oracle Wallet (a password-p
 ### Creating the Wallet
 
 ```sql
--- Step 1: Set the wallet location in sqlnet.ora (or init.ora for 12c+)
+-- Step 1: Set the wallet location
 -- File: $ORACLE_BASE/admin/<db_name>/wallet/
 
--- In sqlnet.ora:
+-- Legacy sqlnet.ora configuration:
 -- ENCRYPTION_WALLET_LOCATION =
 --   (SOURCE = (METHOD = FILE)
 --     (METHOD_DATA = (DIRECTORY = /opt/oracle/admin/ORCL/wallet)))
 
--- In 19c+, use the WALLET_ROOT initialization parameter (recommended):
+-- In 19c+, prefer WALLET_ROOT plus TDE_CONFIGURATION:
 -- ENCRYPTION_WALLET_LOCATION in sqlnet.ora is deprecated as of Oracle 19c.
 ALTER SYSTEM SET wallet_root = '/opt/oracle/admin/ORCL/wallet' SCOPE = SPFILE;
 -- Requires restart; when WALLET_ROOT is set it takes precedence over sqlnet.ora

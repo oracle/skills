@@ -2,11 +2,9 @@
 
 ## Overview
 
-SQLcl includes a built-in JavaScript engine that allows you to write scripts that combine JavaScript logic with SQL execution. This makes it possible to build sophisticated automation workflows entirely within SQLcl, without external tools or programming languages. You can iterate over query results, manipulate data, write files, call Java libraries, and orchestrate complex multi-step database operations from a single script.
+SQLcl includes a JavaScript scripting environment that lets you combine JavaScript logic with SQL execution. This makes it possible to build automation workflows entirely within SQLcl: iterate over query results, manipulate data, write files, call Java classes, and orchestrate multi-step database operations from a single script.
 
-The JavaScript engine used by SQLcl depends on your Java runtime. When running on Java 11 with the bundled Nashorn engine, ES5 syntax is supported. When running on Java 17 or later (the requirement for SQLcl 25.2+), Nashorn is no longer included in the JDK; JavaScript support requires installing the Oracle GraalVM JavaScript Runtime Plugin or running on GraalVM, which provides GraalJS with full ECMAScript 2021+ support. In SQLcl 22.1, running JavaScript on Java 17 required the GraalVM JavaScript plugin.
-
-> ⚠️ Unverified: The exact SQLcl release version (22.x) at which the default engine switched to GraalJS for all users — the transition depends on the JDK in use, not just the SQLcl version. Verify with `script` and check which engine is active in your environment.
+The exact JavaScript engine behavior depends on the SQLcl distribution and Java runtime in your environment. For maximum portability, keep scripts conservative in syntax unless you have validated newer JavaScript features on the target SQLcl/JDK combination.
 
 ---
 
@@ -142,7 +140,7 @@ for (var i = 1; i < rows.length; i++) {
 
 ## Accessing Java Classes from JavaScript
 
-Nashorn and GraalJS both allow you to instantiate Java classes directly:
+SQLcl scripting environments allow you to instantiate Java classes directly:
 
 ```javascript
 // Import Java classes
@@ -470,7 +468,7 @@ Then in JavaScript:
 - For long-running scripts, commit in batches (every 500–1000 rows) to avoid large undo segments and reduce lock contention.
 - Wrap individual row operations in try/catch blocks in batch scripts so one failure does not abort the entire run.
 - Test scripts interactively with small row counts before running against full production datasets. Use `WHERE ROWNUM <= 10` during development.
-- For GraalJS environments (requires GraalVM or the GraalVM JavaScript plugin on Java 17+), you can use modern JS features like `let`, `const`, arrow functions, template literals, and `for...of` loops. On Nashorn (Java 11 only), stick to ES5.
+- Prefer conservative JavaScript syntax when scripts must run across multiple SQLcl environments. If you depend on newer language features, validate them on the exact SQLcl and Java runtime used in production.
 
 ---
 
@@ -492,7 +490,7 @@ NULL columns in query results come back as JavaScript `null`. String concatenati
 `executeReturnListofList` and `executeReturnList` load the entire result set into a JavaScript array. For tables with millions of rows, this will exhaust memory. Process in batches using `WHERE ROWNUM <= N` or cursor-based approaches using the raw JDBC connection.
 
 **Mistake: JS engine version assumptions**
-Scripts written for GraalJS using `const`, arrow functions, or `for...of` will fail on SQLcl with Nashorn (Java 11). Use ES5 syntax for maximum portability, or verify your Java runtime and install the GraalVM JavaScript plugin if needed (required for Java 17+).
+Do not assume every SQLcl environment exposes the same JavaScript feature set. If a script uses newer syntax, test it on the exact SQLcl and Java runtime combination used in the target environment.
 
 ---
 

@@ -108,17 +108,14 @@ lb generate-object -object-type table -object-name EMPLOYEES -file employees_cha
 
 ### Output Formats
 
-SQLcl Liquibase supports XML (default), YAML, JSON, and SQL formats:
+Current SQLcl documentation shows XML as the default output for schema generation, with SQL output available through the `-sql` flag:
 
 ```sql
--- Generate in YAML format
-lb generate-schema -format yaml
+-- Default XML changelog output
+lb generate-schema
 
--- Generate in JSON format
-lb generate-schema -format json
-
--- Generate in SQL format (plain DDL statements wrapped in Liquibase SQL changesets)
-lb generate-schema -format sql
+-- Generate SQL output
+lb generate-schema -sql
 ```
 
 ---
@@ -491,6 +488,6 @@ The `DATABASECHANGELOG` lives in the database, not in version control. Do not tr
 ## Sources
 
 - [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
-- [Using Liquibase with SQLcl — Oracle Docs 19.2](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/19.2/sqcug/using-liquibase-sqlcl.html)
+- [Using Liquibase with SQLcl — Oracle Docs 25.4](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.4/sqcug/using-liquibase-sqlcl.html)
 - [SQLcl Liquibase Automating Deployments — ORACLE-BASE](https://oracle-base.com/articles/misc/sqlcl-automating-your-database-deployments-using-sqlcl-and-liquibase)
 - [Oracle SQLcl Releases index](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/index.html)

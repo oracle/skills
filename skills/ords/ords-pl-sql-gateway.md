@@ -14,10 +14,11 @@ ORDS supports several source types that determine how the handler's SQL/PL/SQL i
 
 | Source Type | Constant | Description |
 |---|---|---|
-| `plsql/block` | `ORDS.source_type_plsql` | Anonymous PL/SQL block; manual result handling |
+| `plsql/block` | `ORDS.source_type_plsql` | Anonymous PL/SQL block; best for package/procedure orchestration |
 | `query` / `collection/feed` | `ORDS.source_type_collection_feed` | SQL SELECT returning paginated JSON collection |
 | `query/one_row` / `collection/item` | `ORDS.source_type_collection_item` | SQL SELECT returning single JSON object |
-| `dml` | `ORDS.source_type_dml` | SQL INSERT/UPDATE/DELETE with implicit commit |
+| `feed` | `ORDS.source_type_feed` | SQL or PL/SQL returning Atom feed output |
+| `csv/query` | `ORDS.source_type_csv_query` | SQL SELECT serialized as CSV |
 | `query/resultset` | N/A (use plsql) | Use implicit results from PL/SQL |
 
 ---

@@ -22,7 +22,7 @@ The Migration Workbench requires a dedicated Oracle schema to store migration me
 -- Create a dedicated migration repository schema
 CREATE USER migration_repo IDENTIFIED BY "repo_password"
     DEFAULT TABLESPACE users QUOTA UNLIMITED ON users;
-GRANT CONNECT, RESOURCE TO migration_repo;
+GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE PROCEDURE TO migration_repo;
 GRANT CREATE VIEW TO migration_repo;
 GRANT CREATE MATERIALIZED VIEW TO migration_repo;
 ```
@@ -175,7 +175,7 @@ This allows converted code to call these functions without rewriting every occur
 
 ## SSMA (SQL Server Migration Assistant) for Oracle
 
-> ⚠️ **Direction Correction:** SSMA for Oracle migrates FROM Oracle TO SQL Server (not the reverse). The section title can be misleading. This tool is not used when Oracle is the migration target.
+> **Direction Correction:** SSMA for Oracle migrates FROM Oracle TO SQL Server (not the reverse). The section title can be misleading. This tool is not used when Oracle is the migration target.
 
 Note: SSMA for Oracle migrates FROM Oracle TO SQL Server. For SQL Server-to-Oracle migrations, use AWS SCT or SQL Developer Migration Workbench instead. The note in the `migrate-sqlserver-to-oracle.md` guide referencing "SSMA for Oracle" as enabling SQL Server → Oracle should be understood to mean using AWS SCT or SQL Developer, not SSMA for Oracle specifically.
 
@@ -200,7 +200,7 @@ For SQL Server → Oracle migration specifically, AWS SCT or SQL Developer Migra
 
 ## ora2pg — Oracle/MySQL to PostgreSQL (NOT an Oracle target tool)
 
-> ⚠️ **Direction Correction:** ora2pg is an open-source Perl tool that migrates **Oracle** (or MySQL) databases **to PostgreSQL**. It is **not** a tool for migrating to Oracle. The source is Oracle or MySQL; the target is always PostgreSQL. Do not use ora2pg when Oracle is the migration target. For PostgreSQL-to-Oracle migrations use SQL Developer Migration Workbench or manual export/SQL*Loader workflows instead.
+> **Direction Correction:** ora2pg is an open-source Perl tool that migrates **Oracle** (or MySQL) databases **to PostgreSQL**. It is **not** a tool for migrating to Oracle. The source is Oracle or MySQL; the target is always PostgreSQL. Do not use ora2pg when Oracle is the migration target. For PostgreSQL-to-Oracle migrations use SQL Developer Migration Workbench or manual export/SQL*Loader workflows instead.
 
 ora2pg is listed here for completeness, as it is sometimes relevant when an organization is migrating away from Oracle to PostgreSQL (the reverse of the focus of this guide). Its assessment report format is also a useful reference for complexity estimation methodology.
 
@@ -366,7 +366,7 @@ No dedicated tool; use a combination of:
 1. **mongoexport** for data extraction
 2. Custom Python ETL scripts for transformation
 3. **SQL*Loader** for loading into Oracle
-4. **Oracle JSON Duality Views** (23c) for document-style access layer
+4. **Oracle JSON Duality Views** (introduced in 23ai, available in 26ai) for document-style access layer
 
 ---
 

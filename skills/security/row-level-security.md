@@ -44,8 +44,8 @@ Application contexts are the primary mechanism for storing session-specific secu
 -- The USING clause names the package authorized to set values in this context
 CREATE OR REPLACE CONTEXT hr_security_ctx USING hr.set_context_pkg;
 
--- For a globally accessible context (across all sessions)
-CREATE OR REPLACE CONTEXT hr_security_ctx USING hr.set_context_pkg ACCESSED GLOBALLY;
+-- Separate context used to drive policy groups
+CREATE OR REPLACE CONTEXT hr_app_ctx USING hr.set_context_pkg ACCESSED GLOBALLY;
 ```
 
 ### Creating the Context-Setting Package
@@ -53,6 +53,7 @@ CREATE OR REPLACE CONTEXT hr_security_ctx USING hr.set_context_pkg ACCESSED GLOB
 ```sql
 CREATE OR REPLACE PACKAGE hr.set_context_pkg AS
   PROCEDURE set_user_context;
+  PROCEDURE set_policy_group(p_group IN VARCHAR2);
 END set_context_pkg;
 /
 
@@ -79,6 +80,11 @@ CREATE OR REPLACE PACKAGE BODY hr.set_context_pkg AS
       DBMS_SESSION.SET_CONTEXT('hr_security_ctx', 'dept_id',   '-1');
       DBMS_SESSION.SET_CONTEXT('hr_security_ctx', 'user_role', 'NONE');
   END set_user_context;
+
+  PROCEDURE set_policy_group(p_group IN VARCHAR2) IS
+  BEGIN
+    DBMS_SESSION.SET_CONTEXT('hr_app_ctx', 'policy_group', p_group);
+  END set_policy_group;
 
 END set_context_pkg;
 /
@@ -386,8 +392,8 @@ END;
 -- Use DBMS_RLS.ADD_POLICY_CONTEXT to register which context attribute drives group selection:
 EXEC DBMS_RLS.ADD_POLICY_CONTEXT('HR', 'EMPLOYEES', 'HR_APP_CTX', 'POLICY_GROUP');
 
--- Then, at session time, set the context value to the desired group name:
-EXEC DBMS_SESSION.SET_CONTEXT('HR_APP_CTX', 'POLICY_GROUP', 'INTERNAL_GROUP');
+-- Then, at session time, call the trusted package to set the active group:
+EXEC hr.set_context_pkg.set_policy_group('INTERNAL_GROUP');
 
 -- There is no DBMS_RLS.SET_CONTEXT procedure. Policy group activation is driven by
 -- an application context value registered via ADD_POLICY_CONTEXT.
@@ -455,7 +461,7 @@ RETURN VARCHAR2 AS
 BEGIN
   RETURN 'tenant_id = ' || SYS_CONTEXT('app_ctx', 'tenant_id');
   -- If tenant_id is NULL, this returns 'tenant_id = ' which is a SQL error
-  -- or if policy function raises an exception, Oracle may open all rows
+  -- and if the policy function raises an exception, Oracle raises an error for the statement
 END;
 /
 

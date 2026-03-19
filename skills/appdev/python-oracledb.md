@@ -309,10 +309,18 @@ async def main():
 asyncio.run(main())
 
 # Async pool
-pool = await oracledb.create_pool_async(
-    user="hr", password="password", dsn="localhost:1521/freepdb1",
-    min=2, max=10, increment=1
-)
+async def pooled():
+    pool = oracledb.create_pool_async(
+        user="hr", password="password", dsn="localhost:1521/freepdb1",
+        min=2, max=10, increment=1
+    )
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            await cur.execute("SELECT 1 FROM dual")
+            print(await cur.fetchone())
+    await pool.close()
+
+asyncio.run(pooled())
 ```
 
 ---
