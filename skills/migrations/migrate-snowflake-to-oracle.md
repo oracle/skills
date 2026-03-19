@@ -469,9 +469,9 @@ Snowflake TIMESTAMP_NTZ has no timezone. Oracle TIMESTAMP also has no timezone. 
 ```sql
 -- Snowflake
 WHERE is_active = TRUE
--- Oracle (23c BOOLEAN or NUMBER-based)
+-- Oracle (23ai/26ai BOOLEAN or NUMBER-based)
 WHERE is_active = 1   -- for NUMBER(1) mapping
-WHERE is_active       -- for Oracle 23c native BOOLEAN
+WHERE is_active       -- for Oracle 23ai/26ai native BOOLEAN
 ```
 
 **Pitfall 3 — Snowflake's permissive type coercion:**

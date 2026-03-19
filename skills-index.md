@@ -1,5 +1,8 @@
 # Oracle DB Skills Index
 
+**Repository:** https://github.com/krisrice/oracle-db-skills
+**Version:** 1.0.0
+
 A tracking file for skills.md topics to create for working with Oracle DB.
 
 ## Status Legend
@@ -105,10 +108,8 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `plsql-performance.md` — Context switch minimization, BULK COLLECT/FORALL, pipelined functions, NOCOPY, result cache (RESULT_CACHE), deterministic functions
 - [x] `plsql-collections.md` — Associative arrays, nested tables, varrays — declarations, methods (COUNT, FIRST, LAST, NEXT, DELETE), bulk operations, TABLE() function
 - [x] `plsql-cursors.md` — Implicit vs explicit cursors, cursor FOR loops, parameterized cursors, REF CURSORs (strong/weak), SYS_REFCURSOR, cursor variables across call boundaries
-- [x] `plsql-dynamic-sql.md` — EXECUTE IMMEDIATE, DBMS_SQL, bind variables in dynamic SQL, dynamic DDL patterns, avoiding injection
 - [x] `plsql-security.md` — AUTHID CURRENT_USER vs DEFINER rights, SQL injection in PL/SQL, DBMS_ASSERT, secure coding checklist
 - [x] `plsql-debugging.md` — DBMS_OUTPUT, DBMS_APPLICATION_INFO, SQL Developer debugger, compile warnings (PLSQL_WARNINGS), runtime errors tracing
-- [x] `plsql-unit-testing.md` — utPLSQL framework, writing test packages, assertions, mocking dependencies, CI integration, code coverage
 - [x] `plsql-patterns.md` — Row pipelining, autonomous transactions for logging, table API (TAPI) pattern, object types in PL/SQL, PL/SQL records
 - [x] `plsql-compiler-options.md` — PLSQL_OPTIMIZE_LEVEL, PLSQL_CODE_TYPE (native vs interpreted), conditional compilation ($$PLSQL_LINE, $IF), edition-based compilation
 - [x] `plsql-code-quality.md` — Naming conventions, code review checklist, avoiding anti-patterns (WHEN OTHERS NULL, hardcoded literals, magic numbers), static analysis with PL/SQL Cop / Trivadis guidelines
@@ -135,6 +136,17 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `ords-security.md` — Securing endpoints, HTTPS, CORS configuration, rate limiting, allowed origins, privilege checking
 - [x] `ords-monitoring.md` — ORDS logs, request logging, performance tuning, connection pool monitoring, error diagnosis
 
+## Frameworks
+- [x] `sqlalchemy-oracle.md` — SQLAlchemy ORM/Core dialect, engine setup, models, sequences, bulk ops
+- [x] `django-oracle.md` — Django ORM backend, settings, migrations, Oracle quirks (empty string, ROWNUM)
+- [x] `pandas-oracle.md` — read_sql, to_sql, chunked reads, bulk load via executemany, dtype mapping
+- [x] `spring-data-jpa-oracle.md` — Hibernate Oracle dialect, @SequenceGenerator, native queries, PL/SQL calls
+- [x] `mybatis-oracle.md` — Mapper XML, #{} binds, dynamic SQL, CALLABLE statements, sequences
+- [x] `typeorm-oracle.md` — TypeORM entities, QueryBuilder, migrations, NestJS integration
+- [x] `sequelize-oracle.md` — Sequelize model definition, field mapping, sequence hooks, raw SQL
+- [x] `dapper-oracle.md` — Dapper Query<T>, DynamicParameters, OUT params, multi-mapping
+- [x] `gorm-oracle.md` — GORM models, BeforeCreate sequence hook, scopes, transactions
+
 ## Oracle-Specific Features
 - [x] `advanced-queuing.md` — AQ/TQ messaging, producers/consumers
 - [x] `dbms-scheduler.md` — Job scheduling, chains, event-based jobs
@@ -142,3 +154,17 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `materialized-views.md` — MV refresh strategies, query rewrite
 - [x] `database-links.md` — DBLinks, distributed queries, risks
 - [x] `oracle-apex.md` — Low-code app dev on Oracle
+- [x] `vector-search.md` — VECTOR type, HNSW/IVF indexes, VECTOR_DISTANCE(), RAG patterns (26ai)
+- [x] `select-ai.md` — SELECT AI natural language to SQL, AI profiles, actions (26ai)
+- [x] `dbms-vector.md` — DBMS_VECTOR and DBMS_VECTOR_CHAIN, embedding pipelines (26ai)
+- [x] `ai-profiles.md` — AI provider profile configuration: OpenAI, Cohere, OCI GenAI, Anthropic (26ai)
+
+## Agent & AI Assistant Patterns
+- [x] `safe-dml-patterns.md` — Always-WHERE guards, dry run, count before delete, bulk DML safety
+- [x] `destructive-op-guards.md` — Pre-flight checks before DROP/TRUNCATE: dependencies, locks, DDL snapshot
+- [x] `idempotency-patterns.md` — MERGE over INSERT, CREATE OR REPLACE, retry-safe migration patterns
+- [x] `nl-to-sql-patterns.md` — NL phrasings mapped to Oracle SQL constructs
+- [x] `schema-discovery.md` — Agent startup queries: tables, columns, constraints, privileges
+- [x] `intent-disambiguation.md` — When to ask for clarification; safe defaults; question templates
+- [x] `client-identification.md` — DBMS_APPLICATION_INFO, CLIENT_IDENTIFIER for agent traceability
+- [x] `ora-error-catalog.md` — Top 25 ORA- errors with root cause and corrective action

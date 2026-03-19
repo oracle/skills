@@ -499,6 +499,10 @@ tkprof /path/to/trace.trc output.txt explain=myuser/mypass sys=no sort=prsela,ex
 
 ---
 
+## See Also
+
+- [PL/SQL Error Handling](../plsql/plsql-error-handling.md) — Structured exception handling design and logging patterns
+
 ## Sources
 
 - [DBMS_OUTPUT (19c)](https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_OUTPUT.html) — PUT_LINE, PUT, NEW_LINE, ENABLE

@@ -127,10 +127,10 @@ SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(FORMAT => 'ALLSTATS LAST'));
 
 Retrieves historical plans stored in AWR. Useful when a plan was used in the past but is no longer in the shared pool.
 
-> Note: In Oracle Database 23c and later, `DISPLAY_AWR` is deprecated. The replacement is `DBMS_XPLAN.DISPLAY_WORKLOAD_REPOSITORY`, which has the same intent but a slightly different signature (`dbid` is the last parameter and the parameter is named `dbid` not `db_id`). `DISPLAY_AWR` continues to function for backward compatibility but new code should prefer `DISPLAY_WORKLOAD_REPOSITORY`.
+> Note: In Oracle Database 23ai and later, `DISPLAY_AWR` is deprecated. The replacement is `DBMS_XPLAN.DISPLAY_WORKLOAD_REPOSITORY`, which has the same intent but a slightly different signature (`dbid` is the last parameter and the parameter is named `dbid` not `db_id`). `DISPLAY_AWR` continues to function for backward compatibility but new code should prefer `DISPLAY_WORKLOAD_REPOSITORY`.
 
 ```sql
--- All plans for a SQL_ID from AWR (use DISPLAY_WORKLOAD_REPOSITORY in 23c+)
+-- All plans for a SQL_ID from AWR (use DISPLAY_WORKLOAD_REPOSITORY in 23ai+)
 SELECT * FROM TABLE(
   DBMS_XPLAN.DISPLAY_AWR(
     sql_id          => 'abc123xyz789',
@@ -400,12 +400,125 @@ END;
 
 ---
 
+## Security Considerations
+
+### Protecting Execution Plan Information
+Execution plans can reveal sensitive information about your database schema, indexes, and query structure. Treat them as sensitive data:
+
+- **Restrict access to plan tables and views:**
+  ```sql
+  -- Only grant necessary privileges for plan analysis
+  GRANT SELECT ON plan_table TO tuning_role;
+  GRANT SELECT ON v_$sql_plan TO tuning_role;
+  GRANT SELECT ON v_$sql_plan_statistics TO tuning_role;
+  GRANT SELECT ON v_$sqlarea TO tuning_role;
+  -- Avoid granting these to PUBLIC or overly broad roles
+  ```
+
+- **Be cautious when sharing plans externally** (with vendors, consultants, etc.):
+  - Plans may reveal table structures, index names, and column details
+  - Consider obfuscating schema/object names when sharing for troubleshooting
+  - Use database links to remote tuning environments instead of exporting plans when possible
+
+- **Monitor for unauthorized plan access attempts:**
+  ```sql
+  -- Audit access to plan-related views
+  CREATE AUDIT POLICY plan_access_monitor
+    ACTIONS SELECT ON SYS.V_$SQL_PLAN,
+            SELECT ON SYS.V_$SQLAREA;
+  AUDIT POLICY plan_access_monitor;
+  ```
+
+### SQL Injection and Plan Stability
+While explain plan itself doesn't execute SQL, the statements being analyzed are vulnerable:
+
+- **Always use bind variables** in application code to prevent SQL injection:
+  ```java
+  // SAFE: Using PreparedStatement with bind variables
+  PreparedStatement ps = conn.prepareStatement(
+      "SELECT * FROM employees WHERE department_id = ? AND salary > ?");
+  ps.setInt(1, deptId);
+  ps.setDouble(2, minSalary);
+  ResultSet rs = ps.executeQuery();
+
+  // UNSAFE: String concatenation leads to SQL injection
+  // String sql = "SELECT * FROM employees WHERE department_id = " + deptId
+  //           + " AND salary > " + minSalary;  // NEVER DO THIS
+  ```
+
+- **Unstable plans due to SQL injection attempts** can cause performance issues:
+  - Malicious users might inject hints or alter query structure
+  - This can lead to bad execution plans being generated and cached
+  - Implement proper input validation and use database-level security (VPD, Oracle Database Firewall)
+
+### Secure Plan Management
+
+- **When using SQL Plan Management (SPM), consider security implications:**
+  ```sql
+  -- Baseline plans only from trusted sources
+  -- Avoid loading plans from unverified SQL statements
+  DECLARE
+    l_plans PLS_INTEGER;
+  BEGIN
+    l_plans := DBMS_SPM.LOAD_PLANS_FROM_CURSOR_CACHE(
+      sql_id          => 'trusted_sql_id_only',  -- Verify source first
+      plan_hash_value => 1234567890
+    );
+  END;
+  /
+
+- **Restrict who can create/modify SQL Plan Baselines:**
+  ```sql
+  -- Only grant ADMINISTER SQL MANAGEMENT OBJECT to trusted DBAs
+  GRANT ADMINISTER SQL MANAGEMENT OBJECT TO dba_role;
+  -- Do NOT grant this to application users or developers
+  ```
+
+### Protecting Sensitive Data in Plans
+
+- **Execution plans may show peeked bind values** which could contain sensitive data:
+  ```sql
+  -- When using +PEEKED_BINDS format, be aware that:
+  SELECT * FROM TABLE(
+    DBMS_XPLAN.DISPLAY_CURSOR(
+      sql_id  => 'some_sql_id',
+      format  => 'TYPICAL +PEEKED_BINDS'
+    )
+  );
+  -- This might show actual values like credit card numbers, passwords, etc.
+  ```
+
+- **Mitigation techniques:**
+  - Avoid using sensitive data as bind variables when possible (use application-level encryption/tokenization)
+  - Restrict access to DISPLAY_CURSOR with +PEEKED_BINDS format
+  - Consider using applications that don't pass sensitive data in SQL (use surrogate keys/tokens)
+
+### Compliance Considerations
+
+- **PCI-DSS**: Execution plans may reveal cardholder data environments - restrict access accordingly
+- **HIPAA**: Plans may reveal PHI table/column structures - implement minimum necessary access controls
+- **GDPR**: Plans may reveal personal data structures - ensure proper authorization for access
+
+- **Audit plan access for compliance:**
+  ```sql
+  -- Track who accesses execution plans (for compliance reporting)
+  CREATE AUDIT POLICY plan_access_audit
+    ACTIONS SELECT ON SYS.V_$SQL_PLAN,
+            SELECT ON SYS.V_$SQL_PLAN_STATISTICS_ALL;
+  AUDIT POLICY plan_access_audit;
+  ```
+
+---
 
 ## Oracle Version Notes (19c vs 26ai)
 
 - Baseline guidance in this file is valid for Oracle Database 19c unless a newer minimum version is explicitly called out.
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
+
+## See Also
+
+- [SQL Tuning in Oracle](../sql-dev/sql-tuning.md) — Full SQL tuning methodology: hints, profiles, baselines
 
 ## Sources
 

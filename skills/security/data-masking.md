@@ -345,24 +345,22 @@ END;
 ### Querying Redaction Policies
 
 ```sql
--- All redaction policies and their columns
-SELECT object_schema, object_name, policy_name, column_name,
-       function_type, function_parameters, regexp_pattern,
-       expression, enable
-FROM redaction_policies
-ORDER BY object_schema, object_name, policy_name;
+-- All redaction policies
+SELECT object_owner, object_name, policy_name, expression, enable
+FROM   redaction_policies
+ORDER  BY object_owner, object_name, policy_name;
 
--- Alternative view (older)
-SELECT object_schema, object_name, policy_name, column_name,
-       function_type, expression, policy_enable
-FROM dba_redaction_policies
-ORDER BY object_schema, object_name;
+-- Columns protected by each policy
+SELECT object_owner, object_name, policy_name, column_name,
+       function_type, function_parameters, regexp_pattern
+FROM   redaction_columns
+ORDER  BY object_owner, object_name, policy_name, column_name;
 
 -- Find all redacted columns in a specific schema
-SELECT object_name, column_name, function_type, expression
-FROM redaction_policies
-WHERE object_schema = 'HR'
-ORDER BY object_name, column_name;
+SELECT object_name, column_name, function_type
+FROM   redaction_columns
+WHERE  object_owner = 'HR'
+ORDER  BY object_name, column_name;
 ```
 
 ---

@@ -29,6 +29,24 @@ GRANT ut_runner TO ut_runner;   -- utPLSQL role
 EOF
 ```
 
+### Post-Installation Verification
+
+```sql
+-- Verify no invalid objects remain after install
+SELECT object_name, object_type, status
+FROM   all_objects
+WHERE  owner = 'UT3'
+  AND  object_type IN ('PACKAGE', 'TYPE')
+  AND  status = 'INVALID';
+-- Should return no rows
+
+-- Run the framework self-test
+BEGIN
+  ut.run();
+END;
+/
+```
+
 ---
 
 ## Test Package Structure
@@ -38,15 +56,18 @@ utPLSQL tests are organized as annotated PL/SQL packages. Annotations (`-- %` co
 | Annotation | Purpose |
 |---|---|
 | `%suite` | Marks a package as a test suite |
+| `%suitepath(path)` | Hierarchical path for organizing suites (e.g., `myapp.orders`) |
 | `%test` | Marks a procedure as a test |
 | `%beforeall` | Runs once before the entire suite |
 | `%afterall` | Runs once after the entire suite |
 | `%beforeeach` | Runs before each test |
 | `%aftereach` | Runs after each test |
-| `%suite_context` | Descriptive grouping label |
+| `%suite_context` / `%context` | Descriptive grouping label for sub-contexts |
+| `%endcontext` | Ends a context group |
 | `%displayname` | Human-readable test/suite name |
 | `%disabled` | Skip this test |
 | `%throws` | Expect a specific exception code |
+| `%tags(tag1,tag2)` | Tag for selective test running |
 
 ### Minimal Test Package
 
@@ -180,6 +201,7 @@ utPLSQL uses a fluent assertion API centered on `ut.expect(actual).to_*(expected
 ```sql
 -- Scalar equality
 ut.expect(v_count).to_equal(5);
+ut.expect(v_count).not_to_equal(0);
 ut.expect(v_name).to_equal('ACTIVE');
 
 -- Null checks
@@ -188,6 +210,8 @@ ut.expect(v_result).not_to_be_null();
 
 -- Numeric comparisons
 ut.expect(v_total).to_be_greater_than(0);
+ut.expect(v_total).to_be_greater_or_equal(1);
+ut.expect(v_total).to_be_less_than(1000);
 ut.expect(v_total).to_be_less_or_equal(1000);
 ut.expect(v_total).to_be_between(10, 999);
 
@@ -196,8 +220,10 @@ ut.expect(v_flag).to_be_true();
 ut.expect(v_flag).to_be_false();
 
 -- Strings
-ut.expect(v_message).to_be_like('%error%');         -- SQL LIKE pattern
-ut.expect(v_message).to_match('^ERROR:.*\d{4}$');   -- REGEXP
+ut.expect(v_message).to_be_like('%error%');              -- SQL LIKE pattern
+ut.expect(v_message).not_to_be_like('%SUCCESS%');
+ut.expect(v_name).to_be_like_ignoring_case('%smith%');   -- case-insensitive LIKE
+ut.expect(v_message).to_match('^ERROR:.*\d{4}$');        -- REGEXP
 
 -- Custom failure message
 ut.expect(v_status, 'Order status should be SHIPPED').to_equal('SHIPPED');
@@ -227,6 +253,17 @@ BEGIN
 END test_active_customer_view;
 ```
 
+Cursor comparisons support additional modifiers:
+
+```sql
+-- Exclude non-deterministic columns (e.g. timestamps) from comparison
+ut.expect(l_actual).to_equal(l_expected)
+  .exclude_columns(ut_varchar2_list('created_at', 'updated_at'));
+
+-- Unordered comparison (row order does not matter)
+ut.expect(l_actual).to_equal(l_expected).unordered;
+```
+
 ### Comparing Collections
 
 ```sql
@@ -244,6 +281,29 @@ BEGIN
   ut.expect(anydata.ConvertCollection(v_actual))
     .to_equal(anydata.ConvertCollection(v_expected));
 END test_product_list;
+```
+
+### Exception Testing
+
+```sql
+-- Method 1: %throws annotation (cleanest for a single expected exception)
+-- %throws(-20001)
+PROCEDURE test_invalid_input IS
+BEGIN
+  validate_customer(NULL);  -- should raise ORA-20001
+END;
+
+-- Method 2: Inline ut.expect().to_throw() for multiple exception cases
+PROCEDURE test_multiple_exception_cases IS
+BEGIN
+  ut.expect(
+    PROCEDURE() IS BEGIN validate_customer(NULL); END;
+  ).to_throw(-20001);
+
+  ut.expect(
+    PROCEDURE() IS BEGIN validate_customer(-1); END;
+  ).to_throw(-20002, 'negative customer id');
+END;
 ```
 
 ---
@@ -272,6 +332,26 @@ PROCEDURE teardown_test IS
 BEGIN
   ROLLBACK TO SAVEPOINT test_start;
 END teardown_test;
+```
+
+**Autonomous Transaction for Persistent Test Data:** Insert reference/setup data that must survive the test transaction context (e.g., lookup tables required by the code under test):
+
+```sql
+-- %beforeall
+PROCEDURE setup_test_data IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  INSERT INTO test_customers VALUES (99999, 'TEST CORP', 'ACTIVE');
+  COMMIT;
+END setup_test_data;
+
+-- %afterall
+PROCEDURE cleanup_test_data IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  DELETE FROM test_customers WHERE customer_id = 99999;
+  COMMIT;
+END cleanup_test_data;
 ```
 
 **Dedicated Test Schema:** Run tests in a completely separate schema that is dropped and recreated per CI run. Best isolation, highest overhead.
@@ -488,6 +568,17 @@ END;
 
 utPLSQL supports multiple output formats for CI integration:
 
+| Reporter | Output Format | Use Case |
+|---|---|---|
+| `ut_documentation_reporter` | Human-readable text | Local development |
+| `ut_junit_reporter` | JUnit XML | CI/CD (Jenkins, GitLab CI, GitHub Actions) |
+| `ut_sonar_test_reporter` | SonarQube format | SonarQube integration |
+| `ut_teamcity_reporter` | TeamCity format | JetBrains TeamCity |
+| `ut_tap_reporter` | TAP (Test Anything Protocol) | Generic CI tools |
+| `ut_coveralls_reporter` | Coveralls JSON | Coveralls code coverage service |
+| `ut_coverage_html_reporter` | HTML | Human-readable coverage report |
+| `ut_coverage_cobertura_reporter` | Cobertura XML | Coverage in CI dashboards |
+
 ```sql
 -- JUnit XML (consumed by Jenkins, GitHub Actions, GitLab CI)
 BEGIN
@@ -653,7 +744,7 @@ END;
 ### Checking Coverage Programmatically
 
 ```sql
--- Query coverage results after a test run
+-- Query coverage results after a test run (UT3.UT_COVERAGE_DETAILS view)
 SELECT
     o.OWNER,
     o.OBJECT_NAME,
@@ -670,6 +761,14 @@ WHERE
     o.OWNER = 'APP_OWNER'
 ORDER BY
     PCT_COVERAGE ASC;
+
+-- Alternative view: UT3.UT_COVERAGE_RESULTS
+SELECT object_name, object_type,
+       covered_lines,
+       total_lines,
+       ROUND(covered_lines / NULLIF(total_lines, 0) * 100, 1) AS pct_covered
+FROM   ut3.ut_coverage_results
+ORDER BY pct_covered;
 ```
 
 ---
@@ -683,6 +782,8 @@ ORDER BY
 - **Co-locate test packages with the code they test.** A `src/plsql/pkg_orders.pks` should have a corresponding `tests/ut_pkg_orders.pks` in the same repository.
 - **Run tests on every pull request.** Use the JUnit XML reporter to integrate with the PR check system. A red test should block merge.
 - **Measure and gate on coverage.** Aim for 80%+ line coverage on business-critical packages. Use coverage reports in CI to identify gaps, but do not treat 100% as the goal — test quality matters more than test quantity.
+- **Use `%tags` to separate fast unit tests from slow integration tests.** This allows running the fast suite on every commit and the full suite nightly or on release branches.
+- **Use cursor assertions over COUNT(*) checks.** Cursor comparison validates actual data values; a COUNT of 1 only tells you a row exists.
 
 ---
 
@@ -702,6 +803,15 @@ If the code under test changes its interface (renamed parameter, changed type), 
 
 **Mistake: Running tests against a production database.**
 utPLSQL tests insert, update, and delete data. They should never run against production — not even with careful cleanup. Use dedicated test environments or ephemeral CI containers.
+
+**Mistake: Using `WHEN OTHERS THEN NULL` in test procedures.**
+Swallowing exceptions in test code causes tests to pass even when the code under test throws. Never suppress exceptions inside test procedures.
+
+**Mistake: Asserting only COUNT(*).**
+A count of 1 only confirms a row exists; it does not validate its content. Use cursor assertions to verify actual column values.
+
+**Mistake: Hardcoded IDs that conflict with existing data.**
+Use sequences, known-safe negative ranges, or very large integers (e.g., 99999+) to avoid collisions with application data.
 
 ---
 

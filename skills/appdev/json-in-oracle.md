@@ -2,7 +2,7 @@
 
 ## Overview
 
-Oracle has evolved from treating JSON as a string stored in VARCHAR2 or CLOB columns (12c) to providing a dedicated native JSON data type with deep query integration, indexing, and schema enforcement (21c+). In Oracle 23c, JSON Relational Duality Views represent a paradigm shift — allowing the same data to be accessed and modified as both JSON documents and relational rows simultaneously.
+Oracle has evolved from treating JSON as a string stored in VARCHAR2 or CLOB columns (12c) to providing a dedicated native JSON data type with deep query integration, indexing, and schema enforcement (21c+). In Oracle 23ai, JSON Relational Duality Views represent a paradigm shift — allowing the same data to be accessed and modified as both JSON documents and relational rows simultaneously.
 
 This guide covers the full spectrum: storage options, the complete SQL/JSON function set, indexing strategies, and the modern JSON Duality View architecture.
 
@@ -318,9 +318,9 @@ CREATE INDEX idx_cust_status ON orders (
 
 ---
 
-## JSON Duality Views (23c)
+## JSON Duality Views (23ai/26ai)
 
-JSON Relational Duality Views are one of Oracle 23c's flagship features. They expose relational table data as JSON documents that can be fully queried and modified through either a JSON or SQL interface. This eliminates the impedance mismatch between application objects and database rows.
+JSON Relational Duality Views are one of Oracle 23ai's flagship features, available in 26ai. They expose relational table data as JSON documents that can be fully queried and modified through either a JSON or SQL interface. This eliminates the impedance mismatch between application objects and database rows.
 
 ### Creating a Duality View
 
@@ -496,4 +496,4 @@ WHERE JSON_VALUE(order_data, '$.total' RETURNING NUMBER) > 100
 - [Oracle Database 19c JSON Developer's Guide (ADJSN)](https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/)
 - [Oracle Database 19c SQL Language Reference — JSON Functions](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/)
 - [Oracle Database 21c — JSON Data Type](https://docs.oracle.com/en/database/oracle/oracle-database/21/adjsn/)
-- [Oracle Database 23c — JSON Relational Duality Views](https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/)
+- [Oracle Database 23ai — JSON Relational Duality Views](https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/)

@@ -443,7 +443,7 @@ db2 "EXPORT TO /tmp/customers.csv OF DEL MODIFIED BY COLDEL, TIMESTAMPFORMAT='YY
 db2look -d mydb -e -o schema.ddl -a
 ```
 
-> ⚠️ Unverified: DB2 EXPORT command option syntax (NOCHARDEL, CHARDELIM, exact modifier spelling) varies across DB2 versions. Verify the exact modifiers against the IBM Db2 documentation for your version before use.
+Note: Db2 `EXPORT` modifier syntax can vary by Db2 version and platform. Verify the exact modifier spelling against the IBM Db2 documentation for your version before use.
 
 **Step 2: Translate DDL**
 

@@ -51,7 +51,7 @@ ANSICONSOLE automatically adjusts column widths to fit the actual data (not the 
 Set it as the default in `login.sql`:
 
 ```sql
--- ~/.sqlcl/login.sql
+-- ~/login.sql
 SET SQLFORMAT ANSICONSOLE
 ```
 

@@ -6,14 +6,14 @@ Connection pooling is one of the most critical performance techniques in Oracle 
 
 Oracle provides two primary pooling architectures:
 
-- **Universal Connection Pool (UCP)** — a client-side pool managed by the application tier, available for JDBC, Python (python-oracledb), and Node.js (node-oracledb)
+- **Universal Connection Pool (UCP)** — Oracle's client-side Java pool for JDBC applications
 - **Database Resident Connection Pooling (DRCP)** — a server-side pool managed inside the database, ideal for thousands of short-lived connections from stateless application servers
 
 ---
 
 ## Universal Connection Pool (UCP)
 
-UCP is Oracle's client-side connection pool. It is a pure-Java library (for JDBC) that maintains a pool of physical database connections. The pool is shared within a single JVM process (or across processes in certain configurations).
+UCP is Oracle's client-side connection pool for JDBC. It is a pure-Java library that maintains a pool of physical database connections inside the application process.
 
 ### Key Pool Parameters
 
@@ -164,7 +164,7 @@ db-host:1521/MYSERVICE:POOLED
 ```python
 import oracledb
 
-# Thin mode (no Oracle Client needed) - UCP-style pool
+# Thin mode (no Oracle Client needed) - python-oracledb native pool
 pool = oracledb.create_pool(
     user="app_user",
     password="secret",

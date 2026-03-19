@@ -36,7 +36,7 @@ ALTER SYSTEM SET UNDO_TABLESPACE = undotbs2 SCOPE=BOTH;
 ```
 
 **`UNDO_RETENTION`**
-Specifies how long (in seconds) Oracle should *attempt* to retain undo information after a transaction commits. This is a target, not a guarantee. Oracle will overwrite old undo if space is needed.
+Specifies the low-threshold retention period (in seconds) for undo after a transaction commits. In current 19c releases Oracle auto-tunes retention, but unexpired undo can still be reused if active transactions need space and the undo tablespace cannot satisfy the workload.
 
 ```sql
 SHOW PARAMETER undo_retention;
@@ -257,19 +257,19 @@ Oracle's Undo Advisor (part of the Automatic Database Diagnostic Monitor, ADDM) 
 
 ```sql
 -- Calculate the minimum undo tablespace size required for a given retention
--- Parameters: retention_seconds, start_time, end_time
-SELECT DBMS_UNDO_ADV.MIN_RETENTION(
-         p_lotime  => SYSDATE - 7,    -- analyze last 7 days
-         p_hitime  => SYSDATE
+-- REQUIRED_RETENTION returns the undo_retention value needed for the period
+SELECT DBMS_UNDO_ADV.REQUIRED_RETENTION(
+         start_time => SYSDATE - 7,    -- analyze last 7 days
+         end_time   => SYSDATE
        ) AS recommended_retention_seconds
 FROM DUAL;
 
 -- Calculate minimum tablespace size for a target retention
-SELECT DBMS_UNDO_ADV.MIN_UNDO_SIZE(
-         p_undo_retention => 3600,    -- 1 hour target
-         p_lotime         => SYSDATE - 7,
-         p_hitime         => SYSDATE
-       ) / 1048576 AS required_mb
+SELECT DBMS_UNDO_ADV.REQUIRED_UNDO_SIZE(
+         retention  => 3600,         -- 1 hour target
+         start_time => SYSDATE - 7,
+         end_time   => SYSDATE
+       ) AS required_mb
 FROM DUAL;
 ```
 

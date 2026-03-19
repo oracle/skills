@@ -537,7 +537,7 @@ END;
 A misbehaving APEX developer can crash or starve the shared ORDS JVM. Use separate ORDS instances for development and production, each with its own connection pool configuration and resource limits.
 
 **Mistake 5: Not setting up proper ORDS connection pool sizing**
-ORDS uses a JDBC connection pool. The default pool size is often too small for production workloads or too large for shared development environments. Tune `db.connectionPoolMaxStatements`, `db.pool.maxSize`, and `db.pool.minSize` in the ORDS configuration.
+ORDS uses a JDBC connection pool. The default pool size is often too small for production workloads or too large for shared development environments. Tune `jdbc.MaxStatementsLimit`, `jdbc.MaxLimit`, and `jdbc.MinLimit` in the ORDS configuration.
 
 **Mistake 6: Assuming APEX auto-REST is production-ready without authentication**
 Auto-REST with `p_auto_rest_auth => FALSE` makes all CRUD operations publicly accessible. In production, always require OAuth2 tokens or custom privilege checks on REST endpoints, and audit REST handler access via ORDS access logging.

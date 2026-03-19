@@ -50,7 +50,7 @@ sql -S username/password@service @/path/to/script.sql
 
 ### Command-line -c Flag (Inline Command)
 
-> ⚠️ Unverified: The `-c` flag for passing an inline SQL command is not listed in the official SQLcl 25.2 startup flags documentation (`-H[ELP]`, `-V[ERSION]`, `-C[OMPATIBILITY]`, `-L[OGON]`, `-NOLOGINTIME`, `-R[ESTRICT]`, `-S[ILENT]`, `-mcp`). Use stdin or a script file instead.
+The official SQLcl startup flags documentation does not include a `-c` option for inline SQL commands. Use stdin or a script file instead.
 
 ```shell
 # Preferred: use stdin or a script file

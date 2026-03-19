@@ -219,10 +219,11 @@ A **failover** is an emergency operation when the primary database is unavailabl
 **Failover permanently activates the standby as the new primary.** The old primary cannot be used without reinstating it as a standby.
 
 ```bash
-# Failover using Broker (recommended)
+# Complete failover using Broker (recommended)
 DGMGRL> FAILOVER TO standby_db;
 
-# With data loss prevention attempt (waits for all redo)
+# Immediate failover bypasses applying remaining redo on the standby
+# Use only when a complete failover is not possible; this can increase data loss
 DGMGRL> FAILOVER TO standby_db IMMEDIATE;
 ```
 

@@ -149,9 +149,9 @@ SET ROLE ALL;
 -- NEVER grant this to application accounts
 GRANT DBA TO scott;  -- BAD PRACTICE
 
--- CONNECT role: in 12c+ only grants CREATE SESSION
--- RESOURCE role: grants CREATE TABLE, SEQUENCE, PROCEDURE, etc.
--- These are acceptable for developer schemas but not for application service accounts
+-- CONNECT role: in 12c+ it effectively provides only CREATE SESSION
+-- RESOURCE role: grants object-creation privileges such as CREATE TABLE and CREATE PROCEDURE
+-- Prefer explicit privilege grants instead of relying on legacy predefined roles
 
 -- Check what's inside Oracle's predefined roles
 SELECT privilege, admin_option
@@ -272,7 +272,7 @@ FROM dba_sys_privs
 WHERE grantee = 'APP_WRITE_ROLE'
 ORDER BY privilege;
 
--- Find all users with DBA role (direct or indirect)
+-- Find all users with a direct DBA role grant
 SELECT grantee, granted_role, admin_option, default_role
 FROM dba_role_privs
 WHERE granted_role = 'DBA'
@@ -346,12 +346,13 @@ FROM dba_role_privs
 WHERE granted_role = 'APP_WRITE_ROLE'
 ORDER BY grantee;
 
--- Full role hierarchy
+-- Direct system privileges granted to a role
 SELECT role, privilege, admin_option
 FROM role_sys_privs
 WHERE role = 'APP_WRITE_ROLE'
 ORDER BY privilege;
 
+-- Direct object privileges granted to a role
 SELECT role, owner, table_name, privilege, grantable
 FROM role_tab_privs
 WHERE role = 'APP_WRITE_ROLE'
@@ -494,7 +495,7 @@ BEGIN
   DBMS_SCHEDULER.CREATE_JOB(
     job_name        => 'REVOKE_TEMP_ACCESS',
     job_type        => 'PLSQL_BLOCK',
-    job_action      => 'REVOKE SELECT ON hr.employees FROM contractor_user;',
+    job_action      => 'BEGIN EXECUTE IMMEDIATE ''REVOKE SELECT ON hr.employees FROM contractor_user''; END;',
     start_date      => SYSTIMESTAMP + INTERVAL '30' DAY,
     enabled         => TRUE,
     comments        => 'Auto-revoke temporary contractor access'

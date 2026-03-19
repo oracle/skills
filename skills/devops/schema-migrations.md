@@ -103,7 +103,7 @@ password=${DB_PASSWORD}
   <changeSet id="002" author="jane.smith" labels="customer,status" context="!test">
     <comment>Add STATUS column to CUSTOMERS with lookup table</comment>
 
-    <!-- Oracle-specific: use NUMBER(1) not BOOLEAN -->
+    <!-- Cross-version Oracle compatibility: use NUMBER(1) instead of SQL BOOLEAN -->
     <addColumn tableName="CUSTOMERS">
       <column name="STATUS_CODE" type="VARCHAR2(10)" defaultValue="ACTIVE">
         <constraints nullable="false"/>
@@ -154,11 +154,11 @@ password=${DB_PASSWORD}
 
 ### Oracle-Specific Data Types in Liquibase
 
-Liquibase's generic types do not map cleanly to Oracle. Always use Oracle-native types explicitly:
+Liquibase's generic types do not always map cleanly to Oracle. For mixed-version estates, prefer explicit Oracle-native types:
 
 | Generic Liquibase | Oracle Reality | Use Instead |
 |---|---|---|
-| `BOOLEAN` | Does not exist in Oracle | `NUMBER(1,0)` with CHECK (col IN (0,1)) |
+| `BOOLEAN` | SQL BOOLEAN exists in 23ai/26ai, but older estates and some toolchains still expect numeric compatibility | `NUMBER(1,0)` with CHECK (col IN (0,1)) for cross-version compatibility |
 | `BIGINT` | Maps to `NUMBER(19,0)` | `NUMBER(18,0)` or `NUMBER(19,0)` explicitly |
 | `DATETIME` | Maps to `DATE` (loses sub-second) | `TIMESTAMP` or `TIMESTAMP WITH TIME ZONE` |
 | `TEXT` | Maps to `CLOB` | `VARCHAR2(4000)` or `CLOB` depending on need |
@@ -597,7 +597,7 @@ END;
 ## Common Mistakes
 
 **Mistake: Using `BOOLEAN` as a column type.**
-Oracle SQL does not have a BOOLEAN type (PL/SQL does, but not SQL DDL). Liquibase silently maps `BOOLEAN` to `NUMBER(1,0)` for Oracle, which is correct, but the intent is unclear to readers. Use `NUMBER(1,0)` explicitly with a CHECK constraint.
+Oracle 23ai/26ai support SQL `BOOLEAN`, but many Oracle estates still target 19c compatibility and some migration toolchains normalize booleans to numeric columns. For cross-version portability, use `NUMBER(1,0)` explicitly with a CHECK constraint unless you are intentionally targeting 23ai/26ai-only schemas.
 
 ```sql
 -- Wrong (ambiguous mapping)
@@ -623,6 +623,248 @@ In high-availability deployments, the application and database versions may be t
 
 ---
 
+
+## Security Considerations
+
+### Privilege Management for Migration Accounts
+Migration processes often require elevated privileges, creating security risks if not properly managed:
+
+- **Use least privilege principle for migration accounts:**
+  ```sql
+  -- Instead of granting DBA role (excessive privileges):
+  -- GRANT DBA TO migration_user; -- AVOID
+
+  -- Grant only specific privileges needed for schema changes:
+  CREATE USER migration_user IDENTIFIED BY "strong_password";
+  GRANT CREATE SESSION TO migration_user;
+  GRANT CREATE TABLE, ALTER TABLE, DROP TABLE TO migration_user;
+  GRANT CREATE VIEW, ALTER VIEW, DROP VIEW TO migration_user;
+  GRANT CREATE PROCEDURE, ALTER PROCEDURE, DROP PROCEDURE TO migration_user;
+  GRANT CREATE TRIGGER, ALTER TRIGGER, DROP TRIGGER TO migration_user;
+  GRANT CREATE SEQUENCE, ALTER SEQUENCE, DROP SEQUENCE TO migration_user;
+  GRANT CREATE INDEX, ALTER INDEX, DROP INDEX TO migration_user;
+  -- Add privileges for specific schemas if needed
+  GRANT CREATE ANY TABLE TO migration_user;  -- Only if absolutely necessary
+  GRANT CREATE ANY INDEX TO migration_user;  -- Only if absolutely necessary
+  ```
+
+- **Separate migration user from application user:**
+  - Migration user: Has DDL privileges to modify schema
+  - Application user: Has only DML privileges (SELECT, INSERT, UPDATE, DELETE) on application objects
+  - Never use the same credentials for both purposes
+
+- **Consider using role-based access control:**
+  ```sql
+  CREATE ROLE schema_migration_role;
+  GRANT CREATE TABLE, ALTER TABLE, DROP TABLE TO schema_migration_role;
+  GRANT CREATE VIEW, ALTER VIEW, DROP VIEW TO schema_migration_role;
+  GRANT CREATE PROCEDURE, ALTER PROCEDURE, DROP PROCEDURE TO schema_migration_role;
+  GRANT CREATE TRIGGER, ALTER TRIGGER, DROP TRIGGER TO schema_migration_role;
+  GRANT CREATE SEQUENCE, ALTER SEQUENCE, DROP SEQUENCE TO schema_migration_role;
+  GRANT CREATE INDEX, ALTER INDEX, DROP INDEX TO schema_migration_role;
+  GRANT schema_migration_role TO migration_user;
+  ```
+
+### Secure Credential Handling in CI/CD
+Migration tools often require database credentials, which must be protected in CI/CD pipelines:
+
+- **Never hardcode credentials in migration files or configuration:**
+  ```xml
+  <!-- AVOID: Hardcoded credentials in changelog -->
+  <databaseChangeLog
+      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+      username="hardcoded_user"
+      password="hardcoded_password">
+  ```
+
+- **Use environment variables or secret management systems:**
+  ```bash
+  # Liquibase with environment variables (CI/CD safe)
+  liquibase \
+    --url="${{ secrets.DB_PROD_URL }}" \
+    --username="${{ secrets.DB_USER }}" \
+    --password="${{ secrets.DB_PASSWORD }}" \
+    update
+  ```
+
+  ```toml
+  # Flyway TOML with environment variables
+  [environments.default]
+  url = "${DB_PROD_URL}"
+  user = "${DB_USER}"
+  password = "${DB_PASSWORD}"
+  ```
+
+- **Integrate with enterprise secret stores:**
+  - HashiCorp Vault, AWS Secrets Manager, Azure Key Vault
+  - Use CI/CD plugin integrations to fetch secrets at runtime
+  - Never store secrets in repository history
+
+### Protecting Sensitive Data During Migrations
+Schema migrations can expose or mishandle sensitive data if not properly controlled:
+
+- **Be cautious with data migrations involving sensitive information:**
+  ```sql
+  -- Example: Migrating to encrypted columns
+  BEGIN
+    -- Add encrypted column
+    ALTER TABLE customers ADD (ssn_encrypted VARCHAR2(255));
+
+    -- Encrypt existing data (in batches to avoid locks)
+    UPDATE customers
+    SET ssn_encrypted = ENCRYPT_USING(ssn, 'AES256', :encryption_key)
+    WHERE ssn IS NOT NULL;
+
+    -- Verify encryption worked
+    -- Drop original column only after verification
+    ALTER TABLE customers DROP COLUMN ssn;
+  END;
+  ```
+
+- **Use secure techniques for handling sensitive data:**
+  - Process sensitive data in small batches to minimize exposure
+  - Use encryption keys from secure wallets/HSMs, not hardcoded values
+  - Consider using Oracle Data Redaction during migration windows
+  - Log access to sensitive data during migration processes
+
+- **Never log or expose sensitive data in migration scripts:**
+  ```sql
+  -- AVOID: Logging sensitive values
+  INSERT INTO migration_log (step, details)
+  VALUES ('ENCRYPT_SSN', 'Encrypting SSN: ' || ssn_value);  -- EXPOSES SENSITIVE DATA
+
+  -- INSTEAD: Log only non-sensitive metadata
+  INSERT INTO migration_log (step, details, record_count)
+  VALUES ('ENCRYPT_SSN', 'SSN encryption completed', SQL%ROWCOUNT);
+  ```
+
+### Audit and Compliance for Schema Changes
+Schema changes themselves should be audited for compliance and security monitoring:
+
+- **Enable DDL auditing to track schema modifications:**
+  ```sql
+  -- Audit all DDL changes in critical schemas
+  CREATE AUDIT POLICY schema_changes_audit
+    ACTIONS CREATE TABLE, ALTER TABLE, DROP TABLE,
+              CREATE VIEW, ALTER VIEW, DROP VIEW,
+              CREATE PROCEDURE, ALTER PROCEDURE, DROP PROCEDURE,
+              CREATE TRIGGER, ALTER TRIGGER, DROP TRIGGER,
+              CREATE SEQUENCE, DROP SEQUENCE,
+              CREATE INDEX, DROP INDEX;
+  AUDIT POLICY schema_changes_audit BY USERS WITH GRANTED ROLES;
+  ```
+
+- **Monitor for unauthorized schema changes:**
+  ```sql
+  -- Alert on DDL outside of approved maintenance windows
+  CREATE AUDIT POLICY unauthorized_ddl_alert
+    ACTIONS CREATE TABLE, ALTER TABLE, DROP TABLE
+    WHEN 'NOT (TO_NUMBER(TO_CHAR(SYSDATE,''HH24MISS'')) BETWEEN 20000 AND 40000)'
+    EVALUATE PER SESSION;
+  AUDIT POLICY unauthorized_ddl_alert;
+  ```
+
+- **Maintain immutable audit trail for compliance:**
+  - Ensure audit records cannot be altered or deleted by migration users
+  - Use unified auditing with separate AUDSYS schema
+  - Regularly archive audit logs to secure, write-once storage
+
+### Securing Migration Artifacts
+Migration-generated SQL files can contain sensitive information:
+
+- **Treat generated SQL as potentially sensitive:**
+  - May contain table structures, index definitions, and data values
+  - Restrict access to migration artifacts (updateSQL output)
+  - Delete temporary SQL files after use in CI/CD pipelines
+
+- **Secure handling of migration SQL artifacts:**
+  ```yaml
+  # In CI/CD pipeline - secure handling of generated SQL
+  - name: Generate migration SQL (artifact for review)
+    run: |
+      liquibase \
+        --url="${{ secrets.DB_PROD_URL }}" \
+        --username="${{ secrets.DB_USER }}" \
+        --password="${{ secrets.DB_PASSWORD }}" \
+        updateSQL > migration-prod.sql
+  - name: Upload encrypted artifact
+    run: |
+      # Encrypt before uploading if containing sensitive data
+      gpg --symmetric --cipher-algo AES256 migration-prod.sql
+      rm migration-prod.sql  # Delete plaintext version
+  - uses: actions/upload-artifact@v4
+    with:
+      name: encrypted-migration-sql
+      path: migration-prod.sql.gpg
+  ```
+
+### Database Link Security in Migrations
+
+- **Secure database link usage in migration scripts:**
+  ```sql
+  -- AVOID: Hardcoded credentials in database links
+  CREATE DATABASE LINK remote_db
+  CONNECT TO remote_user IDENTIFIED BY "hardcoded_password"
+  USING 'remote_database';
+
+  -- INSTEAD: Use external password store or OS authentication
+  CREATE DATABASE LINK secure_remote_db
+  CONNECT TO CURRENT_USER USING 'remote_database';
+  -- Or use wallet-based authentication
+  ```
+
+- **Monitor and audit database link usage:**
+  ```sql
+  CREATE AUDIT POLICY db_link_usage
+    ACTIONS EXECUTE ON SYS.DBMS_SQL;
+  AUDIT POLICY db_link_usage;
+  ```
+
+### Migration Rollback Security Considerations
+
+- **Test rollback procedures in non-production first:**
+  - Verify rollback scripts don't leave data in inconsistent state
+  - Confirm sensitive data is properly handled during rollback
+
+- **Be cautious with data loss during rollback:**
+  ```sql
+  -- Example: Adding then dropping a column
+  -- Migration: ADD COLUMN ssn VARCHAR2(11)
+  -- Rollback: DROP COLUMN ssn
+  --
+  -- If rollback is executed after data has been added:
+  -- THE SSN DATA IS PERMANENTLY LOST
+  --
+  -- Better approach for sensitive data:
+  -- Migration: ADD COLUMN ssn_encrypted VARCHAR2(255) (encrypted)
+  -- Migration: COPY AND ENCRYPT DATA FROM ssn TO ssn_encrypted
+  -- Migration: DROP COLUMN ssn (after verification)
+  -- Rollback: RECOVERY PROCEDURE NEEDED (not simple DROP)
+  ```
+
+### Compliance-Specific Migration Requirements
+
+- **PCI-DSS Requirement 6.4**:
+  - Restrict access to cardholder data environments
+  - Implement change detection mechanisms for schema changes
+  - Separate development/test and production environments
+
+- **SOX Section 404**:
+  - Implement change management controls for financial systems
+  - Document and approve all schema changes
+  - Maintain audit trail of all DDL changes
+
+- **GDPR Article 25 (Data Protection by Design)**:
+  - Consider data minimization when adding new columns
+  - Implement pseudonymization techniques where appropriate
+  - Ensure right to erasure can be implemented through schema design
+
+### Secure Migration Lifecycle
+
+- **Development**: Use encrypted credentials, test on anonymized data
+- **CI/CD**: Secure credential handling, artifact protection, approval gates
+- **Staging**: Validate against production-like data with masking
+- **Production**: Change windows, monitoring, rollback procedures tested
 
 ## Oracle Version Notes (19c vs 26ai)
 

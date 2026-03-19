@@ -455,6 +455,10 @@ fi
 
 ---
 
+## See Also
+
+- [PL/SQL Compiler Options](../plsql/plsql-compiler-options.md) — Compiler optimization levels and conditional compilation
+
 ## Sources
 
 - [Trivadis PL/SQL and SQL Coding Guidelines](https://trivadis.github.io/plsql-and-sql-coding-guidelines/) — naming conventions, anti-patterns, complexity metrics

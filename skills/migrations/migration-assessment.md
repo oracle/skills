@@ -162,7 +162,7 @@ FROM information_schema.columns
 WHERE data_type = 'ARRAY'
   AND table_schema = 'public';
 
--- Find BOOLEAN columns (need NUMBER(1) in Oracle pre-23c)
+-- Find BOOLEAN columns (need NUMBER(1) in Oracle pre-23ai)
 SELECT table_name, column_name
 FROM information_schema.columns
 WHERE data_type = 'boolean'
@@ -368,13 +368,13 @@ Rate each risk factor on a 1–5 scale for Likelihood and Impact. Multiply to ge
 
 ## Oracle Database Migration Assessment Resources
 
-> ⚠️ Unverified: The term "Database Migration Assessment Framework (DMAF)" refers to an **AWS** open-source tool, not an Oracle product. Oracle does not publish a product by that name. Oracle's migration assessment resources are provided through Oracle SQL Developer Migration Workbench (built-in assessment), AWS SCT assessment reports (for cross-RDBMS), and the **Oracle Cloud Migration Advisor** for cloud-target migrations.
+Note: "Database Migration Assessment Framework (DMAF)" is not an Oracle product name. Oracle migration assessment resources are provided through Oracle SQL Developer Migration Workbench and OCI migration tooling for Oracle cloud targets.
 
 ### Oracle Cloud Migration Advisor
 
 If the target is OCI (Oracle Autonomous Database or DBCS), use the Oracle Cloud Migration Advisor:
 
-> ⚠️ Unverified: The exact step-by-step setup process for Oracle Cloud Migration Advisor may differ by OCI region and service generation — check the current OCI documentation before use.
+Note: The exact Oracle Cloud Migration Advisor setup flow can differ by OCI service generation and region. Check the current OCI documentation for your target service before use.
 
 1. Install the **Oracle Cloud Database Migration** service or use the built-in OCI migration tooling
 2. Connect the advisor to the source database

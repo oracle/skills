@@ -455,8 +455,6 @@ WHERE  type = 'Result' AND name LIKE '%GET_TAX_RATE%';
 - **Oracle 12c+**: `PRAGMA UDF` (User Defined Function) hint reduces context switch overhead when a PL/SQL function is called from SQL. Apply when you cannot use SQL expressions instead.
 - **All versions**: `BULK COLLECT` and `FORALL` are available since Oracle 9i and remain the primary bulk operation tools.
 
-> ⚠️ Unverified: `PRAGMA SUPPRESSES_WARNING_6009` for pipelined functions — this pragma does not appear in Oracle 19c documentation. Check official docs for your specific version before use.
-
 ```sql
 -- Oracle 12c+: PRAGMA UDF reduces context switch for SQL-called functions
 CREATE OR REPLACE FUNCTION calculate_bonus(

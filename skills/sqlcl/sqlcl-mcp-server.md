@@ -315,8 +315,9 @@ The only environment variable documented for the SQLcl MCP server is `TNS_ADMIN`
 
 ## Sources
 
-- [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
-- [SQLcl Release Notes 25.2 — MCP Server introduced](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.html)
-- [Starting and Leaving SQLcl — startup flags including -mcp](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/startup-sqlcl-settings.html)
-
-> ⚠️ Unverified: The official MCP documentation page for SQLcl 25.2 was not reachable at time of verification. The critical facts in this file (5 tools, stdio transport, `-mcp` flag, version 25.2+, `DBTOOLS$MCP_LOG` log table, `TNS_ADMIN` only env var, `conn -save -savepwd`) should be confirmed against the live Oracle SQLcl docs before use in production.
+- [Using the Oracle SQLcl MCP Server](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.4/sqcug/using-oracle-sqlcl-mcp-server.html)
+- [Preparing Your Environment](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.4/sqcug/preparing-your-environment.html)
+- [Starting and Managing the SQLcl MCP Server](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/starting-and-managing-sqlcl-mcp-server.html)
+- [About the SQLcl MCP Server Tools](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.3/sqcug/sqlcl-mcp-server-tools.html)
+- [Monitoring the SQLcl MCP Server](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.3/sqcug/monitoring-sqlcl-mcp-server.html)
+- [Configuring Restrict Levels for the SQLcl MCP Server](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.4/sqcug/configuring-restrict-levels-sqlcl-mcp-server.html)

@@ -219,14 +219,24 @@ RESTORE DATABASE PREVIEW SUMMARY;
 -- Recover database after full restore (applies all archived logs through current SCN)
 RECOVER DATABASE;
 
--- Recover to a specific point in time
-RECOVER DATABASE UNTIL TIME "TO_DATE('2025-12-01 14:30','YYYY-MM-DD HH24:MI')";
+-- For incomplete recovery, set the target first so RESTORE and RECOVER use the same endpoint
+RUN {
+  SET UNTIL TIME "TO_DATE('2025-12-01 14:30','YYYY-MM-DD HH24:MI')";
+  RESTORE DATABASE;
+  RECOVER DATABASE;
+}
 
--- Recover to a specific SCN
-RECOVER DATABASE UNTIL SCN 9876543;
+RUN {
+  SET UNTIL SCN 9876543;
+  RESTORE DATABASE;
+  RECOVER DATABASE;
+}
 
--- Recover to a specific log sequence
-RECOVER DATABASE UNTIL SEQUENCE 1200 THREAD 1;
+RUN {
+  SET UNTIL SEQUENCE 1200 THREAD 1;
+  RESTORE DATABASE;
+  RECOVER DATABASE;
+}
 
 -- Recover a single tablespace
 RECOVER TABLESPACE users;
@@ -428,7 +438,7 @@ For transparent (keystore-based) encryption, the Oracle Wallet (TDE keystore) mu
 ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY <wallet_password>;
 ```
 
-> ⚠️ Unverified: The older `ALTER SYSTEM SET WALLET OPEN` syntax is not documented in Oracle 19c; use `ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN` instead — check official docs before use.
+Use `ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN` for current Oracle releases rather than relying on older wallet-opening syntax.
 
 ---
 
@@ -574,6 +584,10 @@ ALTER SYSTEM SET CONTROL_FILE_RECORD_KEEP_TIME = 31 SCOPE=BOTH;
 - Baseline guidance in this file is valid for Oracle Database 19c unless a newer minimum version is explicitly called out.
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
+
+## See Also
+
+- [Oracle RMAN Backup and Recovery](../admin/backup-recovery.md) — RMAN architecture, backup strategy, and recovery scenarios
 
 ## Sources
 

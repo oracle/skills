@@ -417,14 +417,12 @@ ALTER SYSTEM SET HEAT_MAP = ON SCOPE = BOTH;
 -- Enable Automatic In-Memory management
 ALTER SYSTEM SET INMEMORY_AUTOMATIC_LEVEL = MEDIUM SCOPE = BOTH;
 -- Levels: OFF (manual), LOW (only explicit INMEMORY objects managed),
---         MEDIUM (AIM populates/evicts based on heat),
---         HIGH (AIM can populate ANY object, even without INMEMORY clause)
+--         MEDIUM (AIM populates/evicts based on heat)
 
 -- Check AIM activity
-SELECT object_name, action_taken, timestamp, reason
-FROM   v$im_adg_log
-ORDER  BY timestamp DESC
-FETCH  FIRST 50 ROWS ONLY;
+SELECT *
+FROM   dba_inmemory_aimtasks
+FETCH  FIRST 20 ROWS ONLY;
 
 -- Check Heat Map data
 SELECT object_name, owner, track_time,

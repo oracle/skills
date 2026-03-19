@@ -137,18 +137,28 @@ END;
 ### Protected Handler (privilege required)
 
 ```sql
+DECLARE
+  l_roles    owa.vc_arr;
+  l_patterns owa.vc_arr;
+  l_modules  owa.vc_arr;
 BEGIN
   -- Define the privilege
+  ORDS.CREATE_ROLE(p_role_name => 'HR_API_USER');
+  l_roles(1) := 'HR_API_USER';
+
   ORDS.DEFINE_PRIVILEGE(
     p_privilege_name => 'hr.employees.read',
+    p_roles          => l_roles,
+    p_patterns       => l_patterns,
+    p_modules        => l_modules,
     p_label          => 'Read HR Employee Data',
     p_description    => 'Required for accessing HR employee endpoints'
   );
 
   -- Protect the module
-  ORDS.PRIVILEGE_MAP_MODULE(
-    p_privilege_name => 'hr.employees.read',
-    p_module_name    => 'hr.employees'
+  ORDS.SET_MODULE_PRIVILEGE(
+    p_module_name    => 'hr.employees',
+    p_privilege_name => 'hr.employees.read'
   );
   COMMIT;
 END;

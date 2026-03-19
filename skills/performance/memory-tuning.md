@@ -223,7 +223,7 @@ ALTER SYSTEM SET PGA_AGGREGATE_TARGET = 2G;        -- total target for all sessi
 
 -- 12c+: Hard limit on PGA (prevents runaway queries from crashing the instance)
 ALTER SYSTEM SET PGA_AGGREGATE_LIMIT = 4G;
--- Must be >= 2 * PGA_AGGREGATE_TARGET
+-- Common starting point: 2x PGA_AGGREGATE_TARGET; avoid setting below the platform default
 
 -- Check current PGA usage vs. target
 SELECT name, value
@@ -504,7 +504,7 @@ ORDER  BY shared_pool_size_for_estimate;
 |---|---|---|
 | Using AMM with HugePages on Linux | HugePages silently not used; TLB thrashing | Use ASMM; disable AMM (`MEMORY_TARGET=0`) |
 | Setting `SGA_TARGET` = total RAM | OS starvation; swap usage | Leave 20% of RAM for OS |
-| Not setting `PGA_AGGREGATE_LIMIT` (12c+) | Runaway query can exhaust all RAM | Always set limit >= 2x target |
+| Not setting `PGA_AGGREGATE_LIMIT` (12c+) | Runaway query can exhaust all RAM | Set a hard limit consciously; 2x target is a common starting point |
 | Undersizing LARGE_POOL for RMAN | RMAN allocates from shared pool; fragmentation | Set large pool based on channel count × buffer size |
 | Ignoring `estd_overalloc_count` in PGA advice | Confirms PGA is undersized | Increase PGA until overalloc_count = 0 |
 | Pinning everything in shared pool | Evicts needed objects; wastes space | Only pin large, frequently invalidated packages |

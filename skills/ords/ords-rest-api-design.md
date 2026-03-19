@@ -95,7 +95,7 @@ Creates the HTTP method handler for a template. Each handler has a source type a
 ORDS.DEFINE_HANDLER(
   p_module_name    => 'hr.api',
   p_pattern        => 'employees/',
-  p_method         => 'GET',             -- HTTP method: GET POST PUT DELETE PATCH
+  p_method         => 'GET',             -- HTTP method: GET POST PUT DELETE
   p_source_type    => ORDS.source_type_collection_feed,  -- See source types below
   p_items_per_page => 25,
   p_mimes_allowed  => NULL,              -- Accepted Content-Types (for POST/PUT)
@@ -120,12 +120,13 @@ The `p_source_type` parameter controls how ORDS interprets and serializes the ha
 | `ORDS.source_type_collection_feed` | SQL SELECT returning a paginated JSON collection (`items`, `hasMore`, `links`) |
 | `ORDS.source_type_collection_item` | SQL SELECT returning a single row as a JSON object |
 | `ORDS.source_type_media` | SQL returning BLOB/CLOB for binary/text responses (files, images) |
-| `ORDS.source_type_plsql` | PL/SQL block (no automatic result serialization — use `:status_code`, `:body`, etc.) |
+| `ORDS.source_type_plsql` | PL/SQL block |
 | `ORDS.source_type_query` | Alias for `collection_feed` |
 | `ORDS.source_type_query_one_row` | Alias for `collection_item` |
-| `ORDS.source_type_dml` | SQL DML statement (INSERT/UPDATE/DELETE) with implicit commit |
+| `ORDS.source_type_feed` | SQL or PL/SQL returning Atom feed output |
+| `ORDS.source_type_csv_query` | SQL SELECT serialized as CSV |
 
-String literals also work: `'collection/feed'`, `'collection/item'`, `'plsql/block'`, `'query'`, `'dml'`
+String literals also work: `'collection/feed'`, `'collection/item'`, `'plsql/block'`, `'query'`, `'feed'`, `'csv/query'`
 
 ---
 
@@ -359,7 +360,7 @@ WHERE (:dept_id IS NULL OR department_id = :dept_id)
 
 ### Request Body Parameters (JSON)
 
-For POST/PUT/PATCH with `application/json` body, ORDS automatically parses the JSON body and makes each top-level key available as a named bind variable:
+For POST/PUT handlers with `application/json` body, ORDS automatically parses the JSON body and makes each top-level key available as a named bind variable:
 
 ```json
 {
@@ -418,7 +419,7 @@ END;
 
 ## Returning JSON Results from PL/SQL Handlers
 
-For `source_type_plsql` handlers, ORDS does not automatically serialize results. Use one of these approaches:
+For `source_type_plsql` handlers, ORDS can serialize implicit result sets and cursor binds. For custom status codes, headers, or manually constructed response bodies, use one of these approaches:
 
 ### Approach 1: Use `:forward_location` to Redirect to GET
 
@@ -478,8 +479,7 @@ Resource collection:    GET    /v1/employees/           List
                         POST   /v1/employees/           Create
 
 Resource item:          GET    /v1/employees/:id        Read
-                        PUT    /v1/employees/:id        Replace
-                        PATCH  /v1/employees/:id        Partial update
+                        PUT    /v1/employees/:id        Replace or update
                         DELETE /v1/employees/:id        Delete
 
 Nested collection:      GET    /v1/depts/:id/employees  List by parent

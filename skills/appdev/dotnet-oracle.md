@@ -29,13 +29,11 @@ using Oracle.ManagedDataAccess.Client;
 // Easy Connect
 string connStr = "User Id=hr;Password=password;Data Source=localhost:1521/freepdb1;";
 
-// TNS alias
-string connStr = "User Id=hr;Password=password;Data Source=mydb_high;";
-
-// Long-form descriptor inline
-string connStr = "User Id=hr;Password=password;" +
-    "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))" +
-    "(CONNECT_DATA=(SERVICE_NAME=freepdb1)));";
+// Alternatives:
+// connStr = "User Id=hr;Password=password;Data Source=mydb_high;";
+// connStr = "User Id=hr;Password=password;" +
+//     "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))" +
+//     "(CONNECT_DATA=(SERVICE_NAME=freepdb1)));";
 
 using var conn = new OracleConnection(connStr);
 conn.Open();
@@ -53,7 +51,7 @@ Console.WriteLine(result);
 string connStr = "User Id=admin;Password=password;Data Source=myatp_high;" +
     "Connection Timeout=30;";
 
-// Set wallet location in code
+// Configure wallet location in code
 OracleConfiguration.TnsAdmin = "/path/to/wallet";
 OracleConfiguration.WalletLocation = "/path/to/wallet";
 
@@ -313,7 +311,7 @@ conn.Commit();
 
 ## Oracle Version Notes (19c vs 26ai)
 
-- `Oracle.ManagedDataAccess.Core` 23.x supports Oracle Database 11.2 through 23ai.
+- `Oracle.ManagedDataAccess.Core` 23.x supports Oracle Database 11.2 through 26ai.
 - `Oracle.EntityFrameworkCore` 8.x targets EF Core 8 / .NET 8.
 - Oracle 23ai `VECTOR` type support is available in ODP.NET 23.4+.
 

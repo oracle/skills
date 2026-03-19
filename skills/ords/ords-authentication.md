@@ -4,6 +4,8 @@
 
 ORDS provides a complete OAuth2-based security model for protecting REST endpoints. Access control is defined through **privileges** (which endpoints are protected) and **OAuth2 clients** (which applications/users can access them). ORDS supports OAuth2 client credentials flow (machine-to-machine), authorization code flow (user-facing web applications), and implicit flow. Additionally, ORDS supports external identity providers via JWT profile configuration, enabling integration with Oracle Identity Cloud Service (IDCS), Azure AD, Okta, and other OIDC-compatible providers.
 
+Current ORDS releases use `ORDS_SECURITY` and `ORDS_SECURITY_ADMIN` for OAuth client lifecycle management. The older `OAUTH` and `OAUTH_ADMIN` packages are deprecated and should not be used in new examples.
+
 ---
 
 ## Core Security Concepts
@@ -26,14 +28,26 @@ An **OAuth client** represents an application (or user account) that wants to ca
 
 ```sql
 -- Define a privilege that protects employee data endpoints
+DECLARE
+  l_roles    owa.vc_arr;
+  l_patterns owa.vc_arr;
+  l_modules  owa.vc_arr;
 BEGIN
   ORDS.DEFINE_PRIVILEGE(
     p_privilege_name => 'hr.employees.read',
-    p_roles          => NULL,                  -- No role restriction (any authenticated client)
+    p_roles          => l_roles,               -- Empty array = no role restriction
+    p_patterns       => l_patterns,
+    p_modules        => l_modules,
     p_label          => 'HR Employee Read',
     p_description    => 'Read access to HR employee data',
     p_comments       => NULL
   );
+
+  ORDS.SET_MODULE_PRIVILEGE(
+    p_module_name    => 'hr.employees',
+    p_privilege_name => 'hr.employees.read'
+  );
+
   COMMIT;
 END;
 /
@@ -43,62 +57,53 @@ END;
 
 ```sql
 DECLARE
-  l_roles owa.vc_arr;
+  l_roles    owa.vc_arr;
+  l_patterns owa.vc_arr;
+  l_modules  owa.vc_arr;
 BEGIN
   -- Define roles first
   ORDS.CREATE_ROLE(p_role_name => 'HR_MANAGER');
   ORDS.CREATE_ROLE(p_role_name => 'HR_ADMIN');
 
   -- Define privilege requiring HR_MANAGER or HR_ADMIN role
-  -- p_roles is owa.vc_arr (not ORDS_TYPES.T_ORDS_STR_LIST)
+  -- p_roles is an owa.vc_arr
   l_roles(1) := 'HR_MANAGER';
   l_roles(2) := 'HR_ADMIN';
 
   ORDS.DEFINE_PRIVILEGE(
     p_privilege_name => 'hr.employees.write',
     p_roles          => l_roles,
+    p_patterns       => l_patterns,
+    p_modules        => l_modules,
     p_label          => 'HR Employee Write',
     p_description    => 'Create, update, and delete HR employee records'
   );
+
+  ORDS.SET_MODULE_PRIVILEGE(
+    p_module_name    => 'hr.employees',
+    p_privilege_name => 'hr.employees.write'
+  );
+
   COMMIT;
 END;
 /
 ```
 
-### Attaching a Privilege to Module Patterns
+### Attaching a Privilege to a Module
 
 ```sql
 BEGIN
   -- Protect all endpoints in the hr.employees module
-  ORDS.PRIVILEGE_MAP_MODULE(
-    p_privilege_name => 'hr.employees.read',
-    p_module_name    => 'hr.employees'
+  ORDS.SET_MODULE_PRIVILEGE(
+    p_module_name    => 'hr.employees',
+    p_privilege_name => 'hr.employees.read'
   );
   COMMIT;
 END;
 /
 ```
 
-### Attaching a Privilege to a Specific URL Pattern
-
-```sql
-BEGIN
-  -- Protect only write operations on the employees resource
-  ORDS.CREATE_ROLE('hr.employees.write');
-
-  -- Associate privilege with a URL pattern
-  ORDS.DEFINE_PRIVILEGE(
-    p_privilege_name  => 'hr.employees.write',
-    p_roles           => ORDS_TYPES.T_ORDS_STR_LIST('HR_ADMIN'),
-    p_label           => 'Employee Write',
-    p_description     => 'Modify employee records',
-    p_module_name     => 'hr.employees',   -- Scope to module
-    p_pattern         => 'employees/'
-  );
-  COMMIT;
-END;
-/
-```
+To protect only selected URL patterns instead of an entire module, use `ORDS.DEFINE_PRIVILEGE` with the `p_patterns` array.
 
 ---
 
@@ -109,36 +114,46 @@ This flow is used for server-to-server API calls where there is no interactive u
 ### Step 1: Create an OAuth Client
 
 ```sql
+DECLARE
+  l_client ords_types.t_client_credentials;
 BEGIN
-  OAUTH.CREATE_CLIENT(
+  l_client := ORDS_SECURITY.REGISTER_CLIENT(
     p_name            => 'reporting-service',
     p_grant_type      => 'client_credentials',
-    p_owner           => 'Data Platform Team',
     p_description     => 'Automated reporting service for HR data',
-    p_support_email   => 'dataplatform@example.com',
-    p_privilege_names => 'hr.employees.read'   -- Comma-separated privilege names
+    p_support_email   => 'https://api.example.com/support',
+    p_privilege_names => 'hr.employees.read'
   );
+
+  l_client.client_key.name := 'reporting-service';
+  l_client := ORDS_SECURITY.ROTATE_CLIENT_SECRET(
+    p_client_key      => l_client.client_key,
+    p_revoke_existing => TRUE
+  );
+
+  DBMS_OUTPUT.PUT_LINE('client_id=' || l_client.client_key.client_id);
+  DBMS_OUTPUT.PUT_LINE('client_secret=' || l_client.client_secret.secret);
   COMMIT;
 END;
 /
 ```
 
-### Step 2: Retrieve the Client ID and Secret
+### Step 2: Retrieve the Client ID
 
 ```sql
--- View the generated client_id and client_secret
-SELECT client_id, client_secret
-FROM user_ords_clients
-WHERE name = 'reporting-service';
+-- View the generated client_id
+SELECT client_id
+FROM   user_ords_clients
+WHERE  name = 'reporting-service';
 ```
 
-Store the `client_secret` securely — it is only visible immediately after creation (or until next reset).
+Save the `client_secret` returned by `ROTATE_CLIENT_SECRET` immediately. It may not be queryable later unless you explicitly store it.
 
 ### Step 3: Grant Privileges to the Client
 
 ```sql
 BEGIN
-  OAUTH.GRANT_CLIENT_ROLE(
+  ORDS_SECURITY.GRANT_CLIENT_ROLE(
     p_client_name => 'reporting-service',
     p_role_name   => 'HR_ADMIN'   -- if the privilege requires this role
   );
@@ -195,20 +210,23 @@ Used when a human user must authenticate and explicitly authorize the applicatio
 ### Step 1: Create an Authorization Code Client
 
 ```sql
+DECLARE
+  l_client ords_types.t_client_credentials;
 BEGIN
-  OAUTH.CREATE_CLIENT(
-    p_name              => 'hr-portal',
-    p_grant_type        => 'authorization_code',
-    p_redirect_uri      => 'https://hrportal.example.com/callback',
-    p_support_email     => 'portal-admin@example.com',
-    p_privilege_names   => 'hr.employees.read,hr.employees.write',
-    p_owner             => 'HR Portal Team',
-    p_description       => 'HR Self-Service Portal'
+  l_client := ORDS_SECURITY.REGISTER_CLIENT(
+    p_name            => 'hr-portal',
+    p_grant_type      => 'authorization_code',
+    p_redirect_uri    => 'https://hrportal.example.com/callback',
+    p_support_email   => 'https://hrportal.example.com/support',
+    p_privilege_names => 'hr.employees.read,hr.employees.write',
+    p_description     => 'HR Self-Service Portal'
   );
   COMMIT;
 END;
 /
 ```
+
+Generate or rotate the client secret before exchanging the authorization code for tokens.
 
 ### Step 2: Authorization Code Flow
 
@@ -252,39 +270,33 @@ Response includes `access_token` and `refresh_token`.
 ```sql
 -- List all OAuth clients
 SELECT client_id, name, grant_type, redirect_uri, status
-FROM user_ords_clients;
+FROM   user_ords_clients;
 
--- List tokens issued (admin view)
-SELECT c.name, t.token_type, t.expires_in
-FROM user_ords_tokens t
-JOIN user_ords_clients c ON c.client_id = t.client_id;
+-- List client role assignments
+SELECT client_name, role_name
+FROM   user_ords_client_roles
+ORDER  BY client_name, role_name;
 
--- Revoke a client (disable all its tokens)
+-- Rotate the client secret and revoke the existing one
+DECLARE
+  l_client ords_types.t_client_credentials;
 BEGIN
-  OAUTH.UPDATE_CLIENT(
-    p_name   => 'reporting-service',
-    p_status => 'REVOKED'
+  l_client.client_key.name := 'reporting-service';
+  l_client := ORDS_SECURITY.ROTATE_CLIENT_SECRET(
+    p_client_key      => l_client.client_key,
+    p_revoke_existing => TRUE
   );
   COMMIT;
+  DBMS_OUTPUT.PUT_LINE('New client secret: ' || l_client.client_secret.secret);
 END;
 /
 
 -- Delete a client
 BEGIN
-  OAUTH.DELETE_CLIENT(p_name => 'reporting-service');
+  ORDS_SECURITY.DELETE_CLIENT(p_name => 'reporting-service');
   COMMIT;
 END;
 /
-
--- Reset client secret
-BEGIN
-  OAUTH.RESET_CLIENT_SECRET(p_name => 'reporting-service');
-  COMMIT;
-END;
-/
-
--- Get new secret after reset
-SELECT client_secret FROM user_ords_clients WHERE name = 'reporting-service';
 ```
 
 ---
@@ -404,7 +416,7 @@ END;
 - **Set short token expiry for sensitive operations**: Default ORDS token expiry is 1 hour. For high-security contexts, configure shorter expiry and implement refresh token logic.
 - **Scope privileges narrowly**: Create separate privileges for read vs. write vs. admin operations. Clients receive only the minimum required privileges.
 - **Use external IdP for user-facing applications**: Rather than managing users in ORDS, integrate with your organization's identity provider via JWT profile. This enables SSO and centralizes user lifecycle management.
-- **Rotate client secrets regularly**: Treat client secrets like passwords. Rotate them on schedule and after any potential exposure. Use `OAUTH.RESET_CLIENT_SECRET`.
+- **Rotate client secrets regularly**: Treat client secrets like passwords. Rotate them on schedule and after any potential exposure. Use `ORDS_SECURITY.ROTATE_CLIENT_SECRET`.
 - **Audit privilege assignments**: Periodically review `user_ords_clients` and `user_ords_client_roles` to ensure no stale or over-privileged clients exist.
 
 ## Common Mistakes
@@ -421,5 +433,5 @@ END;
 ## Sources
 
 - [ORDS Developer's Guide — Securing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
-- [Oracle REST Data Services PL/SQL API Reference — OAUTH and ORDS Packages](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [Oracle REST Data Services PL/SQL API Reference — ORDS, ORDS_SECURITY, and ORDS_SECURITY_ADMIN](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.3/orddg/ORDS-reference.html)
 - [ORDS OAuth2 Client Credentials Flow](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/rest-enabled-sql-service.html)

@@ -484,10 +484,8 @@ WHERE s.username IS NOT NULL
   )
 ORDER BY s.username;
 
--- Check listener endpoints
-SELECT end_point
-FROM v$listener_network
-ORDER BY end_point;
+-- Listener endpoints are best verified from the OS with lsnrctl:
+-- lsnrctl status
 ```
 
 ---

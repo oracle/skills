@@ -422,14 +422,14 @@ ORDER BY temp_mb DESC;
 
 ```sql
 -- Temp tablespace sizing: look at historical max usage (if AWR available)
-SELECT snap_id,
-       tablespace_name,
-       ROUND(tablespace_size   / 1073741824, 2) AS total_gb,
-       ROUND(tablespace_usedsize / 1073741824, 2) AS used_gb
-FROM   dba_hist_tbspc_space_usage
-WHERE  tablespace_name IN (
-    SELECT tablespace_name FROM dba_tablespaces WHERE contents = 'TEMPORARY'
-)
+SELECT u.snap_id,
+       ts.name AS tablespace_name,
+       ROUND(u.tablespace_size * dt.block_size / 1073741824, 2) AS total_gb,
+       ROUND(u.tablespace_usedsize * dt.block_size / 1073741824, 2) AS used_gb
+FROM   dba_hist_tbspc_space_usage u
+JOIN   v$tablespace              ts ON u.tablespace_id = ts.ts#
+JOIN   dba_tablespaces           dt ON dt.tablespace_name = ts.name
+WHERE  dt.contents = 'TEMPORARY'
 ORDER BY snap_id DESC
 FETCH FIRST 100 ROWS ONLY;
 ```
@@ -510,16 +510,18 @@ ORDER BY used_pct DESC;
 
 ```sql
 -- Tablespace growth per week over the last 3 months
-SELECT tablespace_name,
-       TRUNC(snap_time, 'IW')                                     AS week_start,
-       ROUND(MAX(tablespace_usedsize) * 8192 / 1073741824, 2)     AS max_used_gb,
-       ROUND(MIN(tablespace_usedsize) * 8192 / 1073741824, 2)     AS min_used_gb,
-       ROUND((MAX(tablespace_usedsize) - MIN(tablespace_usedsize))
-             * 8192 / 1073741824, 3)                               AS growth_gb
+SELECT ts.name AS tablespace_name,
+       TRUNC(s.begin_interval_time, 'IW')                         AS week_start,
+       ROUND(MAX(u.tablespace_usedsize) * dt.block_size / 1073741824, 2) AS max_used_gb,
+       ROUND(MIN(u.tablespace_usedsize) * dt.block_size / 1073741824, 2) AS min_used_gb,
+       ROUND((MAX(u.tablespace_usedsize) - MIN(u.tablespace_usedsize))
+             * dt.block_size / 1073741824, 3)                     AS growth_gb
 FROM   dba_hist_tbspc_space_usage  u
 JOIN   dba_hist_snapshot            s ON u.snap_id = s.snap_id AND u.dbid = s.dbid
-WHERE  s.snap_time > SYSDATE - 90
-GROUP BY tablespace_name, TRUNC(snap_time, 'IW')
+JOIN   v$tablespace                ts ON u.tablespace_id = ts.ts#
+JOIN   dba_tablespaces             dt ON dt.tablespace_name = ts.name
+WHERE  s.begin_interval_time > SYSDATE - 90
+GROUP BY ts.name, dt.block_size, TRUNC(s.begin_interval_time, 'IW')
 ORDER BY tablespace_name, week_start;
 ```
 

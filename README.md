@@ -1,5 +1,8 @@
 # Oracle DB Skills
 
+**Repository:** https://github.com/krisrice/oracle-db-skills
+**Version:** 1.0.0
+
 Oracle DB Skills is a curated library of 100+ practical, documentation-backed guides for working with Oracle Database, organized by domain: SQL and PL/SQL development, performance tuning, security, administration, monitoring, architecture, DevOps, migrations, SQLcl, ORDS, and Oracle-specific features. Each guide includes actionable examples, best practices, common pitfalls, sources, and explicit Oracle version compatibility notes for 19c and 26ai.
 
 ## Version Coverage Standard
@@ -35,6 +38,7 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 | [Oracle-Specific Features](#oracle-specific-features) | 6 | `skills/features/` |
 | [SQLcl](#sqlcl) | 8 | `skills/sqlcl/` |
 | [ORDS (Oracle REST Data Services)](#ords-oracle-rest-data-services) | 10 | `skills/ords/` |
+| [Frameworks](#frameworks) | 9 | `skills/frameworks/` |
 
 ---
 
@@ -271,6 +275,24 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 
 ---
 
+## Frameworks
+
+`skills/frameworks/`
+
+| File | Description |
+|------|-------------|
+| `sqlalchemy-oracle.md` | SQLAlchemy ORM/Core Oracle dialect, engine setup, models, sequences, bulk ops |
+| `django-oracle.md` | Django ORM Oracle backend, settings, migrations, empty-string/NULL quirks |
+| `pandas-oracle.md` | read_sql, to_sql, chunked reads, bulk load via executemany, dtype mapping |
+| `spring-data-jpa-oracle.md` | Spring Data JPA + Hibernate Oracle dialect, @SequenceGenerator, native queries, PL/SQL |
+| `mybatis-oracle.md` | MyBatis mapper XML, #{} binds, dynamic SQL, CALLABLE statements, sequences |
+| `typeorm-oracle.md` | TypeORM entities, QueryBuilder, migrations, NestJS integration |
+| `sequelize-oracle.md` | Sequelize model definition, field mapping, sequence hooks, transactions |
+| `dapper-oracle.md` | Dapper Query<T>, DynamicParameters, OUT params, multi-mapping |
+| `gorm-oracle.md` | GORM models, BeforeCreate sequence hook, scopes, transactions |
+
+---
+
 ## Structure
 
 ```
@@ -286,6 +308,7 @@ oracle-db-skills/
     ├── features/            # Oracle-Specific Features
     ├── migrations/          # Migrations to Oracle
     ├── monitoring/          # Monitoring & Diagnostics
+    ├── frameworks/          # Language Frameworks (SQLAlchemy, Django, Spring, etc.)
     ├── ords/                # Oracle REST Data Services
     ├── performance/         # Performance & Tuning
     ├── plsql/               # PL/SQL Development

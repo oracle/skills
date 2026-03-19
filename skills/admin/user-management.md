@@ -345,14 +345,15 @@ CREATE USER c##dba_admin
   IDENTIFIED BY "P@ssw0rd!"
   CONTAINER = ALL;   -- or CURRENT (only in root)
 
--- Grant common roles
-GRANT c##connect, c##resource TO c##dba_admin CONTAINER=ALL;
+-- Grant common privileges
+GRANT CREATE SESSION TO c##dba_admin CONTAINER = ALL;
 
 -- Grant DBA privilege in all PDBs
-GRANT DBA TO c##dba_admin CONTAINER=ALL;
+GRANT DBA TO c##dba_admin CONTAINER = ALL;
 
--- Grant privileges in a specific PDB only
-GRANT DBA TO c##dba_admin CONTAINER=CURRENT;
+-- To grant a privilege only in one PDB, switch to that PDB first and use CONTAINER = CURRENT
+-- ALTER SESSION SET CONTAINER = pdb_production;
+-- GRANT READ ANY TABLE TO c##dba_admin CONTAINER = CURRENT;
 ```
 
 ### Local Users (in a PDB)
@@ -369,7 +370,7 @@ CREATE USER app_owner
   TEMPORARY TABLESPACE temp
   QUOTA UNLIMITED ON app_data;
 
-GRANT CONNECT, RESOURCE TO app_owner;
+GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE PROCEDURE, CREATE SEQUENCE TO app_owner;
 ```
 
 ### Key CDB/PDB User Management Queries
@@ -483,7 +484,7 @@ ORDER BY timestamp DESC;
 ## Common Mistakes and How to Avoid Them
 
 **Granting DBA to application users**
-The `DBA` role includes the ability to drop tables, read any table, create users, and more. Application accounts should have only `CONNECT` and specific object privileges. Audit `DBA` role grants regularly:
+The `DBA` role includes the ability to drop tables, read any table, create users, and more. Application accounts should have only `CREATE SESSION` and the specific object privileges they need. Audit `DBA` role grants regularly:
 ```sql
 SELECT grantee, granted_role FROM dba_role_privs WHERE granted_role = 'DBA';
 ```

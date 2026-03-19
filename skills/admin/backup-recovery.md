@@ -298,24 +298,33 @@ Used when you need to recover to a point before the current time — for example
 **By SCN:**
 ```sql
 STARTUP MOUNT;
-RESTORE DATABASE UNTIL SCN 5432100;
-RECOVER DATABASE UNTIL SCN 5432100;
+RUN {
+  SET UNTIL SCN 5432100;
+  RESTORE DATABASE;
+  RECOVER DATABASE;
+}
 ALTER DATABASE OPEN RESETLOGS;
 ```
 
 **By Time:**
 ```sql
 STARTUP MOUNT;
-RESTORE DATABASE UNTIL TIME "TO_DATE('2025-12-01 14:30:00','YYYY-MM-DD HH24:MI:SS')";
-RECOVER DATABASE UNTIL TIME "TO_DATE('2025-12-01 14:30:00','YYYY-MM-DD HH24:MI:SS')";
+RUN {
+  SET UNTIL TIME "TO_DATE('2025-12-01 14:30:00','YYYY-MM-DD HH24:MI:SS')";
+  RESTORE DATABASE;
+  RECOVER DATABASE;
+}
 ALTER DATABASE OPEN RESETLOGS;
 ```
 
 **By Sequence:**
 ```sql
 STARTUP MOUNT;
-RESTORE DATABASE UNTIL SEQUENCE 1450 THREAD 1;
-RECOVER DATABASE UNTIL SEQUENCE 1450 THREAD 1;
+RUN {
+  SET UNTIL SEQUENCE 1450 THREAD 1;
+  RESTORE DATABASE;
+  RECOVER DATABASE;
+}
 ALTER DATABASE OPEN RESETLOGS;
 ```
 
@@ -454,6 +463,10 @@ ALTER DATABASE OPEN;
 - Baseline guidance in this file is valid for Oracle Database 19c unless a newer minimum version is explicitly called out.
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
+
+## See Also
+
+- [RMAN Basics: Commands, Configuration, and Operations](../admin/rman-basics.md) — Day-to-day RMAN command reference
 
 ## Sources
 

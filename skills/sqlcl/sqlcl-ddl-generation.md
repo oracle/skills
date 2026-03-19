@@ -78,9 +78,7 @@ By default, the `DDL` command produces clean, portable DDL with minimal storage 
 
 ### SHOW Options
 
-The `DDL` command output is primarily controlled through `SET DDL` session-level settings (see below). The exact inline flag syntax (`SHOW STORAGE`, `SHOW SEGMENT`, `NOSCHEMA`) for the `DDL` command varies between SQLcl versions.
-
-> ⚠️ Unverified: The inline `DDL ... SHOW STORAGE`, `DDL ... SHOW SEGMENT`, and `DDL ... NOSCHEMA` flag syntax — these are not consistently documented across official Oracle SQLcl release docs. Use the session-level `SET DDL` commands instead, which are officially documented and reliably available.
+The `DDL` command output is primarily controlled through `SET DDL` session-level settings (see below). This guide intentionally uses the session-level commands because they are the documented, version-stable way to control storage, segment attributes, tablespace clauses, and schema qualification.
 
 The recommended approach for controlling DDL output is via session settings:
 

@@ -1,6 +1,9 @@
 # Oracle DB Skills
 
-108 Oracle Database reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
+**Repository:** https://github.com/krisrice/oracle-db-skills
+**Version:** 1.0.0
+
+126 Oracle Database reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
 
 **Install:** `npx skills add krisrice/oracle-db-skills`
 
@@ -84,10 +87,8 @@
 | `skills/plsql/plsql-performance.md` | plsql | Context switches, BULK COLLECT/FORALL, pipelined functions, RESULT_CACHE, PRAGMA UDF |
 | `skills/plsql/plsql-collections.md` | plsql | Associative arrays, nested tables, varrays, collection methods, TABLE() in SQL |
 | `skills/plsql/plsql-cursors.md` | plsql | Implicit/explicit cursors, cursor FOR loops, REF CURSORs, SYS_REFCURSOR, leak prevention |
-| `skills/plsql/plsql-dynamic-sql.md` | plsql | EXECUTE IMMEDIATE, DBMS_SQL, parse-once/execute-many, injection prevention |
 | `skills/plsql/plsql-security.md` | plsql | AUTHID DEFINER vs CURRENT_USER, injection vectors, DBMS_ASSERT, secure coding checklist |
 | `skills/plsql/plsql-debugging.md` | plsql | DBMS_OUTPUT, DBMS_APPLICATION_INFO, SQL Developer debugger, PLSQL_WARNINGS, DBMS_TRACE |
-| `skills/plsql/plsql-unit-testing.md` | plsql | utPLSQL, test packages, assertions, mocking, CI integration, code coverage |
 | `skills/plsql/plsql-patterns.md` | plsql | TAPI pattern, autonomous transaction logging, pipelined functions, object types |
 | `skills/plsql/plsql-compiler-options.md` | plsql | PLSQL_OPTIMIZE_LEVEL, native vs interpreted, conditional compilation, PLSQL_CCFLAGS |
 | `skills/plsql/plsql-code-quality.md` | plsql | Naming conventions, Trivadis guidelines, anti-patterns, review checklist, PL/SQL Cop |
@@ -97,6 +98,15 @@
 | `skills/features/materialized-views.md` | features | COMPLETE/FAST/FORCE refresh, ON COMMIT, MV logs, query rewrite |
 | `skills/features/database-links.md` | features | Fixed/connected/shared links, distributed DML, two-phase commit, security risks |
 | `skills/features/oracle-apex.md` | features | APEX architecture, authentication, ORDS integration, REST APIs, CI/CD deployment |
+| `skills/frameworks/sqlalchemy-oracle.md` | frameworks | SQLAlchemy ORM/Core Oracle dialect, engine, models, sequences, bulk ops |
+| `skills/frameworks/django-oracle.md` | frameworks | Django ORM Oracle backend, settings, migrations, empty-string/NULL quirks |
+| `skills/frameworks/pandas-oracle.md` | frameworks | read_sql, to_sql, chunked reads, bulk load, dtype mapping |
+| `skills/frameworks/spring-data-jpa-oracle.md` | frameworks | Spring Data JPA + Hibernate Oracle dialect, @SequenceGenerator, native queries |
+| `skills/frameworks/mybatis-oracle.md` | frameworks | MyBatis mapper XML, #{} binds, dynamic SQL, CALLABLE, sequences |
+| `skills/frameworks/typeorm-oracle.md` | frameworks | TypeORM entities, QueryBuilder, migrations, NestJS integration |
+| `skills/frameworks/sequelize-oracle.md` | frameworks | Sequelize model definition, field mapping, sequence hooks, transactions |
+| `skills/frameworks/dapper-oracle.md` | frameworks | Dapper Query<T>, DynamicParameters, OUT params, multi-mapping |
+| `skills/frameworks/gorm-oracle.md` | frameworks | GORM models, BeforeCreate sequence hook, scopes, transactions |
 | `skills/sqlcl/sqlcl-basics.md` | sqlcl | Installation, connecting (TNS/Easy Connect/wallet), key differences from SQL*Plus |
 | `skills/sqlcl/sqlcl-scripting.md` | sqlcl | JavaScript engine (Nashorn/GraalVM), script command, Java interop, automation examples |
 | `skills/sqlcl/sqlcl-liquibase.md` | sqlcl | Built-in Liquibase, lb generate-schema, lb update/rollback, CI/CD integration |
@@ -115,3 +125,15 @@
 | `skills/ords/ords-metadata-catalog.md` | ords | OpenAPI 3.0 generation, Swagger UI/Postman integration, metadata views |
 | `skills/ords/ords-security.md` | ords | HTTPS enforcement, CORS via `ords config set`, wallet-based secrets, request validation |
 | `skills/ords/ords-monitoring.md` | ords | Log configuration, request logging, connection pool monitoring, error diagnosis |
+| `skills/features/vector-search.md` | features | VECTOR data type, HNSW/IVF indexes, VECTOR_DISTANCE(), similarity search, RAG patterns |
+| `skills/features/select-ai.md` | features | SELECT AI natural language to SQL, AI profiles, RUNSQL/SHOWSQL/NARRATE/CHAT actions |
+| `skills/features/dbms-vector.md` | features | DBMS_VECTOR and DBMS_VECTOR_CHAIN packages, embedding generation, RAG pipelines |
+| `skills/features/ai-profiles.md` | features | AI provider profile configuration: OpenAI, Cohere, Azure, OCI GenAI, Anthropic |
+| `skills/agent/safe-dml-patterns.md` | agent | Always-WHERE guards, dry run via SAVEPOINT, count before delete, bulk DML safety |
+| `skills/agent/destructive-op-guards.md` | agent | Pre-flight checks before DROP/TRUNCATE: dependencies, locks, DDL snapshot, recycle bin |
+| `skills/agent/idempotency-patterns.md` | agent | MERGE over INSERT, CREATE OR REPLACE, existence checks, retry-safe migration patterns |
+| `skills/agent/nl-to-sql-patterns.md` | agent | NL phrasings mapped to Oracle SQL: aggregation, date ranges, schema introspection |
+| `skills/agent/schema-discovery.md` | agent | Agent startup queries: ALL_TABLES, ALL_TAB_COLUMNS, ALL_CONSTRAINTS, privileges |
+| `skills/agent/intent-disambiguation.md` | agent | When to ask for clarification vs. proceed; safe defaults; disambiguation templates |
+| `skills/agent/client-identification.md` | agent | DBMS_APPLICATION_INFO, CLIENT_IDENTIFIER, tracing agent queries in ASH/AWR |
+| `skills/agent/ora-error-catalog.md` | agent | Top 25 ORA- errors: root cause and corrective SQL action for agent self-correction |

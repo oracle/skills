@@ -23,7 +23,7 @@ CREATE SEQUENCE schema.sequence_name
     CACHE n | NOCACHE                    -- pre-allocate n values in memory (default: 20)
     ORDER | NOORDER                      -- ORDER guarantees generation order (only matters for RAC)
     KEEP | NOKEEP                        -- affects sequence behavior after session restore
-    SCALE | NOSCALE;                     -- 23c: prepend instance/shard info for uniqueness
+    SCALE | NOSCALE;                     -- introduced in 23ai: prepend instance/shard info for uniqueness
 ```
 
 ### Basic Examples
@@ -414,7 +414,7 @@ When using `GENERATED ALWAYS`, Data Pump exports include the sequence definition
 ```sql
 -- After Data Pump import, fix the identity sequence
 SELECT max(employee_id) FROM employees;  -- say it's 5432
-ALTER TABLE employees MODIFY employee_id GENERATED ALWAYS AS IDENTITY (START WITH 5433);
+ALTER TABLE employees MODIFY employee_id GENERATED ALWAYS AS IDENTITY (START WITH LIMIT VALUE);
 ```
 
 ---

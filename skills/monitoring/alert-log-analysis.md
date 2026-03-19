@@ -438,6 +438,10 @@ In rare cases (system crashes, disk issues), they can diverge. The XML log is th
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
 
+## See Also
+
+- [ADRCI Usage](../monitoring/adrci-usage.md) — adrci tool for searching, filtering, and packaging diagnostic data
+
 ## Sources
 
 - [Oracle Database 19c Administrator's Guide — Diagnosing and Resolving Problems](https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/diagnosing-and-resolving-problems.html)

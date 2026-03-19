@@ -507,6 +507,10 @@ END;
 
 ---
 
+## See Also
+
+- [PL/SQL Debugging](../plsql/plsql-debugging.md) — Runtime diagnosis tools: DBMS_OUTPUT, SQL trace, debugger
+
 ## Sources
 
 - Oracle Database 19c PL/SQL Language Reference — Exception Handling: https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/plsql-error-handling.html

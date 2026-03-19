@@ -401,7 +401,7 @@ ORDER  SIBLINGS BY session_id;
 
 ```sql
 -- Pull a historical execution plan for a SQL found in ASH
--- Note: DISPLAY_AWR is deprecated in Oracle 23c+; use DISPLAY_WORKLOAD_REPOSITORY for new code
+-- Note: DISPLAY_AWR is deprecated in Oracle 23ai+; use DISPLAY_WORKLOAD_REPOSITORY for new code
 SELECT * FROM TABLE(
   DBMS_XPLAN.DISPLAY_AWR(
     sql_id        => 'abc123xyz',

@@ -396,7 +396,7 @@ SELECT * FROM orders WHERE order_date < DATE '2020-01-01';
 
 AWS Schema Conversion Tool (SCT) automates schema conversion for SQL Server to Oracle migrations and can assess migration complexity.
 
-> ⚠️ Note: "SSMA for Oracle" (Microsoft's product) migrates FROM Oracle TO SQL Server — the reverse direction. For SQL Server to Oracle, use **AWS SCT** or **SQL Developer Migration Workbench**.
+> Note: "SSMA for Oracle" (Microsoft's product) migrates FROM Oracle TO SQL Server — the reverse direction. For SQL Server to Oracle, use **AWS SCT** or **SQL Developer Migration Workbench**.
 
 ### AWS SCT Workflow (SQL Server → Oracle)
 

@@ -324,18 +324,16 @@ ALTER SYSTEM SET RESOURCE_MANAGER_PLAN = 'PDB_APP1_PLAN' SCOPE = BOTH;
 
 ```sql
 -- Set SGA and PGA memory limits per PDB (requires 19c Multitenant license)
-ALTER PLUGGABLE DATABASE pdb_app1
-    SET SGA_TARGET = 8G SGA_MIN_SIZE = 4G;
+ALTER SESSION SET CONTAINER = pdb_app1;
+ALTER SYSTEM SET SGA_TARGET   = 8G SCOPE = BOTH;
+ALTER SYSTEM SET SGA_MIN_SIZE = 4G SCOPE = BOTH;
 
-ALTER PLUGGABLE DATABASE pdb_reporting
-    SET SGA_TARGET = 4G;
+ALTER SESSION SET CONTAINER = pdb_reporting;
+ALTER SYSTEM SET SGA_TARGET = 4G SCOPE = BOTH;
 
--- Query memory allocation
-SELECT con_id, name,
-       sga_target / 1024 / 1024          AS sga_target_mb,
-       sga_min_size / 1024 / 1024        AS sga_min_mb
-FROM   v$pdbs
-ORDER  BY con_id;
+-- Verify inside each PDB after switching containers
+SHOW PARAMETER sga_target;
+SHOW PARAMETER sga_min_size;
 ```
 
 ---
@@ -373,7 +371,7 @@ ALTER SESSION SET CONTAINER = pdb_app1;
 
 -- Create a local user (no C## prefix required)
 CREATE USER app_owner IDENTIFIED BY "AppPass#1";
-GRANT CONNECT, RESOURCE TO app_owner;
+GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE PROCEDURE, CREATE SEQUENCE TO app_owner;
 GRANT UNLIMITED TABLESPACE TO app_owner;
 ```
 

@@ -78,13 +78,14 @@ ORDER  BY inst_id, name;
 
 -- Check interconnect statistics
 SELECT inst_id,
-       gc_cr_blocks_received,
-       gc_current_blocks_received,
-       gc_cr_blocks_served,
-       gc_current_blocks_served
+       SUM(CASE WHEN name = 'gc cr blocks received'      THEN value ELSE 0 END) AS gc_cr_blocks_received,
+       SUM(CASE WHEN name = 'gc current blocks received' THEN value ELSE 0 END) AS gc_current_blocks_received,
+       SUM(CASE WHEN name = 'gc cr blocks served'        THEN value ELSE 0 END) AS gc_cr_blocks_served,
+       SUM(CASE WHEN name = 'gc current blocks served'   THEN value ELSE 0 END) AS gc_current_blocks_served
 FROM   gv$sysstat
 WHERE  name IN ('gc cr blocks received', 'gc current blocks received',
                 'gc cr blocks served',  'gc current blocks served')
+GROUP  BY inst_id
 ORDER  BY inst_id;
 ```
 
@@ -127,12 +128,18 @@ FROM (
 ORDER  BY inst_id;
 
 -- Top segments causing cross-instance block transfers
-SELECT segment_name, segment_type,
-       gc_buffer_busy_waits, gc_cr_blocks_received, gc_current_blocks_received
+SELECT inst_id,
+       owner,
+       object_name,
+       object_type,
+       SUM(CASE WHEN statistic_name = 'gc buffer busy waits'      THEN value ELSE 0 END) AS gc_buffer_busy_waits,
+       SUM(CASE WHEN statistic_name = 'gc cr blocks received'     THEN value ELSE 0 END) AS gc_cr_blocks_received,
+       SUM(CASE WHEN statistic_name = 'gc current blocks received' THEN value ELSE 0 END) AS gc_current_blocks_received
 FROM   gv$segment_statistics
-WHERE  statistic_name IN ('gc buffer busy waits')
-  AND  value > 0
-ORDER  BY value DESC
+WHERE  statistic_name IN ('gc buffer busy waits', 'gc cr blocks received', 'gc current blocks received')
+GROUP  BY inst_id, owner, object_name, object_type
+HAVING SUM(CASE WHEN statistic_name = 'gc buffer busy waits' THEN value ELSE 0 END) > 0
+ORDER  BY gc_buffer_busy_waits DESC
 FETCH  FIRST 20 ROWS ONLY;
 ```
 

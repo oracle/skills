@@ -41,15 +41,14 @@ implementation 'com.oracle.database.jdbc:ucp11:23.4.0.24.05'
 
 ```java
 import java.sql.*;
+import oracle.jdbc.pool.OracleDataSource;
 
 // Easy Connect
 String url = "jdbc:oracle:thin:@localhost:1521/freepdb1";
 
-// TNS alias (set oracle.net.tns_admin system property or TNS_ADMIN env var)
-String url = "jdbc:oracle:thin:@mydb_high";
-
-// Long-form descriptor
-String url = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=freepdb1)))";
+// Alternatives:
+// String url = "jdbc:oracle:thin:@mydb_high";  // TNS alias
+// String url = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=freepdb1)))";
 
 try (Connection conn = DriverManager.getConnection(url, "hr", "password");
      Statement stmt = conn.createStatement();
@@ -67,13 +66,16 @@ System.setProperty("oracle.net.tns_admin", "/path/to/wallet");
 
 String url = "jdbc:oracle:thin:@myatp_high?TNS_ADMIN=/path/to/wallet";
 
-// If wallet has a password
+// If the wallet is password-protected
 OracleDataSource ods = new OracleDataSource();
 ods.setURL(url);
 ods.setUser("admin");
 ods.setPassword("password");
 ods.setConnectionProperty("oracle.net.wallet_password", "walletpassword");
-Connection conn = ods.getConnection();
+
+try (Connection conn = ods.getConnection()) {
+    // use conn
+}
 ```
 
 ---
@@ -261,69 +263,125 @@ try (CallableStatement cstmt = conn.prepareCall(
 
 ---
 
-## LOB Handling
+## Security Considerations
 
-```java
-// Read CLOB
-try (PreparedStatement pstmt = conn.prepareStatement(
-        "SELECT resume FROM employee_docs WHERE employee_id = ?")) {
-    pstmt.setInt(1, 100);
-    try (ResultSet rs = pstmt.executeQuery()) {
-        if (rs.next()) {
-            Clob clob = rs.getClob("resume");
-            String text = clob.getSubString(1, (int) clob.length());
-            System.out.println(text.substring(0, 200));
-        }
-    }
-}
+### Credential Management
+- **Never hardcode passwords** in application code or configuration files
+- Use Oracle Wallet to store credentials securely:
+  ```java
+  // For Autonomous Database or TLS connections
+  System.setProperty("oracle.net.tns_admin", "/path/to/wallet");
+  String url = "jdbc:oracle:thin:@myatp_high?TNS_ADMIN=/path/to/wallet";
+  // Wallet password can be set via connection property
+  OracleDataSource ods = new OracleDataSource();
+  ods.setURL(url);
+  ods.setUser("username");
+  // Wallet password (if wallet is password-protected)
+  ods.setConnectionProperty("oracle.net.wallet_password", "walletPassword");
+  ```
+- Consider using external credential stores (AWS Secrets Manager, HashiCorp Vault) for production deployments
 
-// Write CLOB
-try (PreparedStatement pstmt = conn.prepareStatement(
-        "UPDATE employee_docs SET resume = ? WHERE employee_id = ?")) {
-    Clob clob = conn.createClob();
-    clob.setString(1, "Large text content...");
-    pstmt.setClob(1, clob);
-    pstmt.setInt(2, 100);
-    pstmt.executeUpdate();
-    conn.commit();
-}
+### Network Security
+- **Always use TCPS (TLS)** for production connections:
+  ```java
+  String url = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCPS)(HOST=db-host)(PORT=2484))(CONNECT_DATA=(SERVICE_NAME=service_name)))";
+  ```
+- Verify server identity with `SSL_SERVER_CERT_DN` in connection properties when using TCPS
+- For cloud deployments, use IAM authentication where available:
+  ```java
+  // Example for Oracle Cloud Infrastructure
+  OracleDataSource ods = new OracleDataSource();
+  ods.setURL("jdbc:oracle:thin:@your_tcp_alias");
+  // Set IAM credentials via OracleCloudIamUsernameCallbackHandler
+  ```
 
-// Write BLOB from file
-try (PreparedStatement pstmt = conn.prepareStatement(
-        "UPDATE employee_photos SET photo = ? WHERE employee_id = ?")) {
-    Path path = Path.of("photo.jpg");
-    pstmt.setBytes(1, Files.readAllBytes(path));
-    pstmt.setInt(2, 100);
-    pstmt.executeUpdate();
-    conn.commit();
-}
-```
+### SQL Injection Prevention
+- **Always use `PreparedStatement`** with bind variables (already covered in best practices)
+- Never concatenate user input into SQL strings
+- For dynamic SQL (table/column names), use whitelist validation:
+  ```java
+  // UNSAFE: String sql = "SELECT * FROM " + userInputTable; // NEVER DO THIS
+  // SAFE: Validate against allowed table names
+  if (ALLOWED_TABLES.contains(userInputTable)) {
+      String sql = "SELECT * FROM " + userInputTable;
+      // Use PreparedStatement for any user values in WHERE clause
+  }
+  ```
 
----
+### Principle of Least Privilege
+- Database user should have **minimum required privileges**:
+  ```sql
+  -- Instead of granting CONNECT, RESOURCE roles:
+  CREATE USER app_user IDENTIFIED BY "secure_password";
+  GRANT CREATE SESSION TO app_user;
+  GRANT SELECT, INSERT, UPDATE ON needed_table TO app_user;
+  GRANT EXECUTE ON needed_procedure TO app_user;
+  ```
+- Avoid granting excessive privileges like `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`
+- Use roles to manage permissions: `GRANT app_user_role TO app_user;`
 
-## Oracle-Specific JDBC Extensions
+### Auditing and Monitoring
+- Set client information for traceability in database logs:
+  ```java
+  OracleConnection oraConn = conn.unwrap(OracleConnection.class);
+  oraConn.setClientInfo("OCSID.MODULE", "YourAppName");
+  oraConn.setClientInfo("OCSID.ACTION", "SpecificOperation");
+  oraConn.setClientInfo("OCSID.CLIENTID", "endUserIdentifier");
+  ```
+- These values appear in `V$SESSION.MODULE`, `V$SESSION.ACTION`, `V$SESSION.CLIENT_IDENTIFIER`
+- Enable unified auditing to track database access:
+  ```sql
+  -- Audit failed logins (brute force detection)
+  CREATE AUDIT POLICY failed_logins_pol
+    ACTIONS LOGON
+    WHENEVER NOT SUCCESSFUL;
+  AUDIT POLICY failed_logins_pol;
+  ```
 
-```java
-import oracle.jdbc.OracleConnection;
-import oracle.jdbc.OracleResultSet;
+### Data Protection
+- Consider using **Transparent Data Encryption (TDE)** for sensitive data at rest
+- For application-level encryption of sensitive fields before storage:
+  ```java
+  // Encrypt sensitive data before inserting/updateing
+  String encryptedSSN = encrypt(ssnValue); // Using AES/GCM or similar
+  preparedStatement.setString(1, encryptedSSN);
+  ```
+- Use Oracle Data Redaction for masking sensitive data in query results:
+  ```sql
+  -- Example: Redact SSN for non-HR users
+  BEGIN
+    DBMS_REDACT.ADD_POLICY(
+      object_schema => 'HR',
+      object_name => 'EMPLOYEES',
+      column_name => 'SSN',
+      policy_name => 'REDACT_SSN_POLICY',
+      function_type => DBMS_REDACT.PARTIAL,
+      expression => 'SYS_CONTEXT(''USERENV'',''SESSION_USER'') NOT IN (''HR_MANAGER'')'
+    );
+  END;
+  ```
 
-// Access Oracle extensions
-OracleConnection oraConn = conn.unwrap(OracleConnection.class);
+### Connection Pool Security
+- When using connection pools (UCP, HikariCP):
+  - Validate connections before use: `setConnectionValidationQuery("SELECT 1 FROM DUAL")`
+  - Set appropriate timeout values to prevent resource exhaustion
+  - Consider using separate pools for different privilege levels if needed
+- For UCP specifically:
+  ```java
+  PoolDataSource pds = PoolDataSourceFactory.getPoolDataSource();
+  pds.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+  pds.setURL(secureUrl);
+  pds.setUser(username);
+  // Consider using callback handlers for credential retrieval
+  pds.setConnectionFactoryProperties(java.util.Collections.singletonMap(
+      "oracle.net.wallet_location", "(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=/path/to/wallet)))"
+  ));
+  ```
 
-// Set client info (visible in V$SESSION)
-oraConn.setClientInfo("OCSID.ACTION", "process_payroll");
-oraConn.setClientInfo("OCSID.MODULE", "PayrollApp");
-oraConn.setClientInfo("OCSID.CLIENTID", "user123");
-
-// Fetch implicit results (from PL/SQL DBMS_SQL.RETURN_RESULT)
-try (PreparedStatement pstmt = conn.prepareStatement(
-        "BEGIN DBMS_SQL.RETURN_RESULT(CURSOR(SELECT * FROM employees)); END;")) {
-    pstmt.execute();
-    OraclePreparedStatement ops = pstmt.unwrap(OraclePreparedStatement.class);
-    ResultSet rs = ops.getReturnResultSet();
-    while (rs.next()) System.out.println(rs.getString(1));
-}
-```
+### Dependency Security
+- Keep JDBC driver updated: Regularly check for new `ojdbc` versions
+- Monitor for CVEs in Oracle JDBC driver and related libraries
+- Use dependency checking tools (OWASP Dependency-Check, Snyk) in CI/CD pipeline
 
 ---
 

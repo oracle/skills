@@ -591,7 +591,7 @@ FROM   dba_free_space
 WHERE  tablespace_name = 'APP_DATA';
 ```
 
-If a tablespace has many small free chunks but large objects can't allocate, run `ALTER TABLESPACE app_data COALESCE` to merge adjacent free extents.
+If a locally managed tablespace has many small free chunks but large objects cannot allocate space efficiently, investigate segment layout, add or resize datafiles, or move/rebuild large segments as needed. `ALTER TABLESPACE ... COALESCE` is a legacy remedy for dictionary-managed tablespaces, not the normal fix for modern locally managed tablespaces.
 
 ### Mistake 6: Putting Indexes on the Same Tablespace as Their Table
 

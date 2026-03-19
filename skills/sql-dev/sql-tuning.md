@@ -422,6 +422,10 @@ END;
 - Features marked as 21c, 23c, or 23ai should be treated as Oracle Database 26ai-capable features; keep 19c-compatible alternatives for mixed-version estates.
 - For dual-support environments, test syntax and package behavior in both 19c and 26ai because defaults and deprecations can differ by release update.
 
+## See Also
+
+- [Explain Plan — Execution Plan Analysis](../performance/explain-plan.md) — Reading and interpreting execution plans
+
 ## Sources
 
 - [Oracle Database 19c SQL Tuning Guide (TGSQL)](https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/)

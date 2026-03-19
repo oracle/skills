@@ -82,7 +82,7 @@ INTERVAL (NUMTOYMINTERVAL(1, 'MONTH'))
 | `DECIMAL(p,s)` / `NUMERIC(p,s)` | `NUMBER(p,s)` | Direct equivalent |
 | `REAL` | `BINARY_FLOAT` | 32-bit IEEE 754 |
 | `DOUBLE PRECISION` | `BINARY_DOUBLE` | 64-bit IEEE 754 |
-| `BOOLEAN` | `NUMBER(1)` with CHECK (0,1) | Oracle 23c has native BOOLEAN |
+| `BOOLEAN` | `NUMBER(1)` with CHECK (0,1) | Oracle 23ai/26ai has native BOOLEAN |
 | `CHAR(n)` | `CHAR(n)` | |
 | `VARCHAR(n)` / `CHARACTER VARYING(n)` | `VARCHAR2(n)` | Redshift max 65,535; Oracle max 4000 (32767 extended) |
 | `TEXT` (aliased) | `CLOB` | |

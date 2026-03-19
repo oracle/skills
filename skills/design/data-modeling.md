@@ -556,6 +556,212 @@ Storing pre-calculated values (gross profit, discounts) is sometimes valid for p
 
 ---
 
+## Security Considerations
+
+### Principle of Least Privilege in Schema Design
+- Design schemas with **minimal required privileges** for application users:
+  ```sql
+  -- Instead of granting broad access:
+  -- GRANT SELECT ANY TABLE TO app_user; -- AVOID
+
+  -- Grant specific object privileges:
+  GRANT SELECT ON orders TO app_user;
+  GRANT INSERT ON order_items TO app_user;
+  GRANT UPDATE (status, shipped_date) ON orders TO app_user;
+  ```
+- Separate schema owner from application user:
+  ```sql
+  -- Schema owner (locked account - never used for connections)
+  CREATE USER app_schema IDENTIFIED BY "strong_password" ACCOUNT LOCK;
+
+  -- Application service account (minimal privileges)
+  CREATE USER app_user IDENTIFIED BY "strong_password";
+  GRANT CREATE SESSION TO app_user;
+  GRANT SELECT, INSERT, UPDATE ON app_schema.orders TO app_user;
+  GRANT SELECT ON app_schema.customers TO app_user;
+  ```
+
+### Data Protection Through Design
+- **Identify and isolate sensitive data** (PII, PCI, PHI) in separate tables/schemas:
+  ```sql
+  -- Isolate PII in separate table with stricter controls
+  CREATE TABLE customer_pii (
+      customer_id   NUMBER PRIMARY KEY,
+      ssn           VARCHAR2(11),  -- Will be encrypted
+      dob           DATE,
+      passport_num  VARCHAR2(20),
+      -- Apply column encryption or use secure application logic
+  );
+
+  -- Reference PII table only when necessary
+  CREATE TABLE customer_profile (
+      customer_id   NUMBER PRIMARY KEY,
+      name          VARCHAR2(100),
+      email         VARCHAR2(255),
+      phone         VARCHAR2(20),
+      -- PII reference (foreign key)
+      pii_id        NUMBER REFERENCES customer_pii(customer_id)
+  );
+  ```
+- Use **Virtual Private Database (VPD)** for row-level security directly in the schema:
+  ```sql
+  -- Example: Tenant isolation in multi-tenant application
+  CREATE OR REPLACE FUNCTION tenant_access_policy(
+      p_schema VARCHAR2,
+      p_object VARCHAR2
+  ) RETURN VARCHAR2 AS
+  BEGIN
+    RETURN 'tenant_id = SYS_CONTEXT(''APP_CTX'', ''TENANT_ID'')';
+  END;
+
+  BEGIN
+    DBMS_RLS.ADD_POLICY(
+      object_schema => 'APP',
+      object_name   => 'ORDERS',
+      policy_name   => 'TENANT_ISOLATION_POLICY',
+      function_schema => 'APP',
+      policy_function => 'TENANT_ACCESS_POLICY',
+      statement_types => 'SELECT,INSERT,UPDATE,DELETE'
+    );
+  END;
+  ```
+
+### Secure Handling of Sensitive Data Types
+- **Encrypt sensitive columns** at the storage level:
+  ```sql
+  CREATE TABLE payments (
+      payment_id    NUMBER PRIMARY KEY,
+      card_number   VARCHAR2(19) ENCRYPT USING 'AES256',  -- PCI PAN
+      cvv           VARCHAR2(4)  ENCRYPT USING 'AES256',  -- Never store CVV per PCI-DSS
+      expiry_date   DATE,
+      amount        NUMBER(10,2)
+  );
+  ```
+- **Never store CVV/CVC** - violates PCI-DSS requirement 3.2
+- Use **tokenization** for payment card data instead of storing actual PAN when possible
+
+### Auditing and Monitoring Considerations
+- Design tables with **audit columns** for forensic analysis:
+  ```sql
+  CREATE TABLE financial_transactions (
+      transaction_id    NUMBER PRIMARY KEY,
+      account_id        NUMBER NOT NULL,
+      amount            NUMBER(15,2) NOT NULL,
+      transaction_type  VARCHAR2(20) NOT NULL,
+      -- Security audit columns
+      created_by        VARCHAR2(30) NOT NULL,  -- Application user or service account
+      created_at        TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+      updated_by        VARCHAR2(30),
+      updated_at        TIMESTAMP,
+      -- For sensitive operations, consider:
+      -- session_id      VARCHAR2(30),  -- From SYS_CONTEXT('USERENV','SESSIONID')
+      -- ip_address      VARCHAR2(45)   -- From SYS_CONTEXT('USERENV','IP_ADDRESS')
+  );
+  ```
+- Enable **Fine-Grained Auditing (FGA)** on sensitive tables:
+  ```sql
+  BEGIN
+    DBMS_FGA.ADD_POLICY(
+      object_schema   => 'FINANCE',
+      object_name     => 'WIRE_TRANSFERS',
+      policy_name     => 'MONITOR_LARGE_TRANSFERS',
+      audit_column    => 'AMOUNT',
+      audit_condition => 'AMOUNT > 10000',  -- Audit transfers over $10,000
+      statement_types => 'INSERT,UPDATE'
+    );
+  END;
+  ```
+
+### Input Validation and Injection Prevention
+- **Implement validation at the schema level** using constraints:
+  ```sql
+  CREATE TABLE users (
+      user_id     NUMBER PRIMARY KEY,
+      username    VARCHAR2(50) NOT NULL,
+      email       VARCHAR2(255)
+          CONSTRAINT chk_email_format
+          CHECK (REGEXP_LIKE(email, '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$', 'i')),
+      phone       VARCHAR2(20)
+          CONSTRAINT chk_phone_format
+          CHECK (REGEXP_LIKE(phone, '^\+?[1-9]\d{1,14}$')),  -- E.164 format
+      status      VARCHAR2(20)
+          CONSTRAINT chk_status
+          CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED', 'CLOSED'))
+  );
+  ```
+- Use **check constraints** to enforce business rules and prevent invalid data
+- Consider **virtual columns** for derived values that should never be stored directly:
+  ```sql
+  CREATE TABLE orders (
+      order_id        NUMBER PRIMARY KEY,
+      subtotal        NUMBER(10,2) NOT NULL,
+      tax_rate        NUMBER(4,2) NOT NULL,  -- Stored as percentage (e.g., 8.25 for 8.25%)
+      tax_amount      NUMBER(10,2) GENERATED ALWAYS AS (ROUND(subtotal * tax_rate / 100, 2)) VIRTUAL,
+      shipping_cost   NUMBER(8,2),
+      total_amount    NUMBER(10,2) GENERATED ALWAYS AS (subtotal + tax_amount + shipping_cost) VIRTUAL
+  );
+  ```
+
+### Secure Schema Evolution
+- **Use edition-based redefinition** for zero-downtime schema upgrades:
+  ```sql
+  -- Enable editions for schema
+  ALTER USER app_schema ENABLE EDITIONS;
+
+  -- Create edition for upgrade
+  CREATE EDITION v2 AS CHILD OF ORA$BASE;
+
+  -- Make edition available for use
+  ALTER DATABASE DEFAULT EDITION = v2;
+  ```
+- Implement **backward-compatible changes** when possible:
+  ```sql
+  -- ADD column with DEFAULT (12c+ feature - avoids table lock)
+  ALTER TABLE orders ADD (
+      discount_code VARCHAR2(20) DEFAULT NULL
+  );
+
+  -- For earlier versions, use nullable columns and application-level defaults
+  ```
+
+### Compliance-Driven Design
+- **Design for data minimization** (GDPR Article 5(1)(c)):
+  - Only collect data necessary for specified purpose
+  - Implement automated purging/archive strategies:
+    ```sql
+    -- Example: Archive old transaction data
+    CREATE TABLE transactions_archive AS
+    SELECT * FROM transactions
+    WHERE transaction_date < ADD_MONTHS(SYSDATE, -24);  -- Older than 2 years
+
+    DELETE FROM transactions
+    WHERE transaction_date < ADD_MONTHS(SYSDATE, -24);
+    ```
+- **Implement right to erasure** (GDPR Article 17):
+  ```sql
+  -- Procedure to anonymize/delete user data
+  CREATE OR REPLACE PROCEDURE anonymize_user_data(p_user_id NUMBER) AS
+  BEGIN
+    -- Option 1: Anonymize (retain analytics value)
+    UPDATE users SET
+        email = 'anon_' || user_id || '@example.com',
+        first_name = 'ANONYMIZED',
+        last_name = 'USER',
+        phone = NULL
+    WHERE user_id = p_user_id;
+
+    -- Option 2: Delete (when legally required)
+    -- DELETE FROM user_related_tables WHERE user_id = p_user_id;
+    -- DELETE FROM users WHERE user_id = p_user_id;
+
+    COMMIT;
+  END;
+  ```
+- **Design for data portability** (GDPR Article 20):
+  - Structure data to enable easy export in standard formats (JSON, XML, CSV)
+  - Consider using Oracle's JSON relational duality views for flexible export
+
+---
 
 ## Oracle Version Notes (19c vs 26ai)
 

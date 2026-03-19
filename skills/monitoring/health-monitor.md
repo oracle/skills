@@ -218,56 +218,56 @@ FETCH FIRST 20 ROWS ONLY;
 
 ```sql
 -- All findings from the most recent runs
-SELECT r.run_name,
+SELECT r.name AS run_name,
        r.check_name,
        f.type,           -- FAILURE, WARNING, ADVISORY
        f.status,
        f.description,
        f.repair_sql
 FROM   v$hm_run     r
-JOIN   v$hm_finding f ON r.id = f.run_id
+JOIN   v$hm_finding f ON r.run_id = f.run_id
 ORDER BY r.start_time DESC, f.type;
 ```
 
 ```sql
 -- Only failures and warnings (not just advisory)
-SELECT r.run_name,
+SELECT r.name AS run_name,
        r.check_name,
        f.type,
        f.description,
        f.repair_sql
 FROM   v$hm_run     r
-JOIN   v$hm_finding f ON r.id = f.run_id
+JOIN   v$hm_finding f ON r.run_id = f.run_id
 WHERE  f.type IN ('FAILURE', 'WARNING')
 ORDER BY r.start_time DESC;
 ```
 
 ```sql
 -- Findings with associated recommendations
-SELECT r.run_name,
+SELECT r.name AS run_name,
        f.description AS finding,
        f.type        AS finding_type,
        rec.type      AS recommendation_type,
        rec.description AS recommendation,
        rec.repair_script
 FROM   v$hm_run            r
-JOIN   v$hm_finding        f   ON r.id = f.run_id
-JOIN   v$hm_recommendation rec ON f.id = rec.finding_id
+JOIN   v$hm_finding        f   ON r.run_id = f.run_id
+JOIN   v$hm_recommendation rec ON f.finding_id = rec.finding_id
 ORDER BY r.start_time DESC;
 ```
 
-### Generating an HTML Report
+### Generating a Report
 
-`DBMS_HM` can generate a human-readable HTML report:
+`DBMS_HM` can generate text, HTML, or XML reports:
 
 ```sql
 -- Generate report for a specific run
 DECLARE
     v_report CLOB;
 BEGIN
-    v_report := DBMS_HM.get_run_report('MY_STRUCT_CHECK_20260306');
-    -- Write to a file (requires UTL_FILE setup) or display
-    DBMS_OUTPUT.put_line(DBSTR(v_report, 1, 32767));
+    v_report := DBMS_HM.get_run_report('MY_STRUCT_CHECK_20260306', 'TEXT');
+    -- Write to a file (requires UTL_FILE setup) or display the first chunk
+    DBMS_OUTPUT.put_line(DBMS_LOB.SUBSTR(v_report, 32767, 1));
 END;
 /
 ```
@@ -535,14 +535,14 @@ END;
 
 ```sql
 -- Alert on any FAILURE findings from recent runs
-SELECT r.run_name,
+SELECT r.name AS run_name,
        r.check_name,
        r.start_time,
        f.type,
        f.description,
        f.repair_sql
 FROM   v$hm_run     r
-JOIN   v$hm_finding f ON r.id = f.run_id
+JOIN   v$hm_finding f ON r.run_id = f.run_id
 WHERE  r.start_time > SYSDATE - 7
   AND  f.type = 'FAILURE'
 ORDER BY r.start_time DESC;

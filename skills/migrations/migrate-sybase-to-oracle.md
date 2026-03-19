@@ -524,7 +524,7 @@ CREATE TABLE employees (
 );
 ```
 
-6. **Review Sybase user-defined datatypes.** Sybase supports user-defined types that combine a base type with rules and defaults. Oracle uses domains (23c) or just base types with constraints.
+6. **Review Sybase user-defined datatypes.** Sybase supports user-defined types that combine a base type with rules and defaults. Oracle uses domains (introduced in 23ai, available in 26ai) or just base types with constraints.
 
 ```sql
 -- Sybase UDT

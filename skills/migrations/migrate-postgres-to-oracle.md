@@ -112,7 +112,7 @@ CREATE TABLE feature_flags (
 );
 ```
 
-Add a CHECK constraint to enforce 0/1 semantics. Application code must translate `true`/`false` to `1`/`0`. If using Oracle 23c, the native BOOLEAN type is now available and can be used directly.
+Add a CHECK constraint to enforce 0/1 semantics. Application code must translate `true`/`false` to `1`/`0`. If using Oracle 23ai or later (including 26ai), the native BOOLEAN type is available and can be used directly.
 
 ### Binary Types
 
@@ -472,13 +472,13 @@ UNION ALL SELECT 'products', COUNT(*) FROM products;
 
 Oracle SQL Developer Migration Workbench supports PostgreSQL as a source and can automate much of the schema conversion to Oracle. Use it instead of ora2pg when Oracle is the target.
 
-> ⚠️ **ora2pg direction warning:** ora2pg migrates Oracle databases **to PostgreSQL** — it is not a tool for migrating PostgreSQL to Oracle. Do not use ora2pg when Oracle is the migration target. References to using ora2pg for this direction in other guides are incorrect. Use SQL Developer Migration Workbench or AWS SCT for PostgreSQL → Oracle schema conversion.
+> **ora2pg direction warning:** ora2pg migrates Oracle databases **to PostgreSQL** — it is not a tool for migrating PostgreSQL to Oracle. Do not use ora2pg when Oracle is the migration target. References to using ora2pg for this direction in other guides are incorrect. Use SQL Developer Migration Workbench or AWS SCT for PostgreSQL → Oracle schema conversion.
 
 ---
 
 ## Best Practices
 
-1. **Audit NULL behavior early.** PostgreSQL treats empty string `''` as non-NULL; Oracle traditionally treats it as NULL (though this changed in 23c with standard strings mode). Review columns where empty strings are used as sentinel values.
+1. **Audit NULL behavior early.** PostgreSQL treats empty string `''` as non-NULL; Oracle traditionally treats it as NULL (though this changed in 23ai with standard strings mode). Review columns where empty strings are used as sentinel values.
 
 2. **Migrate sequences after data load.** When using sequences, set their START WITH value to be above the maximum existing ID to avoid primary key conflicts.
 

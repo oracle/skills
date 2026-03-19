@@ -36,13 +36,11 @@ After installation, the command is available as `sql`. Homebrew manages updates 
 
 ### Verify Java
 
-SQLcl 25.2 and later requires JDK 17 or JDK 21. Java 11 support was dropped in SQLcl 25.2. If you have multiple JDKs, ensure the correct one is on your PATH:
+SQLcl 25.2 and later requires Java 17 or 21. If you have multiple JDKs, ensure the correct one is on your PATH:
 
 ```shell
 java -version
 ```
-
-> ⚠️ Unverified: Whether any current SQLcl release bundles its own JVM — check the official release notes before assuming a system JDK is not required.
 
 ---
 
@@ -336,13 +334,12 @@ Press Tab once to complete or twice to show all possibilities when there are mul
 SQLcl reads `login.sql` on startup, similar to SQL*Plus:
 
 - Searches in current directory first
-- Then `$SQLPATH`
-- Then `$HOME/.sqlcl/login.sql`
+- Then in your home directory (`~/login.sql` on Unix-like systems)
 
 Example `login.sql`:
 
 ```sql
--- ~/.sqlcl/login.sql
+-- ~/login.sql
 SET LINESIZE 200
 SET PAGESIZE 100
 SET TIMING ON
@@ -391,7 +388,7 @@ DESC my_package
 
 - Always use `CONNECT` command with a password prompt (omit password from command line) in shared or logged environments to prevent credentials appearing in shell history or process lists.
 - Set `TNS_ADMIN` in your shell profile rather than embedding wallet paths in connection strings to keep scripts portable.
-- Store common `SET` commands and `ALIAS` definitions in `~/.sqlcl/login.sql` so every session starts consistently configured.
+- Store common `SET` commands and `ALIAS` definitions in `login.sql` so every session starts consistently configured.
 - Use `SET FEEDBACK ON` and `SET TIMING ON` during interactive work; turn them `OFF` in scripts where only output data matters.
 - Prefer `SET SERVEROUTPUT ON SIZE UNLIMITED` over a fixed size to avoid truncated DBMS_OUTPUT.
 - Use `SPOOL /path/to/output.log` with `SPOOL OFF` around batch operations to capture all output for later review.
