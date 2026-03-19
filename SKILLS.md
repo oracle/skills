@@ -1,6 +1,6 @@
 # Oracle DB Skills
 
-144 Oracle Database and OCR container reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
+147 Oracle Database and OCR container reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
 
 **Install:** `npx skills add krisrice/oracle-db-skills`
 
@@ -42,10 +42,13 @@
 | `skills/ai/ai-vector-search.md` | ai | AI Vector Search overview, capability boundaries, and routing to storage, query, index, and hybrid-search skills |
 | `skills/ai/hybrid-vector-search.md` | ai | `CREATE HYBRID VECTOR INDEX`, `DBMS_HYBRID_VECTOR`, hybrid query patterns |
 | `skills/ai/select-ai.md` | ai | Select AI overview, capability boundaries, and routing to profiles, actions, metadata, feedback, RAG, and agent skills |
+| `skills/ai/select-ai-accuracy.md` | ai | cross-cutting Select AI accuracy workflow: scope, metadata, inspection, case sensitivity, and feedback |
+| `skills/ai/select-ai-annotations.md` | ai | annotation DDL, profile integration, annotation views, and Select AI metadata usage |
 | `skills/ai/select-ai-actions.md` | ai | `SELECT AI` / `DBMS_CLOUD_AI.GENERATE` actions, `showprompt`, `chat`, `translate`, `summarize` |
 | `skills/ai/select-ai-agent.md` | ai | `DBMS_CLOUD_AI_AGENT`, teams, agents, tasks, tools, built-in tool support |
 | `skills/ai/select-ai-feedback.md` | ai | `feedback` action, `DBMS_CLOUD_AI.FEEDBACK`, feedback vector index, SQL refinement workflow |
 | `skills/ai/select-ai-metadata.md` | ai | `object_list`, metadata controls, comments, annotations, constraints, data access |
+| `skills/ai/select-ai-prompts.md` | ai | prompt wording rules, `showprompt`, prompt augmentation, action choice, and metadata-based guidance |
 | `skills/ai/select-ai-profiles.md` | ai | AI profile lifecycle, attributes, provider configuration, session activation |
 | `skills/ai/select-ai-rag.md` | ai | Select AI RAG flow, vector-index integration, `embedding_model`, `enable_sources` |
 | `skills/ai/select-ai-synthetic-data.md` | ai | `GENERATE_SYNTHETIC_DATA`, params, monitoring status tables, metadata-clone workflows |

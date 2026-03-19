@@ -14,8 +14,11 @@ Complete index for AI-related skills in `skills/ai/`. Start with the overview gu
 | If you need to... | Read |
 |-------------------|------|
 | understand what Select AI covers before choosing an implementation path | `select-ai.md` |
+| improve overall Select AI NL2SQL accuracy | `select-ai-accuracy.md` |
 | configure providers, credentials, models, or session activation | `select-ai-profiles.md` |
 | choose between `showsql`, `runsql`, `showprompt`, `chat`, or `agent` | `select-ai-actions.md` |
+| design and audit Select AI annotations for NL2SQL | `select-ai-annotations.md` |
+| shape prompts, inspect prompt augmentation, or guide prompt wording | `select-ai-prompts.md` |
 | improve NL2SQL with `object_list`, comments, annotations, or constraints | `select-ai-metadata.md` |
 | apply or troubleshoot SQL refinement feedback | `select-ai-feedback.md` |
 | use Select AI with a vector store for RAG | `select-ai-rag.md` |
@@ -36,7 +39,10 @@ Complete index for AI-related skills in `skills/ai/`. Start with the overview gu
 | File | Description |
 |------|-------------|
 | `select-ai.md` | Select AI overview, capability boundaries, and routing guide |
+| `select-ai-accuracy.md` | cross-cutting Select AI accuracy workflow: scope, metadata, inspection, case sensitivity, and feedback |
+| `select-ai-annotations.md` | annotation DDL, profile integration, annotation views, and Select AI metadata usage |
 | `select-ai-profiles.md` | AI profile lifecycle, attributes, provider configuration, session activation |
+| `select-ai-prompts.md` | prompt wording rules, `showprompt`, prompt augmentation, and action guidance |
 | `select-ai-actions.md` | `SELECT AI` / `DBMS_CLOUD_AI.GENERATE` actions, `showprompt`, `chat`, `translate`, `summarize` |
 | `select-ai-metadata.md` | `object_list`, metadata controls, comments, annotations, constraints, data access |
 | `select-ai-feedback.md` | `feedback` action, `DBMS_CLOUD_AI.FEEDBACK`, feedback vector index, SQL refinement workflow |

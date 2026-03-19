@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repository Is
 
-A library of 144 standalone Oracle Database and OCR container reference guides (skill files) organized by category under `skills/`. Each file covers one topic with explanations, examples, and version-specific notes. There is no build system, test suite, or compilation step — this is a pure Markdown content library.
+A library of 147 standalone Oracle Database and OCR container reference guides (skill files) organized by category under `skills/`. Each file covers one topic with explanations, examples, and version-specific notes. There is no build system, test suite, or compilation step — this is a pure Markdown content library.
 
 ## Adding or Modifying Skill Files
 

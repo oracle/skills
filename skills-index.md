@@ -51,10 +51,13 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `ai-vector-search.md` — overview, capability boundaries, and routing to vector storage, SQL, indexing, and hybrid search skills
 - [x] `hybrid-vector-search.md` — `CREATE HYBRID VECTOR INDEX`, `DBMS_HYBRID_VECTOR`, hybrid query patterns
 - [x] `select-ai.md` — overview, capability boundaries, and routing to profiles, actions, metadata, feedback, RAG, and agent skills
+- [x] `select-ai-accuracy.md` — cross-cutting Select AI accuracy workflow: scope, metadata, inspection, case sensitivity, and feedback
+- [x] `select-ai-annotations.md` — annotation DDL, profile integration, annotation views, and Select AI metadata usage
 - [x] `select-ai-actions.md` — `SELECT AI` / `DBMS_CLOUD_AI.GENERATE` actions, `showprompt`, `chat`, `translate`, `summarize`
 - [x] `select-ai-agent.md` — `DBMS_CLOUD_AI_AGENT`, teams, agents, tasks, tools, built-in tool support
 - [x] `select-ai-feedback.md` — `feedback` action, `DBMS_CLOUD_AI.FEEDBACK`, feedback vector index, SQL refinement workflow
 - [x] `select-ai-metadata.md` — `object_list`, metadata controls, comments, annotations, constraints, data access
+- [x] `select-ai-prompts.md` — prompt wording rules, `showprompt`, prompt augmentation, action choice, and metadata-based guidance
 - [x] `select-ai-profiles.md` — AI profile lifecycle, attributes, provider configuration, session activation
 - [x] `select-ai-rag.md` — Select AI RAG flow, vector-index integration, `embedding_model`, `enable_sources`
 - [x] `select-ai-synthetic-data.md` — `GENERATE_SYNTHETIC_DATA`, params, monitoring status tables, metadata-clone workflows
