@@ -10,81 +10,49 @@ Effective ORDS operations require visibility into request patterns, connection p
 
 ### Log Directory
 
-By default, ORDS writes logs to a `logs/` directory inside the ORDS config directory:
-
-```
-/opt/oracle/ords/config/
-└── logs/
-    ├── ords/
-    │   ├── ords_log_2024-01-15.log     # Main application log
-    │   ├── ords_log_2024-01-15.log.1   # Rolled-over log
-    │   └── ...
-    └── ...
-```
-
-Configure a standalone access log path:
+In standalone mode, ORDS writes HTTP access logs only when `standalone.access.log` is configured:
 
 ```shell
-ords --config /opt/oracle/ords/config config set standalone.access.log /var/log/ords
+ords --config /opt/oracle/ords/config config set standalone.access.log /var/log/ords/access
+ords --config /opt/oracle/ords/config config set standalone.access.log.retainDays 10
 ```
 
 Use `--log-folder` with `ords install` or `ords install repair` when you want installation or upgrade logs written to a specific folder.
 
 ### Log Levels
 
-ORDS uses Java Logging (JUL) with configurable levels:
+ORDS uses Java Logging (JUL) for application logs. Configure JUL with a `logging.properties` file rather than an ORDS config setting:
 
-```shell
-# Set global log level
-ords --config /opt/oracle/ords/config config set log.level INFO
-
-# Available levels: FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE
-# FINE = debug level, shows individual SQL executions
-# INFO = normal operations
-# WARNING = recoverable errors
-# SEVERE = critical errors
+```properties
+handlers=java.util.logging.FileHandler,java.util.logging.ConsoleHandler
+.level=INFO
+java.util.logging.FileHandler.level=INFO
+java.util.logging.FileHandler.pattern=/var/log/ords/ords.%g.log
+java.util.logging.FileHandler.limit=10485760
+java.util.logging.FileHandler.count=10
+java.util.logging.FileHandler.append=true
+java.util.logging.FileHandler.formatter=oracle.dbtools.logging.JSONLogFormatter
 ```
 
-For production: `INFO` level. For troubleshooting: `FINE` or `FINER`.
+```shell
+export JDK_JAVA_OPTIONS="-Djava.util.logging.config.file=/etc/ords/logging.properties"
+ords --config /opt/oracle/ords/config serve --secure --port 8443
+```
+
+For production, start with `INFO` or `WARNING`. For troubleshooting, temporarily use `FINE` or `FINER` for the specific logger you are investigating.
 
 ---
 
-## Enabling Request Logging
+## Enabling Standalone Access Logging
 
-Request logging records each HTTP request with URL, method, status code, response time, and client info.
-
-```shell
-# Configure external error path via the ORDS CLI
-ords --config /opt/oracle/ords/config config set error.externalPath /var/log/ords/errors
-```
-
-Configure request logging via the ORDS CLI:
+Standalone access logging records each HTTP request for operational monitoring and downstream analysis:
 
 ```shell
-# Enable access/request log
-ords --config /opt/oracle/ords/config config set log.logging.requestlog true
-
-# Log format (combined = Apache combined log format)
-ords --config /opt/oracle/ords/config config set log.logging.requestlog.format combined
-
-# Log requests slower than 5000ms as "slow"
-ords --config /opt/oracle/ords/config config set log.logging.requestlog.slow 5000
+ords --config /opt/oracle/ords/config config set standalone.access.log /var/log/ords/access
+ords --config /opt/oracle/ords/config config set standalone.access.log.retainDays 10
 ```
 
-### Sample Request Log Entry
-
-```
-2024-01-15 14:23:05.123 [INFO] [worker-5] oracle.dbtools.http.ords.RequestLog
-  method=GET path=/ords/hr/v1/employees/ status=200
-  elapsed=145ms rows=25 pool=default user=reporting-svc
-  remote=10.0.1.42 userAgent=MyApp/1.0
-```
-
-Fields:
-- `elapsed`: Total handler execution time in milliseconds
-- `rows`: Number of result rows returned
-- `pool`: Connection pool name used
-- `user`: Authenticated username (or `oracle` for public requests)
+Access logs are separate from application logs. If you need structured application logs for aggregation or OCI Logging, use a `logging.properties` file with JUL and the ORDS JSON formatter.
 
 ---
 
@@ -314,19 +282,22 @@ Environment="JAVA_OPTS=-Xms512m -Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
 ### Request Thread Pool
 
 ```shell
-# Increase HTTP request threads for high-concurrency (Jetty standalone)
-ords --config /opt/oracle/ords/config config set standalone.threadPoolMax 200
+# Increase HTTP request threads for high-concurrency (standalone mode)
+ords --java-options "-Dthreads.max=200" \
+  --config /opt/oracle/ords/config serve --secure --port 8443
 ```
 
-### Pagination Default
+Request thread tuning is a runtime Java option, not an ORDS config setting.
 
-Reduce default page size to lower average response time and DB load:
+### Pagination Limits
+
+Use `misc.pagination.maxRows` to cap the maximum rows ORDS will return from query-based REST services:
 
 ```shell
-# Default is 25 rows; reduce for mobile/API clients
-ords --config /opt/oracle/ords/config config set misc.pagination.defaultLimit 10
 ords --config /opt/oracle/ords/config config set misc.pagination.maxRows 500
 ```
+
+For custom REST modules, control the default page size with `p_items_per_page` in `ORDS.DEFINE_MODULE` or `ORDS.DEFINE_HANDLER`.
 
 ---
 
@@ -524,5 +495,7 @@ Common validation failures:
 ## Sources
 
 - [Deploying and Monitoring Oracle REST Data Services — Monitoring Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-116149DE-01E1-4056-A723-0EFB96737377)
+- [Deploying and Monitoring Oracle REST Data Services — Configure Java Logging in ORDS](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-1E921E59-53FC-431B-B8AB-5C1312B230FC)
 - [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
-- [Installing and Configuring Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-B6661F35-3EE3-4CB3-9379-40D0B8E24635)
+- [Miscellaneous Configuration Options of Oracle REST Data Services — Configuring Jetty in ORDS Standalone Mode](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/miscellaneous-configuration-options-of-ORDS.html#GUID-9F3CE874-6C6F-4C5D-B0DE-AAFC9332DEA9)
+- [Miscellaneous Configuration Options of Oracle REST Data Services — Configuring the Maximum Number of Rows Returned from a Query](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/miscellaneous-configuration-options-of-ORDS.html#GUID-FACEB063-8809-4BC2-B4DA-501C8511D6E0)
