@@ -22,18 +22,13 @@ By default, ORDS writes logs to a `logs/` directory inside the ORDS config direc
     └── ...
 ```
 
-Configure a custom log path:
+Configure a standalone access log path:
 
 ```shell
-ords --config /opt/oracle/ords/config config set log.dir /var/log/ords
+ords --config /opt/oracle/ords/config config set standalone.access.log /var/log/ords
 ```
 
-Or specify at startup:
-
-```shell
-ords --config /opt/oracle/ords/config serve \
-  --log-folder /var/log/ords
-```
+Use `--log-folder` with `ords install` or `ords install repair` when you want installation or upgrade logs written to a specific folder.
 
 ### Log Levels
 
@@ -528,6 +523,6 @@ Common validation failures:
 
 ## Sources
 
-- [ORDS Developer's Guide — Monitoring and Diagnosing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
-- [ORDS Configuration Settings Reference — Logging and Performance](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
-- [ORDS CLI Reference — ords validate](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/ords-command-line-interface.html)
+- [Deploying and Monitoring Oracle REST Data Services — Monitoring Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-116149DE-01E1-4056-A723-0EFB96737377)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
+- [Installing and Configuring Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-B6661F35-3EE3-4CB3-9379-40D0B8E24635)

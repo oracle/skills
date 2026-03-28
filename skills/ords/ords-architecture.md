@@ -174,9 +174,8 @@ ORDS ships with an embedded Eclipse Jetty server. No external application server
 ```shell
 # Start ORDS standalone
 ords --config /opt/oracle/ords/config serve \
-  --port 8080 \
-  --secure-port 8443 \
-  --certificate-hostname myserver.example.com
+  --secure \
+  --port 8443
 ```
 
 **Pros**: Simple, low overhead, easy to automate, officially supported for production.
@@ -307,5 +306,5 @@ Always check the [ORDS Release Notes](https://docs.oracle.com/en/database/oracle
 ## Sources
 
 - [Oracle REST Data Services Documentation](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/)
-- [ORDS Developer's Guide — Architecture Overview](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/index.html)
+- [Deploying and Monitoring Oracle REST Data Services — Serve Commands for Running in Standalone Mode](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-872EA939-5348-4B31-B4EC-EFD038F69837)
 - [ORDS Release Notes](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/)

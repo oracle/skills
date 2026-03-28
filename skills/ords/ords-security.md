@@ -28,21 +28,18 @@ When `security.forceHTTPS = true`, ORDS:
 Using a certificate from Let's Encrypt or a commercial CA:
 
 ```shell
-# Convert PEM certificate to PKCS12 for Java keystore
-openssl pkcs12 -export \
-  -in /etc/ssl/certs/api.example.com.crt \
-  -inkey /etc/ssl/private/api.example.com.key \
-  -certfile /etc/ssl/certs/chain.crt \
-  -out /opt/oracle/ords/config/ords/standalone/api.p12 \
-  -name ords-ssl \
-  -passout pass:changeit
+# Convert the private key to DER for ORDS
+openssl pkcs8 -topk8 -inform PEM -outform DER \
+  -in /etc/letsencrypt/live/api.example.com/privkey.pem \
+  -out /etc/letsencrypt/live/api.example.com/privkey.der \
+  -nocrypt
 
 # Configure ORDS to use it
 ords --config /opt/oracle/ords/config config set standalone.https.port 443
 ords --config /opt/oracle/ords/config config set standalone.https.cert \
-  /opt/oracle/ords/config/ords/standalone/api.p12
+  /etc/letsencrypt/live/api.example.com/fullchain.pem
 ords --config /opt/oracle/ords/config config set \
-  standalone.https.cert.secret changeit
+  standalone.https.cert.key /etc/letsencrypt/live/api.example.com/privkey.der
 ```
 
 ### TLS Minimum Version and Cipher Suites
@@ -479,6 +476,7 @@ add_header Permissions-Policy        "geolocation=(), microphone=()" always;
 
 ## Sources
 
-- [ORDS Developer's Guide — Securing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
-- [ORDS Configuration Settings Reference — Security Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
+- [Deploying and Monitoring Oracle REST Data Services — Serve Commands for Running in Standalone Mode](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-872EA939-5348-4B31-B4EC-EFD038F69837)
+- [Deploying and Monitoring Oracle REST Data Services — Converting a Private Key to DER (Linux and Unix)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-1E64886C-C85C-49B5-A98E-79B9EC8455B4)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
 - [Oracle Database Vault Administrator's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dvadm/index.html)

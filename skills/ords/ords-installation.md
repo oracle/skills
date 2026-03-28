@@ -263,25 +263,14 @@ ords --config /opt/oracle/ords/config config secret --password-stdin db.password
 ### Option A: ORDS Standalone with Self-Signed Certificate (Dev)
 
 ```shell
-# Generate self-signed cert
-keytool -genkeypair \
-  -alias ords-ssl \
-  -keyalg RSA \
-  -keysize 2048 \
-  -validity 365 \
-  -keystore /opt/oracle/ords/config/ords/standalone/ords.jks \
-  -storepass changeit \
-  -dname "CN=myserver.example.com, OU=ORDS, O=MyOrg, C=US"
-```
-
-```shell
-# Configure standalone to use it
+# Configure standalone HTTPS and let ORDS generate the self-signed certificate
 ords --config /opt/oracle/ords/config config set \
   standalone.https.port 8443
 ords --config /opt/oracle/ords/config config set \
-  standalone.https.cert /opt/oracle/ords/config/ords/standalone/ords.jks
-ords --config /opt/oracle/ords/config config set \
-  standalone.https.cert.secret changeit
+  standalone.https.host myserver.example.com
+
+# Start ORDS with HTTPS enabled
+ords --config /opt/oracle/ords/config serve --secure --port 8443
 ```
 
 ### Option B: ORDS behind a Reverse Proxy (Recommended for Production)
@@ -679,6 +668,7 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 
 ## Sources
 
-- [Oracle REST Data Services Installation and Configuration Guide](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/index.html)
-- [ORDS CLI Reference — ords install](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/installing-oracle-rest-data-services.html)
-- [ORDS Configuration Settings Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
+- [Installing and Configuring Oracle REST Data Services — Installing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-D86804FC-4365-4499-B170-2F901C971D30)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configuration Folder Structure](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-3F19E9F2-13E6-42AC-958A-3DE50E3AF77D)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
+- [Deploying and Monitoring Oracle REST Data Services — Non-Interactive Serve CLI](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-8B65CC69-1D98-4F26-B0A7-389A1332A129)
