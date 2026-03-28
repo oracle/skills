@@ -127,13 +127,15 @@ After install, ORDS creates:
 
 ### Silent/Non-Interactive Installation for Automation
 
-For CI/CD pipelines, automated provisioning, or Ansible/Terraform workflows, use a silent install with a response file or environment variables.
+For CI/CD pipelines, automated provisioning, or Ansible/Terraform workflows, run `ords install` without `-i` and provide all required options on the command line. Use `--password-stdin` with either a password file or an inline stdin block. If you include `--proxy-user`, ORDS reads a second password from standard input for the runtime user (by default `ORDS_PUBLIC_USER`).
 
-**Method 1: Pipe responses via stdin**
+**Method 1: Use an inline stdin block for a new pool or fresh install**
 
 ```shell
 ords --config /opt/oracle/ords/config install \
+  --db-pool default \
   --admin-user SYS \
+  --proxy-user \
   --db-hostname mydb.example.com \
   --db-port 1521 \
   --db-servicename mypdb.example.com \
@@ -147,34 +149,52 @@ OrdsPublicUserPwd456!
 EOF
 ```
 
-**Method 2: Use `ords install --interactive false`**
+The first password is for `--admin-user`. The second password is for the runtime user because `--proxy-user` is present.
+
+**Method 2: Use a password file with input redirection**
 
 ```shell
+cat > passwords.txt <<EOF
+SysPassword123!
+OrdsPublicUserPwd456!
+EOF
+
 ords --config /opt/oracle/ords/config install \
-  --interactive false \
+  --db-pool default \
+  --admin-user SYS \
+  --proxy-user \
   --db-hostname mydb.example.com \
   --db-port 1521 \
   --db-servicename mypdb.example.com \
-  --db-username ORDS_PUBLIC_USER \
-  --admin-user SYS \
-  --feature-sdw true
-# Passwords prompted separately or via env vars
+  --feature-sdw true \
+  --log-folder /var/log/ords \
+  --password-stdin < passwords.txt
 ```
 
-**Method 3: Pre-write pool configuration, then install with `--db-only`**
+Use `--db-user <name>` only if you need a runtime user other than the default `ORDS_PUBLIC_USER`.
 
-Write the pool config first, then run the DB install phase only:
+**Method 3: Pre-write pool configuration, then run `--db-only`**
+
+Write the pool config first, then run the database install or upgrade phase only:
 
 ```shell
 ords --config /opt/oracle/ords/config config set db.hostname mydb.example.com
 ords --config /opt/oracle/ords/config config set db.port 1521
 ords --config /opt/oracle/ords/config config set db.servicename mypdb.example.com
 
-# Set passwords via stdin
-echo "SysPassword123!" | ords --config /opt/oracle/ords/config install \
+# Fresh db-only install: include --proxy-user and provide both passwords
+ords --config /opt/oracle/ords/config install \
+  --db-pool default \
+  --db-only \
   --admin-user "SYS AS SYSDBA" \
-  --password-stdin
+  --proxy-user \
+  --password-stdin <<EOF
+SysPassword123!
+OrdsPublicUserPwd456!
+EOF
 ```
+
+If ORDS is already installed in the database and you are only upgrading the database objects, omit `--proxy-user`; in that case, standard input contains only the administrator password.
 
 ---
 
@@ -440,11 +460,25 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
   CREATE TABLESPACE ords_meta_tbs
     DATAFILE '/u01/app/oracle/oradata/ORDS_METADATA01.DBF'
     SIZE 100M AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+  ```
 
-  -- Then specify during installation:
-  # During interactive install, specify the custom tablespace
+  Then specify the tablespaces during installation:
+
+  ```shell
+  # During interactive install, specify the custom tablespace when prompted
   # Or via silent install:
-  ords config set db.tablespace ords_meta_tbs
+  ords --config /opt/oracle/ords/config install \
+    --admin-user SYS \
+    --proxy-user \
+    --db-hostname mydb.example.com \
+    --db-port 1521 \
+    --db-servicename mypdb.example.com \
+    --schema-tablespace ords_meta_tbs \
+    --schema-temp-tablespace TEMP \
+    --password-stdin <<EOF
+  SysPassword123!
+  OrdsPublicUserPwd456!
+  EOF
   ```
 
 - **Restrict ORDS_METADATA schema privileges:**
@@ -671,4 +705,5 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 - [Installing and Configuring Oracle REST Data Services — Installing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-D86804FC-4365-4499-B170-2F901C971D30)
 - [About the Oracle REST Data Services Configuration Files — Understanding the Configuration Folder Structure](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-3F19E9F2-13E6-42AC-958A-3DE50E3AF77D)
 - [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
-- [Deploying and Monitoring Oracle REST Data Services — Non-Interactive Serve CLI](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-8B65CC69-1D98-4F26-B0A7-389A1332A129)
+- [Installing and Configuring Oracle REST Data Services — Non-Interactive Command-Line Interface Installation (Silent)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-2D13E9CD-EB0C-4CE7-82B8-45BD5C62897B)
+- [Installing and Configuring Oracle REST Data Services — Using Input Redirection](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-ECEDA5F7-2023-47B8-A1FF-2CCD6A2D915A)
