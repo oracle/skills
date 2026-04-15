@@ -55,6 +55,8 @@ When an HTTP client sends a request with a binary body:
 
 These are ORDS implicit bind parameters available in any `plsql/block` handler.
 
+If a handler needs to inspect or reuse `:body` or `:body_text` more than once, assign it to a local PL/SQL variable first. ORDS documents that these payload binds must be dereferenced exactly once, and later reads can be empty.
+
 ### Simple Binary Upload (PUT/POST with raw body)
 
 The simplest upload pattern: the HTTP body IS the file.
@@ -82,9 +84,12 @@ BEGIN
     p_mimes_allowed => '',  -- Accept any content type
     p_source      => q'[
       DECLARE
-        l_doc_id   hr.documents.document_id%TYPE;
-        l_file_size NUMBER := DBMS_LOB.GETLENGTH(:body);
+        l_doc_id     hr.documents.document_id%TYPE;
+        l_body_blob  BLOB := :body;
+        l_file_size  NUMBER;
       BEGIN
+        l_file_size := DBMS_LOB.GETLENGTH(l_body_blob);
+
         -- Validate file size (10MB limit)
         IF l_file_size > 10 * 1024 * 1024 THEN
           :status_code := 413;  -- Payload Too Large
@@ -98,7 +103,7 @@ BEGIN
             file_size, file_content, uploaded_by, upload_date
           ) VALUES (
             :employee_id, :filename, :content_type,
-            l_file_size, :body,
+            l_file_size, l_body_blob,
             :current_user, SYSTIMESTAMP
           )
           RETURNING document_id INTO l_doc_id;
@@ -107,7 +112,7 @@ BEGIN
         EXCEPTION
           WHEN DUP_VAL_ON_INDEX THEN
             UPDATE hr.documents
-            SET    file_content  = :body,
+            SET    file_content  = l_body_blob,
                    content_type  = :content_type,
                    file_size     = l_file_size,
                    uploaded_by   = :current_user,
@@ -120,8 +125,6 @@ BEGIN
         END;
 
         COMMIT;
-        :forward_location := 'employees/' || :employee_id ||
-                             '/documents/' || :filename;
       END;
     ]'
   );
@@ -149,12 +152,12 @@ curl -X PUT \
 
 ### Multipart Form Data Upload
 
-For HTML form-based uploads (browsers sending `multipart/form-data`), the handler receives the entire multipart body in `:body`. ORDS does not natively parse multipart boundaries — use the APEX_WEB_SERVICE or a custom PL/SQL parser, or preferably use direct binary upload (above) from modern clients.
+For HTML form-based uploads (browsers sending `multipart/form-data`), ORDS can natively handle the multipart `POST` request. Form fields are available through `:body_json`, and uploaded files can be processed with `ORDS.BODY_FILE_COUNT` and `ORDS.GET_BODY_FILE`.
 
-For APEX-based file uploads, APEX handles multipart parsing automatically via its own framework.
+Do not dereference both `:body` and `:body_text` in the same PL/SQL block. ORDS allows only one of those stream parameters per handler, and each stream bind must be dereferenced at most once unless it is first copied to a local variable. If you use `:body` or `:body_text`, you also cannot rely on JSON attribute bind notation from the request payload.
 
 ```sql
--- Handler for multipart upload (requires APEX or custom parsing)
+-- Handler for multipart upload with form fields and files
 ORDS.DEFINE_HANDLER(
   p_module_name   => 'hr.docs',
   p_pattern       => 'upload/',
@@ -163,25 +166,45 @@ ORDS.DEFINE_HANDLER(
   p_mimes_allowed => 'multipart/form-data',
   p_source        => q'[
     DECLARE
-      l_body_text CLOB  := :body_text;
-      l_body_blob BLOB  := :body;
-      l_ctype     VARCHAR2(200) := :content_type;
-      -- Extract boundary from content type
-      l_boundary  VARCHAR2(100);
+      l_parameter_name VARCHAR2(4000);
+      l_file_name      VARCHAR2(4000);
+      l_content_type   VARCHAR2(200);
+      l_file_body      BLOB;
+      l_body_json      CLOB := :body_json;
     BEGIN
-      -- Content type looks like: multipart/form-data; boundary=----WebKitFormBoundary...
-      l_boundary := SUBSTR(l_ctype, INSTR(l_ctype, 'boundary=') + 9);
+      FOR i IN 1 .. ORDS.BODY_FILE_COUNT LOOP
+        ORDS.GET_BODY_FILE(
+          p_file_index     => i,
+          p_parameter_name => l_parameter_name,
+          p_file_name      => l_file_name,
+          p_content_type   => l_content_type,
+          p_file_blob      => l_file_body
+        );
 
-      -- For production use, use APEX_WEB_SERVICE.PARSE_MULTIPART or
-      -- a custom multipart parser package
-      -- This is a simplified illustration:
-      :status_code := 200;
+        INSERT INTO hr.documents (
+          employee_id, filename, content_type,
+          file_size, file_content, uploaded_by, upload_date
+        ) VALUES (
+          JSON_VALUE(l_body_json, '$.employee_id' RETURNING NUMBER),
+          l_file_name,
+          l_content_type,
+          DBMS_LOB.GETLENGTH(l_file_body),
+          l_file_body,
+          COALESCE(JSON_VALUE(l_body_json, '$.uploaded_by'), :current_user),
+          SYSTIMESTAMP
+        );
+      END LOOP;
+
+      COMMIT;
+      :status_code := 201;
     END;
   ]'
 );
 ```
 
-**Recommendation**: For browser-based file uploads, use APEX. For programmatic uploads from services, use the direct binary PUT/POST approach with the file as the raw body.
+**Recommendation**: Native ORDS multipart handling is sufficient when a request needs both form fields and one or more files. APEX remains a good option for browser-based applications, but it is not required for multipart parsing. For service-to-service uploads where the request body is only the file, prefer the direct binary PUT/POST approach with the file as the raw body.
+
+For upload handlers, only set `:forward_location` if you intentionally want ORDS to execute a follow-up `GET` and return that representation as the upload response. Otherwise, return `201` or `200` without `:forward_location` and let the client fetch the `/content` resource separately.
 
 ---
 
@@ -189,11 +212,9 @@ ORDS.DEFINE_HANDLER(
 
 ### Using `source_type_media`
 
-The `media` source type is designed specifically for returning binary content. The SQL must return:
-1. A BLOB or CLOB column (the file content)
-2. Optionally: a `content_type` column (MIME type)
-3. Optionally: a `content_filename` column (for Content-Disposition)
-4. Optionally: an `etag` column (for HTTP caching)
+The `media` source type is designed specifically for returning binary or text content. The SQL should return:
+1. The media type first (for example `application/pdf` or `image/jpeg`)
+2. The representation second as a BLOB or CLOB
 
 ```sql
 BEGIN
@@ -209,10 +230,8 @@ BEGIN
     p_method      => 'GET',
     p_source_type => ORDS.source_type_media,
     p_source      => q'[
-      SELECT d.file_content  AS blob,
-             d.content_type  AS "Content-Type",
-             d.filename      AS "Content-Disposition-Filename",
-             d.upload_date   AS "Last-Modified"
+      SELECT d.content_type,
+             d.file_content
       FROM   hr.documents d
       WHERE  d.employee_id = :employee_id
       AND    d.filename    = :filename
@@ -224,76 +243,45 @@ END;
 ```
 
 ORDS automatically:
-- Sets the `Content-Type` header from the `content_type` column
-- Adds `Content-Length` header
-- Streams the BLOB body to the client
+- Sets the `Content-Type` header from the first selected column
+- Streams the BLOB body from the second selected column
 - Returns 404 if the query returns no rows
 
 Example download:
 
 ```shell
 # Download a document
-curl -O -J \
+curl --output resume.pdf \
   https://myserver.example.com/ords/hr/docs/employees/101/documents/resume.pdf/content \
   -H "Authorization: Bearer <token>"
 ```
 
-The `-J` flag tells curl to use the server-provided filename from Content-Disposition.
+Pick the output filename on the client side unless you have separate, documented header handling for attachment filenames.
 
-### Using PL/SQL Handler for Download (More Control)
+### Using `source_type_media` for Generated Downloads
 
-For scenarios requiring custom headers, conditional download, or transformation:
+Current ORDS documentation describes `source_type_plsql` as a handler source type for `DELETE`, `PUT`, and `POST`, not `GET`. For generated downloads, keep the handler on `source_type_media` and return the media type first and the generated representation second.
 
 ```sql
 ORDS.DEFINE_HANDLER(
   p_module_name => 'hr.docs',
   p_pattern     => 'employees/:employee_id/documents/:filename/download',
   p_method      => 'GET',
-  p_source_type => ORDS.source_type_plsql,
+  p_source_type => ORDS.source_type_media,
   p_source      => q'[
-    DECLARE
-      l_blob         BLOB;
-      l_ctype        VARCHAR2(100);
-      l_filename     VARCHAR2(255);
-      l_size         INTEGER;
-      l_offset       INTEGER := 1;
-      l_chunk_size   INTEGER := 32767;
-      l_chunk        RAW(32767);
-      l_amount       INTEGER;
-    BEGIN
-      BEGIN
-        SELECT d.file_content, d.content_type, d.filename
-        INTO   l_blob, l_ctype, l_filename
-        FROM   hr.documents d
-        WHERE  d.employee_id = :employee_id
-        AND    d.filename    = :filename;
-      EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-          :status_code := 404;
-          RETURN;
-      END;
-
-      l_size := DBMS_LOB.GETLENGTH(l_blob);
-
-      -- Set response headers
-      OWA_UTIL.MIME_HEADER(l_ctype, FALSE);
-      HTP.P('Content-Length: ' || l_size);
-      HTP.P('Content-Disposition: attachment; filename="' || l_filename || '"');
-      HTP.P('Cache-Control: private, max-age=3600');
-      OWA_UTIL.HTTP_HEADER_CLOSE;
-
-      -- Stream BLOB in chunks to handle large files
-      WHILE l_offset <= l_size LOOP
-        l_amount := LEAST(l_chunk_size, l_size - l_offset + 1);
-        DBMS_LOB.READ(l_blob, l_amount, l_offset, l_chunk);
-        WPG_DOCLOAD.DOWNLOAD_FILE(l_chunk);
-        l_offset := l_offset + l_amount;
-      END LOOP;
-
-    END;
+    SELECT d.content_type,
+           hr.docs_pkg.render_download_blob(
+             p_employee_id => :employee_id,
+             p_filename    => :filename
+           )
+    FROM   hr.documents d
+    WHERE  d.employee_id = :employee_id
+    AND    d.filename    = :filename
   ]'
 );
 ```
+
+If you need to transform the payload before download, do that work in SQL or in a PL/SQL function called from the `SELECT`, then return the final media type and BLOB through `source_type_media`.
 
 ---
 
@@ -319,9 +307,9 @@ ORDS.DEFINE_HANDLER(
            d.description,
            d.uploaded_by,
            d.upload_date,
-           -- Construct download link
-           '/ords/hr/docs/employees/' || d.employee_id
-             || '/documents/' || d.filename || '/content' AS download_url
+           -- Construct a relative link to the child download resource
+           './' || UTL_URL.ESCAPE(d.filename, TRUE, 'UTF-8')
+             || '/content' AS download_url
     FROM   hr.documents d
     WHERE  d.employee_id = :employee_id
     ORDER  BY d.upload_date DESC
@@ -393,16 +381,11 @@ HTP.P('Content-Disposition: attachment; filename*=UTF-8'''' ||
 
 ## Streaming Large Files
 
-For files larger than available memory, always stream in chunks. The chunk approach above using `DBMS_LOB.READ` and `WPG_DOCLOAD.DOWNLOAD_FILE` handles this correctly. For the `source_type_media` approach, ORDS streams automatically.
+For files larger than available memory, prefer `source_type_media`. ORDS streams the LOB response body automatically, so the handler does not need to implement manual chunking in PL/SQL.
 
-ORDS configuration for large uploads (adjust JVM memory and request limits):
+Large uploads are constrained by the ORDS runtime and fronting HTTP server, not by pagination settings such as `misc.pagination.maxRows`.
 
-```shell
-# Adjust pagination and request limits via the ORDS CLI
-ords --config /opt/oracle/ords/config config set misc.pagination.maxRows 1000
-```
-
-In Jetty standalone, the default max request size is 200MB. For larger files, consider chunked upload (client splits file, uploads parts, server assembles).
+In Jetty standalone, review the request-size and JVM memory settings for the deployed ORDS runtime before accepting large files. For very large payloads, consider chunked upload (client splits the file, uploads parts, server assembles) instead of relying on a single request body.
 
 ---
 
@@ -436,7 +419,7 @@ ORDS.DEFINE_HANDLER(
 ## Best Practices
 
 - **Use `source_type_media` for downloads when possible**: It is the cleanest, most efficient approach. ORDS handles all streaming and header management automatically.
-- **Always validate file size before storing**: Check `DBMS_LOB.GETLENGTH(:body)` against a maximum allowed size. Return 413 (Payload Too Large) for oversized uploads.
+- **Always validate file size before storing**: Copy `:body` into a local `BLOB`, then check `DBMS_LOB.GETLENGTH` on that variable before reusing it in DML. Return 413 (Payload Too Large) for oversized uploads.
 - **Store MIME type in the database**: Do not rely solely on file extension at download time. Store the `Content-Type` from the upload request and use it at download time.
 - **Use SECUREFILE LOB storage**: SECUREFILE provides compression, deduplication, and encryption for LOB columns. Significantly more efficient than BASICFILE for large-scale file storage.
 - **Set appropriate caching headers**: For static content (logos, PDFs) that rarely changes, add `Cache-Control: max-age=86400`. For dynamic documents, use `Cache-Control: private, no-cache`.
@@ -445,6 +428,7 @@ ORDS.DEFINE_HANDLER(
 ## Common Mistakes
 
 - **Using `:body_text` for binary files**: Binary data (images, PDFs) must use `:body` (BLOB). Using `:body_text` (CLOB) for binary data corrupts the content due to character set conversion.
+- **Dereferencing `:body` or `:body_text` multiple times**: Read the implicit payload bind into a local variable first. If you call `DBMS_LOB.GETLENGTH(:body)` and then reuse `:body` later, the later read can be empty.
 - **Not setting `Content-Type` on download**: Without a Content-Type header, browsers guess the type and may display the wrong viewer or prompt the wrong application to open the file.
 - **Forgetting COMMIT in upload handlers**: PL/SQL handlers do not auto-commit. An INSERT/UPDATE of a BLOB without COMMIT leaves the row locked and the data not visible to other sessions.
 - **Loading entire BLOB into memory**: `SELECT file_content INTO l_blob FROM ...` loads the full BLOB pointer, but actual data is not fully read until accessed. Use `DBMS_LOB.READ` in a loop for large files to avoid OOM errors.
@@ -462,6 +446,6 @@ ORDS.DEFINE_HANDLER(
 
 ## Sources
 
-- [ORDS Developer's Guide — Handling BLOBs and Binary Data](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
+- [ORDS Developer's Guide — Handling BLOBs and Binary Data](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/developing-REST-applications.html)
 - [Oracle Database SecureFiles and Large Objects Developer's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/adlob/index.html)
-- [ORDS Implicit Parameters Reference (:body, :content_type)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)
+- [ORDS Implicit Parameters Reference (:body, :content_type)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/implicit-parameters.html)
