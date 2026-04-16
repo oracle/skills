@@ -3,7 +3,7 @@
 **Repository:** https://github.com/krisrice/oracle-db-skills
 **Version:** 1.0.0
 
-This repository is a collection of 117 standalone reference guides for Oracle Database. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
+This repository is a collection of 150 standalone reference guides for Oracle Database. Each file covers one topic with explanations, practical examples, best practices, and common mistakes.
 
 ## How to Use This Collection
 

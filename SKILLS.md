@@ -3,7 +3,7 @@
 **Repository:** https://github.com/krisrice/oracle-db-skills
 **Version:** 1.0.0
 
-126 Oracle Database reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
+150 Oracle Database reference guides for AI agents. Each file is a standalone skill covering one topic with examples, best practices, and common mistakes.
 
 **Install:** `npx skills add krisrice/oracle-db-skills`
 
