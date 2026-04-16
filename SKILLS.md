@@ -119,6 +119,8 @@
 | `skills/ords/ords-installation.md` | ords | Installing ORDS, `ords config set`, wallet-based credential storage, mTLS for ATP/ADW |
 | `skills/ords/ords-auto-rest.md` | ords | ORDS.ENABLE_SCHEMA/OBJECT, endpoint patterns, JSON filter syntax, pagination |
 | `skills/ords/ords-rest-api-design.md` | ords | DEFINE_MODULE/TEMPLATE/HANDLER, source types, implicit bind parameters, CRUD examples |
+| `skills/ords/ords-pre-authenticated-requests.md` | ords | ORDS_PAR create/use/revoke flow, token lifecycle, URI parameter handling, expiry |
+| `skills/ords/ords-sessionless-transactions.md` | ords | GTRID lifecycle, `x-ords-sessionless-transaction-id`, timeout setting, database API commit/rollback |
 | `skills/ords/ords-authentication.md` | ords | OAuth2 client credentials and auth code flows, JWT validation, role mapping |
 | `skills/ords/ords-pl-sql-gateway.md` | ords | Calling PL/SQL from REST, REF CURSORs, APEX_JSON, error handling, CLOB/BLOB |
 | `skills/ords/ords-file-upload-download.md` | ords | BLOB upload/download, multipart form data, Content-Type/Content-Disposition |

@@ -129,6 +129,8 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `ords-installation.md` — Installing and configuring ORDS, pool configuration, wallet setup for ATP/ADW, upgrading
 - [x] `ords-auto-rest.md` — AutoREST enabling tables/views, generated endpoint patterns, filtering, pagination, ordering
 - [x] `ords-rest-api-design.md` — ORDS.DEFINE_MODULE/TEMPLATE/HANDLER, HTTP methods, bind parameters, implicit/explicit parameters
+- [x] `ords-pre-authenticated-requests.md` — ORDS_PAR create/use/revoke flow, token lifecycle, URI parameter handling, expiry
+- [x] `ords-sessionless-transactions.md` — GTRID lifecycle, `x-ords-sessionless-transaction-id`, timeout setting, database API commit/rollback
 - [x] `ords-authentication.md` — OAuth2 flows (client credentials, auth code), privilege definitions, role mapping, JWT validation
 - [x] `ords-pl-sql-gateway.md` — Calling PL/SQL from REST, OUT parameters, result sets via REF CURSORs, APEX_JSON, error handling
 - [x] `ords-file-upload-download.md` — BLOB upload/download endpoints, multipart form data, content-type handling

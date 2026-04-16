@@ -45,7 +45,7 @@ skills/
 | Vector search, SELECT AI, DBMS_VECTOR, AI profiles, embeddings, RAG | `skills/features/` (vector-search, select-ai, dbms-vector, ai-profiles) |
 | Migrating from PostgreSQL, MySQL, SQL Server, MongoDB, etc. | `skills/migrations/` |
 | Alert log, ADR, adrci, space, top SQL, health checks | `skills/monitoring/` |
-| ORDS, REST APIs, OAuth2, AutoREST, PL/SQL gateway | `skills/ords/` |
+| ORDS, REST APIs, OAuth2, AutoREST, PL/SQL gateway, sessionless transactions, pre-authenticated requests (PAR) | `skills/ords/` |
 | AWR, ASH, explain plan, indexes, optimizer stats, wait events, memory | `skills/performance/` |
 | Packages, cursors, collections, error handling, unit testing, debugging | `skills/plsql/` |
 | Privileges, VPD, TDE, encryption, auditing, network security | `skills/security/` |
@@ -63,6 +63,8 @@ skills/
 - **`skills/performance/explain-plan.md`** — foundation for all SQL performance work
 - **`skills/plsql/plsql-package-design.md`** — foundation for PL/SQL architecture questions
 - **`skills/devops/schema-migrations.md`** — Liquibase/Flyway with Oracle in CI/CD pipelines
+- **`skills/ords/ords-pre-authenticated-requests.md`** — ORDS_PAR-based pre-authenticated links for protected handlers
+- **`skills/ords/ords-sessionless-transactions.md`** — GTRID-based transaction control across REST requests in ORDS
 - **`skills/agent/schema-discovery.md`** — run these queries at the start of every agent session
 - **`skills/agent/safe-dml-patterns.md`** — always apply before generating UPDATE/DELETE
 - **`skills/features/select-ai.md`** — Oracle's built-in NL-to-SQL (Oracle 26ai)
