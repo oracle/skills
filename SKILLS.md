@@ -30,6 +30,7 @@
 | `skills/appdev/connection-pooling.md` | appdev | UCP, DRCP, pool sizing, connection validation, JDBC/Python/Node.js examples |
 | `skills/appdev/transaction-management.md` | appdev | ACID properties, savepoints, autonomous transactions, distributed transactions |
 | `skills/appdev/locking-concurrency.md` | appdev | MVCC, SELECT FOR UPDATE, NOWAIT/SKIP LOCKED, deadlock avoidance |
+| `skills/appdev/mle-javascript-in-database.md` | appdev | Multilingual Engine (MLE)/JavaScript and Typescript support for Oracle AI Database 26ai |
 | `skills/appdev/sequences-identity.md` | appdev | Sequence caching, identity columns, UUID alternatives, gap behavior |
 | `skills/appdev/json-in-oracle.md` | appdev | Native JSON type, JSON_VALUE/QUERY/TABLE, JSON Duality Views (23c) |
 | `skills/appdev/xml-in-oracle.md` | appdev | XMLType storage, XQuery, XMLTable, XML indexes, XMLDB repository |

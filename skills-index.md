@@ -37,6 +37,7 @@ A tracking file for skills.md topics to create for working with Oracle DB.
 - [x] `connection-pooling.md` — UCP, DRCP, connection best practices
 - [x] `transaction-management.md` — Commit frequency, savepoints, autonomous transactions
 - [x] `locking-concurrency.md` — Row locks, deadlocks, NOWAIT/SKIP LOCKED
+- [x] `mle-javascript-in-database.md` - Use MLE/JavaScript and Typescript in Oracle AI Database 26ai
 - [x] `sequences-identity.md` — Sequence caching, identity columns, UUID alternatives
 - [x] `json-in-oracle.md` — JSON data type, JSON_TABLE, dot notation, indexes
 - [x] `xml-in-oracle.md` — XMLType, XQuery, XML indexes
