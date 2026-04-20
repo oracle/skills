@@ -27,7 +27,7 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 | [Database Design & Modeling](#database-design--modeling) | 4 | `skills/design/` |
 | [SQL Development](#sql-development) | 5 | `skills/sql-dev/` |
 | [Performance & Tuning](#performance--tuning) | 7 | `skills/performance/` |
-| [Application Development](#application-development) | 14 | `skills/appdev/` |
+| [Application Development](#application-development) | 15 | `skills/appdev/` |
 | [Security](#security) | 6 | `skills/security/` |
 | [Administration](#administration) | 6 | `skills/admin/` |
 | [Monitoring & Diagnostics](#monitoring--diagnostics) | 5 | `skills/monitoring/` |
@@ -105,6 +105,7 @@ Oracle DB Skills is a curated library of 100+ practical, documentation-backed gu
 | `nodejs-oracledb.md` | node-oracledb driver, async/await, pools, result sets, LOBs |
 | `dotnet-oracle.md` | ODP.NET managed driver, EF Core, array binding, OracleParameter |
 | `golang-oracle.md` | godror driver, database/sql interface, named binds, REF CURSORs |
+| `mle-javascript-in-database.md` | Multilingual Engine (MLE) JavaScript and Typescript support for Oracle AI Database 26ai |
 
 ---
 
