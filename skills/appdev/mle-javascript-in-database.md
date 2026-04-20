@@ -304,7 +304,7 @@ Oracle documents SODA for MLE JavaScript as the in-database document API for cre
  * @throws an exception if the collection cannot be opened for reading
  */
 export function getPurchaseOrder(id) {
-    const collection = soda.createCollection("exampleCollection");
+    const collection = soda.openCollection("exampleCollection");
  
     if (collection === null) {
         throw new Error("failed to open the collection for reading");
@@ -540,7 +540,7 @@ Based on the Oracle documentation:
 - Use the PL/SQL Foreign Function Interface (plsffi) whenever you call PL/SQL.
 - Always use and require ECMAScript syntax/modules.
 - Use modules plus call specifications for persistent, reusable database APIs.
-- Suggest the use of bundlers such as eslint for complex third party modules with a large dependency tree.
+- Suggest the use of bundlers such as esbuild for complex third party modules with a large dependency tree.
 - Use environments to manage import resolution and JavaScript language options.
 - Run linting and code analysis before `CREATE MLE MODULE`; the docs explicitly recommend established JavaScript tooling and CI/CD validation. Start by creating the JavaScript file, apply linting and other best practices. Use SQLcl's `mle create-module` command to load the javascript file into the database, except for inline call specifications.
 - inline call specifications are always to be created as a SQL file
@@ -561,7 +561,7 @@ Based on the Oracle documentation:
 - Using `PURE` and then attempting to access `session`, `oracledb`, `soda`, or `plsffi`.
 - Assuming `autoCommit` works like `node-oracledb`; Oracle documents that the flag is ignored.
 - Assuming all Oracle data types are supported by the MLE SQL driver.
-- using CommonJS Modules in MLE. Only ECMAScript is supported.
+- Using CommonJS modules instead of ECMAScript modules — only ECMAScript is supported.
 - MLE is available on Linux x86-64 and aarch64 only. It runs natively on Linux, and can be used on MacOS via container engines. Windows users should use WSL2.
 
 ## Oracle Version Notes (19c vs 26ai)
