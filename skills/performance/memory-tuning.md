@@ -316,7 +316,7 @@ ORDER  BY snap_id;
 
 ### Automatic Memory Management (AMM)
 
-AMM manages both SGA and PGA automatically. Set only `MEMORY_TARGET` and optionally `MEMORY_MAX_TARGET`.
+AMM manages both SGA and PGA automatically. Set only `MEMORY_TARGET` and optionally `MEMORY_MAX_TARGET`. This is recommended only on small systems with a total SGA less than 4GB.
 
 ```sql
 -- Enable AMM

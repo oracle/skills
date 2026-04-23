@@ -15,7 +15,7 @@ Understanding Oracle's locking architecture is essential for writing application
 When a row is modified, Oracle does not overwrite the old data in place. Instead:
 
 1. The new row version is written to the data block
-2. The old row version is stored in the **undo tablespace** (rollback segments)
+2. Instructions on how to resurrect the old row version is stored in the **undo tablespace** (rollback segments)
 3. Readers needing the old version reconstruct it from undo data on demand
 
 This creates a "time-travel" capability: every read sees a **consistent snapshot** of the database at the query's start SCN (System Change Number), regardless of concurrent writers.
@@ -55,6 +55,9 @@ ALTER SYSTEM SET UNDO_RETENTION = 3600;  -- 1 hour
 SELECT d.undoblks, d.maxquerylen, d.tuned_undoretention
 FROM   v$undostat d
 WHERE  rownum <= 1;
+
+-- Increase current or potential size of undo tablespace
+ALTER DATABASE DATAFILE '<undo file>' RESIZE | AUTOEXEND;
 
 -- Enable undo retention guarantee (prevents undo from being overwritten)
 ALTER TABLESPACE undotbs1 RETENTION GUARANTEE;
@@ -121,7 +124,14 @@ BEGIN
         UPDATE accounts SET balance = balance + 500 WHERE account_id = 2001;
         COMMIT;
     ELSE
-        ROLLBACK;
+        --
+        -- Generally a rollback should be used here, because the PL/SQL error 
+        -- will automatically roll back changes made in the PL/SQL block, and a rollback
+        -- will also roll back any outstanding made BEFORE this block was called which
+        -- is typically not the desired behaviour
+        --
+        --ROLLBACK;
+        --
         RAISE_APPLICATION_ERROR(-20001, 'Insufficient funds');
     END IF;
 END;
@@ -171,29 +181,32 @@ FOR UPDATE WAIT 5;
 ```sql
 -- Worker process: claim the next available pending job
 DECLARE
-    v_job_id   NUMBER;
-    v_payload  VARCHAR2(4000);
+    l_job_id   NUMBER;
+    l_payload  VARCHAR2(4000);
+    l_rc       SYS_REFCURSOR;
 BEGIN
-    -- Grab one unprocessed job, skipping any locked by other workers
-    SELECT job_id, payload INTO v_job_id, v_payload
-    FROM   job_queue
-    WHERE  status = 'PENDING'
-      AND  ROWNUM = 1
-    ORDER  BY created_at
-    FOR UPDATE SKIP LOCKED;
+    open l_rc for
+      SELECT job_id, payload
+      FROM   job_queue
+      WHERE  status = 'PENDING'
+      ORDER  BY created_at
+      FOR UPDATE SKIP LOCKED;
+
+    FETCH l_rc INTO l_job_id, l_payload;
+    EXIT WHEN l_rc%NOTFOUND;
 
     -- Mark as in-progress
     UPDATE job_queue SET status = 'PROCESSING', started_at = SYSTIMESTAMP
-    WHERE  job_id = v_job_id;
+    WHERE  job_id = l_job_id;
 
     COMMIT;
 
     -- Process the job (outside the lock)
-    process_job(v_job_id, v_payload);
+    process_job(l_job_id, l_payload);
 
     -- Mark complete
     UPDATE job_queue SET status = 'DONE', completed_at = SYSTIMESTAMP
-    WHERE  job_id = v_job_id;
+    WHERE  job_id = l_job_id;
     COMMIT;
 
 EXCEPTION
@@ -202,7 +215,19 @@ EXCEPTION
 END;
 ```
 
+will not produce correct behaviour. It will fetch PENDING one row (which may already be locked by another process) and only then attempt to lock it, and subsequently skip it, thus returning no rows.
+
 Multiple instances of this worker can run concurrently without any inter-process coordination — Oracle handles the row-level locking automatically.
+
+A common mistake when using SKIP LOCKED is using ROWNUM to limit the returned row. For example
+
+```sql
+    SELECT job_id, payload INTO l_job_id, l_payload
+    FROM   job_queue
+    WHERE  status = 'PENDING'
+    AND    ROWNUM = 1
+    FOR UPDATE SKIP LOCKED;
+```
 
 ---
 
@@ -288,7 +313,7 @@ END;
 
 **Strategy 4: Minimize Transaction Duration**
 
-The longer a transaction holds locks, the more opportunity for deadlocks. Commit frequently for batch operations.
+The longer a transaction holds locks, the more opportunity for deadlocks. 
 
 ---
 
@@ -315,7 +340,7 @@ LOCK TABLE orders IN ROW EXCLUSIVE MODE;
 
 Table locks in `EXCLUSIVE MODE` are rarely needed in application code. Primary use cases:
 - Bulk load operations where you want to prevent any concurrent DML
-- Schema changes when `ONLINE DDL` is not available
+- The database may lock a table during schema changes when ONLINE DDL is not available
 - Explicit synchronization for ETL processes
 
 ```sql
@@ -430,16 +455,17 @@ Read the row without locking. Only at update time, verify the row hasn't changed
 
 ```sql
 -- Read (no lock)
-SELECT order_id, status, last_modified, ORA_ROWSCN AS read_scn
+SELECT order_id, status, last_modified
+INTO   :order_id, :status, :last_modified
 FROM   orders
 WHERE  order_id = 1001;
 -- Application processes the data, user thinks about it...
 
--- Update with collision detection using ORA_ROWSCN or version column
+-- Update with collision detection using comparison with values previously fetched
 UPDATE orders
 SET    status = 'APPROVED', last_modified = SYSTIMESTAMP
 WHERE  order_id = 1001
-  AND  ORA_ROWSCN = :read_scn;  -- fails if row was changed since we read it
+  AND  last_modified = :last_modified; -- fails if row was changed since we read it
 
 IF SQL%ROWCOUNT = 0 THEN
     -- Row was modified by someone else; retry or raise conflict error
@@ -447,6 +473,13 @@ IF SQL%ROWCOUNT = 0 THEN
 END IF;
 COMMIT;
 ```
+
+An anti-pattern is to use the ORA_ROWSCN function as a mechanism for optimistic locking. Avoid this because
+- Tables require the ROW DEPENDENCIES clause, but no error will be raised if this is not the case
+- ORA_ROWSCN does not work on Index Organized Tables
+- ORA_ROWSCN requires columns in the UPDATE-SET clause are also referenced as predicates in the WHERE clause, otherwise it can return null
+
+In version 26ai an above, the SYS_ROW_ETAG can be used for optimistic locking without the drawbacks of ORA_ROWSCN
 
 **Using a version column for optimistic locking:**
 

@@ -18,8 +18,19 @@ The primary tool for managing statistics is the `DBMS_STATS` package.
 
 ### Gather Table Statistics
 
+**Note:** A default installation of the database ships with the most appropriate defaults for optimizer statistics gathering. In most case, using the default parameters for DBMS_STATS calls will be optimal. 
+
 ```sql
--- Basic gather with auto-sample size (recommended default)
+-- Basic gather using system defaults
+BEGIN
+  DBMS_STATS.GATHER_TABLE_STATS(
+    ownname   => 'HR',
+    tabname   => 'EMPLOYEES'
+  );
+END;
+/
+
+-- Basic gather with additional parameters specified
 BEGIN
   DBMS_STATS.GATHER_TABLE_STATS(
     ownname   => 'HR',
@@ -481,6 +492,7 @@ END;
 
 ## Best Practices
 
+- **Use defaults unless customisation required** — A default installation of the database ships with the most appropriate defaults for optimizer statistics gathering. In most case, using the default parameters for DBMS_STATS calls will be optimal. 
 - **Use `AUTO_SAMPLE_SIZE`** — Oracle's incremental statistics algorithm produces accurate stats with minimal overhead in 11g+. Fixed sample sizes (e.g., 10%) are rarely better.
 - **Use incremental statistics for partitioned tables** — avoids full re-scan of unchanged partitions.
 
@@ -496,7 +508,7 @@ END;
 /
 ```
 
-- **Gather stats after bulk loads before running queries** — a batch that inserts millions of rows makes stats stale immediately.
+- **Gather stats after conventional bulk loads before running queries** — a batch that inserts millions of rows makes stats stale immediately.
 - **Export stats before major changes** (upgrades, schema changes) so you can restore the previous state if plan regressions occur.
 - **Use `METHOD_OPT => 'FOR ALL COLUMNS SIZE AUTO'`** as the default — Oracle decides which columns need histograms based on workload feedback.
 - **Check `STALE_STATS` before large batch jobs** — running a 2-hour batch against stale stats is common but avoidable.
@@ -508,12 +520,11 @@ END;
 
 | Mistake | Impact | Fix |
 |---|---|---|
-| Never gathering stats on new tables | Optimizer uses dynamic sampling; may be inaccurate | Gather stats after initial load |
+| Never gathering stats on new tables | Optimizer uses dynamic sampling; may be inaccurate | Gather stats after initial load if statistics were not automatically generated |
 | Using fixed sample size (e.g., 1%) | Inaccurate for skewed data | Use `AUTO_SAMPLE_SIZE` |
 | Gathering stats with `NO_INVALIDATE=TRUE` always | Old plans persist with new stats | Set `FALSE` or use the default (deferred invalidation) |
 | Forgetting to regather after creating extended stats | Extended stats exist but have no data | Always gather after `CREATE_EXTENDED_STATS` |
 | Disabling autostats globally without a replacement | Stats go stale; plan regressions over time | Replace with a custom job; never just disable |
-| Not locking stats on small lookup tables | Stats change unpredictably; optimizer changes join order | Lock stats for stable small tables |
 | Histograms on columns with bind variables | Bind peeking + histogram can cause plan instability | Use `SIZE 1` (no histogram) or `CURSOR_SHARING=FORCE` carefully |
 
 ---

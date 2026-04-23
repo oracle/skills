@@ -20,7 +20,7 @@ CREATE SEQUENCE schema.sequence_name
     MINVALUE        min_value            -- lower bound
     MAXVALUE        max_value            -- upper bound (default: 10^27 for ASC)
     NOCYCLE | CYCLE                      -- NOCYCLE raises ORA-08004 at limit (default: NOCYCLE)
-    CACHE n | NOCACHE                    -- pre-allocate n values in memory (default: 20)
+    CACHE n | NOCACHE                    -- Use memory for a sequence increment count to improve performance (default: 20)
     ORDER | NOORDER                      -- ORDER guarantees generation order (only matters for RAC)
     KEEP | NOKEEP                        -- affects sequence behavior after session restore
     SCALE | NOSCALE;                     -- introduced in 23ai: prepend instance/shard info for uniqueness
@@ -110,13 +110,15 @@ DROP SEQUENCE seq_customer_id;
 
 ## The CACHE Option: Performance Impact
 
-`CACHE` is the most impactful sequence parameter for performance. Oracle pre-allocates `CACHE` values in the SGA. Incrementing a cached sequence is a pure in-memory operation — extremely fast. Without caching (`NOCACHE`), every `NEXTVAL` requires a write to the `seq$` system table.
+`CACHE` is the most impactful sequence parameter for performance. Oracle uses the SGA to increment `CACHE` values before synchronising with the data dictionary table (SEQ$). Incrementing a cached sequence is a pure in-memory operation — extremely fast. Without caching (`NOCACHE`), every `NEXTVAL` requires a write to the `seq$` system table.
 
 ### Performance Comparison
 
+In 19c+ as long as you do not specify NOCACHE, a cached sequence will have its cache size automatically tuned by the database to achieve optimal performance. If you want to explicitly set a CACHE, these are some guidelines
+
+
 | Configuration | NEXTVAL Cost | Notes |
 |---|---|---|
-| `NOCACHE` | ~1 redo log write | ~100x slower; avoid in OLTP |
 | `CACHE 20` (default) | In-memory increment | Good for low-volume |
 | `CACHE 100` | In-memory increment | Good for moderate OLTP |
 | `CACHE 1000+` | In-memory increment | Bulk inserts, high-volume |
@@ -132,7 +134,7 @@ WHERE  sn.name = 'sequence misses'
 
 ### Cache Loss on Instance Restart
 
-When the database restarts, cached but unused sequence values are **discarded**. If you cached 1000 values and used 50, the next session starts at value 1051 — a gap of 950. This is normal and expected. If your application cannot tolerate gaps, you cannot use CACHE (and will pay the performance penalty).
+When the database restarts, cached but unused sequence values are **discarded**. If you cached 1000 values and used 50, the next session starts at value 1051 — a gap of 950. This is normal and expected. If your application cannot tolerate gaps, you cannot use sequences (and will pay the performance penalty).
 
 ```sql
 -- How many values will be lost on restart?

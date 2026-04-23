@@ -112,12 +112,10 @@ BEGIN
     VALUES (p_from_account, p_to_account, p_amount, SYSDATE);
 
     COMMIT;  -- all three changes committed together
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;  -- all three changes discarded
-        RAISE;
 END;
 ```
+
+A benefit of PL/SQL is that a PL/SQL block is also a statement level transaction. If any of the three DMLs above had failed, all three will be rolled back automatically because the entire PL/SQL block is deemed a statement level transaction.
 
 ---
 
@@ -346,33 +344,14 @@ ORDER  BY mb_used DESC;
 
 ### Batch Processing Pattern — Commit in Batches
 
-```plpgsql
--- WRONG: one commit for millions of rows
-BEGIN
-    FOR r IN (SELECT id FROM large_table WHERE needs_processing = 'Y') LOOP
-        UPDATE large_table SET processed_date = SYSDATE WHERE id = r.id;
-    END LOOP;
-    COMMIT;  -- holds all locks for the entire loop duration
-END;
+For example, it may be the case that a single large UPDATE holds locks for too long a period
 
--- RIGHT: commit every N rows
-DECLARE
-    v_batch_size CONSTANT PLS_INTEGER := 1000;
-    v_count      PLS_INTEGER := 0;
-BEGIN
-    FOR r IN (SELECT id FROM large_table WHERE needs_processing = 'Y') LOOP
-        UPDATE large_table SET processed_date = SYSDATE WHERE id = r.id;
-        v_count := v_count + 1;
-
-        IF MOD(v_count, v_batch_size) = 0 THEN
-            COMMIT;
-        END IF;
-    END LOOP;
-    COMMIT;  -- final batch
-END;
+```sql
+UPDATE large_table SET processed_date = SYSDATE WHERE needs_processing = 'Y'
+COMMIT;  -- holds all locks for the entire loop duration
 ```
 
-### Using FORALL for Bulk DML
+To avoid this, commit every N rows also ensuring that the cursor is freshly reopened to avoid ORA-1555 errors.
 
 ```plpgsql
 DECLARE
@@ -381,19 +360,19 @@ DECLARE
     CURSOR c_pending IS
         SELECT id FROM large_table WHERE needs_processing = 'Y';
 BEGIN
-    OPEN c_pending;
     LOOP
-        FETCH c_pending BULK COLLECT INTO v_ids LIMIT 5000;
-        EXIT WHEN v_ids.COUNT = 0;
+      OPEN c_pending;
+      FETCH c_pending BULK COLLECT INTO v_ids LIMIT 5000;
+      EXIT WHEN v_ids.COUNT = 0;
 
-        FORALL i IN 1..v_ids.COUNT
-            UPDATE large_table
-            SET    processed_date = SYSDATE
-            WHERE  id = v_ids(i);
+      FORALL i IN 1..v_ids.COUNT
+          UPDATE large_table
+          SET    processed_date = SYSDATE
+          WHERE  id = v_ids(i);
 
         COMMIT;
+      CLOSE c_pending;
     END LOOP;
-    CLOSE c_pending;
 END;
 ```
 
@@ -403,7 +382,7 @@ END;
 
 - **Keep transactions as short as possible.** Do all computation before the transaction, execute DML, commit immediately.
 - **Never wait for user input inside a transaction.** The user might walk away, leaving locks held.
-- **Always handle exceptions and call ROLLBACK.** An unhandled exception in application code that disconnects without rollback leaves the transaction open until the session is killed.
+- **Always handle exceptions. Call ROLLBACK if necessary** An unhandled exception in application code that disconnects without rollback may leave the transaction open until the session is killed.
 - **Use `COMMIT WRITE BATCH NOWAIT` only for bulk loads** where you understand the durability trade-off.
 - **Prefer `FORALL` and bulk operations** over row-by-row DML to reduce commit frequency while keeping transactions short.
 - **Test with `SERIALIZABLE` isolation** if your application logic depends on consistent reads across multiple statements; do not assume `READ COMMITTED` provides snapshot consistency at the transaction level.
@@ -431,9 +410,17 @@ BEGIN
     UPDATE accounts SET balance = balance - 500 WHERE id = 1;
     UPDATE accounts SET balance = balance + 500 WHERE id = 2;
     COMMIT;
+    -- any error will be raised and both statements rolled back automatically by PL/SQL
+END;
+
+-- ALTERNATIVE 
+BEGIN
+    UPDATE accounts SET balance = balance - 500 WHERE id = 1;
+    UPDATE accounts SET balance = balance + 500 WHERE id = 2;
+    COMMIT;
 EXCEPTION
     WHEN OTHERS THEN
-        ROLLBACK;
+        log_error(...)  -- if we want to capture error details
         RAISE;  -- re-raise so the caller knows
 END;
 ```

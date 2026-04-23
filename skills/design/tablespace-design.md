@@ -88,7 +88,7 @@ CREATE TABLESPACE users_data
 - Data file up to **4 billion blocks** (32 TB with 8K blocks, up to 128 TB with 32K blocks)
 - Only 1 file number consumed per tablespace
 - Simpler management for very large tablespaces
-- RMAN backup of a bigfile tablespace = backup of 1 very large file (less I/O parallelism)
+- RMAN backup of a bigfile tablespace may require altering default settings to ensure I/O parallelism
 - Required for Oracle Managed Files (OMF) on some storage configurations
 
 ```sql
@@ -109,7 +109,6 @@ ALTER TABLESPACE dw_facts_data RESIZE 200G;  -- only valid for bigfile tablespac
 | Number of files | Up to 1022 per TS | Exactly 1 per TS |
 | Individual file size | Up to ~128 TB | Up to ~128 TB |
 | File number consumption | Multiple files per TS | 1 file per TS |
-| RMAN backup parallelism | High (multiple files backed up concurrently) | Low (single file) |
 | Management simplicity | More files to track | Simpler (1 file) |
 | Best for | OLTP, medium-size tables, flexibility | Huge DW fact tables, ASM environments |
 | ASM compatibility | Both work | Preferred on ASM (ASM handles striping) |
@@ -125,17 +124,18 @@ Extents are contiguous groups of Oracle blocks allocated to a segment. Extent ma
 Oracle tracks extent allocation in a bitmap stored within the tablespace's data files themselves, not in the SYSTEM tablespace's data dictionary. This eliminates contention on the data dictionary and is the default for all tablespaces since Oracle 9i.
 
 ```sql
--- Uniform extent size: all extents the same size (preferred for DW/uniform-size objects)
+-- Uniform extent size: all extents the same size
 CREATE TABLESPACE dw_idx
     DATAFILE '/u02/oradata/ORCL/dw_idx01.dbf' SIZE 10G AUTOEXTEND ON NEXT 1G MAXSIZE 100G
     EXTENT MANAGEMENT LOCAL UNIFORM SIZE 8M;  -- every extent is exactly 8M
 
 -- Autoallocate: Oracle chooses extent sizes (64K -> 1M -> 8M -> 64M...)
--- Preferred for OLTP with mixed object sizes
 CREATE TABLESPACE users_data
     DATAFILE '/u01/oradata/ORCL/users_data01.dbf' SIZE 4G AUTOEXTEND ON NEXT 512M MAXSIZE 50G
     EXTENT MANAGEMENT LOCAL AUTOALLOCATE;
 ```
+
+Autoallocate is likely sufficient for all workloads unless there are specific niche reasons to require a uniform extent size.
 
 **Uniform size guidelines:**
 
@@ -258,22 +258,15 @@ CREATE TABLESPACE app_data
     EXTENT MANAGEMENT LOCAL AUTOALLOCATE
     SEGMENT SPACE MANAGEMENT AUTO;
 
+--
+-- If you expect the need to do significant maintenance on LOBs, then 
+-- optionally dedicate a separate tablespace for them. Usually not required.
+--
 -- Large object (LOB) tablespace — separate from row data
 CREATE TABLESPACE app_lob
     DATAFILE '/u04/oradata/ORCL/app_lob_01.dbf' SIZE 20G
              AUTOEXTEND ON NEXT 2G MAXSIZE 1T
     EXTENT MANAGEMENT LOCAL UNIFORM SIZE 8M  -- uniform for LOB efficiency
-    SEGMENT SPACE MANAGEMENT AUTO;
-
--- ============================================================
--- APPLICATION INDEXES: always separate from data for I/O isolation
--- ============================================================
-CREATE TABLESPACE app_idx
-    DATAFILE '/u05/oradata/ORCL/app_idx_01.dbf' SIZE 5G
-             AUTOEXTEND ON NEXT 512M MAXSIZE 200G,
-            '/u05/oradata/ORCL/app_idx_02.dbf' SIZE 5G
-             AUTOEXTEND ON NEXT 512M MAXSIZE 200G
-    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
     SEGMENT SPACE MANAGEMENT AUTO;
 
 -- ============================================================
@@ -513,11 +506,9 @@ WHERE  username = 'APP_OWNER';
 
 ## 9. Best Practices
 
-- **Separate data from indexes.** Index I/O patterns (random access) differ from table I/O patterns (sequential scans) — keeping them on separate tablespaces (ideally separate storage devices) improves I/O throughput.
 - **Separate OLTP data from DW data.** Different compression settings, extent sizes, and backup frequencies make separation critical.
 - **Never store application objects in SYSTEM or SYSAUX.** Corruption or space exhaustion in SYSTEM brings the entire database down.
 - **Cap AUTOEXTEND with a realistic MAXSIZE.** Unlimited autoextend on a filesystem will fill the disk and crash the database. Set `MAXSIZE` to leave at least 20% filesystem headroom.
-- **Use uniform extent sizes for DW tablespaces.** Uniform extents improve full scan performance (contiguous I/O) and simplify space management. Use `AUTOALLOCATE` for OLTP tablespaces with highly variable object sizes.
 - **Put LOB segments in a dedicated tablespace.** LOB segments grow independently from their row tables; isolating them prevents space contention and simplifies monitoring.
 - **Create read-only tablespaces for historical archive data.** Read-only tablespaces don't need backup after the final datafile checkpoint, dramatically reducing backup windows.
 - **Monitor tablespace usage proactively.** Set Oracle thresholds or custom alerts at 75% and 85% usage — never wait for `ORA-01653: unable to extend table`.
@@ -579,25 +570,7 @@ EXEC DBMS_SPACE_ADMIN.TABLESPACE_MIGRATE_TO_LOCAL('OLD_DMT_TABLESPACE');
 
 MSSM freelist contention is a documented scalability bottleneck. Always use ASSM (`SEGMENT SPACE MANAGEMENT AUTO`) for new tablespaces.
 
-### Mistake 5: Ignoring Fragmentation
-
-Frequent drop/create cycles leave free space fragmented across a tablespace. Monitor fragmentation:
-
-```sql
-SELECT COUNT(*) AS free_space_chunks,
-       ROUND(MAX(bytes)/1048576, 2)   AS largest_free_chunk_mb,
-       ROUND(SUM(bytes)/1048576, 2)   AS total_free_mb
-FROM   dba_free_space
-WHERE  tablespace_name = 'APP_DATA';
-```
-
-If a locally managed tablespace has many small free chunks but large objects cannot allocate space efficiently, investigate segment layout, add or resize datafiles, or move/rebuild large segments as needed. `ALTER TABLESPACE ... COALESCE` is a legacy remedy for dictionary-managed tablespaces, not the normal fix for modern locally managed tablespaces.
-
-### Mistake 6: Putting Indexes on the Same Tablespace as Their Table
-
-When a full table scan with an index lookup occurs, Oracle must read both the table and the index. If they share a data file, I/O becomes a bottleneck. Separate data and index tablespaces onto different storage paths (different ASM disk groups, different LUNs, or different filesystem paths).
-
-### Mistake 7: Undersizing the Undo Tablespace
+### Mistake 5: Undersizing the Undo Tablespace
 
 An undersized undo tablespace causes `ORA-01555: snapshot too old` errors for long-running queries and prevents Flashback Query from working for the intended retention window. Size undo based on the longest expected transaction and the `UNDO_RETENTION` setting.
 

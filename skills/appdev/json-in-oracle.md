@@ -10,7 +10,7 @@ This guide covers the full spectrum: storage options, the complete SQL/JSON func
 
 ## JSON Storage Options
 
-### Pre-21c: VARCHAR2 / CLOB with IS JSON Constraint
+### Pre-21c: VARCHAR2 / BLOB with IS JSON Constraint
 
 ```sql
 -- VARCHAR2 for small JSON documents (≤32767 bytes)
@@ -21,10 +21,10 @@ CREATE TABLE product_catalog (
         CONSTRAINT chk_attributes_json CHECK (attributes IS JSON)
 );
 
--- CLOB for large documents
+-- BLOB for large documents
 CREATE TABLE event_log (
     event_id     NUMBER PRIMARY KEY,
-    event_data   CLOB
+    event_data   BLOB
         CONSTRAINT chk_event_json CHECK (event_data IS JSON)
 );
 
@@ -36,6 +36,8 @@ CREATE TABLE strict_json_table (
     data CLOB CONSTRAINT chk_strict CHECK (data IS JSON STRICT)
 );
 ```
+
+BLOBs are more storage efficient than CLOBs when storing JSON. Consider also using the FORMAT OSON clause until 21c+
 
 ### 21c+: Native JSON Data Type
 

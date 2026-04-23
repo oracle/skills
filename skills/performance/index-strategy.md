@@ -52,14 +52,12 @@ Bitmap indexes store one bit per row for each distinct value. They are extremely
 
 ### When to Use
 
-- Columns with very **low cardinality** (2–100 distinct values): status codes, regions, Boolean flags
 - **Data warehouse** or reporting environments with heavy `SELECT` and infrequent `INSERT/UPDATE/DELETE`
 - Queries combining multiple low-cardinality filters (`AND`/`OR`) — Oracle can combine bitmaps with bitwise operations
 
 ### When to Avoid
 
 - **OLTP environments** — bitmap indexes lock entire bitmaps during DML, causing severe contention
-- High-cardinality columns — wasteful; B-tree is better
 - Heavily updated columns — each DML locks bitmaps for all rows with the same value
 
 ```sql
@@ -86,7 +84,7 @@ WHERE  table_name = 'SALES'
 
 | Characteristic | B-Tree | Bitmap |
 |---|---|---|
-| Best cardinality | High | Low (< 100 distinct) |
+| Best cardinality | High | Low |
 | DML performance | Moderate overhead per row | Heavy contention; row-level lock escalates |
 | Storage | Per-value entries | Very compact for low cardinality |
 | Combined predicates | Separate index lookups | Bitwise operations; very efficient |
@@ -303,8 +301,7 @@ ALTER INDEX emp_dept_sal_ix REBUILD COMPRESS 1;
 | Scenario | Recommendation |
 |---|---|
 | Many deletes caused leaf block waste | Coalesce (fast, online-safe) |
-| Index height grown to 4+ levels on small-medium table | Rebuild |
-| Clustering factor severely degraded | Rebuild (or reorganize table with move) |
+| Clustering factor severely degraded | Consider reorganising the **table** |
 | Moving index to different tablespace | Rebuild |
 | Periodic "maintenance" on a healthy index | Neither — unnecessary on healthy indexes |
 
@@ -333,7 +330,9 @@ FROM   index_stats;
 A frequently overlooked index is on the **foreign key column** of a child table. Without it:
 
 - Full table scans occur when navigating from parent to child
-- Deleting or updating a parent row causes an **exclusive table-level lock** on the child table in Oracle (until the cascade/validation completes)
+- Deleting a parent row or updating the parent primary key value (rare) will cause an brief **exclusive table-level lock** on the child table in Oracle (until the cascade/validation completes)
+
+If the parent table is never deleted from, a foreign key index decision is the same as standard index decision, namely, will it improve performance of queries?
 
 ```sql
 -- Identify unindexed foreign keys
@@ -504,11 +503,11 @@ EXEC DBMS_AUTO_INDEX.CONFIGURE('AUTO_INDEX_MODE', 'IMPLEMENT');
 |---|---|---|
 | Creating B-tree on a Y/N flag column | Rarely used; DML overhead for no benefit | Use bitmap index (if DW) or no index (if OLTP) |
 | Wrong column order in composite index | Index not used for common queries | Put equality columns first, then range |
-| Not indexing FK columns | Lock escalation on parent DML; slow joins | Always index FK columns |
+| Not indexing FK columns | Lock escalation on parent DML; slow joins | Index FK columns when required |
 | Using FTS result to conclude "no index needed" | May be an FBI or type mismatch issue | Check predicate info; fix function application |
 | Rebuilding all indexes on schedule | Wasted maintenance window; no real benefit | Rebuild only when fragmentation is confirmed |
 | Dropping an index without testing | May cause performance regression | Make invisible first; test; then drop |
-| Creating duplicate indexes | DML overhead; storage waste | Check existing indexes before creating new ones |
+| Creating overlapping indexes | DML overhead; storage waste | Check existing indexes before creating new ones |
 
 ---
 

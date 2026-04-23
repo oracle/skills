@@ -48,6 +48,8 @@ CREATE USER app_user
 
 **`ACCOUNT LOCK / UNLOCK`** — creates the account locked (prevents login until explicitly unlocked).
 
+**`NOAUTHENTICATION`** — creates the account without any mechanism for a session to be created with this account. Best practice for accounts that contain schema objects where direct login to that account should not be allowed.
+
 ### Altering Users
 
 ```sql
@@ -478,6 +480,8 @@ ORDER BY timestamp DESC;
 - **Review stale accounts monthly.** Lock accounts for users who have left the organization or whose projects have ended.
 
 - **Use proxy authentication for connection pools** to preserve end-user identity in audit trails.
+
+- **Use noauthentication for schema accounts in Production** to reduce potential harm from security breaches with passwords
 
 ---
 

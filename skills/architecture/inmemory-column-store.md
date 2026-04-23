@@ -8,6 +8,7 @@ The primary benefit is analytic query acceleration: columnar storage, vectorized
 
 DBIM is an Oracle Database option — it requires a separate license unless you are using Oracle Exadata (where it is included) or Oracle Autonomous Database (where it is included and managed automatically).
 
+However, 19c+ permits 16GB of IN-MEMORY to be used per instance without requiring additional licensing options.
 ---
 
 ## 1. Architecture Overview
