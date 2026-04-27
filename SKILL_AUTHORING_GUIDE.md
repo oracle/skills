@@ -1,6 +1,6 @@
 # Skill Authoring Guide
 
-This repository is the official Oracle-wide source for curated skills organized by domain under `skills/`.
+This repository is the Oracle-wide source for curated skills organized by domain under `skills/`.
 
 Use this guide when adding or updating skills so the repository stays consistent across Oracle Database, OCI, Fusion, and future domains.
 

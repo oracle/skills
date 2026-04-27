@@ -1,6 +1,6 @@
 # Oracle Skills
 
-Oracle Skills is the official repository for Oracle-wide skills, organized by domain under `skills/`.
+Oracle Skills is the repository for Oracle-wide skills, organized by domain under `skills/`.
 
 The goal is to provide a single source of truth for practical Oracle skills across products and platforms. Each domain can own its own routing, indexing, and topic structure while still fitting a consistent repository model.
 
@@ -8,7 +8,7 @@ The current deepest content lives in `skills/db/`, with `skills/oci/`, `skills/f
 
 ## Repository Goals
 
-- Provide official Oracle-wide skills in one repository.
+- Provide Oracle-wide skills in one repository.
 - Organize content by domain instead of mixing unrelated Oracle topics together.
 - Keep each skill practical, source-backed, and easy to consume on demand.
 - Allow each domain to evolve its own taxonomy without breaking repo-wide consistency.
