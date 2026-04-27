@@ -1,28 +1,28 @@
 # Oracle Fusion Skills
 
-This domain is scaffolded for future Oracle Fusion skills.
+This file is a sample skeleton for how a domain-level `SKILL.md` can be structured for Oracle Fusion content.
 
-This domain will cover Fusion application configuration, extension, integration, reporting, and operational guidance across major Fusion product families.
+Use it as a pattern for future Fusion domain navigation, not as a todo list or commitment to a final taxonomy.
 
 ## How to Use This Domain
 
 1. Start with the routing table below.
 2. Read only the specific file or category you need.
-3. Add new Fusion skills under the planned category structure as content lands.
+3. Use the sections below as a template for organizing Fusion skills as the domain evolves.
 
 ## Directory Structure
 
 ```text
 skills/fusion/
-├── common/         Planned: platform concepts, environments, navigation
-├── erp/            Planned: financials, procurement, project operations
-├── hcm/            Planned: core HR, payroll, talent, recruiting
-├── scm/            Planned: supply chain, manufacturing, inventory
-├── cx/             Planned: sales, service, marketing workflows
-├── platform/       Planned: visual builder, app composer, extensions
-├── integration/    Planned: OIC, REST, SOAP, events, data sync
-├── reporting/      Planned: OTBI, BI Publisher, analytics
-└── security/       Planned: roles, data security, environment controls
+├── common/         Example: platform concepts, environments, navigation
+├── erp/            Example: financials, procurement, project operations
+├── hcm/            Example: core HR, payroll, talent, recruiting
+├── scm/            Example: supply chain, manufacturing, inventory
+├── cx/             Example: sales, service, marketing workflows
+├── platform/       Example: visual builder, app composer, extensions
+├── integration/    Example: OIC, REST, SOAP, events, data sync
+├── reporting/      Example: OTBI, BI Publisher, analytics
+└── security/       Example: roles, data security, environment controls
 ```
 
 ## Category Routing
@@ -41,14 +41,15 @@ skills/fusion/
 
 ## Key Starting Points
 
-- Domain scaffold only
-- Add the first entry-point skills under `common/`, `platform/`, and `integration/`
+- Sample section only
+- Use this area to link a few high-value entry points once the domain has real content
 - Keep product-family guidance separated unless the workflow is truly shared
 
 ## Common Multi-Step Flows
 
 | Task | Recommended Sequence |
 |------|----------------------|
+| Sample extension flow | `common` → `platform` → `security` |
 | Extend a Fusion workflow | `common` → `platform` → `security` |
 | Integrate Fusion with external systems | `common` → `integration` → `reporting` |
 | Roll out a business configuration safely | `common` → product family (`erp`/`hcm`/`scm`/`cx`) → `security` |

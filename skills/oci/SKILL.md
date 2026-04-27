@@ -1,28 +1,28 @@
 # Oracle Cloud Infrastructure Skills
 
-This domain is scaffolded for future Oracle Cloud Infrastructure skills.
+This file is a sample skeleton for how a domain-level `SKILL.md` can be structured for Oracle Cloud Infrastructure content.
 
-This domain will cover OCI service usage, architecture, automation, security, and operational workflows.
+Use it as a pattern for future OCI domain navigation, not as a todo list or commitment to a final taxonomy.
 
 ## How to Use This Domain
 
 1. Start with the routing table below.
 2. Read only the specific file or category you need.
-3. Add new OCI skills under the planned category structure as content lands.
+3. Use the sections below as a template for organizing OCI skills as the domain evolves.
 
 ## Directory Structure
 
 ```text
 skills/oci/
-├── core/           Planned: tenancy, regions, compartments, IAM
-├── compute/        Planned: instances, images, autoscaling
-├── networking/     Planned: VCN, load balancers, DNS, connectivity
-├── storage/        Planned: object, block, file, backup
-├── databases/      Planned: OCI database services and operations
-├── security/       Planned: IAM, vault, key management, guardrails
-├── observability/  Planned: logging, monitoring, alarms, tracing
-├── devops/         Planned: pipelines, resource manager, automation
-└── integration/    Planned: functions, events, api gateway, messaging
+├── core/           Example: tenancy, regions, compartments, IAM
+├── compute/        Example: instances, images, autoscaling
+├── networking/     Example: VCN, load balancers, DNS, connectivity
+├── storage/        Example: object, block, file, backup
+├── databases/      Example: OCI database services and operations
+├── security/       Example: IAM, vault, key management, guardrails
+├── observability/  Example: logging, monitoring, alarms, tracing
+├── devops/         Example: pipelines, resource manager, automation
+└── integration/    Example: functions, events, API Gateway, messaging
 ```
 
 ## Category Routing
@@ -41,14 +41,15 @@ skills/oci/
 
 ## Key Starting Points
 
-- Domain scaffold only
-- Add the first entry-point skills under `core/`, `networking/`, and `devops/`
-- Prefer OCI documentation and service-specific examples
+- Sample section only
+- Use this area to link a few high-value entry points once the domain has real content
+- Prefer OCI documentation and service-specific examples when the domain is populated
 
 ## Common Multi-Step Flows
 
 | Task | Recommended Sequence |
 |------|----------------------|
+| Sample environment setup flow | `core` → `networking` → `security` |
 | Provision a secure OCI environment | `core` → `networking` → `security` |
 | Deploy an application on OCI | `compute` → `networking` → `observability` |
 | Automate OCI infrastructure changes | `devops` → `security` → `observability` |

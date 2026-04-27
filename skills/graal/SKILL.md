@@ -1,26 +1,26 @@
 # Oracle Graal Skills
 
-This domain is scaffolded for future Graal and GraalVM-related Oracle skills.
+This file is a sample skeleton for how a domain-level `SKILL.md` can be structured for Graal and GraalVM-related content.
 
-This domain will cover GraalVM development, native image workflows, polyglot runtime usage, performance tuning, and deployment patterns.
+Use it as a pattern for future Graal domain navigation, not as a todo list or commitment to a final taxonomy.
 
 ## How to Use This Domain
 
 1. Start with the routing table below.
 2. Read only the specific file or category you need.
-3. Add new Graal skills under the planned category structure as content lands.
+3. Use the sections below as a template for organizing Graal skills as the domain evolves.
 
 ## Directory Structure
 
 ```text
 skills/graal/
-├── core/           Planned: GraalVM setup, runtimes, tooling
-├── java/           Planned: JVM mode, optimization, framework usage
-├── native-image/   Planned: builds, config, debugging, startup tuning
-├── polyglot/       Planned: JS, Python, Ruby, interop patterns
-├── frameworks/     Planned: Spring, Micronaut, Quarkus, Helidon
-├── observability/  Planned: diagnostics, profiling, troubleshooting
-└── deployment/     Planned: containers, serverless, OCI integration
+├── core/           Example: GraalVM setup, runtimes, tooling
+├── java/           Example: JVM mode, optimization, framework usage
+├── native-image/   Example: builds, config, debugging, startup tuning
+├── polyglot/       Example: JS, Python, Ruby, interop patterns
+├── frameworks/     Example: Spring, Micronaut, Quarkus, Helidon
+├── observability/  Example: diagnostics, profiling, troubleshooting
+└── deployment/     Example: containers, serverless, OCI integration
 ```
 
 ## Category Routing
@@ -37,14 +37,15 @@ skills/graal/
 
 ## Key Starting Points
 
-- Domain scaffold only
-- Add the first entry-point skills under `core/`, `native-image/`, and `deployment/`
+- Sample section only
+- Use this area to link a few high-value entry points once the domain has real content
 - Keep framework-specific guidance separate from runtime fundamentals
 
 ## Common Multi-Step Flows
 
 | Task | Recommended Sequence |
 |------|----------------------|
+| Sample native image flow | `core` → `native-image` → `observability` |
 | Build and tune a native image | `core` → `native-image` → `observability` |
 | Deploy a GraalVM application | `java` or `frameworks` → `deployment` → `observability` |
 | Add polyglot runtime capabilities | `core` → `polyglot` → `deployment` |

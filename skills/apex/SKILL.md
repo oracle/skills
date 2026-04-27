@@ -1,26 +1,26 @@
 # Oracle APEX Skills
 
-This domain is scaffolded for future Oracle APEX skills.
+This file is a sample skeleton for how a domain-level `SKILL.md` can be structured for Oracle APEX content.
 
-This domain will cover Oracle APEX application development, workspace administration, security, deployment, data access, and extension patterns.
+Use it as a pattern for future APEX domain navigation, not as a todo list or commitment to a final taxonomy.
 
 ## How to Use This Domain
 
 1. Start with the routing table below.
 2. Read only the specific file or category you need.
-3. Add new APEX skills under the planned category structure as content lands.
+3. Use the sections below as a template for organizing APEX skills as the domain evolves.
 
 ## Directory Structure
 
 ```text
 skills/apex/
-├── app-dev/        Planned: pages, items, processes, dynamic actions
-├── data/           Planned: SQL, REST data sources, forms, reports
-├── security/       Planned: authn, authz, session protection
-├── ui/             Planned: themes, templates, Redwood, accessibility
-├── integration/    Planned: REST, webhooks, external services
-├── deployment/     Planned: export, install, CI/CD, environment promotion
-└── admin/          Planned: workspaces, instance settings, operations
+├── app-dev/        Example: pages, items, processes, dynamic actions
+├── data/           Example: SQL, REST data sources, forms, reports
+├── security/       Example: authn, authz, session protection
+├── ui/             Example: themes, templates, Redwood, accessibility
+├── integration/    Example: REST, webhooks, external services
+├── deployment/     Example: export, install, CI/CD, environment promotion
+└── admin/          Example: workspaces, instance settings, operations
 ```
 
 ## Category Routing
@@ -37,14 +37,15 @@ skills/apex/
 
 ## Key Starting Points
 
-- Domain scaffold only
-- Add the first entry-point skills under `app-dev/`, `data/`, and `deployment/`
+- Sample section only
+- Use this area to link a few high-value entry points once the domain has real content
 - Keep APEX guidance focused on practical build and runtime workflows
 
 ## Common Multi-Step Flows
 
 | Task | Recommended Sequence |
 |------|----------------------|
+| Sample feature delivery flow | `app-dev` → `data` → `ui` |
 | Build a new APEX application feature | `app-dev` → `data` → `ui` |
 | Secure an APEX application | `security` → `app-dev` → `admin` |
 | Promote an app across environments | `deployment` → `security` → `admin` |
