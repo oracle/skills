@@ -6,6 +6,8 @@ The ORDS PL/SQL Gateway connects HTTP requests directly to Oracle PL/SQL stored 
 
 Understanding when to use each source type — and how to properly handle parameters, result sets, and errors — is essential for building robust PL/SQL-backed REST services.
 
+For GET and read-only JSON endpoints, prefer `collection/feed`, `collection/item`, SQL/JSON constructors, native JSON columns, and views over PL/SQL Gateway output. Use `plsql/block` when the endpoint needs procedural orchestration, side effects, package calls, custom status handling, or compatibility with existing PL/SQL Gateway code.
+
 ---
 
 ## Handler Source Types for PL/SQL
@@ -71,6 +73,7 @@ BEGIN
       DECLARE
         l_new_salary  employees.salary%TYPE;
         l_message     VARCHAR2(500);
+        l_response    CLOB;
       BEGIN
         hr.give_raise(
           p_employee_id => :id,            -- URI parameter
@@ -79,11 +82,19 @@ BEGIN
           p_message     => l_message
         );
 
-        -- Build JSON response manually
-        HTP.P('{"employee_id":' || :id ||
-              ',"new_salary":' || l_new_salary ||
-              ',"message":"' || l_message || '"}');
+        SELECT JSON_OBJECT(
+                 'employee_id' VALUE TO_NUMBER(:id),
+                 'new_salary'  VALUE l_new_salary,
+                 'message'     VALUE l_message
+                 RETURNING CLOB
+               )
+        INTO l_response
+        FROM dual;
+
         :status_code := 200;
+        OWA_UTIL.MIME_HEADER('application/json', FALSE);
+        OWA_UTIL.HTTP_HEADER_CLOSE;
+        HTP.PRN(l_response);
       END;
     ]'
   );
@@ -122,9 +133,9 @@ l_hire_date  := TO_DATE(:hire_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
 ORDS does not automatically serialize PL/SQL OUT parameters. Use these approaches:
 
 1. **Assign to `:status_code`** and `:forward_location` for redirect responses.
-2. **Use `HTP.P` / `HTP.PRN`** to write raw response content.
-3. **Use `APEX_JSON`** for structured JSON output.
-4. **Use `DBMS_OUTPUT`** (not recommended; requires special config).
+2. **Return a SQL result** through `collection/feed` or `collection/item` when the endpoint is read-only.
+3. **Use SQL/JSON constructors** such as `JSON_OBJECT` and `JSON_ARRAYAGG` for shaped JSON.
+4. **Use `HTP.P` / `HTP.PRN` or `APEX_JSON`** only for procedural or legacy output cases.
 
 ---
 
@@ -202,9 +213,33 @@ Note: `:results` is a SYS_REFCURSOR OUT bind variable. ORDS recognizes cursor bi
 
 ---
 
-## Using APEX_JSON for Custom JSON Output
+## Prefer SQL/JSON for Custom JSON Output
 
-When APEX is installed, `APEX_JSON` provides a clean API for generating JSON from PL/SQL:
+For modern Oracle Database releases, build custom JSON in SQL and expose it through `collection/item` or `collection/feed` handlers whenever possible:
+
+```sql
+SELECT JSON_OBJECT(
+         'department_id' VALUE d.department_id,
+         'employees'     VALUE (
+           SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                      'employee_id' VALUE e.employee_id,
+                      'name'        VALUE e.first_name || ' ' || e.last_name,
+                      'salary'      VALUE e.salary,
+                      'department'  VALUE d.department_name
+                    )
+                    RETURNING CLOB
+                  )
+           FROM employees e
+           WHERE e.department_id = d.department_id
+         )
+         RETURNING CLOB
+       ) AS department_json
+FROM departments d
+WHERE d.department_id = :dept_id;
+```
+
+This avoids procedural cursor loops and lets the SQL engine handle JSON construction. Use `APEX_JSON` only when you are already in procedural PL/SQL and cannot express the response cleanly as SQL:
 
 ```sql
 DECLARE
@@ -249,7 +284,7 @@ This produces:
 
 ## Using HTP Package for Raw Output
 
-Without APEX, use Oracle's `HTP` (Hypertext Procedures) package for raw HTTP output:
+Use Oracle's `HTP` (Hypertext Procedures) package for raw HTTP output only when the handler must write a procedural response body directly. Prefer SQL source types and SQL/JSON for normal JSON reads.
 
 ```sql
 DECLARE
@@ -510,6 +545,7 @@ ORDS.DEFINE_HANDLER(
 ## Best Practices
 
 - **Put business logic in packages, call them from ORDS handlers**: Handlers should be thin orchestration layers. All business logic belongs in PL/SQL packages that can be tested independently of REST.
+- **Prefer SQL handlers for read-only JSON**: Use `collection_feed`, `collection_item`, SQL/JSON constructors, and views before reaching for `plsql/block`.
 - **Always handle exceptions with appropriate HTTP status codes**: Unhandled exceptions result in 500 errors with generic messages. Catch known business exceptions (NO_DATA_FOUND, VALUE_ERROR) and return 404/400 with meaningful messages.
 - **Use implicit results instead of REF CURSOR bind variables**: `DBMS_SQL.RETURN_RESULT` is cleaner and does not require a `:results` cursor bind variable in the handler source.
 - **Cast bind variable types explicitly**: All bind variables arrive as VARCHAR2. Always cast to the correct type (`TO_NUMBER`, `TO_DATE`, etc.) before use, and handle conversion errors gracefully.
@@ -518,7 +554,8 @@ ORDS.DEFINE_HANDLER(
 
 ## Common Mistakes
 
-- **Using `DBMS_OUTPUT` to return data**: DBMS_OUTPUT buffers are NOT returned in REST responses. Use `HTP.P`, `APEX_JSON`, or implicit results.
+- **Using `DBMS_OUTPUT` to return data**: DBMS_OUTPUT buffers are NOT returned in REST responses. Use SQL handlers, SQL/JSON constructors, implicit results, or explicit response output.
+- **Using PL/SQL loops to build JSON for reads**: Prefer `collection_feed`, `collection_item`, `JSON_OBJECT`, and `JSON_ARRAYAGG` for read endpoints. Keep PL/SQL output for procedural or legacy cases.
 - **Forgetting TO_NUMBER for numeric bind variables**: `WHERE employee_id = :id` works due to implicit conversion, but `employee_id = :id` in a calculation will fail if `:id` is VARCHAR2 '101' and the operation expects a number.
 - **Not setting `p_mimes_allowed` on POST/PUT handlers**: Without this, ORDS accepts requests with any Content-Type (including `text/plain`). JSON body parsing fails silently for wrong content types.
 - **Setting `:status_code` after writing to HTP**: Status codes must be set before any HTP output. Writing headers (implicitly via HTP) before setting status code has no effect.
@@ -536,6 +573,6 @@ ORDS.DEFINE_HANDLER(
 
 ## Sources
 
-- [ORDS Developer's Guide — Developing PL/SQL-Based REST Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
-- [Oracle REST Data Services Handler Source Types Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
-- [ORDS Implicit Parameters Reference (status_code, body, forward_location)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)
+- [Developing REST Applications — Manually Creating RESTful Services Using SQL and PL/SQL](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/developing-REST-applications.html#GUID-C9D763FD-9B74-4A27-9B80-6E500756E464)
+- [ORDS PL/SQL Package Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html)
+- [ORDS Implicit Parameters Reference (status_code, body, forward_location)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/implicit-parameters.html)

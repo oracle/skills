@@ -417,11 +417,45 @@ END;
 
 ---
 
-## Returning JSON Results from PL/SQL Handlers
+## Returning JSON Results
 
-For `source_type_plsql` handlers, ORDS can serialize implicit result sets and cursor binds. For custom status codes, headers, or manually constructed response bodies, use one of these approaches:
+For read endpoints, prefer SQL source types and let ORDS serialize the result. Use `source_type_collection_feed` for collections and `source_type_collection_item` for single resources. This keeps pagination, ETags, bind handling, and JSON serialization in ORDS instead of hand-building response bodies in PL/SQL.
 
-### Approach 1: Use `:forward_location` to Redirect to GET
+Use SQL/JSON constructors when the endpoint needs a shaped JSON document that does not map cleanly to ordinary columns:
+
+```sql
+ORDS.DEFINE_HANDLER(
+  p_module_name => 'hr.api',
+  p_pattern     => 'departments/:dept_id/summary',
+  p_method      => 'GET',
+  p_source_type => ORDS.source_type_collection_item,
+  p_source      => q'[
+    SELECT JSON_OBJECT(
+             'department_id' VALUE d.department_id,
+             'department'    VALUE d.department_name,
+             'employees'     VALUE (
+               SELECT JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                          'employee_id' VALUE e.employee_id,
+                          'name'        VALUE e.first_name || ' ' || e.last_name,
+                          'salary'      VALUE e.salary
+                        )
+                        RETURNING CLOB
+                      )
+               FROM employees e
+               WHERE e.department_id = d.department_id
+             )
+             RETURNING CLOB
+           ) AS department_json
+    FROM departments d
+    WHERE d.department_id = :dept_id
+  ]'
+);
+```
+
+For 23ai/26ai-era databases, this SQL-first pattern is normally cleaner than looping through cursors in PL/SQL with `HTP.P` or `APEX_JSON`.
+
+### Use `:forward_location` to Redirect to GET
 
 After a POST insert, redirect to the new resource URL. ORDS follows the redirect internally and returns the GET response body.
 
@@ -430,26 +464,9 @@ After a POST insert, redirect to the new resource URL. ORDS follows the redirect
 :status_code      := 201;
 ```
 
-### Approach 2: Use `APEX_JSON` (if APEX is installed)
+### Use PL/SQL Output Only for Special Cases
 
-```sql
-DECLARE
-  l_emp employees%ROWTYPE;
-BEGIN
-  SELECT * INTO l_emp FROM employees WHERE employee_id = :id;
-
-  APEX_JSON.OPEN_OBJECT;
-  APEX_JSON.WRITE('employee_id', l_emp.employee_id);
-  APEX_JSON.WRITE('first_name',  l_emp.first_name);
-  APEX_JSON.WRITE('last_name',   l_emp.last_name);
-  APEX_JSON.WRITE('salary',      l_emp.salary);
-  APEX_JSON.CLOSE_OBJECT;
-END;
-```
-
-### Approach 3: Use `collection_item` or `collection_feed` Source Types
-
-For read operations, always prefer these source types over `plsql/block`. They handle serialization, pagination, and ETag generation automatically.
+For `source_type_plsql` handlers, ORDS can serialize implicit result sets and cursor binds. Use manual `HTP` or `APEX_JSON` output only when the handler must do procedural orchestration that cannot be expressed as SQL, or when maintaining older APEX/mod_plsql-style code. Do not use PL/SQL loops just to turn rows into JSON.
 
 ---
 
@@ -496,6 +513,7 @@ Aggregation:            GET    /v1/departments/:id/headcount
 
 - **Use `q'[...]'` quoting** for handler source strings: Avoids escaping single quotes in SQL/PL/SQL. The `q'[` syntax treats the content as a literal string.
 - **Use `collection_feed` and `collection_item` for read-only endpoints**: These source types automatically handle pagination, ETag generation, and JSON serialization far better than `plsql/block`.
+- **Use SQL/JSON constructors for shaped JSON**: Prefer `JSON_OBJECT`, `JSON_ARRAYAGG`, native JSON columns, and views for custom JSON documents on newer database releases.
 - **Check `SQL%ROWCOUNT` in DML handlers**: Always verify the DML affected at least one row and return 404 if not. Silently returning 200 when nothing changed is misleading.
 - **Use `NOT_PUBLISHED` status during development**: Prevents partially-built APIs from being accidentally called.
 - **Version your modules**: Use `/v1/`, `/v2/` in the base path. When making breaking changes, create a new module rather than modifying an existing one.
@@ -510,11 +528,12 @@ Aggregation:            GET    /v1/departments/:id/headcount
 - **Not handling NULL bind variables in SQL WHERE clauses**: `WHERE dept_id = :dept_id` returns no rows when `:dept_id` is NULL. Use `WHERE (:dept_id IS NULL OR dept_id = :dept_id)` for optional filtering.
 - **Mixing URL template types**: A template pattern `employees/:id/` (with trailing slash) and `employees/:id` (without) are different patterns. Be consistent.
 - **Over-using `plsql/block` for SELECT operations**: Many developers use PL/SQL blocks with manual cursor loops for simple queries. Use `collection_feed` instead — it's more efficient and provides automatic pagination.
+- **Hand-building JSON with `HTP.P` or `APEX_JSON` for simple reads**: On modern Oracle Database releases, use SQL/JSON constructors in SQL handlers and let ORDS serialize the response.
 
 ---
 
 ## Sources
 
-- [ORDS Developer's Guide — Creating and Editing REST APIs](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
-- [Oracle REST Data Services PL/SQL API Reference — ORDS.DEFINE_MODULE](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
-- [ORDS Implicit Parameters Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)
+- [Developing REST Applications — Manually Creating RESTful Services Using SQL and PL/SQL](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/developing-REST-applications.html#GUID-C9D763FD-9B74-4A27-9B80-6E500756E464)
+- [ORDS PL/SQL Package Reference — ORDS.DEFINE_MODULE](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html#GUID-7FC25CDA-E359-4406-9555-04C68FB55EE4)
+- [ORDS Implicit Parameters Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/implicit-parameters.html)

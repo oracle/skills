@@ -87,13 +87,14 @@ After installation, the config directory looks like:
 /opt/oracle/ords/config/
 ├── databases/
 │   └── default/
-│       └── pool.json         # Connection pool settings (managed by CLI — do not hand-edit)
+│       ├── pool.xml          # Connection pool settings (managed by CLI — do not hand-edit)
+│       └── wallet/           # Pool secrets such as db.password
 ├── global/
-│   └── settings.json         # Global ORDS settings (managed by CLI)
-└── credentials              # Oracle Wallet directory — passwords stored here, never in JSON
+│   ├── settings.xml         # Global ORDS settings (managed by CLI)
+│   └── wallet/              # Present if you store global secrets via --global
 ```
 
-> All configuration files are managed by the `ords config set` CLI. Do not hand-edit JSON files. Passwords are stored in the Oracle Wallet (`credentials/`) and never appear in any config file.
+> All configuration files are managed by the ORDS CLI. Do not hand-edit XML files. Pool secrets such as `db.password` are stored in `databases/{pool_name}/wallet`, and global secrets use `global/wallet`.
 
 ---
 
@@ -126,13 +127,15 @@ After install, ORDS creates:
 
 ### Silent/Non-Interactive Installation for Automation
 
-For CI/CD pipelines, automated provisioning, or Ansible/Terraform workflows, use a silent install with a response file or environment variables.
+For CI/CD pipelines, automated provisioning, or Ansible/Terraform workflows, run `ords install` without `-i` and provide all required options on the command line. Use `--password-stdin` with either a password file or an inline stdin block. If you include `--proxy-user`, ORDS reads a second password from standard input for the runtime user (by default `ORDS_PUBLIC_USER`).
 
-**Method 1: Pipe responses via stdin**
+**Method 1: Use an inline stdin block for a new pool or fresh install**
 
 ```shell
 ords --config /opt/oracle/ords/config install \
+  --db-pool default \
   --admin-user SYS \
+  --proxy-user \
   --db-hostname mydb.example.com \
   --db-port 1521 \
   --db-servicename mypdb.example.com \
@@ -146,40 +149,58 @@ OrdsPublicUserPwd456!
 EOF
 ```
 
-**Method 2: Use `ords install --interactive false`**
+The first password is for `--admin-user`. The second password is for the runtime user because `--proxy-user` is present.
+
+**Method 2: Use a password file with input redirection**
 
 ```shell
+cat > passwords.txt <<EOF
+SysPassword123!
+OrdsPublicUserPwd456!
+EOF
+
 ords --config /opt/oracle/ords/config install \
-  --interactive false \
+  --db-pool default \
+  --admin-user SYS \
+  --proxy-user \
   --db-hostname mydb.example.com \
   --db-port 1521 \
   --db-servicename mypdb.example.com \
-  --db-username ORDS_PUBLIC_USER \
-  --admin-user SYS \
-  --feature-sdw true
-# Passwords prompted separately or via env vars
+  --feature-sdw true \
+  --log-folder /var/log/ords \
+  --password-stdin < passwords.txt
 ```
 
-**Method 3: Pre-write pool configuration, then install with `--db-only`**
+Use `--db-user <name>` only if you need a runtime user other than the default `ORDS_PUBLIC_USER`.
 
-Write the pool config first, then run the DB install phase only:
+**Method 3: Pre-write pool configuration, then run `--db-only`**
+
+Write the pool config first, then run the database install or upgrade phase only:
 
 ```shell
 ords --config /opt/oracle/ords/config config set db.hostname mydb.example.com
 ords --config /opt/oracle/ords/config config set db.port 1521
 ords --config /opt/oracle/ords/config config set db.servicename mypdb.example.com
 
-# Set passwords via stdin
-echo "SysPassword123!" | ords --config /opt/oracle/ords/config install \
+# Fresh db-only install: include --proxy-user and provide both passwords
+ords --config /opt/oracle/ords/config install \
+  --db-pool default \
+  --db-only \
   --admin-user "SYS AS SYSDBA" \
-  --password-stdin
+  --proxy-user \
+  --password-stdin <<EOF
+SysPassword123!
+OrdsPublicUserPwd456!
+EOF
 ```
+
+If ORDS is already installed in the database and you are only upgrading the database objects, omit `--proxy-user`; in that case, standard input contains only the administrator password.
 
 ---
 
 ## Pool Configuration Reference
 
-All pool settings are managed exclusively via the `ords config set` CLI. **Passwords are stored in an Oracle Wallet** in the `credentials/` directory — they never appear in any configuration file. Do not hand-edit the JSON config files ORDS generates.
+All pool settings are managed exclusively via the `ords config set` CLI. **Pool passwords are stored in an Oracle Wallet** in the `databases/{pool_name}/wallet` directory — they never appear in any configuration file. Do not hand-edit the XML config files ORDS generates.
 
 ```shell
 # Set connection parameters
@@ -189,8 +210,7 @@ ords --config /opt/oracle/ords/config config set db.servicename mypdb.example.co
 ords --config /opt/oracle/ords/config config set db.username ORDS_PUBLIC_USER
 
 # Set password — stored in Oracle Wallet, never in a config file
-ords --config /opt/oracle/ords/config config secret set db.password \
-  --password-stdin <<< "MySecurePassword123!"
+ords --config /opt/oracle/ords/config config secret --password-stdin db.password <<< "MySecurePassword123!"
 
 # UCP pool sizing
 ords --config /opt/oracle/ords/config config set jdbc.InitialLimit 5
@@ -253,8 +273,7 @@ ords --config /opt/oracle/ords/config config set db.tnsAliasName myatp_high
 ords --config /opt/oracle/ords/config config set \
   db.wallet.zip.path /opt/oracle/ords/wallet/Wallet_MYATP.zip
 ords --config /opt/oracle/ords/config config set db.username ORDS_PUBLIC_USER
-ords --config /opt/oracle/ords/config config secret set db.password \
-  --password-stdin <<< "MySecurePassword123!"
+ords --config /opt/oracle/ords/config config secret --password-stdin db.password <<< "MySecurePassword123!"
 ```
 
 ---
@@ -264,25 +283,14 @@ ords --config /opt/oracle/ords/config config secret set db.password \
 ### Option A: ORDS Standalone with Self-Signed Certificate (Dev)
 
 ```shell
-# Generate self-signed cert
-keytool -genkeypair \
-  -alias ords-ssl \
-  -keyalg RSA \
-  -keysize 2048 \
-  -validity 365 \
-  -keystore /opt/oracle/ords/config/ords/standalone/ords.jks \
-  -storepass changeit \
-  -dname "CN=myserver.example.com, OU=ORDS, O=MyOrg, C=US"
-```
-
-```shell
-# Configure standalone to use it
+# Configure standalone HTTPS and let ORDS generate the self-signed certificate
 ords --config /opt/oracle/ords/config config set \
   standalone.https.port 8443
 ords --config /opt/oracle/ords/config config set \
-  standalone.https.cert /opt/oracle/ords/config/ords/standalone/ords.jks
-ords --config /opt/oracle/ords/config config set \
-  standalone.https.cert.secret changeit
+  standalone.https.host myserver.example.com
+
+# Start ORDS with HTTPS enabled
+ords --config /opt/oracle/ords/config serve --secure --port 8443
 ```
 
 ### Option B: ORDS behind a Reverse Proxy (Recommended for Production)
@@ -310,11 +318,11 @@ server {
 }
 ```
 
-Set ORDS to trust the forwarded-proto header:
+Tell ORDS which forwarded header indicates the original client request was HTTPS:
 
 ```shell
 ords --config /opt/oracle/ords/config config set \
-  security.forceHTTPS true
+  security.httpsHeaderCheck "X-Forwarded-Proto: https"
 ```
 
 ---
@@ -398,7 +406,7 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 
 - **Separate config directory from software directory**: The config dir should persist across software upgrades. Store in `/opt/oracle/ords/config` (not inside the ORDS software directory).
 - **Use ORDS CLI for all config changes**: Avoid manually editing XML files. The CLI handles wallet management, schema validation, and config refresh.
-- **Passwords live in the Oracle Wallet**: ORDS stores all passwords in an Oracle Wallet (`credentials/` in the config directory). Passwords never appear in any config file. Always use `ords config secret set db.password` to set or rotate credentials — never attempt to write a password directly into a config file.
+- **Passwords live in an Oracle Wallet**: Pool passwords such as `db.password` are stored in `databases/{pool_name}/wallet`, while global secrets use `global/wallet`. Passwords never appear in config files. Always use `ords config secret --password-stdin db.password` to set or rotate pool credentials — never attempt to write a password directly into a config file.
 - **Use TNS aliases for ADB**: Wallet-based connections via TNS aliases are more maintainable than custom JDBC URLs.
 - **Test with `ords validate`** before starting after a config change: `ords --config /path/config validate` checks pool connectivity and reports issues.
 - **Set `jdbc.MaxLimit` based on DB max sessions**: Too high a limit can exhaust DB connections. Use `SELECT * FROM v$resource_limit WHERE resource_name = 'sessions'` to check limits.
@@ -452,11 +460,25 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
   CREATE TABLESPACE ords_meta_tbs
     DATAFILE '/u01/app/oracle/oradata/ORDS_METADATA01.DBF'
     SIZE 100M AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+  ```
 
-  -- Then specify during installation:
-  # During interactive install, specify the custom tablespace
+  Then specify the tablespaces during installation:
+
+  ```shell
+  # During interactive install, specify the custom tablespace when prompted
   # Or via silent install:
-  ords config set db.tablespace ords_meta_tbs
+  ords --config /opt/oracle/ords/config install \
+    --admin-user SYS \
+    --proxy-user \
+    --db-hostname mydb.example.com \
+    --db-port 1521 \
+    --db-servicename mypdb.example.com \
+    --schema-tablespace ords_meta_tbs \
+    --schema-temp-tablespace TEMP \
+    --password-stdin <<EOF
+  SysPassword123!
+  OrdsPublicUserPwd456!
+  EOF
   ```
 
 - **Restrict ORDS_METADATA schema privileges:**
@@ -474,11 +496,10 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 - **Always use the Oracle Wallet for credential storage:**
   ```bash
   # CORRECT: Passwords stored in Oracle Wallet only
-  ords --config /opt/oracle/ords/config config secret set db.password \
-    --password-stdin <<< "SecureDatabasePassword123!"
+  ords --config /opt/oracle/ords/config config secret --password-stdin db.password <<< "SecureDatabasePassword123!"
 
   # INCORRECT: Attempting to store passwords in config files (won't work)
-  # DO NOT ATTEMPT TO MANUALLY EDIT pool.json TO ADD PASSWORDS
+  # DO NOT ATTEMPT TO MANUALLY EDIT pool.xml TO ADD PASSWORDS
   ```
 
 - **Use strong, unique passwords for all ORDS-related accounts:**
@@ -527,7 +548,8 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
   - Apply same access controls to backups as live configuration
 
 - **Secure wallet backups:**
-  - The Oracle Wallet in credentials/ contains all passwords
+  - Pool passwords are stored in `databases/{pool_name}/wallet`
+  - Global secrets, if used, are stored in `global/wallet`
   - Back up the wallet securely and separately from other backups
   - Ensure wallet backups are encrypted and access-controlled
 
@@ -650,10 +672,10 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 - **Validate installation security:**
   ```bash
   # Check that passwords are not in config files
-  grep -r "password" /opt/oracle/ords/config/ --exclude-dir=credentials
+  grep -r "password" /opt/oracle/ords/config/ --exclude-dir=wallet
 
   # Verify wallet directory permissions
-  ls -la /opt/oracle/ords/config/credentials/
+  ls -la /opt/oracle/ords/config/databases/default/wallet/
 
   # Check OS user ORDS is running as
   ps -ef | grep ords
@@ -680,6 +702,8 @@ The `ords install` command is idempotent — re-running it upgrades the schema i
 
 ## Sources
 
-- [Oracle REST Data Services Installation and Configuration Guide](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/index.html)
-- [ORDS CLI Reference — ords install](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/installing-oracle-rest-data-services.html)
-- [ORDS Configuration Settings Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
+- [Installing and Configuring Oracle REST Data Services — Installing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-D86804FC-4365-4499-B170-2F901C971D30)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configuration Folder Structure](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-3F19E9F2-13E6-42AC-958A-3DE50E3AF77D)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
+- [Installing and Configuring Oracle REST Data Services — Non-Interactive Command-Line Interface Installation (Silent)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-2D13E9CD-EB0C-4CE7-82B8-45BD5C62897B)
+- [Installing and Configuring Oracle REST Data Services — Using Input Redirection](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/installing-and-configuring-oracle-rest-data-services.html#GUID-ECEDA5F7-2023-47B8-A1FF-2CCD6A2D915A)

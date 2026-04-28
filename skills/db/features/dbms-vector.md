@@ -1,11 +1,12 @@
-# DBMS_VECTOR and DBMS_VECTOR_CHAIN in Oracle 26ai
+# DBMS_VECTOR, DBMS_VECTOR_CHAIN, and DBMS_HYBRID_VECTOR in Oracle 26ai
 
-Oracle 26ai provides two PL/SQL packages for AI vector operations:
+Oracle 26ai provides three PL/SQL package families for AI vector operations:
 
 - **`DBMS_VECTOR`** — utility functions: generate embeddings, convert vectors, manage vector indexes
 - **`DBMS_VECTOR_CHAIN`** — pipeline functions for end-to-end RAG workflows: chunk text, generate embeddings, store, search, summarize, and generate responses
+- **`DBMS_HYBRID_VECTOR`** — hybrid search functions and helpers for search paths that combine vector and text retrieval
 
-Both packages were introduced in Oracle 23ai and are fully available in Oracle 26ai. They use vector credentials and per-call JSON parameters rather than `DBMS_CLOUD_AI` profiles.
+The vector packages use vector credentials and per-call JSON parameters rather than `DBMS_CLOUD_AI` profiles.
 
 ## DBMS_VECTOR: Core Functions
 
@@ -455,12 +456,37 @@ END;
 -- In 23ai, use the multi-step pattern in the End-to-End RAG Pipeline section.
 ```
 
+## DBMS_HYBRID_VECTOR: Hybrid Search
+
+`DBMS_HYBRID_VECTOR` is for hybrid retrieval over hybrid vector indexes, not for ordinary vector SQL. Use it when the query needs semantic search and Oracle Text-style keyword constraints in the same database-managed search path.
+
+Representative package members include:
+
+- `SEARCH`
+- `SEARCHPIPELINE`
+- `GET_SQL`
+- `GET_HYBRID_SQL`
+- `GET_SQL_TEMPLATE`
+
+```sql
+SELECT DBMS_HYBRID_VECTOR.SEARCH(
+         json('{ "hybrid_index_name" : "docs_hybrid_idx",
+                 "vector" : { "search_text" : "stock fraud" },
+                 "text"   : { "contains"    : "$ABC AND $Corporation" },
+                 "return" : { "topN"        : 10 }
+               }'))
+FROM dual;
+```
+
+Use `GET_SQL` or `GET_HYBRID_SQL` when you need to inspect the generated SQL behind a hybrid search pipeline.
+
 ## Best Practices
 
 - Use `UTL_TO_EMBEDDINGS` (batch) rather than `UTL_TO_EMBEDDING` (single) for bulk ingestion — significantly fewer API calls
 - Chunk size of 150–300 words with 10–20% overlap works well for most document types
 - Store the `CHUNK_OFFSET` and `CHUNK_LENGTH` so you can retrieve the original source passage
 - Add a vector index (HNSW) after initial bulk ingestion, not before — index builds are faster on populated tables
+- Use `DBMS_HYBRID_VECTOR` only for hybrid retrieval; use ordinary vector SQL or `DBMS_VECTOR` for pure vector operations
 - Cache frequently-queried embeddings; re-embedding the same text is wasteful and incurs API cost
 - Use `temperature: 0` for generation in production — deterministic responses are easier to test
 
@@ -474,11 +500,13 @@ END;
 
 **Re-chunking on every query** — chunking is an ingestion-time operation. Store chunks in the database; never rechunk at query time.
 
+**Using `DBMS_HYBRID_VECTOR` for pure vector search** — it is for hybrid indexes and hybrid search execution. Use `VECTOR_DISTANCE`, shorthand operators, or `DBMS_VECTOR` for non-hybrid vector work.
+
 ## Oracle Version Notes (19c vs 26ai)
 
 - **19c**: No DBMS_VECTOR or DBMS_VECTOR_CHAIN; RAG pipelines required entirely external tooling
 - **23ai**: DBMS_VECTOR and DBMS_VECTOR_CHAIN introduced; UTL_TO_EMBEDDING, UTL_TO_EMBEDDINGS, UTL_TO_CHUNKS, UTL_TO_SUMMARY, UTL_TO_GENERATE_TEXT
-- **26ai**: Expanded chunking strategies; improved batch performance; tighter SELECT AI integration; additional provider support
+- **26ai**: Expanded chunking strategies; improved batch performance; tighter SELECT AI integration; additional provider support; `DBMS_HYBRID_VECTOR` for hybrid search workflows
 
 ## See Also
 
@@ -490,4 +518,5 @@ END;
 
 - [DBMS_VECTOR Package Reference](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector.html)
 - [DBMS_VECTOR_CHAIN Package Reference](https://docs.oracle.com/en/database/oracle/oracle-database/23/arpls/dbms_vector_chain.html)
+- [DBMS_HYBRID_VECTOR](https://docs.oracle.com/en/database/oracle/oracle-database/26/vecse/dbms_hybrid_vector-vecse.html)
 - [Oracle AI Vector Search User's Guide — Generating Embeddings](https://docs.oracle.com/en/database/oracle/oracle-database/23/vecse/generate-embeddings.html)

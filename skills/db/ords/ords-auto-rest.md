@@ -465,6 +465,6 @@ FROM dba_ords_enabled_schemas;
 
 ## Sources
 
-- [ORDS Developer's Guide — AutoREST](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
-- [Oracle REST Data Services PL/SQL API Reference — ORDS.ENABLE_OBJECT](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
-- [ORDS REST API Collection Query Syntax (q parameter)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/implicit-parameters.html)
+- [Developing REST Applications — Automatic Enabling of Schema Objects for REST Access (AutoREST)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/developing-REST-applications.html#GUID-4CE630AA-2F06-41D9-96F6-DA77AB1E6395)
+- [ORDS PL/SQL Package Reference — ORDS.ENABLE_OBJECT](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html#GUID-29C61AC7-E5CB-4977-9A77-03B4C1EE85FE)
+- [ORDS Implicit Parameters Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/implicit-parameters.html)

@@ -2,13 +2,13 @@
 
 Select AI is Oracle's built-in gateway to AI providers and AI models, including privately hosted models for a range of generative and agentic AI use cases. Select AI supports:
 
-- **Natural language to SQL (NL2SQL)** - specific to your database shcema, generate and explain SQL, running and narrating generated queries
+- **Natural language to SQL (NL2SQL)** - specific to your database schema, generate and explain SQL, running and narrating generated queries
 - **Retrieval augmented generation (RAG) on 26ai** - automated vector index creation/update and RAG workflow using AI Vector Search
 - **Chat** - generate content with simple or complex custom prompts easily from your database for email generation, sentiment analysis, etc
 - **Synthetic Data Generation (SDG)** - generate data in database tables to support, e.g., testing/debugging applications and interfaces
 - **AI agents** - build interactive and autonomous AI agents that perform tasks and use tools
-- **Sumarize text** - generate a summary of long text with choice of output style and processing method
-- **Translate text** - using AI provider translation services, translate from one language to another to simplify app-dev and assist in translating LLM results to the desired language 
+- **Summarize text** - generate a summary of long text with choice of output style and processing method
+- **Translate text** - using AI provider translation services, translate from one language to another to simplify app-dev and assist in translating LLM results to the desired language
 
 You can use Select AI in SQL clients with:
 
@@ -28,7 +28,7 @@ The SQL command line use of `SELECT AI` is not supported in Database Actions or 
 1. You submit a natural language prompt.
 2. Select AI augments the prompt with schema metadata from the active AI profile.
 3. Select AI sends the constructed prompt to the configured AI provider.
-4. Select AI returns the generated SQL, query results or natural-language summary, or a natural-language explanation depending on the action specified. 
+4. Select AI returns the generated SQL, query results or natural-language summary, or a natural-language explanation depending on the action specified.
 
 For SQL generation, Oracle sends schema metadata, not table contents. For `narrate`, Select AI can send result data or retrieved content to the LLM unless an administrator disables data access.
 
@@ -149,7 +149,7 @@ The following are a few commonly used attributes
 | `provider` | AI provider name | Required |
 | `credential_name` | Name of the `DBMS_CLOUD` credential | Required |
 | `object_list` | JSON array of schemas/tables/views allowed for NL2SQL | Optional in 26ai; required in 19c |
-| `object_list_mode` | Specifies whether to sends metadata for all objects in object_list or the most relevant objects to the LLM | Optional; values `all` or `automated`; 26ai feature |
+| `object_list_mode` | Specifies whether to send metadata for all objects in object_list or the most relevant objects to the LLM | Optional; values `all` or `automated`; 26ai feature |
 | `model` | Provider model name | Optional; exact values vary by provider |
 | `max_tokens` | Maximum response tokens | Optional; default is provider/package dependent |
 | `temperature` | Randomness for generation | Optional; Lower values are more deterministic |
@@ -179,7 +179,7 @@ END;
 
 ## Improving Results with Table Comments
 
-Oracle can send table and column comments to the LLM when `comments` is enabled in the profile. Well-commented schemas generally produce better SQL. On 26ai, annotations are also supported using  `annotations` attribute.  
+Oracle can send table and column comments to the LLM when `comments` is enabled in the profile. Well-commented schemas generally produce better SQL. On 26ai, annotations are also supported using the `annotations` attribute.
 
 ```sql
 -- Add descriptive comments so the LLM understands the schema
@@ -234,7 +234,7 @@ END;
 
 - For `runsql`, `showsql`, and `explainsql`, Oracle sends schema metadata, not table contents, to the LLM.
 - Metadata can include object names, column names, data types, and optionally comments and other prompt-enrichment metadata.
-- `narrate` for both SQL and RAG as wellas synthetic data generation can send result data or retrieved document content to the LLM.
+- `narrate` for both SQL and RAG, as well as synthetic data generation, can send result data or retrieved document content to the LLM.
 - An administrator can disable those data-sending features globally with `DBMS_CLOUD_AI.DISABLE_DATA_ACCESS`.
 - Generated SQL still runs with the current session user's privileges; VPD and row-level security apply normally.
 - `SELECT AI` cannot execute PL/SQL, DDL, or DML.
@@ -265,6 +265,14 @@ BEGIN
 END;
 /
 ```
+
+## Python Access
+
+For Python applications, choose the interface based on how much Select AI-specific workflow you need:
+
+- Use `python-oracledb` to execute `SELECT AI ...` or call `DBMS_CLOUD_AI` / `DBMS_CLOUD_AI_AGENT` when your application already manages normal SQL execution.
+- Use Oracle's `select_ai` Python library when you need Python-native objects for profiles, conversations, vector indexes, synthetic data generation, feedback, async workflows, or agent teams.
+- Keep generic driver concerns such as pooling, binds, LOBs, and transaction control in `skills/db/appdev/python-oracledb.md`.
 
 ## Ambiguous Table Name Handling
 
@@ -309,6 +317,69 @@ FROM   dual;
 SELECT DBMS_CLOUD_AI.GET_PROFILE()
 FROM   dual;
 ```
+
+## Feedback for NL2SQL Refinement
+
+Use Select AI feedback to refine SQL generation for NL2SQL actions such as `RUNSQL`, `SHOWSQL`, and `EXPLAINSQL`. Feedback is not the correction mechanism for RAG grounding.
+
+```sql
+-- Feedback on a specific prompt
+SELECT AI FEEDBACK FOR QUERY
+  "select ai showsql how many watch histories in total",
+  please use sum instead of count;
+
+-- Feedback on a specific generated SQL statement
+SELECT AI FEEDBACK please use sum instead of count for sql_id 1v1z68ra6r9zf;
+
+-- Positive feedback on the most recent generated SQL
+SELECT AI FEEDBACK the result is correct;
+```
+
+Use `DBMS_CLOUD_AI.FEEDBACK` when feedback needs to come from SQL or PL/SQL rather than the `AI` keyword surface. Treat feedback as profile-affecting state: keep separate profiles for separate business domains, and avoid shared-session application patterns where unrelated users write feedback into the same profile.
+
+## Synthetic Data Generation
+
+Synthetic data generation uses `DBMS_CLOUD_AI.GENERATE_SYNTHETIC_DATA`, not `CHAT`, `NARRATE`, or ordinary SQL generation. Use it for development, testing, demos, or metadata clones where shape and variety matter more than production truth.
+
+```sql
+-- Single table form
+BEGIN
+  DBMS_CLOUD_AI.GENERATE_SYNTHETIC_DATA(
+    profile_name => 'GENAI',
+    owner_name   => 'HR',
+    object_name  => 'EMPLOYEES',
+    record_count => 100,
+    user_prompt  => 'Use realistic department and job combinations'
+  );
+END;
+/
+
+-- Multi-table form
+BEGIN
+  DBMS_CLOUD_AI.GENERATE_SYNTHETIC_DATA(
+    profile_name => 'GENAI',
+    object_list  => '[{"owner":"HR","name":"DEPARTMENTS","record_count":5},
+                      {"owner":"HR","name":"EMPLOYEES","record_count":100}]'
+  );
+END;
+/
+```
+
+Large generation jobs are tracked in status tables named like `SYNTHETIC_DATA$<operation_id>_STATUS`. Start with small `record_count` values, inspect the generated data, then scale.
+
+## Select AI Agent Lifecycle
+
+Use Select AI Agent when the workflow needs explicit teams, agents, tasks, tools, and multi-step orchestration. Simpler one-shot generation should stay with `SELECT AI <action>` or `DBMS_CLOUD_AI.GENERATE`.
+
+The normal lifecycle is:
+
+1. Create agents with `DBMS_CLOUD_AI_AGENT.CREATE_AGENT`.
+2. Create tools with `DBMS_CLOUD_AI_AGENT.CREATE_TOOL`.
+3. Create tasks with `DBMS_CLOUD_AI_AGENT.CREATE_TASK`.
+4. Assemble a team with `DBMS_CLOUD_AI_AGENT.CREATE_TEAM`.
+5. Run with `SELECT AI AGENT ...` or `DBMS_CLOUD_AI_AGENT.RUN_TEAM`.
+
+Built-in tool categories include SQL, RAG, web search, notification, and custom PL/SQL. Treat tool creation as explicit configuration; do not assume that a prompt can use arbitrary tools unless those tools were created and enabled.
 
 ## History and Observability
 
@@ -387,7 +458,7 @@ FROM   employees;
 
 **Trying to edit attributes with `SET_PROFILE`** — use `SET_ATTRIBUTE` or `SET_ATTRIBUTES` to change profile metadata such as `object_list`, `temperature`, or `comments`.
 
-**Using a single profile for the whole enterprise schema** — too much metadata increases ambiguity and token pressure. Specify minimal set of objects or use `automated` object_list_mode. 
+**Using a single profile for the whole enterprise schema** — too much metadata increases ambiguity and token pressure. Specify minimal set of objects or use `automated` object_list_mode.
 
 **Exposing raw base tables instead of views** — this makes it easier for the LLM to choose the wrong columns or expose sensitive fields.
 
@@ -416,5 +487,7 @@ FROM   employees;
 - [DBMS_CLOUD_AI_AGENT Package Reference](https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/dbms-cloud-ai-agent-package.html)
 - [DBMS_CLOUD_AI Views](https://docs.oracle.com/en/database/oracle/oracle-database/26/selai/dbms_cloud_ai-views.html)
 - [Examples of Using Select AI](https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/select-ai-examples.html)
+- [Select AI for Python](https://docs.oracle.com/en/database/oracle/oracle-database/26/selai/select-ai-python.html)
+- [Synthetic Data Generation](https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/select-ai-synthetic-data-generation.html)
 - [Verify, Observe, and Secure your Generative AI usage with Oracle Autonomous AI Database Select AI](https://blogs.oracle.com/machinelearning/verify-observe-and-secure-your-gen-ai-usage-with-adb-select-ai)
 - [6 Simple Tips for Better Text-to-SQL Generation using Oracle Autonomous Database Select AI](https://blogs.oracle.com/machinelearning/6-simple-tips-for-better-texttosql-generation-using-oracle-autonomous-database-select-ai)

@@ -12,37 +12,33 @@ This guide covers ORDS-specific security controls, complementing Oracle Database
 
 Never expose ORDS over plain HTTP in any non-development environment. Configure ORDS to refuse or redirect HTTP requests.
 
-### Force HTTPS in ORDS Configuration
+### Reverse Proxy HTTPS Header Handling
 
 ```shell
-# Require HTTPS for all requests
-ords --config /opt/oracle/ords/config config set security.forceHTTPS true
+# Tell ORDS the original client request arrived over HTTPS at the proxy
+ords --config /opt/oracle/ords/config config set \
+  security.httpsHeaderCheck "X-Forwarded-Proto: https"
 ```
 
-When `security.forceHTTPS = true`, ORDS:
-- Redirects HTTP requests to HTTPS (301)
-- Adds `Strict-Transport-Security` header to responses
+Use this when TLS is terminated at Nginx, Apache HTTPD, a load balancer, or another reverse proxy that forwards requests to ORDS over HTTP. Configure HTTP-to-HTTPS redirects and `Strict-Transport-Security` at the reverse proxy layer.
 
 ### HTTPS with ORDS Standalone (Production Certificate)
 
 Using a certificate from Let's Encrypt or a commercial CA:
 
 ```shell
-# Convert PEM certificate to PKCS12 for Java keystore
-openssl pkcs12 -export \
-  -in /etc/ssl/certs/api.example.com.crt \
-  -inkey /etc/ssl/private/api.example.com.key \
-  -certfile /etc/ssl/certs/chain.crt \
-  -out /opt/oracle/ords/config/ords/standalone/api.p12 \
-  -name ords-ssl \
-  -passout pass:changeit
+# Convert the private key to DER for ORDS
+openssl pkcs8 -topk8 -inform PEM -outform DER \
+  -in /etc/letsencrypt/live/api.example.com/privkey.pem \
+  -out /etc/letsencrypt/live/api.example.com/privkey.der \
+  -nocrypt
 
 # Configure ORDS to use it
 ords --config /opt/oracle/ords/config config set standalone.https.port 443
 ords --config /opt/oracle/ords/config config set standalone.https.cert \
-  /opt/oracle/ords/config/ords/standalone/api.p12
+  /etc/letsencrypt/live/api.example.com/fullchain.pem
 ords --config /opt/oracle/ords/config config set \
-  standalone.https.cert.secret changeit
+  standalone.https.cert.key /etc/letsencrypt/live/api.example.com/privkey.der
 ```
 
 ### TLS Minimum Version and Cipher Suites
@@ -72,44 +68,54 @@ CORS (Cross-Origin Resource Sharing) controls which browser origins are allowed 
 
 ### Configure CORS in ORDS
 
-CORS settings are configured via the ORDS CLI:
+CORS configuration differs depending on whether you are exposing ORDS REST modules or PL/SQL Gateway procedures.
+
+### REST Modules
+
+For ORDS REST modules, use `ORDS.SET_MODULE_ORIGINS_ALLOWED` to set the allowed origins for a module. `p_module_name` must be the internal module name defined by `ORDS.DEFINE_MODULE`, not the URL path:
+
+```sql
+BEGIN
+  ORDS.SET_MODULE_ORIGINS_ALLOWED(
+    p_module_name     => 'employees_api',
+    p_origins_allowed => 'https://app.example.com,https://admin.example.com'
+  );
+  COMMIT;
+END;
+/
+```
+
+To remove any existing allowed origins for a module, set `p_origins_allowed` to an empty string:
+
+```sql
+BEGIN
+  ORDS.SET_MODULE_ORIGINS_ALLOWED(
+    p_module_name     => 'employees_api',
+    p_origins_allowed => ''
+  );
+  COMMIT;
+END;
+/
+```
+
+### PL/SQL Gateway
+
+For PL/SQL Gateway external sessions, configure the trusted origins with `security.externalSessionTrustedOrigins`:
 
 ```shell
-# Allow specific origins
-ords --config /opt/oracle/ords/config config set security.requestValidationFunction ords_util.authorize_plsql_gateway
-
-# Set allowed origins (comma-separated, no wildcards for authenticated endpoints)
-ords --config /opt/oracle/ords/config config set security.allowedCORSOrigins \
+ords --config /opt/oracle/ords/config config set \
+  security.externalSessionTrustedOrigins \
   "https://app.example.com,https://admin.example.com"
 ```
 
-Set all CORS parameters via the ORDS CLI:
-
-```shell
-ords --config /opt/oracle/ords/config config set \
-  security.allowedCORSOrigins "https://app.example.com,https://admin.example.com"
-ords --config /opt/oracle/ords/config config set \
-  security.allowedCORSHeaders "Authorization,Content-Type,X-Requested-With"
-ords --config /opt/oracle/ords/config config set \
-  security.allowedCORSMethods "GET,POST,PUT,DELETE,OPTIONS"
-ords --config /opt/oracle/ords/config config set security.maxAge 3600
-```
+If `security.externalSessionTrustedOrigins` is empty or not configured, then CORS requests to the PL/SQL Gateway are not allowed.
 
 ### CORS Best Practices
 
-```shell
-# WRONG: Wildcard on an authenticated API — allows any origin to send credentials
-ords config set security.allowedCORSOrigins "*"
-
-# CORRECT: Explicit trusted origins only
-ords config set security.allowedCORSOrigins "https://myapp.example.com"
-
-# For truly public read-only APIs, wildcard is acceptable
-# but protect all write operations with OAuth2 regardless
-ords config set security.allowedCORSOrigins "*"
-```
-
-When `security.forceHTTPS = true`, CORS allows HTTPS origins only. Mixed HTTP/HTTPS origins are rejected.
+- **Configure CORS per REST module**: Use `ORDS.SET_MODULE_ORIGINS_ALLOWED` for REST handlers.
+- **Use explicit trusted origins**: Prefer exact origins such as `https://app.example.com` over broad allowlists, especially for authenticated endpoints.
+- **Do not confuse request validation with CORS**: `security.requestValidationFunction` controls whether a PL/SQL Gateway procedure is allowed to execute; it is not the CORS allowlist.
+- **Configure PL/SQL Gateway separately**: Use `security.externalSessionTrustedOrigins` only for PL/SQL Gateway external sessions.
 
 ---
 
@@ -270,22 +276,20 @@ END;
 
 ### ORDS Wallet-Based Secret Storage (Default Mechanism)
 
-All passwords in ORDS are stored in an **Oracle Wallet** (credential store) in the `credentials/` directory of the ORDS config. Passwords never appear in any configuration file. Use `ords config secret set` to set or rotate any credential:
+Pool secrets such as `db.password` are stored in an **Oracle Wallet** in `databases/{pool_name}/wallet`. If you use `ords config secret --global`, ORDS stores the secret in `global/wallet`. Secrets never appear in configuration files. Use `ords config secret` to set or rotate them:
 
 ```shell
 # Set the DB password — stored in Oracle Wallet only
-ords --config /opt/oracle/ords/config config secret set db.password \
-  --password-stdin <<< "MySecurePassword123!"
+ords --config /opt/oracle/ords/config config secret --password-stdin db.password <<< "MySecurePassword123!"
 
 # Rotate a password — re-run with the new value
-ords --config /opt/oracle/ords/config config secret set db.password \
-  --password-stdin <<< "NewSecurePassword456!"
+ords --config /opt/oracle/ords/config config secret --password-stdin db.password <<< "NewSecurePassword456!"
 
 # Verify the wallet is present (passwords are not readable from config files)
-ls /opt/oracle/ords/config/credentials/
+ls /opt/oracle/ords/config/databases/default/wallet/
 ```
 
-Protect the `credentials/` directory with OS-level permissions (`chmod 700`) and include it in backup procedures alongside the rest of the config directory.
+Protect wallet directories with OS-level permissions (`chmod 700`) and include them in backup procedures alongside the rest of the config directory.
 
 ### OCI Vault Integration
 
@@ -297,8 +301,7 @@ OCI_SECRET=$(oci secrets secret-bundle get \
   --query 'data."secret-bundle-content".content' \
   --raw-output | base64 --decode)
 
-ords --config /opt/oracle/ords/config config secret set db.password \
-  --password-stdin <<< "$OCI_SECRET"
+ords --config /opt/oracle/ords/config config secret --password-stdin db.password <<< "$OCI_SECRET"
 ```
 
 ---
@@ -465,7 +468,7 @@ add_header Permissions-Policy        "geolocation=(), microphone=()" always;
 ## Common Mistakes
 
 - **Wildcard CORS on authenticated endpoints**: `*` CORS policy with OAuth2 Bearer tokens negates the token security — any site can make cross-origin requests. Use explicit origin allowlists.
-- **Attempting to write passwords into config files**: ORDS stores all credentials in an Oracle Wallet (`credentials/` directory) — passwords never belong in any config file. Use `ords config secret set db.password` to set or rotate them. Attempting to embed a password directly in a config file will not work and may break ORDS startup.
+- **Attempting to write passwords into config files**: ORDS stores secrets in wallet directories, not in config files. Use `ords config secret --password-stdin db.password` for pool credentials. Attempting to embed a password directly into a config file will not work and may break ORDS startup.
 - **Not disabling Database Actions in production (if not needed)**: Database Actions (`feature.sdw=true`) provides a powerful SQL execution interface. Disable it on API-only ORDS instances: `feature.sdw=false`.
 - **Using the same OAuth client for all services**: If a shared client is compromised, all services lose access. Use one OAuth client per service/application.
 - **Not testing authentication on every endpoint after a schema change**: Adding a new module does not automatically protect it. Verify each new endpoint requires the expected authentication.
@@ -482,6 +485,8 @@ add_header Permissions-Policy        "geolocation=(), microphone=()" always;
 
 ## Sources
 
-- [ORDS Developer's Guide — Securing Oracle REST Data Services](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/about-oracle-rest-data-services.html)
-- [ORDS Configuration Settings Reference — Security Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/ordig/configuration-settings.html)
+- [Deploying and Monitoring Oracle REST Data Services — Serve Commands for Running in Standalone Mode](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-872EA939-5348-4B31-B4EC-EFD038F69837)
+- [Deploying and Monitoring Oracle REST Data Services — Converting a Private Key to DER (Linux and Unix)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/deploying-and-monitoring-oracle-rest-data-services.html#GUID-1E64886C-C85C-49B5-A98E-79B9EC8455B4)
+- [ORDS PL/SQL Package Reference — ORDS.SET_MODULE_ORIGINS_ALLOWED](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html#GUID-012CD717-ACBE-4E36-9587-2D156A523BD3)
+- [About the Oracle REST Data Services Configuration Files — Understanding the Configurable Settings](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html#GUID-006F916B-8594-4A78-B500-BB85F35C12A0)
 - [Oracle Database Vault Administrator's Guide 19c](https://docs.oracle.com/en/database/oracle/oracle-database/19/dvadm/index.html)

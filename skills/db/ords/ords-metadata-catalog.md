@@ -472,6 +472,6 @@ The exported CLOB contains rerunnable `ORDS.DEFINE_MODULE`, `ORDS.DEFINE_TEMPLAT
 
 ## Sources
 
-- [ORDS Developer's Guide — OpenAPI and Metadata Catalog](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/developing-oracle-rest-data-services-applications.html)
-- [Oracle REST Data Services PL/SQL API Reference — ORDS.DEFINE_PARAMETER](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orrst/index.html)
+- [Developing REST Applications](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/developing-REST-applications.html)
+- [ORDS PL/SQL Package Reference — ORDS.DEFINE_PARAMETER](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html#GUID-BBB858FB-DB54-44E3-A2D5-387443FF6B8E)
 - [Oracle REST Data Services PL/SQL API Reference — ORDS_EXPORT and ORDS_EXPORT_ADMIN](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ORDS-reference.html)

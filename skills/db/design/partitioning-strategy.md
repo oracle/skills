@@ -152,7 +152,7 @@ PARTITION BY LIST (payment_type) AUTOMATIC  -- new partitions created on-the-fly
 - No natural range or category boundary exists
 - The goal is even I/O distribution across storage devices
 - Enabling **partition-wise joins** (when joining two hash-partitioned tables on the same key with the same number of partitions)
-- Reducing hot-block contention on high-concurrency insert tables
+- Reducing hot-block contention on high-concurrency insert tables or indexes
 
 ### Syntax
 
@@ -340,7 +340,7 @@ ORDER  BY partition_position;
 
 ### Local Indexes
 
-A **local index** is partitioned using the same strategy as the underlying table. Each index partition corresponds to exactly one table partition. Local indexes are the preferred choice for partitioned tables.
+A **local index** is partitioned using the same strategy as the underlying table. Each index partition corresponds to exactly one table partition. Local indexes are the preferred choice for partitioned tables if there is a requirement to keep partition maintenance as inexpensive as possible.
 
 ```sql
 -- Local non-unique index
@@ -383,8 +383,8 @@ TABLESPACE orders_idx;
 
 **Global index characteristics:**
 - Allows unique constraints on columns that don't include the partition key
-- Must be rebuilt (or marked UNUSABLE) after partition maintenance operations unless `UPDATE GLOBAL INDEXES` is specified
-- More expensive to maintain during partition DDL
+- Become stale after partition maintenance operations unless `UPDATE GLOBAL INDEXES` is specified. Once stale, the index can be manually rebuilt or the database automatically correct state global indexes over time with the back ground job
+- Can be more expensive to maintain during partition DDL if `UPDATE GLOBAL INDEXES` is specified
 
 ```sql
 -- Partition maintenance with global index update
@@ -426,7 +426,7 @@ ALTER TABLE SALES TRUNCATE PARTITION p_2022_q1;
 
 -- Exchange a partition with a staging table (zero-copy ETL)
 -- 1. Create staging table with identical structure (no partitioning)
-CREATE TABLE SALES_STAGING AS SELECT * FROM SALES WHERE 1=0;
+CREATE TABLE SALES_STAGING FOR EXCHANGE WITH SALES;
 
 -- 2. Load data into staging table (bulk insert, external table, etc.)
 INSERT /*+ APPEND */ INTO SALES_STAGING SELECT ...;

@@ -523,8 +523,8 @@ END;
 
 ## Sources
 
-- [ORDS Developer's Guide — Developing Oracle REST Data Services Applications](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.3/orddg/developing-REST-applications.html)
-- [ORDS Installation and Configuration Guide — About the Oracle REST Data Services Configuration Files](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.3/ordig/about-REST-configuration-files.html)
-- [ORDS_SECURITY PL/SQL Package Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.2/orddg/ords_security-pl-sql-package-reference.html)
-- [ORDS_SECURITY_ADMIN PL/SQL Package Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.4/orddg/ords_security_admin-pl-sql-package.html)
-- [ORDS OAuth2 Client Credentials Flow](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/24.2/orddg/rest-enabled-sql-service.html)
+- [ORDS Developer's Guide — Developing Oracle REST Data Services Applications](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/developing-REST-applications.html)
+- [ORDS Installation and Configuration Guide — About the Oracle REST Data Services Configuration Files](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/ordig/about-REST-configuration-files.html)
+- [ORDS_SECURITY PL/SQL Package Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ords_security-pl-sql-package-reference.html)
+- [ORDS_SECURITY_ADMIN PL/SQL Package Reference](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/orddg/ords_security_admin-pl-sql-package.html)
+- [Get Started with Oracle REST Data Services — Register an OAuth Client Application to Access the REST API](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/25.4/qsord/get-started-with-oracle-rest-data-services.html#GUID-E5729D26-CA54-4F99-AB81-CA9C20BED46A)
