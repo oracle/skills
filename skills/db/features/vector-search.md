@@ -224,6 +224,29 @@ ORDER  BY rrf_score DESC
 FETCH  FIRST 10 ROWS ONLY;
 ```
 
+## Hybrid Vector Search
+
+Use hybrid vector search when retrieval needs both semantic similarity and keyword or structured filtering. Oracle supports this as an application query pattern and as a first-class hybrid index path.
+
+```sql
+CREATE HYBRID VECTOR INDEX docs_hybrid_idx ON doc_chunks(chunk_text)
+PARAMETERS('MODEL my_embedding_model');
+```
+
+Query hybrid indexes with `DBMS_HYBRID_VECTOR.SEARCH` when you need one call that combines vector and text criteria.
+
+```sql
+SELECT DBMS_HYBRID_VECTOR.SEARCH(
+         json('{ "hybrid_index_name" : "docs_hybrid_idx",
+                 "vector" : { "search_text" : "invoice payment dispute" },
+                 "text"   : { "contains"    : "customer AND overdue" },
+                 "return" : { "topN"        : 10 }
+               }'))
+FROM dual;
+```
+
+Use `text.contains` or `text.search_text` for lexical constraints. Use `filter_by` for business predicates such as status, region, or price. Use vector `filter_type` only when tuning how filtering interacts with vector index evaluation; it is not the same thing as a business filter.
+
 ## Bulk Load: Disable Index, Load, Rebuild
 
 When loading millions of vectors, disable the vector index first, load, then rebuild.
@@ -333,7 +356,7 @@ WHERE  opname LIKE '%VECTOR INDEX%'
 
 - **19c**: No native VECTOR type; workarounds used VARCHAR2/CLOB with external similarity calculation
 - **23ai**: VECTOR data type introduced; HNSW and IVF indexes; `VECTOR_DISTANCE()` and shorthand operators
-- **26ai**: Full production support; enhanced index performance; `DBMS_VECTOR` and `DBMS_VECTOR_CHAIN` for pipeline automation; `SELECT AI` integration
+- **26ai**: Full production support; enhanced index performance; `DBMS_VECTOR`, `DBMS_VECTOR_CHAIN`, and `DBMS_HYBRID_VECTOR` for pipeline automation and hybrid retrieval; `SELECT AI` integration
 
 ## See Also
 
@@ -346,4 +369,6 @@ WHERE  opname LIKE '%VECTOR INDEX%'
 - [Oracle AI Vector Search User's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/23/vecse/)
 - [VECTOR Data Type — Oracle SQL Language Reference](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/data-types.html)
 - [VECTOR_DISTANCE Function](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/VECTOR_DISTANCE.html)
+- [CREATE HYBRID VECTOR INDEX](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/create-hybrid-vector-index.html)
+- [DBMS_HYBRID_VECTOR](https://docs.oracle.com/en/database/oracle/oracle-database/26/vecse/dbms_hybrid_vector-vecse.html)
 - [Oracle AI Vector Search Blog](https://blogs.oracle.com/database/post/oracle-ai-vector-search)
