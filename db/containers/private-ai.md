@@ -25,7 +25,7 @@ The OCR detail page explicitly calls out 25.x image behavior. In particular, it 
 
 - **Use this image when:** Use when deploying Oracle Private AI Services container endpoints.
 - **Use another image when:** Avoid when you only need a base database runtime without AI service APIs.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

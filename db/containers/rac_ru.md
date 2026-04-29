@@ -25,7 +25,7 @@ The OCR detail page explicitly positions `rac_ru` as a Release Update image stre
 
 - **Use this image when:** Use when you need RU-tagged Oracle RAC container images under CPU terms.
 - **Use another image when:** Avoid when you need the non-RU stream; use rac.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

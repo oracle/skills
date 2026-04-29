@@ -25,7 +25,7 @@ The OCR detail page tracks operator-image releases instead of a 19c-versus-26ai 
 
 - **Use this image when:** Use when Oracle Database lifecycle is managed through Kubernetes operator patterns.
 - **Use another image when:** Avoid when you are not using Kubernetes operator-based operations.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

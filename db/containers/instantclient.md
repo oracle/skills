@@ -25,7 +25,7 @@ The OCR detail page does not publish a dedicated 19c-versus-26ai matrix for `ins
 
 - **Use this image when:** Use when you need Oracle client libraries/tools in a container, not a DB server.
 - **Use another image when:** Avoid when you need database instance startup; use free/enterprise/etc.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

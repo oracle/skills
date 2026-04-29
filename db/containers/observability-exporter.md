@@ -25,7 +25,7 @@ The OCR detail page presents this repository as a tool image with versioned expo
 
 - **Use this image when:** Use when you need DB metrics/logs/traces export into observability stacks.
 - **Use another image when:** Avoid when you need a database server image; this is tooling/exporter only.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

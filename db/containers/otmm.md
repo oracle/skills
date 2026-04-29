@@ -25,7 +25,7 @@ The OCR detail page tracks MicroTx image releases rather than a 19c-versus-26ai 
 
 - **Use this image when:** Use when you need free MicroTx capabilities for distributed transaction patterns.
 - **Use another image when:** Avoid when you need Enterprise coordinator/console features; use microtx-ee-* images.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

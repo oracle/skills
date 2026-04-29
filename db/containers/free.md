@@ -25,7 +25,7 @@ The OCR detail page explicitly documents `free` as the Oracle AI Database 26ai F
 
 - **Use this image when:** Use for local development and learning with Oracle AI Database 26ai Free.
 - **Use another image when:** Avoid when you need Enterprise-only features or support commitments.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

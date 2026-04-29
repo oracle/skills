@@ -1,6 +1,6 @@
 # Skill Authoring Guide
 
-This repository is the Oracle-wide source for curated skills organized by domain under `skills/`.
+This repository is the Oracle-wide source for curated skills organized by domain at the repository root.
 
 Use this guide when adding or updating skills so the repository stays consistent across Oracle Database, OCI, Fusion, and future domains.
 
@@ -13,10 +13,10 @@ Use this guide when adding or updating skills so the repository stays consistent
 
 ## Repository Model
 
-Skills are grouped by domain:
+Skills are grouped by root-level domain directory:
 
 ```text
-skills/
+.
 ├── db/
 ├── oci/
 └── fusion/
@@ -62,7 +62,7 @@ For stub domains that do not yet have real content, keep `SKILL.md` short. It sh
 - Use short, stable, descriptive filenames in lowercase with hyphens.
 - Keep one primary topic per file.
 - Avoid filenames tied to temporary product marketing language unless that name is the official product term.
-- Prefer paths like `skills/db/sqlcl/sqlcl-mcp-server.md` over broad catch-all files.
+- Prefer paths like `db/sqlcl/sqlcl-mcp-server.md` over broad catch-all files.
 
 ## Research Standards
 

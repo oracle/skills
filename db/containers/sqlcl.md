@@ -25,7 +25,7 @@ The OCR detail page tracks SQLcl image releases instead of a 19c-versus-26ai dat
 
 - **Use this image when:** Use for SQLcl-based scripting and CI automation in a containerized CLI.
 - **Use another image when:** Avoid when you need ORDS runtime or database server capabilities.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

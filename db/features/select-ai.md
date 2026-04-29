@@ -272,7 +272,7 @@ For Python applications, choose the interface based on how much Select AI-specif
 
 - Use `python-oracledb` to execute `SELECT AI ...` or call `DBMS_CLOUD_AI` / `DBMS_CLOUD_AI_AGENT` when your application already manages normal SQL execution.
 - Use Oracle's `select_ai` Python library when you need Python-native objects for profiles, conversations, vector indexes, synthetic data generation, feedback, async workflows, or agent teams.
-- Keep generic driver concerns such as pooling, binds, LOBs, and transaction control in `skills/db/appdev/python-oracledb.md`.
+- Keep generic driver concerns such as pooling, binds, LOBs, and transaction control in `db/appdev/python-oracledb.md`.
 
 ## Ambiguous Table Name Handling
 

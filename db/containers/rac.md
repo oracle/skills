@@ -25,7 +25,7 @@ The OCR readme explicitly calls out support on Podman starting with 19c (19.16),
 
 - **Use this image when:** Use when you need Oracle RAC container deployments with Podman guidance.
 - **Use another image when:** Avoid when you need RU stream tags; use rac_ru.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

@@ -1,10 +1,18 @@
 # Oracle Skills
 
-Oracle Skills is the repository for Oracle-wide skills, organized by domain under `skills/`.
+Oracle Skills is the repository for Oracle-wide skills, organized by domain at the repository root.
 
 The goal is to provide a single source of truth for practical Oracle skills across products and platforms. Each domain can own its own routing, indexing, and topic structure while still fitting a consistent repository model.
 
-The current deepest content lives in `skills/db/`, with `skills/oci/`, `skills/fusion/`, `skills/apex/`, and `skills/graal/` in place as domain roots for expansion.
+The current deepest content lives in `db/`, with `oci/`, `fusion/`, `apex/`, and `graal/` in place as domain roots for expansion.
+
+## Installation
+
+Install a domain by appending the root-level domain directory to the repository name:
+
+```bash
+npx skills add oracle/skills/db
+```
 
 ## Repository Goals
 
@@ -16,7 +24,7 @@ The current deepest content lives in `skills/db/`, with `skills/oci/`, `skills/f
 ## Repository Layout
 
 ```text
-skills/
+.
 ├── db/
 │   ├── SKILL.md
 │   ├── admin/
@@ -48,16 +56,16 @@ skills/
 
 ## Start Here
 
-- `skills/db/SKILL.md` — database domain routing and key entry points
+- `db/SKILL.md` — database domain routing and key entry points
 - `SKILL_AUTHORING_GUIDE.md` — best practices for creating or updating skills in this repo
 
 ## Domain Model
 
-- `skills/db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
-- `skills/oci/` is the root for future Oracle Cloud Infrastructure skills.
-- `skills/fusion/` is the root for future Oracle Fusion skills.
-- `skills/apex/` is the root for future Oracle APEX skills.
-- `skills/graal/` is the root for future Graal and GraalVM-related Oracle skills.
+- `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
+- `oci/` is the root for future Oracle Cloud Infrastructure skills.
+- `fusion/` is the root for future Oracle Fusion skills.
+- `apex/` is the root for future Oracle APEX skills.
+- `graal/` is the root for future Graal and GraalVM-related Oracle skills.
 
 Each domain should own its own `SKILL.md` and any additional indexing files it needs.
 

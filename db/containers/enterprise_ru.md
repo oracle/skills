@@ -25,7 +25,7 @@ The OCR detail page explicitly documents this repository as the 19c Release Upda
 
 - **Use this image when:** Use when you need RU-tagged Enterprise images from the CPU repository stream.
 - **Use another image when:** Avoid when you want the non-CPU latest stream; use enterprise instead.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

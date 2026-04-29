@@ -25,7 +25,7 @@ The OCR detail page focuses on MicroTx release tags rather than a 19c-versus-26a
 
 - **Use this image when:** Use when you need the MicroTx Enterprise console UI for operations/monitoring.
 - **Use another image when:** Avoid when you are not running MicroTx Enterprise coordinator workflows.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

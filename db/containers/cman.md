@@ -25,7 +25,7 @@ The OCR detail page does not publish a dedicated 19c-versus-26ai compatibility m
 
 - **Use this image when:** Use when you need Oracle Connection Manager as a proxy/gateway layer.
 - **Use another image when:** Avoid when clients can connect directly and no proxy tier is required.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

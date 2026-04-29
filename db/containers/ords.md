@@ -25,7 +25,7 @@ The OCR detail page tracks ORDS image releases instead of a 19c-versus-26ai data
 
 - **Use this image when:** Use for supported ORDS container deployments.
 - **Use another image when:** Avoid deprecated/legacy ORDS container lines for new deployments.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

@@ -1,6 +1,6 @@
 # Container Skills Index
 
-Complete index for container-related skills in `skills/db/containers/`.
+Complete index for container-related skills in `db/containers/`.
 
 ## Common
 

@@ -25,7 +25,7 @@ The OCR detail page explicitly documents `enterprise` as the 26ai Enterprise Edi
 
 - **Use this image when:** Use when you need Oracle AI Database 26ai Enterprise Edition in a container.
 - **Use another image when:** Avoid when you need CPU/RU stream patch pinning; use enterprise_ru instead.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

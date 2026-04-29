@@ -25,7 +25,7 @@ The OCR detail page does not provide a dedicated 19c-versus-26ai matrix for `gsm
 
 - **Use this image when:** Use when deploying Oracle Globally Distributed Database and GSM is required.
 - **Use another image when:** Avoid when you need RU stream tagging; use gsm_ru.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

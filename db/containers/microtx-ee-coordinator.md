@@ -25,7 +25,7 @@ The OCR detail page tracks MicroTx image releases rather than a 19c-versus-26ai 
 
 - **Use this image when:** Use when you need MicroTx Enterprise coordinator features (XA/Saga/TCC).
 - **Use another image when:** Avoid when free-tier capabilities are sufficient; use otmm.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

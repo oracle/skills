@@ -25,7 +25,7 @@ The OCR detail page does not publish a separate 19c-versus-26ai matrix for `gsm_
 
 - **Use this image when:** Use when you need RU-tagged GSM images under CPU terms.
 - **Use another image when:** Avoid when non-RU GSM stream is sufficient; use gsm.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

@@ -25,7 +25,7 @@ This repository is explicitly tied to Oracle AI Database 26ai. The OCR readme sa
 
 - **Use this image when:** Use for quick Property Graph exploration and demos on 26ai.
 - **Use another image when:** Avoid for production workloads; use supported production deployment patterns.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 

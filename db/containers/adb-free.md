@@ -25,7 +25,7 @@ The OCR detail page provides an explicit version matrix: the 23ai stream uses `l
 
 - **Use this image when:** Use when you need Autonomous Database Free container workflows (ADW/ATP modes).
 - **Use another image when:** Avoid when a generic Database Free runtime is enough; use free.
-- **Cross-image decision aid:** `skills/db/containers/container-selection-matrix.md`
+- **Cross-image decision aid:** `db/containers/container-selection-matrix.md`
 
 ## Prerequisites and Minimal Run Pattern
 
