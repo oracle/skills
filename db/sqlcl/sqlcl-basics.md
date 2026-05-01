@@ -125,6 +125,45 @@ sql sys/password@localhost:1521/ORCL as sysdba
 sql / as sysdba
 ```
 
+### Starting Up and Shutting Down a Database
+
+SQLcl supports Oracle's `STARTUP` and `SHUTDOWN` commands when connected as SYSDBA or SYSOPER.
+
+**STARTUP modes:**
+
+```sql
+STARTUP                  -- Full open (default)
+STARTUP NOMOUNT          -- Instance started, database not mounted (for RMAN restore, controlfile recreation)
+STARTUP MOUNT            -- Instance started, database mounted but not open (for media recovery)
+STARTUP OPEN             -- Same as default
+STARTUP FORCE            -- Shutdown abort + startup (forces restart of a hung instance)
+STARTUP RESTRICT         -- Open in restricted mode (only users with RESTRICTED SESSION privilege)
+STARTUP OPEN READ ONLY   -- Open for read-only access
+```
+
+**SHUTDOWN modes:**
+
+```sql
+SHUTDOWN NORMAL        -- Wait for all sessions to disconnect (can take a long time)
+SHUTDOWN IMMEDIATE     -- Roll back active transactions, disconnect sessions, clean shutdown
+SHUTDOWN TRANSACTIONAL -- Wait for active transactions to commit, then disconnect
+SHUTDOWN ABORT         -- Immediate, unclean stop (instance recovery required on next startup)
+```
+
+`SHUTDOWN IMMEDIATE` is the standard choice for planned maintenance. `SHUTDOWN ABORT` should only be used when the database is hung and `IMMEDIATE` is not responding.
+
+**Connecting locally for startup/shutdown:**
+
+```shell
+# Connect without a listener (local OS authentication)
+sql / as sysdba
+```
+
+```sql
+SHUTDOWN IMMEDIATE
+STARTUP
+```
+
 ### Connecting from Within SQLcl
 
 Use the `CONNECT` command to switch connections without restarting:
@@ -272,6 +311,32 @@ ALIAS LOAD
 @script.sql arg1 arg2
 -- Arguments accessible as &1, &2, etc.
 ```
+
+### ARGUMENT Command
+
+The `ARGUMENT` command defines named, typed parameters for SQLcl scripts — a more readable and self-documenting alternative to positional `&1`, `&2` substitution variables.
+
+```sql
+-- Define a named argument (in a script file)
+ARGUMENT department_id NUMBER "Department ID to report on"
+ARGUMENT output_format VARCHAR2 "Output format: CSV or JSON"
+
+-- Reference the argument like a substitution variable
+SELECT * FROM employees WHERE department_id = &department_id;
+```
+
+Call the script and pass values positionally:
+
+```shell
+sql user/pass@service @my_report.sql 90 CSV
+```
+
+Arguments are matched by position to the order they are declared in the script. They support basic types (`NUMBER`, `VARCHAR2`, `DATE`) and an optional description string used by `HELP` within the script.
+
+Difference from bare `&1` substitution:
+- `ARGUMENT` gives the variable a name — `&department_id` is clearer than `&1`
+- The type declaration enables basic validation
+- The description is visible when the script is inspected or documented
 
 ---
 

@@ -55,7 +55,7 @@ db/
 | Package design, error handling, performance, collections, cursors, debugging | `db/plsql/` |
 | Privileges, VPD, masking, auditing, encryption, network security | `db/security/` |
 | SQL tuning, SQL patterns, dynamic SQL, injection avoidance | `db/sql-dev/` |
-| SQLcl basics, scripting, Liquibase, formatting, DDL generation, data loading, MCP server | `db/sqlcl/` |
+| SQLcl basics, scripting, Liquibase, formatting, DDL generation, data loading, MCP server, scheduler daemon, AWR, background jobs | `db/sqlcl/` |
 
 ## Key Starting Points
 
@@ -75,3 +75,4 @@ db/
 | Plan a migration | `migration-assessment` → `oracle-migration-tools` → source-specific `migrate-*.md` → `migration-cutover-strategy` |
 | Build RAG on Oracle Database | `ai-profiles` → `vector-search` → `dbms-vector` |
 | Perform agent-safe schema change | `schema-discovery` → `destructive-op-guards` → `idempotency-patterns` → `schema-migrations` |
+| Set up AI-driven database access via MCP | `sqlcl-basics` (save connections) → `security/privilege-management` (least-privilege user) → `sqlcl-mcp-server` (configure + start) |
