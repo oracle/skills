@@ -1,0 +1,44 @@
+# APEX Workspace Users And Authentication
+
+Use this topic for initial workspace administrators, developers, end users, and `Database Username` builder-login environments.
+
+Use `APEX_WORKSPACE_APEX_USERS` when you need supported workspace-user metadata for administrators, developers, and end users. Check column availability first on older or managed APEX environments.
+
+## Create Initial Workspace Admin
+
+Set the workspace security group ID before creating workspace-scoped users outside an APEX session.
+
+```sql
+DECLARE
+    l_workspace_id NUMBER;
+BEGIN
+    l_workspace_id := APEX_UTIL.FIND_SECURITY_GROUP_ID(:workspace_name);
+    APEX_UTIL.SET_SECURITY_GROUP_ID(l_workspace_id);
+
+    APEX_UTIL.CREATE_USER(
+        p_user_name                    => :apex_user_name,
+        p_email_address                => :email_address,
+        p_web_password                 => :temporary_password,
+        p_developer_privs              => 'ADMIN:CREATE:DATA_LOADER:EDIT:HELP:MONITOR:SQL',
+        p_change_password_on_first_use => 'Y');
+END;
+/
+```
+
+Do not include real passwords in skills, examples, logs, scripts, or chat output.
+
+## Database-Username Builder Login
+
+If the APEX sign-in page says `Database Username`, a matching database user may be required in addition to the APEX workspace user. Keep the security contexts separate:
+
+- Workspace Admin
+- Developer
+- End User
+- Parsing Schema
+- Database Login User
+- ORDS/APEX Runtime Accounts
+- DBA/Admin Accounts
+
+DB skill in use: `db/admin/user-management.md` and `db/security/privilege-management.md` for generic database user creation and privilege management. The APEX workspace skill is being used for APEX login-model and workspace-user context.
+
+Do not grant `DBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, or `GRANT ANY PRIVILEGE` for ordinary APEX workspace users.

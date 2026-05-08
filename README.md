@@ -9,6 +9,7 @@ The goal is to give developers and agents a single place to find source-backed O
 Install a domain by appending the root-level domain directory to the repository name:
 
 ```bash
+npx skills add oracle/skills/apex
 npx skills add oracle/skills/db
 npx skills add oracle/skills/graal
 ...
@@ -26,7 +27,7 @@ npx skills add oracle/skills/graal
 - `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
 - `oci/` is the root for future Oracle Cloud Infrastructure skills.
 - `fusion/` is the root for future Oracle Fusion skills.
-- `apex/` is the root for future Oracle APEX skills.
+- `apex/` contains Oracle APEX skills, starting with workspace provisioning and administration.
 - `graal/` contains GraalVM skills, starting with Native Image.
 
 ## Start Here
@@ -61,7 +62,12 @@ npx skills add oracle/skills/graal
 ├── fusion/
 │   └── SKILL.md
 ├── apex/
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── deployment/
+│   └── monitoring/
+│   └── security/
+│   └── workspace/
+│   └── test-apex-skills.sh
 ├── graal/
 │   ├── SKILL.md
 │   └── native-image/
