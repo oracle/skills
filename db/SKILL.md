@@ -39,7 +39,7 @@ db/
 
 | Topic | Directory |
 |-------|-----------|
-| Backup, recovery, RMAN, Data Guard, redo/undo logs, users | `db/admin/` |
+| Backup, recovery, RMAN, Data Guard, redo/undo logs, users, ASM | `db/admin/` |
 | Safe DML, destructive operation guards, idempotency, schema discovery, ORA- error handling | `db/agent/` |
 | JDBC, pooling, JSON, XML, spatial, Oracle Text, transactions, MLE, language drivers | `db/appdev/` |
 | RAC, Multitenant, Exadata, In-Memory, OCI database services, Data Guard architecture | `db/architecture/` |
@@ -76,3 +76,4 @@ db/
 | Build RAG on Oracle Database | `ai-profiles` → `vector-search` → `dbms-vector` |
 | Perform agent-safe schema change | `schema-discovery` → `destructive-op-guards` → `idempotency-patterns` → `schema-migrations` |
 | Set up AI-driven database access via MCP | `sqlcl-basics` (save connections) → `security/privilege-management` (least-privilege user) → `sqlcl-mcp-server` (configure + start) |
+| Investigate an ASM disk-group issue | `asm-management` (concepts + monitoring views) → `ora-error-catalog` (error context) → `rac-concepts` (when cluster topology is involved) |
