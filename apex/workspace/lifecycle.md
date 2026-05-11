@@ -10,6 +10,8 @@ Use this topic for workspace inventory, pre-flight checks, create workspace, and
 - Whether database schemas already exist or must be created.
 - Whether the first user should be an APEX workspace administrator, developer, or end user.
 - Authentication model for the development environment.
+- Confirm parsing-schema candidates with `apex/workspace/schema-mapping.md`; do not suggest ORDS schemas, `PDB_ADMIN`, Oracle-maintained accounts, APEX platform schemas, or DBA/runtime service accounts as parsing schemas.
+- If the user wants to reuse an existing parsing schema, verify required privileges first. If privileges are missing or excessive, ask whether the user wants the DB privilege changes handled through `db/security/privilege-management.md`; continue only when the privileges are correct or the user approves adjustment.
 - Whether this is Oracle Cloud or Autonomous Database, where some instance administration options may be restricted.
 
 ## List Workspaces

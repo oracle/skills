@@ -24,7 +24,8 @@ This domain contains Oracle APEX skills for workspace administration, applicatio
 - Do not treat APEX parsing schemas as personal interactive logins in production. Keep their technical use narrow and document when an account should be locked or non-interactive.
 - Prefer supported APEX APIs and views. Do not write directly to internal APEX repository tables.
 - Treat APEX versions and managed environments as variable. Before relying on a view column or package parameter, inspect availability with `ALL_TAB_COLUMNS`, `ALL_ARGUMENTS`, `DESC`, or a supported APEX version view.
-- Protect destructive actions with explicit object listings, confirmation prompts, protected-account checks, and no assumptions from remembered context.
+- Protect destructive actions with explicit object listings, fresh exact English confirmation prompts, protected-account checks, and no assumptions from remembered context. Workspace-related database users may be dropped only when the user explicitly asks to remove the workspace and its listed related database users/components and confirms that this is their own will.
+- Before APEX workflows that use MCP database access, run the APEX MCP availability guard. If MCP reports `Transport closed` or an unavailable tool channel, stop the APEX workflow and do not continue from stale database state.
 - Never include real secrets in skills, examples, logs, exports, or chat output. This includes passwords, OAuth secrets, SMTP credentials, wallet passwords, API tokens, and web credentials.
 - Treat APEX activity logs, debug logs, error messages, request values, Team Development files, exports, and session context as potentially sensitive. Avoid selecting unnecessary payload columns, BLOBs, CLOBs, or secret-bearing values.
 - Do not treat APEX session state, hidden items, read-only items, or client-side checks as a security boundary. Use server-side authorization, validations, and database privileges.
@@ -55,9 +56,9 @@ apex/
 | Topic | Directory |
 |-------|-----------|
 | Create, list, configure, verify, export, import, or remove Oracle APEX workspaces | `apex/workspace/` |
-| Runtime monitoring, activity logs, page latency, error trends, session drilldown, Team Development file context | `apex/monitoring/` |
+| Runtime monitoring, MCP availability, activity logs, page latency, error trends, session drilldown, Team Development file context | `apex/monitoring/` |
 | APEX authentication and authorization context, session-state safety, secrets, exports, safety messages, audit-column triggers | `apex/security/` |
-| APEX application export/import, environment promotion, `APEX_APPLICATION_INSTALL`, build options, substitutions, and deployment safety | `apex/deployment/` |
+| APEX installation pre-checks, patching, application export/import, environment promotion, `APEX_APPLICATION_INSTALL`, build options, substitutions, and deployment safety | `apex/deployment/` |
 
 ## Key Starting Points
 
@@ -70,6 +71,7 @@ apex/
 - APEX security guardrails: `apex/security/guardrails.md`
 - APEX safety messages: `apex/security/safety-messages.md`
 - APEX application-table audit columns: `apex/security/audit-columns.md`
+- APEX MCP availability guard: `apex/monitoring/mcp-availability.md`
 - APEX runtime monitoring: `apex/monitoring/activity-log.md`
 - APEX error handling and logging: `apex/monitoring/error-handling.md`
 - APEX user journey replay: `apex/monitoring/user-journey-replay.md`
@@ -78,7 +80,7 @@ apex/
 - APEX page and report performance: `apex/monitoring/page-performance.md` and `apex/monitoring/ir-ig-tuning.md`
 - APEX AWR/wait correlation bridge: `apex/monitoring/awr-wait-correlation.md`
 - APEX deployment pre-checks and promotion: `apex/deployment/pre-check.md` and `apex/deployment/import-promotion.md`
-- APEX deployment export review: `apex/deployment/export-review.md`
+- APEX deployment export review and patching: `apex/deployment/export-review.md` and `apex/deployment/patching.md`
 - APEX post-deploy validation: `apex/deployment/post-deploy-validation.md`
 - Category security reviews: `apex/workspace/security-review.md`, `apex/security/security-review.md`, `apex/monitoring/security-review.md`, and `apex/deployment/security-review.md`
 
@@ -137,7 +139,7 @@ Safety stop: this would grant a broad administrative privilege. Please confirm t
 ```
 
 ```text
-Safety stop: this operation is destructive. I will first list affected workspaces, schemas, APEX users, and database users, then require explicit confirmation before generating or running delete steps.
+Safety stop: this operation is destructive. I will first list affected workspaces, schemas, APEX users, database users, and related components, then require a fresh exact English confirmation before generating or running delete steps. If database users are included, you must confirm that deleting the listed users/components is your own will.
 ```
 
 ```text
@@ -154,6 +156,10 @@ Audit note: the trigger pattern records application change metadata only. It is 
 
 ```text
 Version check: this APEX view or package signature can vary by release. I will inspect available columns or arguments before generating version-specific SQL.
+```
+
+```text
+APEX MCP availability check failed: the MCP transport is closed, so I cannot safely verify or change APEX state from here. I will pause the APEX workflow until the MCP tool channel is available again.
 ```
 
 ## Common Multi-Step Flows

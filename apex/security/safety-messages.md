@@ -19,7 +19,7 @@ Safety stop: this would grant a broad administrative privilege. Please confirm t
 ```
 
 ```text
-Safety stop: this operation is destructive. I will first list affected workspaces, schemas, APEX users, and database users, then require explicit confirmation before generating or running delete steps.
+Safety stop: this operation is destructive. I will first list affected workspaces, schemas, APEX users, database users, and related components, then require a fresh exact English confirmation before generating or running delete steps. If database users are included, you must confirm that deleting the listed users/components is your own will.
 ```
 
 ```text
@@ -38,4 +38,8 @@ Audit note: the trigger pattern records application change metadata only. It is 
 Version check: this APEX view or package signature can vary by release. I will inspect available columns or arguments before generating version-specific SQL.
 ```
 
-Emit these messages before continuing when the request involves broad grants, direct internal repository writes, destructive changes, sensitive logs/exports, session-state security assumptions, audit triggers, or version-sensitive APEX views.
+```text
+APEX MCP availability check failed: the MCP transport is closed, so I cannot safely verify or change APEX state from here. I will pause the APEX workflow until the MCP tool channel is available again.
+```
+
+Emit these messages before continuing when the request involves broad grants, direct internal repository writes, destructive changes, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.

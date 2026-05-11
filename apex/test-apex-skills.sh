@@ -169,6 +169,7 @@ monitoring_topics=(
   "$APEX_DIR/monitoring/page-performance.md"
   "$APEX_DIR/monitoring/ir-ig-tuning.md"
   "$APEX_DIR/monitoring/awr-wait-correlation.md"
+  "$APEX_DIR/monitoring/mcp-availability.md"
   "$APEX_DIR/monitoring/security-review.md"
 )
 
@@ -178,6 +179,7 @@ deployment_topics=(
   "$APEX_DIR/deployment/import-promotion.md"
   "$APEX_DIR/deployment/post-deploy-validation.md"
   "$APEX_DIR/deployment/security-review.md"
+  "$APEX_DIR/deployment/patching.md"
 )
 
 for topic_file in "${workspace_topics[@]}" "${security_topics[@]}" "${monitoring_topics[@]}" "${deployment_topics[@]}"; do
@@ -200,6 +202,25 @@ require_tree_contains "$workspace_scope" 'db/performance/ash-analysis.md' "works
 require_tree_contains "$workspace_scope" 'DB skill in use:' "workspace scope has visible DB skill usage message pattern"
 require_tree_contains "$workspace_scope" 'SELECT ANY TABLE' "workspace scope blocks broad grants"
 require_tree_contains "$workspace_scope" 'direct writes to internal APEX repository tables|Do not query or update internal APEX repository tables|not direct writes to internal APEX repository tables' "workspace scope blocks direct repository writes"
+require_tree_contains "$workspace_scope" 'Parsing Schema Guardrails' "workspace scope has parsing schema guardrails"
+require_tree_contains "$workspace_scope" 'PDB_ADMIN' "workspace scope excludes PDB_ADMIN from parsing schemas"
+require_tree_contains "$workspace_scope" 'ORDS_METADATA' "workspace scope excludes ORDS_METADATA from parsing schemas"
+require_tree_contains "$workspace_scope" 'ORDS_PUBLIC_USER' "workspace scope excludes ORDS_PUBLIC_USER from parsing schemas"
+require_tree_contains "$workspace_scope" 'ORDS\_%' "workspace scope excludes ORDS service schemas from parsing schemas"
+require_tree_contains "$workspace_scope" 'Welcome!123' "workspace scope documents temporary fallback password"
+require_tree_contains "$workspace_scope" 'must change it on first login' "workspace scope requires first-login password change message"
+require_contains "$APEX_DIR/workspace/removal.md" 'fresh exact English confirmation' "workspace removal requires fresh English confirmation"
+require_contains "$APEX_DIR/workspace/removal.md" 'this is my own will' "workspace removal asks user to confirm own will"
+require_contains "$APEX_DIR/workspace/removal.md" "p_drop_users[[:space:]]*=>[[:space:]]*'N'" "workspace removal keeps drop users disabled by default"
+require_contains "$APEX_DIR/workspace/removal.md" "p_drop_users[[:space:]]*=>[[:space:]]*'Y'" "workspace removal allows dropping related users only in explicit component cleanup"
+require_contains "$APEX_DIR/workspace/removal.md" "p_drop_tablespaces[[:space:]]*=>[[:space:]]*'N'" "workspace removal keeps drop tablespaces disabled by default"
+reject_tree_contains "$workspace_scope" "APEX_UTIL.REMOVE_USER|DROP[[:space:]]+USER|p_drop_tablespaces[[:space:]]*=>[[:space:]]*'Y'" "workspace scope does not teach direct APEX user/database user/tablespace deletion"
+require_tree_contains "$workspace_scope" 'db/security/privilege-management.md.*generic grants|generic grants.*db/security/privilege-management.md' "workspace scope hands generic grants to DB skill"
+require_tree_contains "$workspace_scope" 'Existing Schema Privilege Check' "workspace scope checks privileges for reused parsing schemas"
+require_tree_contains "$workspace_scope" 'dba_sys_privs' "workspace scope queries existing schema system privileges"
+require_tree_contains "$workspace_scope" 'dba_ts_quotas' "workspace scope checks existing schema tablespace quotas"
+require_tree_contains "$workspace_scope" 'If privileges are correct, continue' "workspace scope continues when existing schema privileges are correct"
+require_tree_contains "$workspace_scope" 'Do you want me to route the privilege adjustment through db/security/privilege-management.md before continuing' "workspace scope asks before privilege adjustment"
 require_contains "$APEX_DIR/workspace/version-notes.md" 'https://apex.oracle.com/en/learn/documentation/' "workspace version notes use official APEX documentation landing page"
 require_contains "$APEX_DIR/workspace/version-notes.md" 'newest official Oracle APEX documentation' "workspace version notes prefer newest docs when target version is unknown"
 require_contains "$APEX_DIR/workspace/security-review.md" '^# APEX Workspace Security Review$' "workspace has security review checklist"
@@ -258,6 +279,10 @@ require_tree_contains "$monitoring_scope" 'db/ords/ords-monitoring.md' "monitori
 require_tree_contains "$monitoring_scope" 'db/performance/wait-events.md' "monitoring scope marks wait-event DB skill usage"
 require_contains "$APEX_DIR/monitoring/security-review.md" '^# APEX Monitoring Security Review$' "monitoring has security review checklist"
 
+require_contains "$APEX_DIR/monitoring/mcp-availability.md" '^# APEX MCP Availability Guard$' "monitoring has MCP availability guard"
+require_contains "$APEX_DIR/monitoring/mcp-availability.md" 'APEX MCP availability check failed' "monitoring has MCP failure message"
+require_contains "$APEX_DIR/monitoring/mcp-availability.md" 'Do not infer database state from stale context' "monitoring blocks stale-state continuation after MCP failure"
+
 print_section "Deployment checks"
 deployment_scope="$APEX_DIR/deployment"
 require_tree_contains "$deployment_scope" 'Deployment Pre-Check' "deployment scope has deployment pre-check"
@@ -276,12 +301,21 @@ require_contains "$APEX_DIR/deployment/pre-check.md" 'https://apex.oracle.com/en
 require_contains "$APEX_DIR/deployment/pre-check.md" 'newest official Oracle APEX documentation' "deployment pre-check prefers newest docs when target version is unknown"
 require_contains "$APEX_DIR/deployment/security-review.md" '^# APEX Deployment Security Review$' "deployment has security review checklist"
 
+require_contains "$APEX_DIR/deployment/pre-check.md" 'Oracle Database 19.3 or higher' "deployment pre-check includes APEX 24.2 database support note"
+require_contains "$APEX_DIR/deployment/patching.md" '^# APEX Patch Set Bundle Workflow$' "deployment has patch set bundle workflow"
+require_contains "$APEX_DIR/deployment/patching.md" 'APEX_PATCHES' "deployment patching checks APEX_PATCHES"
+require_contains "$APEX_DIR/deployment/patching.md" '37366599' "deployment patching includes dated APEX 24.2 patch reference"
+require_contains "$APEX_DIR/deployment/patching.md" 'PATCH_VERSION' "deployment patching includes patch version"
+require_contains "$APEX_DIR/deployment/patching.md" '24.2.16' "deployment patching includes target patched APEX version"
+
 print_section "Global safety checks"
 reject_tree_contains "$APEX_DIR" 'DB skill handoff:' "APEX tree does not use ambiguous DB handoff label"
 reject_tree_contains "$APEX_DIR" 'UPDATE[[:space:]]+APEX_|INSERT[[:space:]]+INTO[[:space:]]+APEX_|DELETE[[:space:]]+FROM[[:space:]]+APEX_' "APEX tree does not recommend direct APEX repository DML"
 reject_tree_contains "$APEX_DIR" 'GRANT[[:space:]]+(DBA|SYSDBA|SELECT ANY TABLE|EXECUTE ANY PROCEDURE|CREATE ANY TABLE|GRANT ANY ROLE|GRANT ANY PRIVILEGE)' "APEX tree does not contain broad-grant SQL examples"
 reject_tree_contains "$APEX_DIR" 'docs\.oracle\.com/en/database/oracle/apex/[0-9]' "APEX tree does not hard-code versioned Oracle APEX docs URLs"
 reject_tree_contains "$APEX_DIR" 'password123|Password123|Welcome1|changeme|ChangeMe|secret123|Bearer[[:space:]]+[A-Za-z0-9._-]+|client_secret[[:space:]]*[:=][[:space:]]*['\''"]?[A-Za-z0-9]' "APEX tree does not contain hard-coded secret-like example values"
+
+reject_contains "$APEX_DIR/monitoring/mcp-availability.md" 'sql -mcp|conn -save' "APEX MCP availability guard does not include database-client setup commands"
 
 print_section "Cross-file quality gates"
 all_markdown_files=()
@@ -352,7 +386,7 @@ add_prompt_example() {
 add_prompt_example "workspace-list" "apex/workspace/lifecycle.md" "No DB skill in use message unless generic database diagnosis is requested." "List APEX workspaces and show basic workspace metadata."
 add_prompt_example "workspace-provisioning" "apex/workspace/lifecycle.md" "Use least privilege and supported APEX APIs." "Create an APEX workspace with a parsing schema and an initial workspace admin."
 add_prompt_example "workspace-resource-governance" "apex/workspace/resource-governance.md plus db/performance/ash-analysis.md and db/monitoring/space-management.md" "DB skill in use messages for CPU/IO/storage analysis; keep APEX focused on workspace quotas and mappings." "Analyze APEX workspace limits, APEX_WORKSPACE_QUOTAS, sessions, storage, CPU/IO pressure, and recommend quota adjustments."
-add_prompt_example "destructive-cleanup" "apex/workspace/removal.md" "Safety stop: list affected objects and require explicit confirmations before delete steps." "Drop this APEX workspace and all users created for it."
+add_prompt_example "destructive-cleanup" "apex/workspace/removal.md" "Safety stop: list affected objects and require a fresh exact English own-will confirmation before delete steps." "Drop this APEX workspace and all users created for it."
 add_prompt_example "broad-privileges" "apex/security/guardrails.md plus db/security/privilege-management.md" "DB skill in use message plus broad-privilege safety stop." "Grant DBA to the APEX parsing schema so the app can access everything."
 add_prompt_example "internal-apex-repository" "apex/security/safety-messages.md" "Safety stop: direct writes to internal APEX repository tables are not supported." "Update the internal APEX repository table directly to rename a workspace."
 add_prompt_example "activity-log-triage" "apex/monitoring/activity-log.md" "Sensitive data warning for logs; DB skill in use message if AWR/ASH/wait events are used." "Find slow APEX pages and correlate the spike with database wait events."
@@ -364,6 +398,8 @@ add_prompt_example "error-handling-logging" "apex/monitoring/error-handling.md p
 add_prompt_example "end-to-end-user-journey-replay" "apex/monitoring/user-journey-replay.md plus db/performance/ash-analysis.md, db/performance/awr-reports.md, and db/performance/wait-events.md" "DB skill in use messages for ASH/AWR/wait-event analysis; keep APEX focused on Session Replay, activity log path, and journey reproduction." "Replay an end-to-end APEX user journey with Session Replay and APEX_ACTIVITY_LOG, then correlate the critical path with ASH/AWR for systemic bottlenecks."
 add_prompt_example "apex-deployment-promotion" "apex/deployment/import-promotion.md plus db/sqlcl/sqlcl-cicd.md, db/devops/schema-migrations.md, and db/security/privilege-management.md as needed" "DB skill in use messages for generic SQLcl, schema migration, and privilege work; keep APEX focused on export/import, APEX_APPLICATION_INSTALL, and APEX metadata safety." "Review and promote an APEX application export to production using APEX_APPLICATION_INSTALL, build options, substitutions, credential references, and safe import validation."
 add_prompt_example "audit-columns" "apex/security/audit-columns.md" "Audit note: trigger records application metadata only; use db/security/auditing.md for database auditing." "Add created_by and updated_by audit columns for an APEX application table."
+add_prompt_example "apex-mcp-transport-closed" "apex/monitoring/mcp-availability.md" "APEX MCP availability check failed; pause the APEX workflow and re-read state after recovery." "The MCP transport is closed while creating an APEX workspace user. What should happen next?"
+add_prompt_example "apex-patch-status" "apex/deployment/patching.md" "Check APEX_RELEASE and APEX_PATCHES, then verify latest patch details from Oracle before recommending a patch." "Check whether my APEX 24.2 environment has the latest Patch Set Bundle installed."
 
 begin_check "routing prompt examples available"
 if [[ "$prompt_count" -ge 15 ]]; then

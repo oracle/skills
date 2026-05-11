@@ -4,6 +4,20 @@ Use this topic for initial workspace administrators, developers, end users, and 
 
 Use `APEX_WORKSPACE_APEX_USERS` when you need supported workspace-user metadata for administrators, developers, and end users. Check column availability first on older or managed APEX environments.
 
+## Temporary Password Policy
+
+If the user provides an explicit temporary password or approved secret-handling method, use that.
+
+If the user does not provide a password for a newly created APEX workspace user in a demo or test workflow, use the temporary fallback password `Welcome!123` and always set `p_change_password_on_first_use => 'Y'`.
+
+After creating a user with the fallback password, tell the user:
+
+```text
+APEX user <USER_NAME> was created with the temporary password Welcome!123 and must change it on first login.
+```
+
+Do not use the fallback password silently. Do not use it for production or shared non-test environments unless the user explicitly approves it for that environment.
+
 ## Create Initial Workspace Admin
 
 Set the workspace security group ID before creating workspace-scoped users outside an APEX session.
@@ -18,14 +32,16 @@ BEGIN
     APEX_UTIL.CREATE_USER(
         p_user_name                    => :apex_user_name,
         p_email_address                => :email_address,
-        p_web_password                 => :temporary_password,
+        p_web_password                 => COALESCE(:temporary_password, 'Welcome!123'),
         p_developer_privs              => 'ADMIN:CREATE:DATA_LOADER:EDIT:HELP:MONITOR:SQL',
         p_change_password_on_first_use => 'Y');
+
+    COMMIT;
 END;
 /
 ```
 
-Do not include real passwords in skills, examples, logs, scripts, or chat output.
+Do not include real production passwords in skills, examples, logs, scripts, or chat output.
 
 ## Database-Username Builder Login
 

@@ -11,6 +11,27 @@ Before generating import SQL or deployment steps, identify:
 
 ## Version And Package Checks
 
+
+For APEX 24.2 installation or upgrade pre-checks, also identify:
+
+- Database version and whether the target is CDB/PDB.
+- Exact PDB where APEX is or will be installed.
+- Existing APEX version, if any.
+- ORDS version and deployment mode.
+- Whether APEX static files are served by ORDS local images, web server images, or Oracle CDN.
+- Backup and rollback plan.
+- Maintenance window and affected applications/workspaces.
+
+As of May 11, 2026, Oracle's APEX downloads page states that APEX 24.2 is supported through Oracle Support Services on Oracle Database 19.3 or higher with a valid Oracle Database Technical Support agreement. Still verify the current installation guide before acting, because managed services, patch levels, and support policies can change.
+
+For fully managed Autonomous Database or APEX Application Development Service, do not plan a manual APEX installation unless Oracle documentation for that service explicitly allows it. For self-managed environments, follow the APEX installation guide for the exact target version.
+
+Before installation or upgrade, confirm:
+
+- A tested database/PDB backup or restore point exists.
+- Static files and image prefix handling are planned before the maintenance window.
+- ORDS can be stopped, reloaded, or placed behind maintenance according to local policy.
+
 Before relying on an APEX API signature, check the current official Oracle APEX documentation landing page and then use the docs for the target installed version:
 
 ```text
