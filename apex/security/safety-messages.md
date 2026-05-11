@@ -23,6 +23,10 @@ Safety stop: this operation is destructive. I will first list affected workspace
 ```
 
 ```text
+Recovery check: this APEX provisioning workflow was interrupted. I will inventory the planned workspace, schema mappings, APEX users, database users, application tables, and APEX applications one by one, then ask whether you want to roll back only the listed artifacts.
+```
+
+```text
 Sensitive data warning: APEX logs, debug output, request values, Team Development files, and exports may contain secrets or personal data. I will avoid selecting payload columns unless you explicitly need them.
 ```
 
@@ -42,4 +46,4 @@ Version check: this APEX view or package signature can vary by release. I will i
 APEX MCP availability check failed: the MCP transport is closed, so I cannot safely verify or change APEX state from here. I will pause the APEX workflow until the MCP tool channel is available again.
 ```
 
-Emit these messages before continuing when the request involves broad grants, direct internal repository writes, destructive changes, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.
+Emit these messages before continuing when the request involves broad grants, direct internal repository writes, destructive changes, interrupted provisioning recovery, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.

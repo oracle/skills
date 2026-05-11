@@ -37,7 +37,9 @@ After the user says MCP is available again:
 1. Repeat the MCP availability check.
 2. Reconnect or confirm the active database connection.
 3. Re-read APEX state from the database.
-4. Continue only from freshly verified state.
+4. If an APEX provisioning workflow may have been interrupted after create steps, inventory each planned artifact individually with `apex/workspace/lifecycle.md#provisioning-recovery-after-interruption`.
+5. Ask whether the user wants to roll back the listed artifacts before continuing or retrying.
+6. Continue only from freshly verified state.
 
 Never continue a workspace create, user create, patch check, or removal workflow from pre-failure assumptions.
 
@@ -73,6 +75,12 @@ SELECT workspace_name,
 FROM apex_workspace_apex_users
 WHERE workspace_name = :workspace_name
   AND user_name = :user_name;
+```
+
+For interrupted workspace/app provisioning, use the lifecycle recovery checklist to re-read the planned workspace, schema mappings, APEX users, database users, application tables, and APEX applications one by one before asking:
+
+```text
+I found the following artifacts from the interrupted APEX provisioning workflow: <ARTIFACT_LIST>. Do you want me to roll back the listed artifacts by removing only these objects?
 ```
 
 ## DB Skill Usage

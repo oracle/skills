@@ -7,7 +7,9 @@ Use this topic for workspace inventory, pre-flight checks, create workspace, and
 - APEX version, because package signatures differ across APEX releases.
 - Target workspace name and whether a deterministic workspace ID is required.
 - Primary parsing schema and any additional schemas.
-- Whether database schemas already exist or must be created.
+- Always ask whether the workspace should use a new database user/schema or an existing database user/schema before creating the workspace. Do not infer this from the requested workspace name.
+- If a new database user/schema is requested, route generic user creation and grants through the relevant DB skills before calling `APEX_INSTANCE_ADMIN.ADD_WORKSPACE`.
+- If an existing database user/schema is requested, verify it with `apex/workspace/schema-mapping.md` before workspace creation.
 - Whether the first user should be an APEX workspace administrator, developer, or end user.
 - Authentication model for the development environment.
 - Confirm parsing-schema candidates with `apex/workspace/schema-mapping.md`; do not suggest ORDS schemas, `PDB_ADMIN`, Oracle-maintained accounts, APEX platform schemas, or DBA/runtime service accounts as parsing schemas.
@@ -65,5 +67,85 @@ Check `APEX_INSTANCE_ADMIN.ADD_WORKSPACE` arguments with `ALL_ARGUMENTS` before 
 ## Verify
 
 After creation, verify workspace, schema mappings, APEX users, and expected privileges through supported APEX views. Do not query or update internal APEX repository tables directly.
+
+## Provisioning Recovery After Interruption
+
+If a workspace provisioning workflow is interrupted, aborted, or loses MCP/database connectivity after any create step may have run, do not continue or retry blindly. Reconnect first, then inventory each planned artifact individually before deciding what to do next.
+
+Check only the objects that were part of the current provisioning plan:
+
+```sql
+SELECT workspace_id,
+       workspace,
+       schemas,
+       applications,
+       apex_developers,
+       apex_workspace_administrators
+FROM apex_workspaces
+WHERE workspace = UPPER(TRIM(:workspace_name));
+```
+
+```sql
+SELECT workspace_name,
+       schema
+FROM apex_workspace_schemas
+WHERE workspace_name = UPPER(TRIM(:workspace_name))
+ORDER BY schema;
+```
+
+```sql
+SELECT workspace_name,
+       user_name,
+       email,
+       is_admin,
+       is_application_developer,
+       account_locked
+FROM apex_workspace_apex_users
+WHERE workspace_name = UPPER(TRIM(:workspace_name))
+ORDER BY user_name;
+```
+
+```sql
+SELECT username,
+       account_status,
+       oracle_maintained
+FROM dba_users
+WHERE username IN (
+    UPPER(TRIM(:primary_schema)),
+    UPPER(TRIM(:database_login_user))
+)
+ORDER BY username;
+```
+
+```sql
+SELECT owner,
+       object_name,
+       object_type,
+       status
+FROM all_objects
+WHERE owner = UPPER(TRIM(:primary_schema))
+  AND object_name IN ('EMP')
+ORDER BY object_type, object_name;
+```
+
+```sql
+SELECT workspace,
+       application_id,
+       application_name,
+       alias
+FROM apex_applications
+WHERE workspace = UPPER(TRIM(:workspace_name))
+ORDER BY application_id;
+```
+
+Report the recovered inventory in concrete terms: created, missing, or unknown for each planned workspace, schema mapping, APEX user, database user, application table, and APEX application.
+
+Then ask before cleanup:
+
+```text
+I found the following artifacts from the interrupted APEX provisioning workflow: <ARTIFACT_LIST>. Do you want me to roll back the listed artifacts by removing only these objects?
+```
+
+If the user wants cleanup, route the destructive part through `apex/workspace/removal.md` and require its exact English confirmation for the current cleanup scope. If the user wants to continue instead, proceed only from the freshly verified inventory and skip create steps for objects that already exist.
 
 DB skill in use: `db/security/privilege-management.md` for generic schema/user privilege design. The APEX workspace skill is being used for workspace and parsing-schema context.
