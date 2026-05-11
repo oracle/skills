@@ -80,7 +80,7 @@ WHERE username = UPPER(:schema_name)
 ORDER BY tablespace_name;
 ```
 
-Evaluate the result against the application need. Typical APEX application parsing schemas may need narrowly scoped object-creation privileges such as `CREATE TABLE`, `CREATE VIEW`, `CREATE SEQUENCE`, `CREATE PROCEDURE`, `CREATE TRIGGER`, `CREATE TYPE`, and quota on the application tablespace. They should not receive broad administrative grants such as `DBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, or `GRANT ANY PRIVILEGE` for ordinary workspace creation.
+Evaluate the result against the application need. Typical APEX application parsing schemas may need narrowly scoped object-creation privileges such as `CREATE TABLE`, `CREATE VIEW`, `CREATE SEQUENCE`, `CREATE PROCEDURE`, `CREATE TRIGGER`, `CREATE TYPE`, and quota on the application tablespace. If Oracle AI Database 26ai is detected and the APEX application needs MLE, add `CREATE MLE` and `EXECUTE DYNAMIC MLE` to the expected privilege profile. They should not receive broad administrative grants such as `DBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, or `GRANT ANY PRIVILEGE` for ordinary workspace creation.
 
 If required privileges are missing or existing privileges are too broad, stop before mapping the schema and ask:
 
