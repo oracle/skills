@@ -1,0 +1,358 @@
+#!/usr/bin/env node
+
+function usage() {
+  return `Usage:
+  node apex/admin/tools/workspace-admin-plan.mjs --action <inventory|create|verify|recover|remove> [--workspace <name>] [--schema <name>] [--user <name>] [--format markdown|json]
+
+Purpose:
+  Generate APEX-only workspace administration checklists and supported APEX view/API snippets.
+  This tool does not create database users, grant privileges, run SQLcl, or perform database administration.
+`;
+}
+
+function readOption(args, name, fallback = "") {
+  const index = args.indexOf(name);
+  if (index === -1 || index + 1 >= args.length) {
+    return fallback;
+  }
+  return args[index + 1];
+}
+
+function hasFlag(args, name) {
+  return args.includes(name);
+}
+
+function bindValue(value, placeholder) {
+  return value ? value.toUpperCase() : placeholder;
+}
+
+const APEX_VERSION_GATE_SNIPPET = {
+  label: "Supported APEX version gate",
+  sql: `SELECT version_no,
+       CASE
+           WHEN REGEXP_LIKE(version_no, '^(26\\.1|24\\.2|24\\.1|23\\.2)(\\.|$)')
+           THEN 'SUPPORTED'
+           ELSE 'UNSUPPORTED'
+       END AS apex_admin_skill_support
+FROM apex_release;`
+};
+
+function inventoryPlan(input) {
+  return {
+    title: "APEX Workspace Inventory",
+    cautions: [
+      "Run the supported APEX version gate first; stop if the installed APEX release is unsupported by this skill.",
+      "Use supported APEX views only.",
+      "Inspect view columns in the target APEX version before relying on version-specific columns.",
+      "Do not query or update internal APEX repository tables."
+    ],
+    checklist: [
+      "Identify the target workspace and workspace ID.",
+      "List mapped parsing schemas.",
+      "List workspace administrators and developers.",
+      "List applications in the workspace.",
+      "Record any missing or unknown evidence explicitly."
+    ],
+    snippets: [
+      APEX_VERSION_GATE_SNIPPET,
+      {
+        label: "View column check",
+        sql: `SELECT table_name,
+       column_id,
+       column_name,
+       data_type
+FROM all_tab_columns
+WHERE table_name IN (
+          'APEX_WORKSPACES',
+          'APEX_WORKSPACE_SCHEMAS',
+          'APEX_WORKSPACE_APEX_USERS',
+          'APEX_APPLICATIONS')
+ORDER BY table_name,
+         column_id;`
+      },
+      {
+        label: "Workspace inventory",
+        sql: `SELECT workspace_id,
+       workspace,
+       workspace_display_name,
+       path_prefix,
+       schemas,
+       applications,
+       apex_developers,
+       apex_workspace_administrators,
+       created_on
+FROM apex_workspaces
+WHERE (:workspace_name IS NULL OR workspace = UPPER(TRIM(:workspace_name)))
+ORDER BY workspace;`
+      },
+      {
+        label: "Workspace schema mappings",
+        sql: `SELECT workspace_name,
+       schema
+FROM apex_workspace_schemas
+WHERE (:workspace_name IS NULL OR workspace_name = UPPER(TRIM(:workspace_name)))
+ORDER BY workspace_name,
+         schema;`
+      },
+      {
+        label: "Workspace users",
+        sql: `SELECT workspace_name,
+       user_name,
+       email,
+       is_admin,
+       is_application_developer,
+       account_locked
+FROM apex_workspace_apex_users
+WHERE (:workspace_name IS NULL OR workspace_name = UPPER(TRIM(:workspace_name)))
+ORDER BY workspace_name,
+         user_name;`
+      },
+      {
+        label: "Workspace applications",
+        sql: `SELECT workspace,
+       application_id,
+       application_name,
+       alias
+FROM apex_applications
+WHERE (:workspace_name IS NULL OR workspace = UPPER(TRIM(:workspace_name)))
+ORDER BY workspace,
+         application_id;`
+      }
+    ],
+    binds: {
+      workspace_name: bindValue(input.workspace, ":workspace_name")
+    }
+  };
+}
+
+function createPlan(input) {
+  return {
+    title: "APEX Workspace Create Plan",
+    cautions: [
+      "This plan covers only the APEX workspace step.",
+      "Run the supported APEX version gate first; stop if the installed APEX release is unsupported by this skill.",
+      "Use a dedicated non-SYS/SYSTEM database account granted APEX_ADMINISTRATOR_ROLE for routine APEX workspace automation.",
+      "Do not connect MCP or routine automation as SYS, SYSTEM, or SYSDBA for this workflow.",
+      "Database user creation, grants, tablespaces, and quotas belong outside this APEX admin tool.",
+      "Check APEX_INSTANCE_ADMIN.ADD_WORKSPACE arguments in the installed APEX version before use."
+    ],
+    checklist: [
+      "Confirm the installed APEX version is supported by this skill.",
+      "Confirm exact workspace name.",
+      "Confirm the active automation account is not SYS, SYSTEM, or SYSDBA.",
+      "Confirm primary parsing schema and whether it already exists.",
+      "Verify the schema mapping candidate is not an APEX platform, ORDS, DBA, or shared runtime account.",
+      "Confirm whether a deterministic workspace ID is required.",
+      "Create the workspace with supported APEX_INSTANCE_ADMIN API.",
+      "Verify the workspace through supported APEX views."
+    ],
+    snippets: [
+      {
+        label: "Connection identity guard",
+        sql: `SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') AS session_user,
+       SYS_CONTEXT('USERENV', 'CURRENT_USER') AS current_user,
+       SYS_CONTEXT('USERENV', 'ISDBA') AS is_dba
+FROM dual;`
+      },
+      APEX_VERSION_GATE_SNIPPET,
+      {
+        label: "API argument check",
+        sql: `SELECT argument_name,
+       position,
+       data_type,
+       defaulted
+FROM all_arguments
+WHERE package_name = 'APEX_INSTANCE_ADMIN'
+  AND object_name = 'ADD_WORKSPACE'
+ORDER BY overload,
+         sequence;`
+      },
+      {
+        label: "Create workspace",
+        sql: `BEGIN
+    APEX_INSTANCE_ADMIN.ADD_WORKSPACE(
+        p_workspace_id   => :workspace_id,
+        p_workspace      => :workspace_name,
+        p_primary_schema => :primary_schema);
+END;
+/`
+      },
+      ...inventoryPlan(input).snippets.slice(1, 3)
+    ],
+    binds: {
+      workspace_name: bindValue(input.workspace, ":workspace_name"),
+      primary_schema: bindValue(input.schema, ":primary_schema"),
+      workspace_id: ":workspace_id"
+    }
+  };
+}
+
+function verifyPlan(input) {
+  return {
+    title: "APEX Workspace Verification",
+    cautions: [
+      "Verification should use supported APEX views and APIs.",
+      "Do not treat session state or client-side checks as a security boundary."
+    ],
+    checklist: [
+      "Verify workspace row exists.",
+      "Verify schema mappings match the intended parsing schemas.",
+      "Verify the expected APEX workspace users and roles.",
+      "Verify expected applications are in the workspace.",
+      "Record unexpected extra mappings, missing users, or locked accounts."
+    ],
+    snippets: inventoryPlan(input).snippets,
+    binds: {
+      workspace_name: bindValue(input.workspace, ":workspace_name"),
+      primary_schema: bindValue(input.schema, ":primary_schema"),
+      user_name: bindValue(input.user, ":user_name")
+    }
+  };
+}
+
+function recoverPlan(input) {
+  return {
+    title: "Interrupted APEX Provisioning Recovery",
+    cautions: [
+      "Do not retry blindly after an interrupted APEX provisioning workflow.",
+      "Inventory planned artifacts first and classify each as created, missing, or unknown.",
+      "Use the destructive removal workflow only after explicit confirmation."
+    ],
+    checklist: [
+      "Reconnect or re-establish a fresh APEX evidence source.",
+      "Inventory the planned workspace.",
+      "Inventory mapped parsing schemas.",
+      "Inventory planned APEX workspace users.",
+      "Inventory planned APEX applications.",
+      "Ask whether to continue from verified state or remove only the listed artifacts."
+    ],
+    snippets: inventoryPlan(input).snippets,
+    binds: {
+      workspace_name: bindValue(input.workspace, ":workspace_name"),
+      primary_schema: bindValue(input.schema, ":primary_schema"),
+      user_name: bindValue(input.user, ":user_name")
+    }
+  };
+}
+
+function removePlan(input) {
+  return {
+    title: "APEX Workspace Removal Pre-Check",
+    cautions: [
+      "Removal is destructive and requires a fresh exact confirmation for the current scope.",
+      "Default to keeping related database users and tablespaces.",
+      "Database user and tablespace deletion is outside this APEX admin tool."
+    ],
+    checklist: [
+      "List the exact workspace to remove.",
+      "List mapped schemas and applications for user review.",
+      "Confirm whether only the APEX workspace should be removed.",
+      "Require the configured confirmation phrase from the removal reference before generating removal steps.",
+      "Verify removal through supported APEX views."
+    ],
+    snippets: [
+      ...inventoryPlan(input).snippets.slice(1),
+      {
+        label: "APEX workspace removal shape",
+        sql: `BEGIN
+    APEX_INSTANCE_ADMIN.REMOVE_WORKSPACE(
+        p_workspace         => :workspace_name,
+        p_drop_users        => 'N',
+        p_drop_tablespaces  => 'N');
+END;
+/`
+      }
+    ],
+    binds: {
+      workspace_name: bindValue(input.workspace, ":workspace_name")
+    }
+  };
+}
+
+function buildPlan(input) {
+  switch (input.action) {
+    case "inventory":
+      return inventoryPlan(input);
+    case "create":
+      return createPlan(input);
+    case "verify":
+      return verifyPlan(input);
+    case "recover":
+      return recoverPlan(input);
+    case "remove":
+      return removePlan(input);
+    default:
+      throw new Error("--action must be one of inventory, create, verify, recover, remove.");
+  }
+}
+
+function renderMarkdown(plan) {
+  const lines = [];
+  lines.push(`# ${plan.title}`);
+  lines.push("");
+  lines.push("APEX-only workspace administration aid. Review snippets before use in the target APEX version.");
+  lines.push("");
+  lines.push("## Cautions");
+  lines.push("");
+  for (const caution of plan.cautions) {
+    lines.push(`- ${caution}`);
+  }
+  lines.push("");
+  lines.push("## Checklist");
+  lines.push("");
+  for (const item of plan.checklist) {
+    lines.push(`- ${item}`);
+  }
+  lines.push("");
+  lines.push("## Binds");
+  lines.push("");
+  for (const [name, value] of Object.entries(plan.binds)) {
+    lines.push(`- ${name}: ${value}`);
+  }
+  lines.push("");
+  lines.push("## Snippets");
+  for (const snippet of plan.snippets) {
+    lines.push("");
+    lines.push(`### ${snippet.label}`);
+    lines.push("");
+    lines.push("```sql");
+    lines.push(snippet.sql);
+    lines.push("```");
+  }
+  lines.push("");
+  return lines.join("\n");
+}
+
+function main() {
+  const args = process.argv.slice(2);
+  if (hasFlag(args, "--help") || args.length === 0) {
+    console.log(usage());
+    return;
+  }
+
+  const input = {
+    action: readOption(args, "--action"),
+    workspace: readOption(args, "--workspace"),
+    schema: readOption(args, "--schema"),
+    user: readOption(args, "--user")
+  };
+  const format = readOption(args, "--format", "markdown").toLowerCase();
+
+  if (!["markdown", "json"].includes(format)) {
+    throw new Error("--format must be markdown or json.");
+  }
+
+  const plan = buildPlan(input);
+  if (format === "json") {
+    process.stdout.write(JSON.stringify(plan, null, 2) + "\n");
+  } else {
+    process.stdout.write(renderMarkdown(plan));
+  }
+}
+
+try {
+  main();
+} catch (error) {
+  console.error(`workspace-admin-plan: ${error.message}`);
+  process.exit(1);
+}
