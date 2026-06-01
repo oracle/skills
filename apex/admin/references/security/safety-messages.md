@@ -11,7 +11,11 @@ APEXlang skill in use: apex/apexlang/SKILL.md for APEX application generation. T
 ```
 
 ```text
-Connection confirmation: I am connected as SESSION_USER=<SESSION_USER>, CURRENT_USER=<CURRENT_USER>, ISDBA=<ISDBA>. Do you want me to continue the APEX application create/import workflow with this connection user?
+Connection confirmation: I am connected as SESSION_USER=<SESSION_USER>, CURRENT_USER=<CURRENT_USER>, ISDBA=<ISDBA>. This APEX admin workflow requires the intended APEX admin identity. Confirm this connection is the APEX admin identity for the target workspace/import before I continue.
+```
+
+```text
+DB skill handoff: this evidence or action belongs to <DB_SKILL_PATH>. I will use that DB skill's required connection/user for the DB work and keep the APEX admin identity only for APEX workspace, application, page, session, request, and time-window context.
 ```
 
 ```text
@@ -58,4 +62,4 @@ Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports o
 APEX MCP availability check failed: the MCP transport is closed, so I cannot safely verify or change APEX state from here. I will pause the APEX workflow until the MCP tool channel is available again.
 ```
 
-Emit these messages before continuing when the request involves APEX application generation handoff, MCP-backed application create/import connection confirmation, unsupported APEX versions, broad grants, direct internal repository writes, destructive changes, interrupted provisioning recovery, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.
+Emit these messages before continuing when the request involves APEX application generation handoff, MCP-backed application create/import connection confirmation, DB-skill handoff, unsupported APEX versions, broad grants, direct internal repository writes, destructive changes, interrupted provisioning recovery, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.

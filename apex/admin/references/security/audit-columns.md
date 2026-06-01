@@ -4,6 +4,8 @@ Use this pattern for APEX-owned application tables when the application needs si
 
 DB skill in use: `db/security/auditing.md` for generic database auditing, Unified Auditing, FGA, compliance audit policies, or tamper-resistant audit design. The APEX security skill is being used for APEX-owned application-table audit-column context.
 
+After this handoff, use the DB auditing skill's required connection/user for audit policies, FGA, Unified Auditing, history tables, Flashback Data Archive, or tamper-resistant audit design. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
+
 ## Columns
 
 For new APEX application tables, prefer consistent audit columns:

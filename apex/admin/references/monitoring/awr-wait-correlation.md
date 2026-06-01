@@ -2,11 +2,21 @@
 
 Use this reference only after APEX activity has identified the workspace, application, page, and time window.
 
+For broad APEX application performance analysis, load `apex-performance-evidence.md` first to ask for available APEX, browser, AWR/ASH, SQL Monitor, and ORDS evidence and the output path for customer-specific results.
+
 ## Scope
 
 APEX activity chooses the incident window. Generic AWR, ASH, and wait-event interpretation belongs to DB performance skills.
 
-DB skill in use: `db/performance/wait-events.md`, `db/performance/ash-analysis.md`, or `db/performance/awr-reports.md` for generic database wait-event, ASH, and AWR interpretation. The APEX monitoring skill is being used for choosing the APEX time window and correlating it with database symptoms.
+If the user attaches or references an AWR report, ASH extract, wait-event output, SQL Monitor report, execution plan, `V$`/`DBA_HIST` output, or ORDS pool/runtime diagnostics, stop before interpreting it and ask whether to switch to the relevant DB skill. Continue only after the user confirms. Use the selected DB skill's required connection/user for any live DB follow-up; do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
+
+Use this handoff only after confirmation:
+
+```text
+DB skill in use: db/performance/awr-reports.md, db/performance/ash-analysis.md, or db/performance/wait-events.md for generic database performance interpretation. The APEX monitoring skill is being used for choosing the APEX workspace, application, page, session, request, and time window.
+```
+
+After this handoff, use a diagnostics/performance account suitable for AWR, ASH, `DBA_HIST`, `V$`, SQL Monitor, or execution-plan evidence according to the selected DB skill.
 
 ## Historical Wait Cross-Check
 

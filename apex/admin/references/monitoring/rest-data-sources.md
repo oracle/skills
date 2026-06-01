@@ -65,4 +65,6 @@ Map symptoms back to APEX pages and components with `APEX_WORKSPACE_ACTIVITY_LOG
 
 DB skill in use: `db/ords/ords-monitoring.md` for generic ORDS monitoring and request/pool troubleshooting. DB skill in use: `db/performance/ash-analysis.md` and `db/performance/wait-events.md` for `DBA_HIST_ACTIVE_SESS_HISTORY`, `V$ACTIVE_SESSION_HISTORY`, wait-class, and network-wait interpretation. The APEX monitoring skill is being used for REST Data Source metadata, APEX webservice logs, and component impact.
 
+After a DB/ORDS-skill handoff, use the selected skill's required connection/user, such as an ORDS/runtime administration identity for ORDS pool diagnostics or a diagnostics/performance account for ASH, `DBA_HIST`, `V$`, and wait-event evidence. Do not reuse the APEX admin connection unless the DB/ORDS skill explicitly accepts it.
+
 ASH and `DBA_HIST_ACTIVE_SESS_HISTORY` require Diagnostics Pack in production.

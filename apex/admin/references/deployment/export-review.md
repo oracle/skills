@@ -4,6 +4,8 @@ APEX exports can contain sensitive metadata: URLs, authorization schemes, build 
 
 Use App Builder export or SQLcl APEX export workflows, but keep generic SQLcl syntax and CI/CD mechanics in the SQLcl DB skills.
 
+Before starting a file-only export review, tell the user that the review is static and does not require database access. For customer exports, ask whether the result should stay chat-only or be saved to a user-confirmed external output path. Do not write customer-specific export findings under `apex/admin/<customer_name>` or anywhere else in the skill tree. If the review later needs live validation, stop before connecting and apply the APEX Admin Identity Gate or DB-skill handoff as appropriate.
+
 ## Review Checklist
 
 - Application ID and alias are intentional for the target environment.
@@ -19,3 +21,5 @@ Use App Builder export or SQLcl APEX export workflows, but keep generic SQLcl sy
 ## DB Skill Usage
 
 DB skill in use: `db/security/encryption.md`, `db/security/network-security.md`, or `db/security/privilege-management.md` for generic secret storage, TLS/network, and privilege implementation. The APEX deployment skill is being used for APEX export and credential-reference review.
+
+After this handoff, use the selected DB security skill's required connection/user. Do not reuse the APEX admin connection for grants, network ACLs, encryption, masking, or database secret-store changes unless the DB skill explicitly accepts it.

@@ -76,3 +76,5 @@ Do not blindly call `DBMS_SCHEDULER.RUN_JOB`, `STOP_JOB`, `DISABLE`, `ENABLE`, o
 ## DB Skill Usage
 
 DB skill in use: `db/features/dbms-scheduler.md` for generic `DBMS_SCHEDULER` job design, attributes, logging levels, `max_failures`, `max_run_duration`, job classes, and operational management. The APEX monitoring skill is being used for APEX application, workspace, automation, and job-log context.
+
+After this handoff, use the DB skill's required connection/user for live `DBMS_SCHEDULER` inspection or job-state changes. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.

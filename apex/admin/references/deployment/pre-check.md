@@ -20,7 +20,7 @@ APEXlang skill in use: apex/apexlang/SKILL.md for APEX application generation. T
 
 Then load `apex/apexlang/SKILL.md` and follow the APEXlang application-generation workflow. Keep this deployment pre-check open only for target workspace, parsing schema, deployment identity, import/promotion, and post-deploy validation decisions.
 
-For MCP-backed app creation, materialization, validation, or import, verify the active database identity and ask whether to continue with the connected user before proceeding:
+For MCP-backed app creation, materialization, validation, or import, verify the active database identity before proceeding:
 
 ```sql
 SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') AS session_user,
@@ -30,10 +30,10 @@ FROM dual;
 ```
 
 ```text
-Connection confirmation: I am connected as SESSION_USER=<SESSION_USER>, CURRENT_USER=<CURRENT_USER>, ISDBA=<ISDBA>. Do you want me to continue the APEX application create/import workflow with this connection user?
+Connection confirmation: I am connected as SESSION_USER=<SESSION_USER>, CURRENT_USER=<CURRENT_USER>, ISDBA=<ISDBA>. This APEX admin workflow requires the intended APEX admin identity. Confirm this connection is the APEX admin identity for the target workspace/import before I continue.
 ```
 
-If `SESSION_USER` or `CURRENT_USER` is `SYS` or `SYSTEM`, or `IS_DBA` is `TRUE`, stop for change operations and ask for a least-privilege APEX admin or deployment connection.
+If `SESSION_USER` or `CURRENT_USER` is `SYS` or `SYSTEM`, `IS_DBA` is `TRUE`, or the user cannot confirm this is the APEX admin identity, stop and ask for the confirmed APEX admin connection. Do not use a generic deployment user inside this APEX admin skill; route generic database deployment work to the DB skill and use that skill's required connection/user.
 
 ## Version And Package Checks
 
@@ -134,3 +134,5 @@ ORDER BY table_name,
 DB skill in use: `db/sqlcl/sqlcl-basics.md`, `db/sqlcl/sqlcl-scripting.md`, or `db/sqlcl/sqlcl-cicd.md` for generic SQLcl commands and CI/CD mechanics. The APEX deployment skill is being used for APEX metadata and import semantics.
 
 DB skill in use: `db/security/privilege-management.md` for generic deployment-account, parsing-schema, and runtime-account privilege analysis. The APEX deployment skill is being used for APEX export/import context and environment mapping.
+
+After a DB-skill handoff, use the selected DB skill's required connection/user for SQLcl workflows, schema deployment, grants, deployment-account setup, and runtime-account privilege analysis. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.

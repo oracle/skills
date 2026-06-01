@@ -72,4 +72,6 @@ Red flags:
 
 DB skill in use: `db/sql-dev/sql-tuning.md` for generic SQL tuning. DB skill in use: `db/performance/index-strategy.md` for index design. DB skill in use: `db/monitoring/top-sql-queries.md` for SQL IDs and `DBA_HIST_SQLSTAT`. DB skill in use: `db/performance/awr-reports.md` for AWR interpretation. The APEX monitoring skill is being used for IR/IG behavior, report settings, request patterns, and APEX page context.
 
+After a DB-skill handoff, use the selected DB skill's required connection/user, such as a diagnostics/performance account for AWR, ASH, `DBA_HIST`, `V$`, SQL Monitor, or execution-plan evidence and a schema/object owner or scoped tuning identity when the DB tuning skill requires object-level inspection. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
+
 AWR, ASH, and `DBA_HIST_SQLSTAT` require Diagnostics Pack in production.

@@ -2,6 +2,8 @@
 
 Use this checklist after substantial APEX workspace or application-support changes.
 
+- APEX admin identity: every live MCP-backed APEX admin step used the confirmed APEX admin identity, not `SYS`, `SYSTEM`, `SYSDBA`, a parsing schema, workspace user, ORDS/APEX runtime account, generic deployment user, or unknown account.
+- DB handoff identity: every generic DB/security step used the selected DB skill's required connection/user rather than silently reusing the APEX admin connection.
 - Privileges: parsing schemas, workspace users, database-login users, and automation accounts have only the required rights.
 - Role boundaries: workspace administrator, developer, end user, parsing schema, runtime account, and DBA/admin roles are not mixed.
 - Secrets: no real passwords, web credentials, OAuth secrets, SMTP credentials, wallet passwords, or API tokens appear in scripts, exports, logs, examples, or chat output.

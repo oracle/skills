@@ -4,6 +4,10 @@ Use this reference for static APEX export review when the user asks whether an A
 
 This is APEX-only. Do not tune ORDS connection pools, SQLcl, database instance settings, indexes, wait events, or execution plans here. If the evidence points there, record a clear external handoff and keep the APEX finding separate.
 
+Before running this static export review or the export risk scan tool, tell the user that no database connection or live MCP database access is needed for this step. For customer exports, ask whether the result should stay chat-only or be saved to a user-confirmed external output path outside the skill tree.
+
+If the user provides only an APEX export for performance or runtime analysis, ask once whether they also have runtime evidence such as APEX Activity Log/Page Performance, APEX Debug, HAR/Network, AWR/ASH, SQL Monitor, or ORDS logs for the same case. If the user declines or no more files are available, continue with export-only analysis and state that runtime impact remains unverified without those sources.
+
 Version check: APEX export syntax and component attributes are version-specific. Read the export header first and treat missing attributes as version or component differences, not as proof that the behavior is absent.
 
 ## Export Header

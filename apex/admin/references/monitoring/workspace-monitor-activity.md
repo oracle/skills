@@ -37,7 +37,7 @@ Guardrails:
 
 ## Identity And Access
 
-Before MCP-backed monitoring queries, verify the active database identity and classify the work as read-only or change:
+Before MCP-backed monitoring queries, verify the active database identity:
 
 ```sql
 SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') AS session_user,
@@ -46,9 +46,9 @@ SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') AS session_user,
 FROM dual;
 ```
 
-For read-only report interpretation, do not block solely because the connection is privileged, but warn that a least-privilege APEX admin or read-only evidence account is preferred. Keep the work read-only.
+Continue only when the user confirms the connection is the intended APEX admin identity. If the connection is `SYS`, `SYSTEM`, `ISDBA = TRUE`, an app parsing schema, a workspace developer/end user, an ORDS/APEX runtime account, a generic deployment user, or unknown, stop and ask for the confirmed APEX admin connection. This applies to read-only APEX monitoring queries as well as changes.
 
-If the user asks to enable Debug, Trace Mode, purge activity, change retention, change schemas, grant privileges, create users, or alter quotas/tablespaces, reclassify the workflow as a change operation and load the relevant APEX admin or DB reference before proceeding.
+If the user asks to enable Debug, Trace Mode, purge activity, change retention, or change APEX schema mappings or users, keep the APEX steps under the confirmed APEX admin identity and load the relevant APEX admin reference before proceeding. If the request moves to grants, database users, quotas, tablespaces, AWR, ASH, `V$`, `DBA_HIST`, or ORDS runtime diagnostics, stop and route that portion to the DB skill with that skill's required connection/user.
 
 ## Supported View Discovery
 

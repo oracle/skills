@@ -4,6 +4,8 @@ Use this workflow when reviewing workspace limits, storage pressure, request cei
 
 DB skill in use: `db/performance/ash-analysis.md`, `db/performance/awr-reports.md`, `db/performance/wait-events.md`, and `db/monitoring/space-management.md` for generic CPU, I/O, wait-event, AWR/ASH, and tablespace analysis. The APEX workspace skill is being used for workspace quota, schema mapping, file-storage, and Resource Manager context.
 
+After a DB-skill handoff, use the selected DB skill's required connection/user, such as a diagnostics/performance account for AWR, ASH, `DBA_HIST`, `V$`, and wait-event evidence or a storage/DB administration identity for tablespace analysis. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
+
 ## Quota Source Pre-Check
 
 `APEX_WORKSPACE_QUOTAS` may not exist in every APEX release or managed environment. Check available views and columns first.

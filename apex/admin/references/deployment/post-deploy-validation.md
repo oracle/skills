@@ -2,6 +2,8 @@
 
 Validate APEX-specific behavior after import.
 
+Live MCP-backed APEX validation queries must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. If validation crosses into generic database auditing, grants, runtime schemas, ORDS, or infrastructure checks, route that portion to the DB skill and use that skill's required connection/user.
+
 ## Validation Checklist
 
 - Application exists in the expected workspace with the expected ID, alias, owner, and parsing schema.

@@ -106,4 +106,6 @@ Prefer `DEBUG_PAGE_VIEW_ID`, `APEX_SESSION_ID`, ECID, application/page/component
 
 DB skill in use: `db/security/auditing.md` for generic database audit trails. DB skill in use: `db/performance/awr-reports.md` and `db/performance/ash-analysis.md` for AWR/ASH correlation. DB skill in use: `db/monitoring/alert-log-analysis.md` for database alert log, trace, and ADR investigation. The APEX monitoring skill is being used for APEX debug/error context and incident time-window selection.
 
+After a DB-skill handoff, use the selected DB skill's required connection/user. Do not reuse the APEX admin connection for live AWR, ASH, `V$`, `DBA_HIST`, alert-log, trace, ADR, audit-policy, or grant investigation unless the DB skill explicitly accepts that identity.
+
 AWR and ASH require Diagnostics Pack in production.

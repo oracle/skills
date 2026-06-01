@@ -4,6 +4,8 @@ Use this checklist after substantial APEX monitoring, replay, debug, error-log, 
 
 - Scope: APEX logs, debug context, Session Replay output, page/runtime context, workspace/application/page IDs, and time windows stayed in this skill; generic AWR, ASH, wait-event, SQL tuning, ORDS, scheduler, auditing, or alert-log analysis was routed to `db/...`.
 - DB usage messages: every generic DB step has a visible `DB skill in use:` message naming the relevant DB skill path.
+- APEX admin identity: every live MCP-backed APEX monitoring step used the confirmed APEX admin identity, not `SYS`, `SYSTEM`, `SYSDBA`, a parsing schema, workspace user, ORDS/APEX runtime account, generic deployment user, or unknown account.
+- DB handoff identity: every generic DB/ORDS/performance step used the selected DB skill's required connection/user rather than silently reusing the APEX admin connection.
 - Sensitive data: activity logs, debug messages, error logs, request values, Team Development files, Session Replay output, and exports avoid unnecessary payload columns, BLOBs, CLOBs, headers, tokens, item values, and secret-bearing URLs.
 - Version checks: APEX views and columns were discovered with `APEX_DICTIONARY`, `ALL_OBJECTS`, or `ALL_TAB_COLUMNS` before version-specific SQL was generated.
 - Licensed features: AWR, ASH, and Diagnostics Pack usage was called out; non-licensed fallbacks such as live `V$SESSION`, `V$SQL`, ORDS logs, APEX debug, and application instrumentation were considered.

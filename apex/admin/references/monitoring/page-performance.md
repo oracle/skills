@@ -2,6 +2,8 @@
 
 Use this reference for the slowest APEX pages, regions, Page Performance reports, `APEX_WORKSPACE_PAGE_VIEW_DETAIL`, and `DBA_HIST_SQLSTAT` correlation.
 
+For broad APEX application performance analysis, load `apex-performance-evidence.md` first to ask for available APEX, browser, AWR/ASH, SQL Monitor, and ORDS evidence and the output path for customer-specific results.
+
 Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming page-view detail or activity-log view availability.
 
 Use APEX Diff as a convenience helper to compare page-view, activity-log,
@@ -81,6 +83,14 @@ Use APEX Builder Page Performance reports or narrow SQL/CSV extracts of page, re
 
 ## DB Skill Usage
 
-DB skill in use: `db/monitoring/top-sql-queries.md` for `DBA_HIST_SQLSTAT`, top-SQL resource dimensions, and historical SQL-stat interpretation. DB skill in use: `db/performance/awr-reports.md` for AWR report interpretation. The APEX monitoring skill is being used for page, region, session, and report context.
+If the user provides AWR, ASH, SQL Monitor, execution plans, `DBA_HIST_SQLSTAT`, wait-event output, `V$` output, or ORDS runtime diagnostics, ask before switching to the DB skill. Do not interpret that evidence inside this APEX monitoring reference, and do not reuse the APEX admin connection for live DB-skill work unless the DB skill explicitly accepts it.
+
+Use this handoff only after confirmation:
+
+```text
+DB skill in use: db/monitoring/top-sql-queries.md or db/performance/awr-reports.md for generic database performance interpretation. The APEX monitoring skill is being used for page, region, session, request, and time-window context.
+```
+
+After this handoff, use the selected DB skill's required connection/user, such as a diagnostics/performance account for `DBA_HIST_SQLSTAT`, AWR, ASH, `V$`, SQL Monitor, or execution-plan evidence.
 
 AWR, ASH, and `DBA_HIST_SQLSTAT` require Diagnostics Pack in production.

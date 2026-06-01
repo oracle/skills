@@ -69,4 +69,6 @@ Compare one failed session with one successful baseline from the same applicatio
 
 DB skill in use: `db/performance/ash-analysis.md`, `db/performance/awr-reports.md`, and `db/performance/wait-events.md` for generic ASH/AWR and wait-event interpretation. The APEX monitoring skill is being used for Session Replay, activity-log path, and journey reproduction context.
 
+After a DB-skill handoff, use the selected DB performance skill's required connection/user, such as a diagnostics/performance account for AWR, ASH, `DBA_HIST`, `V$`, SQL Monitor, or wait-event evidence. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
+
 AWR and ASH require Diagnostics Pack in production.

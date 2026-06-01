@@ -4,6 +4,8 @@ Use this topic for guarded test-workspace removal and cleanup. Treat removal as 
 
 Version check: use `ALL_TAB_COLUMNS` and `ALL_ARGUMENTS` before assuming workspace inventory columns or `APEX_INSTANCE_ADMIN.REMOVE_WORKSPACE` parameters.
 
+MCP-backed workspace inventory and removal must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not remove or inventory APEX workspace objects under `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts.
+
 ## Safety Rules
 
 Safety stop: list affected workspaces, schemas, APEX users, database users, and tablespaces, then require explicit English confirmation before generating or running delete steps.
@@ -91,3 +93,5 @@ END;
 Keep `p_drop_tablespaces => 'N'` unless the user explicitly lists tablespace deletion in the requested scope and confirms that scope with the same English own-will confirmation pattern.
 
 DB skill in use: `db/agent/destructive-op-guards.md` for generic destructive-operation safety patterns. The APEX workspace skill is being used for APEX workspace object inventory and supported removal API context.
+
+If cleanup crosses into generic database users, grants, quotas, tablespaces, or other non-APEX objects, route that portion to the relevant DB skill and use that skill's required connection/user. Do not reuse the APEX admin connection for DB-skill cleanup unless the DB skill explicitly accepts it.

@@ -31,11 +31,23 @@ admin/
 - Use `tools/` only for generic APEX-admin analysis or planning. Tools must not contain customer-specific paths, customer exports, SQLcl automation, ORDS tuning, or database administration logic.
 - Customer cases may inform generic skill improvements, but never add customer names, customer paths, export filenames, application names, domains, users, line references, findings, or incident details to skill files, tools, tests, references, examples, or committed docs.
 
+## Analysis Output Handling
+
+- Before starting any static or file-only review that does not need database access, explicitly tell the user that no database connection or live MCP database access will be used. Keep it short, for example: "I can analyze this export statically; no database access is needed for this step."
+- If a static review later needs live APEX evidence, stop before connecting and apply the APEX Admin Identity Gate. If it needs generic DB evidence, stop before handoff and ask whether to switch to the relevant DB skill.
+- Before substantive analysis of customer-specific performance, runtime, deployment, or incident evidence, ask once whether the user has more relevant customer evidence for the same case, such as APEX Activity Log/Page Performance, APEX Debug, HAR/Network, AWR/ASH, SQL Monitor, ORDS logs, deployment logs, or another APEX export. Treat this as an intake question, not a requirement: if the user declines or no more files are available, proceed with the available evidence, finish the analysis, and state the evidence limits.
+- When the user provides customer-specific files or evidence and asks for analysis, ask before substantive analysis whether the result should be chat-only or saved as an external artifact. If saved, require a user-confirmed output directory or exact file path before continuing.
+- Do not write customer-specific analysis output into this skill, the repository, `tools/`, `references/`, examples, tests, or committed documentation unless the user explicitly asks for a generic, sanitized skill improvement instead.
+- Do not create customer-specific output folders such as `apex/admin/<customer_name>`. Customer reports, logs, generated checklists, and derived artifacts must go to a user-confirmed external path outside the skill tree.
+- If the user gives a source file path but no output path, do not infer that the result belongs beside the source. Ask for the output directory or exact file path first.
+- When the user gives a directory, create or update only the requested result file inside that directory. When the user gives a file path, use that exact file path after confirming overwrite if the file already exists.
+- Keep customer identifiers, application names, source paths, export filenames, line references, and findings only in the confirmed external output artifact and chat summary; never copy them into skill files.
+
 ## Routing
 
 - Workspace lifecycle/provisioning/listing/removal: `references/workspace/lifecycle.md`, `references/workspace/resource-governance.md`, `references/workspace/users-and-auth.md`, `references/workspace/schema-mapping.md`, `references/workspace/removal.md`, `references/workspace/version-notes.md`, `references/workspace/security-review.md`
 - Security/auth/session/export safety: `references/security/guardrails.md`, `references/security/safety-messages.md`, `references/security/audit-columns.md`, `references/security/security-review.md`
-- Monitoring/runtime diagnosis/MCP availability: `references/monitoring/workspace-monitor-activity.md`, `references/monitoring/activity-log.md`, `references/monitoring/error-handling.md`, `references/monitoring/user-journey-replay.md`, `references/monitoring/background-jobs.md`, `references/monitoring/rest-data-sources.md`, `references/monitoring/page-performance.md`, `references/monitoring/export-runtime-risk-review.md`, `references/monitoring/ir-ig-tuning.md`, `references/monitoring/awr-wait-correlation.md`, `references/monitoring/mcp-availability.md`, `references/monitoring/security-review.md`
+- Monitoring/runtime diagnosis/MCP availability: start broad APEX performance cases with `references/monitoring/apex-performance-evidence.md`; then route to `references/monitoring/workspace-monitor-activity.md`, `references/monitoring/activity-log.md`, `references/monitoring/error-handling.md`, `references/monitoring/user-journey-replay.md`, `references/monitoring/background-jobs.md`, `references/monitoring/rest-data-sources.md`, `references/monitoring/page-performance.md`, `references/monitoring/export-runtime-risk-review.md`, `references/monitoring/ir-ig-tuning.md`, `references/monitoring/awr-wait-correlation.md`, `references/monitoring/mcp-availability.md`, `references/monitoring/security-review.md`
 - Deployment/export/import/patching/instance-administrator bootstrap: `references/deployment/pre-check.md`, `references/deployment/export-review.md`, `references/deployment/import-promotion.md`, `references/deployment/deployment-identity.md`, `references/deployment/instance-admin-bootstrap.md`, `references/deployment/post-deploy-validation.md`, `references/deployment/patching.md`, `references/deployment/security-review.md`
 - New APEX application generation: announce the skill handoff, then route the application-generation work to `apex/apexlang/SKILL.md`. Keep `admin/` loaded only for workspace, deployment identity, connection safety, import/promotion, monitoring, and post-deploy validation context.
 
@@ -55,7 +67,31 @@ When a user asks to create, scaffold, generate, or materially change an APEX app
 APEXlang skill in use: apex/apexlang/SKILL.md for APEX application generation. The APEX admin skill is being used only for workspace, deployment identity, connection safety, and post-deploy validation.
 ```
 
-Before MCP-backed application creation, import, or materialization continues, verify the active database identity with `SYS_CONTEXT('USERENV','SESSION_USER')`, `SYS_CONTEXT('USERENV','CURRENT_USER')`, and `SYS_CONTEXT('USERENV','ISDBA')`. Show the connection user context and ask the user whether to continue with that connection/user. Continue only after the user confirms. If the connection is `SYS`, `SYSTEM`, or `ISDBA = TRUE`, apply the safety block for change operations and ask for a least-privilege APEX admin or deployment connection instead.
+Before MCP-backed application creation, import, or materialization continues, apply the APEX Admin Identity Gate below. Do not continue only because the user accepts the currently connected database user; the user must confirm that the connection is the intended APEX admin identity.
+
+## APEX Admin Identity Gate
+
+All live MCP-backed work owned by this skill must run only under a confirmed APEX admin identity. Static file review of APEX exports, AWR/ASH reports, HAR files, CSV extracts, and logs does not require a database connection.
+
+Accepted APEX admin identities:
+
+- A dedicated non-`SYS`/`SYSTEM` database account granted `APEX_ADMINISTRATOR_ROLE` for instance-level APEX administration.
+- On Autonomous Database or APEX Service only, the service `ADMIN` account when the user explicitly confirms that it is the environment's APEX administration identity and the work remains APEX-admin-scoped.
+
+Before any live APEX query, APEX API call, import, workspace operation, monitoring-query, debug-log query, or version check through MCP, verify and show the active identity:
+
+```sql
+SELECT SYS_CONTEXT('USERENV','SESSION_USER') AS session_user,
+       SYS_CONTEXT('USERENV','CURRENT_USER') AS current_user,
+       SYS_CONTEXT('USERENV','ISDBA') AS is_dba
+FROM dual;
+```
+
+If permissions allow, also verify `APEX_ADMINISTRATOR_ROLE` through `SESSION_ROLES` or `USER_ROLE_PRIVS`.
+
+Stop the APEX admin workflow when the active identity is `SYS`, `SYSTEM`, `ISDBA = TRUE`, an app parsing schema, a workspace developer/end-user, an ORDS/APEX runtime account, a generic deployment user, or unknown. Ask for the confirmed APEX admin connection before continuing. This applies to read-only APEX evidence gathering as well as change operations.
+
+The APEX Instance Administrator bootstrap path in `references/deployment/instance-admin-bootstrap.md` is the only documented exception, because Oracle's `apxchpwd.sql` flow can require `SYS AS SYSDBA`. That exception is not a routine MCP APEX admin session and must not be used for workspace creation, imports, monitoring, or APEX API automation.
 
 ## Supported Version Gate
 
@@ -95,21 +131,19 @@ When using a generic DB skill, announce it with `DB skill in use: db/...`, for e
 DB skill in use: db/performance/wait-events.md for the generic wait-event analysis. The APEX admin skill is being used for APEX activity-log correlation.
 ```
 
+If the user attaches or references an AWR report, ASH extract, SQL Monitor report, execution plan, wait-event output, `V$`/`DBA_HIST` evidence, or ORDS pool/runtime diagnostics during APEX monitoring work, stop before interpreting that evidence. Ask whether to switch to the relevant DB skill, and continue only after the user confirms. After handoff, follow the selected DB skill's identity and connection requirements: use a diagnostics/performance account for AWR, ASH, `DBA_HIST`, `V$`, SQL Monitor, and execution-plan evidence; a DB admin or privilege-management identity for users, grants, quotas, and schemas; and an ORDS/runtime administration identity for ORDS pool or gateway diagnostics. Do not silently reuse the APEX admin connection for DB-skill work unless the DB skill's own rules explicitly accept that identity.
+
 ## Safety
 
 - Use least privilege for parsing schemas, workspace users, database-login users, and automation accounts. Do not recommend broad grants such as `DBA`, `SYSDBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, `GRANT ANY PRIVILEGE`, or `WITH ADMIN OPTION` unless the user explicitly asks for privileged administration and the risk is called out.
-- Do not connect MCP or routine automation as `SYS`, `SYSTEM`, or `SYSDBA` for APEX admin, workspace lifecycle, or App Builder administration. Prefer a dedicated non-SYS/SYSTEM database account granted `APEX_ADMINISTRATOR_ROLE` for instance-level APEX APIs. Use `SYS`/`SYSTEM` only for explicit installation, upgrade, emergency DBA, or grant-management work, and route generic DBA steps to the database/admin skill.
+- Do not connect MCP or routine automation as `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace developers, end users, ORDS/APEX runtime accounts, or generic deployment users for APEX admin work. Use only a confirmed APEX admin identity as defined in the APEX Admin Identity Gate.
 - If the user asks to create, reset, unlock, or bootstrap an APEX Instance Administrator for APEX Administration Services or the `INTERNAL` workspace, route to `references/deployment/instance-admin-bootstrap.md`. Do not treat this as a normal workspace user created with `APEX_UTIL.CREATE_USER`, and do not ask for a least-privilege `APEX_ADMINISTRATOR_ROLE` connection as the primary path. First confirm whether the environment is self-managed/container/co-managed Cloud or a fully managed service. For new self-managed/container/co-managed Cloud installations, the supported path is running `apxchpwd.sql` from the APEX installation directory as `SYS AS SYSDBA` in the database where APEX is installed. For Autonomous AI Database or Oracle APEX AI Application Generator Service (APEX Service), do not provide local script steps; direct the user to the service-specific administration/reset path.
 - Do not run `apxchpwd.sql` through `sql_run`, and do not put the Instance Administrator password in chat, SQL, scripts, or logged MCP tool calls. Give the user a terminal/SQLcl command sequence with placeholders and tell them to enter the password only at the script prompt.
 - For APEX Instance Administrator bootstrap, always require an explicit confirmation of the action, environment type, target PDB/service, APEX installation directory, username, and email before giving final run commands or instructing the user to execute them.
-- Before MCP-backed APEX admin work, verify the active database identity with `SYS_CONTEXT('USERENV','SESSION_USER')`, `SYS_CONTEXT('USERENV','CURRENT_USER')`, and `SYS_CONTEXT('USERENV','ISDBA')`, then classify the requested work:
-  - For workspace lifecycle, provisioning, deployment/import changes, user/schema mapping changes, destructive actions, or any DDL/DML/API call that changes database or APEX state, block `SYS`, `SYSTEM`, and `ISDBA = TRUE`; stop and ask for a least-privilege APEX admin connection instead.
-  - For Autonomous Database/APEX Service, the service `ADMIN` user may be an acceptable APEX admin identity when the environment grants it the required APEX administration capabilities. Treat `ADMIN` as privileged: use it only after explicit identity confirmation and only for APEX-admin-scoped work.
-  - If the workflow needs generic database administration such as creating database users/schemas, granting roles or privileges, changing quotas, tablespaces, ORDS configuration, or DBA diagnostics, stop the APEX admin workflow, announce the DB skill handoff, and ask the user for a separate appropriate DB administration connection such as `SYSTEM`, `ADMIN`, or another account with comparable scoped privileges. Do not silently reuse the APEX admin connection for DB-skill work.
-  - For read-only APEX evidence gathering, performance triage from APEX views, export review, activity-log review, or debug-log review, do not block solely because the connection is privileged. Warn that a least-privilege read-only/APEX admin account is preferred, keep the work read-only, and do not run change operations in that session.
-  - If the analysis needs generic DB performance evidence such as AWR, ASH, `V$SESSION`, `V$SQL`, wait events, ORDS pool tuning, grants, or system-level diagnostics, announce and route that portion to the appropriate database/ORDS/performance skill; those tasks may require DBA-level privileges and are outside this APEX admin skill's ownership.
+- Before MCP-backed APEX admin work, apply the APEX Admin Identity Gate. If the identity is not a confirmed APEX admin identity, stop and ask for the correct APEX admin connection.
+- If the workflow needs generic database administration or diagnostics such as database users/schemas, grants, quotas, tablespaces, ORDS configuration, AWR, ASH, `V$SESSION`, `V$SQL`, wait events, or system-level diagnostics, stop the APEX admin workflow, announce the DB skill handoff, and ask for the connection/user required by that DB skill. Do not silently reuse the APEX admin connection for DB-skill work.
 - Before MCP-backed APEX admin work, check `APEX_RELEASE.VERSION_NO` against the supported-version gate. If the version is unsupported, stop and do not generate version-sensitive SQL or change steps.
-- Before MCP-backed APEX application creation, scaffold materialization, or import/promotion work, explicitly ask whether to continue with the currently connected database user after showing the verified `SESSION_USER`, `CURRENT_USER`, and `ISDBA` values.
+- Before MCP-backed APEX application creation, scaffold materialization, or import/promotion work, show the verified `SESSION_USER`, `CURRENT_USER`, and `ISDBA` values and continue only after the user confirms that the identity is the intended APEX admin identity.
 - Keep APEX security contexts separate: workspace administrator, developer, end user, parsing schema, database-login user, ORDS/APEX runtime account, and DBA/admin account are different roles.
 - Do not treat APEX parsing schemas as personal interactive logins in production.
 - Prefer supported APEX APIs and views. Do not write directly to internal APEX repository tables.

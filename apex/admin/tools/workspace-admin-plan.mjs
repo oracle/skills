@@ -134,15 +134,23 @@ function createPlan(input) {
       "Use a dedicated non-SYS/SYSTEM database account granted APEX_ADMINISTRATOR_ROLE for routine APEX workspace automation.",
       "Do not connect MCP or routine automation as SYS, SYSTEM, or SYSDBA for this workflow.",
       "Database user creation, grants, tablespaces, and quotas belong outside this APEX admin tool.",
+      "WORKSPACE_PROVISION_DEMO_OBJECTS is an instance-level side-effect setting; do not change it or create workspaces under the wrong value without explicit user confirmation.",
       "Check APEX_INSTANCE_ADMIN.ADD_WORKSPACE arguments in the installed APEX version before use."
     ],
     checklist: [
       "Confirm the installed APEX version is supported by this skill.",
+      "Check WORKSPACE_PROVISION_DEMO_OBJECTS and confirm whether demonstration applications/database objects should be created in new workspaces.",
       "Confirm exact workspace name.",
+      "Confirm workspace description or administrative notes.",
       "Confirm the active automation account is not SYS, SYSTEM, or SYSDBA.",
-      "Confirm primary parsing schema and whether it already exists.",
+      "Confirm whether the workspace reuses an existing schema or needs a new database user/schema.",
+      "For an existing schema, review suggested additional privileges through the schema-mapping reference before mapping it.",
+      "For a new schema, route database user creation, password handling, tablespace, quota, and grants to the relevant DB skill before the APEX workspace API step.",
+      "Confirm primary parsing schema and any additional schema mappings.",
       "Verify the schema mapping candidate is not an APEX platform, ORDS, DBA, or shared runtime account.",
       "Confirm whether a deterministic workspace ID is required.",
+      "Confirm the initial workspace administrator details and secret-handling path through the workspace users reference.",
+      "For bulk provisioning, preview the exact naming method, count or email-address input, quota, Resource Manager consumer group, automatic-purge setting, demo-object policy, and description before any create loop.",
       "Create the workspace with supported APEX_INSTANCE_ADMIN API.",
       "Verify the workspace through supported APEX views."
     ],
@@ -155,6 +163,11 @@ function createPlan(input) {
 FROM dual;`
       },
       APEX_VERSION_GATE_SNIPPET,
+      {
+        label: "Demo object provisioning check",
+        sql: `SELECT APEX_INSTANCE_ADMIN.GET_PARAMETER('WORKSPACE_PROVISION_DEMO_OBJECTS') AS workspace_provision_demo_objects
+FROM dual;`
+      },
       {
         label: "API argument check",
         sql: `SELECT argument_name,

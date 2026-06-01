@@ -2,6 +2,8 @@
 
 Use this reference for `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_ACTIVITY_LOG`, usage/load trends, session drilldown, and Team Development file context.
 
+For broad APEX application performance analysis, load `apex-performance-evidence.md` first to ask for available APEX, browser, AWR/ASH, SQL Monitor, and ORDS evidence and the output path for customer-specific results.
+
 ## View Pre-Check
 
 APEX view columns vary by release and privilege. Inspect availability before version-specific SQL.
@@ -99,4 +101,12 @@ Use `APEX_TEAM_DEV_FILES` only as optional developer-artifact context. Inspect c
 
 ## DB Skill Usage
 
-DB skill in use: `db/performance/wait-events.md`, `db/performance/ash-analysis.md`, or `db/performance/awr-reports.md` only after the APEX workspace, application, page, session, and time window are identified. The APEX monitoring skill is being used for activity-log context.
+If the user provides AWR, ASH, wait-event output, SQL Monitor, execution plans, `V$`/`DBA_HIST` evidence, or ORDS runtime diagnostics after the APEX workspace, application, page, session, and time window are identified, ask before switching to the DB skill. Do not interpret generic DB evidence inside this APEX activity-log reference, and do not reuse the APEX admin connection for live DB-skill work unless the DB skill explicitly accepts it.
+
+Use this handoff only after confirmation:
+
+```text
+DB skill in use: db/performance/wait-events.md, db/performance/ash-analysis.md, or db/performance/awr-reports.md for generic database performance interpretation. The APEX monitoring skill is being used for activity-log context.
+```
+
+After this handoff, use the selected DB performance skill's required connection/user, such as a diagnostics/performance account for AWR, ASH, `DBA_HIST`, `V$`, SQL Monitor, or execution-plan evidence.

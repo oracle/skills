@@ -6,6 +6,8 @@ If the user asks for an APEX Instance Administrator, APEX Administration Service
 
 Use `APEX_WORKSPACE_APEX_USERS` when you need supported workspace-user metadata for administrators, developers, and end users. Check column availability first on older or managed APEX environments.
 
+MCP-backed workspace-user reads or changes must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not create, unlock, reset, or inspect APEX workspace users under `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts.
+
 ## Temporary Password Policy
 
 If the user provides an approved secret-handling method, use that.
@@ -66,5 +68,7 @@ If the APEX sign-in page says `Database Username`, a matching database user may 
 - DBA/Admin Accounts
 
 DB skill in use: `db/admin/user-management.md` and `db/security/privilege-management.md` for generic database user creation and privilege management. The APEX workspace skill is being used for APEX login-model and workspace-user context.
+
+After this handoff, use the selected DB skill's required connection/user for database-login user creation, grants, password policy, quotas, and privilege remediation. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
 
 Do not grant `DBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, or `GRANT ANY PRIVILEGE` for ordinary APEX workspace users.

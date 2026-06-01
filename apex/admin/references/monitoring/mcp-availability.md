@@ -10,9 +10,10 @@ Before any APEX workflow that will run SQL or PL/SQL through MCP:
 
 - Confirm the MCP tool transport is available.
 - Confirm a database connection can be established or is already active.
-- If the APEX workflow needs a specific connection name, confirm that connection before generating change SQL.
+- Confirm the active connection is the intended APEX admin identity before running APEX-owned live checks, including read-only checks.
+- If the APEX workflow needs a specific connection name, confirm that connection before generating SQL.
 
-Use the smallest available client-side MCP check. Do not run APEX DDL, APEX administration APIs, or destructive SQL as a connectivity test.
+Use the smallest available client-side MCP check. Do not run APEX DDL, APEX administration APIs, generic DB diagnostics, or destructive SQL as a connectivity test.
 
 ## Stop Condition
 
@@ -35,7 +36,7 @@ Your APEX browser session may still be connected, but this APEX workflow needs t
 After the user says MCP is available again:
 
 1. Repeat the MCP availability check.
-2. Reconnect or confirm the active database connection.
+2. Reconnect or confirm the active database connection is the intended APEX admin identity.
 3. Re-read APEX state from the database.
 4. If an APEX provisioning workflow may have been interrupted after create steps, inventory each planned artifact individually with `references/workspace/lifecycle.md#provisioning-recovery-after-interruption`.
 5. Ask whether the user wants to roll back the listed artifacts before continuing or retrying.

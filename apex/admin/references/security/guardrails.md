@@ -6,6 +6,8 @@ Apply these APEX-specific rules before generating SQL, scripts, or operational s
 
 Keep APEX role boundaries clear: workspace administrator, developer, end user, parsing schema, database-login user, ORDS/APEX runtime account, and DBA/admin account are different security contexts.
 
+Run live MCP-backed APEX admin work only under the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not use `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts for APEX-owned queries or operations.
+
 Do not treat parsing schemas as personal interactive logins in production. If a parsing schema is only technical, keep it narrow and document whether it should be locked outside deployment windows.
 
 ## Least Privilege
@@ -13,6 +15,8 @@ Do not treat parsing schemas as personal interactive logins in production. If a 
 Do not grant broad privileges such as `DBA`, `SYSDBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, `GRANT ANY PRIVILEGE`, or `WITH ADMIN OPTION` for ordinary APEX provisioning.
 
 DB skill in use: `db/security/privilege-management.md` for generic database privilege design. The APEX security skill is being used for APEX workspace, parsing-schema, and runtime-account context.
+
+After a DB-skill handoff, use that DB security skill's required connection/user. Do not reuse the APEX admin connection for grants, users, quotas, audit policies, encryption, network ACLs, VPD/RLS, masking, or other generic DB security work unless the DB skill explicitly accepts it.
 
 ## Supported Interfaces
 

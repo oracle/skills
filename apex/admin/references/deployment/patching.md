@@ -4,6 +4,8 @@ Use this topic for Oracle APEX Patch Set Bundle status checks and patch planning
 
 Use this for self-managed or co-managed environments. For fully managed Autonomous Database or APEX Application Development Service, Oracle normally applies APEX patch bundles; do not advise manual patching unless the service documentation says patching is customer-managed.
 
+Live MCP-backed APEX patch-status checks in this skill require the confirmed APEX admin identity from `apex/admin/SKILL.md`. Privileged patch execution, database backup/restore, invalid-object repair, and ORDS runtime administration are DB/ORDS-skill work and must use those skills' required connection/user.
+
 ## Version And View Availability
 
 Check APEX version first:
@@ -59,7 +61,7 @@ Follow the patch README for exact commands. Use this as the operational checklis
 5. Back up the database/PDB and export critical APEX applications.
 6. Stop ORDS or put APEX behind maintenance if the README or local policy requires it.
 7. Unzip the patch on the database host or approved deployment host.
-8. Connect to the PDB where APEX is installed with the required administrative privileges, typically `SYS AS SYSDBA` when the README requires it.
+8. After the DB/admin skill handoff, connect to the PDB where APEX is installed with the required administrative privileges, typically `SYS AS SYSDBA` when the README requires it.
 9. Run the patch script from the extracted patch directory exactly as documented.
 10. Recompile invalid objects.
 11. Update APEX static files, or set the image prefix to the matching Oracle CDN path when CDN images are used.
@@ -130,6 +132,8 @@ For Autonomous Database and APEX Application Development Service:
 DB skill in use: `db/admin/backup-recovery.md` for generic database backup and restore planning. The APEX deployment skill is being used for APEX patch-bundle workflow context.
 
 DB skill in use: `db/ords/ords-monitoring.md` for generic ORDS runtime checks. The APEX deployment skill is being used for APEX static-file and App Builder verification context.
+
+After a DB/ORDS-skill handoff, use the selected skill's required connection/user. Do not reuse the APEX admin connection for backup, restore, patch execution, invalid-object repair, or ORDS diagnostics unless the selected skill explicitly accepts it.
 
 ## Guardrails
 

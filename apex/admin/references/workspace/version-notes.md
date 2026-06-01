@@ -21,8 +21,9 @@ Do not use APEX documentation older than 24.2 unless the user explicitly asks fo
 ## Supported Version Gate
 
 Run this gate before any MCP-backed APEX admin workflow. Continue only when the
-installed APEX version is in the supported list. As of May 2026, this skill
-supports APEX `26.1`, `24.2`, `24.1`, and `23.2`.
+active connection has passed the APEX Admin Identity Gate in `apex/admin/SKILL.md`
+and the installed APEX version is in the supported list. As of May 2026, this
+skill supports APEX `26.1`, `24.2`, `24.1`, and `23.2`.
 
 ```sql
 SELECT version_no,
@@ -79,3 +80,5 @@ documentation.
 For Oracle Database 19c through 26ai, keep workspace provisioning scripts portable by detecting APEX package signatures and by avoiding database-version assumptions unless the task depends on database-specific features such as MLE, Resource Manager setup, or schema privilege syntax.
 
 DB skill in use: `db/architecture/oracle-cloud-oci.md` or the relevant `db/admin/*` skill only when the question moves into generic database or cloud administration. The APEX workspace skill is being used for APEX version and package signature context.
+
+After a DB-skill handoff, use the selected DB skill's required connection/user. Do not reuse the APEX admin connection for generic database or cloud administration unless that DB skill explicitly accepts it.
