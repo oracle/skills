@@ -10,6 +10,7 @@ Install a domain by appending the root-level domain directory to the repository 
 
 ```bash
 npx skills add oracle/skills/db
+npx skills add oracle/skills/oci
 npx skills add oracle/skills/graal
 ...
 ```
@@ -24,7 +25,7 @@ npx skills add oracle/skills/graal
 ## Domains
 
 - `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
-- `oci/` is the root for future Oracle Cloud Infrastructure skills.
+- `oci/` is the Oracle Cloud Infrastructure domain and includes `oci/enterprise-ai/` for OCI Generative AI, agents, RAG, governance, model endpoints, Autonomous Database, APEX, and integrations.
 - `fusion/` is the root for future Oracle Fusion skills.
 - `apex/` is the root for future Oracle APEX skills.
 - `graal/` contains GraalVM skills, starting with Native Image.
@@ -70,7 +71,15 @@ npx skills add oracle/skills/graal
 │       ├── reachability-metadata.md
 │       └── troubleshooting.md
 └── oci/
-    └── SKILL.md
+    ├── SKILL.md
+    └── enterprise-ai/
+        ├── SKILL.md
+        ├── models/
+        ├── agent-workflows/
+        ├── governance/
+        ├── data/
+        ├── cost/
+        └── integrations/
 ```
 
 Each domain has its own `SKILL.md` and any supporting index files it needs.
