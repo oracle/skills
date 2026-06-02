@@ -4,6 +4,8 @@ Use this reference for static APEX export review when the user asks whether an A
 
 This is APEX-only. Do not tune ORDS connection pools, SQLcl, database instance settings, indexes, wait events, or execution plans here. If the evidence points there, record a clear external handoff and keep the APEX finding separate.
 
+When the entry point is a customer-specific APEX application export file, including `.sql` or `.apx`, load `apex-performance-evidence.md` first and ask once for additional evidence before running this static export runtime-risk review.
+
 Before running this static export review or the export risk scan tool, tell the user that no database connection or live MCP database access is needed for this step. For customer exports, ask whether the result should stay chat-only or be saved to a user-confirmed external output path outside the skill tree.
 
 If the user provides only an APEX export for performance or runtime analysis, ask once whether they also have runtime evidence such as APEX Activity Log/Page Performance, APEX Debug, HAR/Network, AWR/ASH, SQL Monitor, or ORDS logs for the same case. If the user declines or no more files are available, continue with export-only analysis and state that runtime impact remains unverified without those sources.

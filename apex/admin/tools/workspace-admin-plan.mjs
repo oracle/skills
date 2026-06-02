@@ -133,9 +133,10 @@ function createPlan(input) {
       "Run the supported APEX version gate first; stop if the installed APEX release is unsupported by this skill.",
       "Use a dedicated non-SYS/SYSTEM database account granted APEX_ADMINISTRATOR_ROLE for routine APEX workspace automation.",
       "Do not connect MCP or routine automation as SYS, SYSTEM, or SYSDBA for this workflow.",
-      "Database user creation, grants, tablespaces, and quotas belong outside this APEX admin tool.",
+      "Database user creation, password handling, manual grants, tablespaces, and quotas belong outside this APEX admin tool.",
+      "For new database users/schemas that will become APEX workspace or parsing schemas, use APEX-managed schema grants through APEX_INSTANCE_ADMIN.ADD_SCHEMA p_grant_apex_privileges => TRUE as the standard when the installed APEX version supports that parameter.",
       "WORKSPACE_PROVISION_DEMO_OBJECTS is an instance-level side-effect setting; do not change it or create workspaces under the wrong value without explicit user confirmation.",
-      "Check APEX_INSTANCE_ADMIN.ADD_WORKSPACE arguments in the installed APEX version before use."
+      "Check APEX_INSTANCE_ADMIN.ADD_WORKSPACE and ADD_SCHEMA arguments in the installed APEX version before use."
     ],
     checklist: [
       "Confirm the installed APEX version is supported by this skill.",
@@ -145,7 +146,8 @@ function createPlan(input) {
       "Confirm the active automation account is not SYS, SYSTEM, or SYSDBA.",
       "Confirm whether the workspace reuses an existing schema or needs a new database user/schema.",
       "For an existing schema, review suggested additional privileges through the schema-mapping reference before mapping it.",
-      "For a new schema, route database user creation, password handling, tablespace, quota, and grants to the relevant DB skill before the APEX workspace API step.",
+      "For supported ADD_SCHEMA signatures, use p_grant_apex_privileges => TRUE as the standard APEX-managed grant behavior unless the user or environment policy opts out; do not rely on the package default.",
+      "For a new schema, route database user creation, password handling, tablespace, quota, and manual grants to the relevant DB skill before the APEX workspace API step.",
       "Confirm primary parsing schema and any additional schema mappings.",
       "Verify the schema mapping candidate is not an APEX platform, ORDS, DBA, or shared runtime account.",
       "Confirm whether a deterministic workspace ID is required.",
@@ -169,16 +171,64 @@ FROM dual;`
 FROM dual;`
       },
       {
-        label: "API argument check",
-        sql: `SELECT argument_name,
+        label: "ADD_WORKSPACE API argument check",
+        sql: `WITH apex_instance_admin_target AS (
+    SELECT owner,
+           object_name AS package_name
+    FROM all_objects
+    WHERE object_name = 'APEX_INSTANCE_ADMIN'
+      AND object_type = 'PACKAGE'
+    UNION ALL
+    SELECT table_owner AS owner,
+           table_name  AS package_name
+    FROM all_synonyms
+    WHERE synonym_name = 'APEX_INSTANCE_ADMIN'
+)
+SELECT DISTINCT
+       a.owner,
+       a.package_name,
+       a.argument_name,
        position,
-       data_type,
-       defaulted
-FROM all_arguments
-WHERE package_name = 'APEX_INSTANCE_ADMIN'
-  AND object_name = 'ADD_WORKSPACE'
-ORDER BY overload,
-         sequence;`
+       a.data_type,
+       a.defaulted
+FROM apex_instance_admin_target t
+JOIN all_arguments a
+  ON a.owner = t.owner
+ AND a.package_name = t.package_name
+WHERE a.object_name = 'ADD_WORKSPACE'
+ORDER BY a.owner,
+         a.package_name,
+         a.position;`
+      },
+      {
+        label: "ADD_SCHEMA API argument check",
+        sql: `WITH apex_instance_admin_target AS (
+    SELECT owner,
+           object_name AS package_name
+    FROM all_objects
+    WHERE object_name = 'APEX_INSTANCE_ADMIN'
+      AND object_type = 'PACKAGE'
+    UNION ALL
+    SELECT table_owner AS owner,
+           table_name  AS package_name
+    FROM all_synonyms
+    WHERE synonym_name = 'APEX_INSTANCE_ADMIN'
+)
+SELECT DISTINCT
+       a.owner,
+       a.package_name,
+       a.argument_name,
+       position,
+       a.data_type,
+       a.defaulted
+FROM apex_instance_admin_target t
+JOIN all_arguments a
+  ON a.owner = t.owner
+ AND a.package_name = t.package_name
+WHERE a.object_name = 'ADD_SCHEMA'
+ORDER BY a.owner,
+         a.package_name,
+         a.position;`
       },
       {
         label: "Create workspace",
@@ -190,11 +240,23 @@ ORDER BY overload,
 END;
 /`
       },
+      {
+        label: "Add additional schema mapping with APEX-managed grants",
+        sql: `-- Use only for a schema that is not already mapped by ADD_WORKSPACE.
+BEGIN
+    APEX_INSTANCE_ADMIN.ADD_SCHEMA(
+        p_workspace             => :workspace_name,
+        p_schema                => :schema_name,
+        p_grant_apex_privileges => TRUE);
+END;
+/`
+      },
       ...inventoryPlan(input).snippets.slice(1, 3)
     ],
     binds: {
       workspace_name: bindValue(input.workspace, ":workspace_name"),
       primary_schema: bindValue(input.schema, ":primary_schema"),
+      schema_name: bindValue(input.schema, ":schema_name"),
       workspace_id: ":workspace_id"
     }
   };

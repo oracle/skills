@@ -4,6 +4,8 @@ APEX exports can contain sensitive metadata: URLs, authorization schemes, build 
 
 Use App Builder export or SQLcl APEX export workflows, but keep generic SQLcl syntax and CI/CD mechanics in the SQLcl DB skills.
 
+If the user's entry point is a customer-specific APEX application export file, including `.sql` or `.apx`, load `references/monitoring/apex-performance-evidence.md` first. Ask once whether additional evidence exists for the same case, such as APEX Activity Log/Page Performance, APEX Debug, HAR/Network, AWR/ASH, SQL Monitor, ORDS logs, deployment logs, or another export. If the user declines or no more files are available, continue with the export review or runtime-risk review using the available evidence and state the limits.
+
 Before starting a file-only export review, tell the user that the review is static and does not require database access. For customer exports, ask whether the result should stay chat-only or be saved to a user-confirmed external output path. Do not write customer-specific export findings under `apex/admin/<customer_name>` or anywhere else in the skill tree. If the review later needs live validation, stop before connecting and apply the APEX Admin Identity Gate or DB-skill handoff as appropriate.
 
 ## Review Checklist

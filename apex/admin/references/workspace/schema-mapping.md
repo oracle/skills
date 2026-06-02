@@ -82,7 +82,7 @@ WHERE username = UPPER(:schema_name)
 ORDER BY tablespace_name;
 ```
 
-Evaluate the result against the application need. Typical APEX application parsing schemas may need narrowly scoped object-creation privileges such as `CREATE TABLE`, `CREATE VIEW`, `CREATE SEQUENCE`, `CREATE PROCEDURE`, `CREATE TRIGGER`, `CREATE TYPE`, and quota on the application tablespace. If Oracle AI Database 26ai is detected and the APEX application needs MLE, add `CREATE MLE` and `EXECUTE DYNAMIC MLE` to the expected privilege profile. They should not receive broad administrative grants such as `DBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, or `GRANT ANY PRIVILEGE` for ordinary workspace creation.
+Evaluate the result against the application need. Typical APEX application parsing schemas may need narrowly scoped object-creation privileges such as `CREATE TABLE`, `CREATE VIEW`, `CREATE SEQUENCE`, `CREATE PROCEDURE`, `CREATE TRIGGER`, `CREATE TYPE`, and quota on the application tablespace. The standard APEX-managed grant path is `APEX_INSTANCE_ADMIN.ADD_SCHEMA(..., p_grant_apex_privileges => TRUE)`, which applies privileges from `APEX_GRANTS_FOR_NEW_USERS_ROLE` in releases that support it. That role may include database-version-specific privileges such as `CREATE MLE` and `EXECUTE DYNAMIC MLE`. Schemas should not receive broad administrative grants such as `DBA`, `SELECT ANY TABLE`, `EXECUTE ANY PROCEDURE`, `CREATE ANY TABLE`, `GRANT ANY ROLE`, or `GRANT ANY PRIVILEGE` for ordinary workspace creation.
 
 If required privileges are missing or existing privileges are too broad, stop before mapping the schema and ask:
 
@@ -92,6 +92,70 @@ The existing schema <SCHEMA_NAME> does not match the expected privilege profile 
 
 If privileges are correct, continue with the workspace creation or schema mapping. Do not generate GRANT or REVOKE statements from this APEX skill; route generic database privilege changes to `db/security/privilege-management.md`.
 
+## APEX-Managed Schema Grants
+
+For APEX releases where `APEX_INSTANCE_ADMIN.ADD_SCHEMA` exposes `p_grant_apex_privileges`, use APEX-managed schema privilege grants as the standard for new database users/schemas that will be used as APEX workspace or parsing schemas:
+
+```sql
+BEGIN
+    APEX_INSTANCE_ADMIN.ADD_SCHEMA(
+        p_workspace             => :workspace_name,
+        p_schema                => :schema_name,
+        p_grant_apex_privileges => TRUE);
+END;
+/
+```
+
+This option grants the standard APEX privileges for a workspace schema, including privileges from `APEX_GRANTS_FOR_NEW_USERS_ROLE` in APEX releases that support that role. It is the APEX-owned equivalent of the Administration Services "Grant APEX Privileges" behavior. Use it unless the user or environment policy explicitly opts out. Do not rely on the package default; installed package specs can default `p_grant_apex_privileges` to `FALSE`, so pass `TRUE` explicitly when standard APEX grants are required.
+
+Before using the parameter, verify the installed APEX package signature. `APEX_INSTANCE_ADMIN` may be a synonym for the real APEX package, such as `WWV_FLOW_INSTANCE_ADMIN`, so resolve the synonym instead of checking only `PACKAGE_NAME = 'APEX_INSTANCE_ADMIN'`:
+
+```sql
+WITH apex_instance_admin_target AS (
+    SELECT owner,
+           object_name AS package_name
+    FROM all_objects
+    WHERE object_name = 'APEX_INSTANCE_ADMIN'
+      AND object_type = 'PACKAGE'
+    UNION ALL
+    SELECT table_owner AS owner,
+           table_name  AS package_name
+    FROM all_synonyms
+    WHERE synonym_name = 'APEX_INSTANCE_ADMIN'
+)
+SELECT DISTINCT
+       a.owner,
+       a.package_name,
+       a.object_name,
+       a.overload,
+       a.sequence,
+       a.position,
+       a.argument_name,
+       a.in_out,
+       a.data_type,
+       a.defaulted
+FROM apex_instance_admin_target t
+JOIN all_arguments a
+  ON a.owner = t.owner
+ AND a.package_name = t.package_name
+WHERE a.object_name = 'ADD_SCHEMA'
+ORDER BY a.owner,
+         a.package_name,
+         a.overload,
+         a.sequence;
+```
+
+If permissions allow, inspect the standard APEX role contents before and after provisioning:
+
+```sql
+SELECT privilege
+FROM sys.dba_sys_privs
+WHERE grantee = 'APEX_GRANTS_FOR_NEW_USERS_ROLE'
+ORDER BY privilege;
+```
+
+If `p_grant_apex_privileges` is absent, use the older `ADD_SCHEMA` signature and route any missing privilege remediation to `db/security/privilege-management.md`. Do not invent manual grants in this APEX skill. If a schema is already mapped by `ADD_WORKSPACE`, do not blindly call `ADD_SCHEMA` for the same schema; verify the mapping and privileges, then route missing manual remediation to the DB skill when the supported APEX API path is unavailable.
+
 ## Add Schema Mapping
 
 Add an existing schema to a workspace with supported APEX APIs.
@@ -99,8 +163,9 @@ Add an existing schema to a workspace with supported APEX APIs.
 ```sql
 BEGIN
     APEX_INSTANCE_ADMIN.ADD_SCHEMA(
-        p_workspace => :workspace_name,
-        p_schema    => :schema_name);
+        p_workspace             => :workspace_name,
+        p_schema                => :schema_name,
+        p_grant_apex_privileges => TRUE);
 END;
 /
 ```
@@ -108,11 +173,33 @@ END;
 Check package signatures first:
 
 ```sql
-SELECT argument_name
-FROM all_arguments
-WHERE package_name = 'APEX_INSTANCE_ADMIN'
-  AND object_name = 'ADD_SCHEMA'
-ORDER BY sequence;
+WITH apex_instance_admin_target AS (
+    SELECT owner,
+           object_name AS package_name
+    FROM all_objects
+    WHERE object_name = 'APEX_INSTANCE_ADMIN'
+      AND object_type = 'PACKAGE'
+    UNION ALL
+    SELECT table_owner AS owner,
+           table_name  AS package_name
+    FROM all_synonyms
+    WHERE synonym_name = 'APEX_INSTANCE_ADMIN'
+)
+SELECT DISTINCT
+       a.owner,
+       a.package_name,
+       a.argument_name,
+       a.position,
+       a.data_type,
+       a.defaulted
+FROM apex_instance_admin_target t
+JOIN all_arguments a
+  ON a.owner = t.owner
+ AND a.package_name = t.package_name
+WHERE a.object_name = 'ADD_SCHEMA'
+ORDER BY a.owner,
+         a.package_name,
+         a.position;
 ```
 
 ## Export And Import

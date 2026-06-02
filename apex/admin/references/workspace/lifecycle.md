@@ -11,8 +11,9 @@ Use this topic for workspace inventory, pre-flight checks, create workspace, and
 - Workspace description or administrative notes that should be recorded during provisioning.
 - Primary parsing schema and any additional schemas.
 - Always ask whether the workspace should use a new database user/schema or an existing database user/schema before creating the workspace. Do not infer this from the requested workspace name.
-- If a new database user/schema is requested, route generic user creation and grants through the relevant DB skills before calling `APEX_INSTANCE_ADMIN.ADD_WORKSPACE`.
+- If a new database user/schema is requested, route generic user creation, password handling, tablespace, quota, and manual grants through the relevant DB skills before APEX workspace mapping. After the database user/schema exists, apply APEX-managed standard schema privileges through `APEX_INSTANCE_ADMIN.ADD_SCHEMA(..., p_grant_apex_privileges => TRUE)` when the installed APEX version supports that parameter and the schema is not already mapped.
 - If an existing database user/schema is requested, verify it with `references/workspace/schema-mapping.md` before workspace creation.
+- For schema-to-workspace mappings where `APEX_INSTANCE_ADMIN.ADD_SCHEMA` supports `p_grant_apex_privileges`, use `p_grant_apex_privileges => TRUE` as the standard APEX-managed grant behavior unless the user or environment policy explicitly opts out. This applies the standard privileges from `APEX_GRANTS_FOR_NEW_USERS_ROLE`. Manual `GRANT`/`REVOKE` remediation remains a DB-skill handoff.
 - Whether the first user should be an APEX workspace administrator, developer, or end user.
 - For bulk provisioning, ask for the workspace naming method, workspace count, quota, Resource Manager consumer group, automatic-purge setting, demo-object policy, email-address input when relevant, and confirmation policy before any create loop.
 - Authentication model for the development environment.
@@ -34,8 +35,8 @@ Provisioning method settings:
 Manual Create Workspace Wizard coverage:
 
 - Identify Workspace: collect unique workspace name, optional positive workspace ID greater than 100000 when deterministic ID is required, and description.
-- Identify Schema, existing schema: select an existing application-owned schema, inspect suggested additional privileges, and use `references/workspace/schema-mapping.md` before mapping it. Route grants or privilege remediation to `db/security/privilege-management.md`.
-- Identify Schema, new schema: collect intended schema name and quota, but route database-user creation, password handling, tablespace, datafile, quota, and grants to the DB skill before the APEX workspace API step.
+- Identify Schema, existing schema: select an existing application-owned schema, inspect suggested additional privileges, and use `references/workspace/schema-mapping.md` before mapping it. When supported, use APEX-managed grants through `p_grant_apex_privileges => TRUE`; route manual grants or privilege remediation to `db/security/privilege-management.md`.
+- Identify Schema, new schema: collect intended schema name and quota, but route database-user creation, password handling, tablespace, datafile, quota, and manual grants to the DB skill before the APEX workspace API step. After the database user/schema exists, use APEX-managed grants with `p_grant_apex_privileges => TRUE` for supported schema mappings.
 - Identify Administrator: use `references/workspace/users-and-auth.md` for the initial workspace administrator and password-handling guardrails.
 - Confirm selections: summarize workspace name, workspace ID policy, schema model, additional schemas, quota/storage implications, initial administrator, environment type, and DB-skill handoffs before creating.
 
@@ -143,11 +144,23 @@ END;
 /
 ```
 
-Check `APEX_INSTANCE_ADMIN.ADD_WORKSPACE` arguments with `ALL_ARGUMENTS` before using version-specific parameters.
+Check `APEX_INSTANCE_ADMIN.ADD_WORKSPACE` arguments with `ALL_ARGUMENTS` before using version-specific parameters. Do not add `p_grant_apex_privileges` to `ADD_WORKSPACE` unless the installed package signature explicitly exposes it. In current APEX 26.1 package shapes, the APEX-managed grant switch is on `ADD_SCHEMA`, not necessarily on `ADD_WORKSPACE`.
+
+For additional schema mappings, or when the schema is not already mapped by `ADD_WORKSPACE`, use the APEX-managed grant standard from `references/workspace/schema-mapping.md`:
+
+```sql
+BEGIN
+    APEX_INSTANCE_ADMIN.ADD_SCHEMA(
+        p_workspace             => :workspace_name,
+        p_schema                => :schema_name,
+        p_grant_apex_privileges => TRUE);
+END;
+/
+```
 
 ## Verify
 
-After creation, verify workspace, schema mappings, APEX users, and expected privileges through supported APEX views. Do not query or update internal APEX repository tables directly.
+After creation, verify workspace, schema mappings, APEX users, and expected privileges through supported APEX views. If the schema was mapped with `p_grant_apex_privileges => TRUE`, record that APEX-managed standard grants were requested. If a primary schema was mapped through `ADD_WORKSPACE` and the installed `ADD_WORKSPACE` signature does not expose `p_grant_apex_privileges`, verify the privileges explicitly. If expected privileges are still missing, route remediation to `db/security/privilege-management.md`; do not generate manual grants from this skill. Do not query or update internal APEX repository tables directly.
 
 ## Application Creation Boundary
 

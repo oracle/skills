@@ -45,17 +45,41 @@ Use this message:
 Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports only currently supported APEX releases: 26.1, 24.2, 24.1, and 23.2 as of May 2026. I will stop before generating APEX admin SQL or change steps for this environment.
 ```
 
-Use these checks before generating version-sensitive SQL:
+Use these checks before generating version-sensitive SQL. `APEX_INSTANCE_ADMIN` may be a synonym for the real APEX package, so resolve it before checking arguments:
 
 ```sql
 SELECT version_no
 FROM apex_release;
 
-SELECT argument_name
-FROM all_arguments
-WHERE package_name = 'APEX_INSTANCE_ADMIN'
-  AND object_name = 'ADD_WORKSPACE'
-ORDER BY sequence;
+WITH apex_instance_admin_target AS (
+    SELECT owner,
+           object_name AS package_name
+    FROM all_objects
+    WHERE object_name = 'APEX_INSTANCE_ADMIN'
+      AND object_type = 'PACKAGE'
+    UNION ALL
+    SELECT table_owner AS owner,
+           table_name  AS package_name
+    FROM all_synonyms
+    WHERE synonym_name = 'APEX_INSTANCE_ADMIN'
+)
+SELECT DISTINCT
+       a.owner,
+       a.package_name,
+       a.object_name,
+       a.argument_name,
+       a.position,
+       a.data_type,
+       a.defaulted
+FROM apex_instance_admin_target t
+JOIN all_arguments a
+  ON a.owner = t.owner
+ AND a.package_name = t.package_name
+WHERE a.object_name IN ('ADD_WORKSPACE', 'ADD_SCHEMA')
+ORDER BY a.owner,
+         a.package_name,
+         a.object_name,
+         a.position;
 ```
 
 Use `ALL_TAB_COLUMNS`, `ALL_ARGUMENTS`, `APEX_DICTIONARY`, and supported APEX version views before relying on a column or package parameter.

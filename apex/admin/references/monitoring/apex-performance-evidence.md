@@ -2,11 +2,13 @@
 
 Use this reference at the start of an APEX application performance analysis, especially when the user provides only one evidence source such as an APEX export or AWR report.
 
+When the user's entry point is a customer-specific APEX application export file, including `.sql` or `.apx`, load this reference before export-only, deployment, or security review references. Treat the export as the first performance/runtime evidence source, ask once for additional customer evidence, and then continue with the available material.
+
 APEX performance issues often span APEX metadata, APEX runtime logs, browser request behavior, database SQL, and sometimes ORDS/runtime infrastructure. Start by collecting enough APEX context before drawing root-cause conclusions from DB-only evidence.
 
 ## Ask For Evidence
 
-Ask which files or exports the user can provide and whether the result should be chat-only or saved as an external artifact. Always ask this before substantive analysis, even when the user has already provided one APEX export, AWR report, HAR file, or log and asks to start. Treat it as an intake question, not a gate: if the user declines more files or no more files are available, continue with the available evidence, finish the analysis, and state the evidence limits. If saved, ask for the output directory or exact file path before substantive analysis. Do not store customer-specific analysis under `apex/admin/<customer_name>` or anywhere else in the skill tree.
+Ask which files or exports the user can provide and whether the result should be chat-only or saved as an external artifact. Always ask this before substantive analysis, even when the user has already provided one APEX export, AWR report, HAR file, or log and asks to start. For `.sql` or `.apx` APEX application exports, ask this before running static export scans or export-only review. Treat it as an intake question, not a gate: if the user declines more files or no more files are available, continue with the available evidence, finish the analysis, and state the evidence limits. If saved, ask for the output directory or exact file path before substantive analysis. Do not store customer-specific analysis under `apex/admin/<customer_name>` or anywhere else in the skill tree.
 
 Do not require all evidence files before beginning; use the available evidence and mark gaps.
 
