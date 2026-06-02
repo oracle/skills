@@ -10,6 +10,8 @@ APEX performance issues often span APEX metadata, APEX runtime logs, browser req
 
 Ask which files or exports the user can provide and whether the result should be chat-only or saved as an external artifact. Always ask this before substantive analysis, even when the user has already provided one APEX export, AWR report, HAR file, or log and asks to start. For `.sql` or `.apx` APEX application exports, ask this before running static export scans or export-only review. Treat it as an intake question, not a gate: if the user declines more files or no more files are available, continue with the available evidence, finish the analysis, and state the evidence limits. If saved, ask for the output directory or exact file path before substantive analysis. Do not store customer-specific analysis under `apex/admin/<customer_name>` or anywhere else in the skill tree.
 
+For customer-specific `.sql` or `.apx` APEX application export analysis requests, make the additional-evidence question part of the first user-facing response. Do not run the export scanner, start a static review, draft findings, or create a report until the user has answered, declined, or already stated in the same prompt that no more evidence is available. The first response may also include the static-analysis boundary ("no database access is needed for this step") and the output-location question.
+
 Do not require all evidence files before beginning; use the available evidence and mark gaps.
 
 Useful APEX-side evidence:
