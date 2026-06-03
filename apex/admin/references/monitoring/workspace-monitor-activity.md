@@ -21,6 +21,7 @@ Route these Workspace Administration reports here before choosing deeper SQL, de
 - Application Errors: use for App Builder error report triage. Continue to `error-handling.md` for APEX error-log and debug correlation.
 - Workspace Schema Reports: use for mapped schemas, Schema Tablespace Utilization, Database Privileges, and Workspace Schemas. Keep APEX mapping context here; route generic user creation, grants, quotas, tablespaces, and privilege remediation to the DB skill.
 - Web Service Activity Log: use for REST Data Source, Web Source, and outbound web service call activity. Continue to `rest-data-sources.md` for APEX webservice-log analysis. Never print credentials, API keys, bearer tokens, or full secret-bearing URLs.
+- Generative AI service utilization, service history, AI token limits, remaining tokens, or token consumption per app: continue to `ai-token-monitoring.md`. Treat prompts, completions, API keys, credential static IDs, and provider details as sensitive.
 - Archived Activity: use for historical APEX activity retained by the workspace, including Page Views, By View, By User, By Application, By Weighted Page Performance, By Page Performance, By Application and Page, By Page, By User and Page, and By Page and User. Avoid exporting or pasting bulk logs into chat; summarize counts, time windows, applications, pages, and anonymized patterns.
 - Archive of Purged Task Files: use for Team Development task-file archive awareness. Do not retrieve file payloads unless the user explicitly asks and the sensitivity is reviewed.
 
@@ -90,6 +91,7 @@ ORDER BY table_name,
 - Page Views, Active Sessions, Page View Analysis, Archived Activity: `activity-log.md`
 - Application Errors, Debug, Trace Mode: `error-handling.md`
 - Web Service Activity Log: `rest-data-sources.md`
+- Generative AI service utilization, service history, and AI token monitoring: `ai-token-monitoring.md`
 - Page or component latency: `page-performance.md`, `ir-ig-tuning.md`
 - Workspace schemas and mappings: `../workspace/schema-mapping.md`
 - Database privileges, users, quotas, tablespaces, auditing, or identity-provider investigation: announce the DB skill handoff before generating generic DB steps.

@@ -55,7 +55,7 @@ Version check: this APEX view or package signature can vary by release. I will i
 ```
 
 ```text
-Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports only currently supported APEX releases: 26.1, 24.2, 24.1, and 23.2 as of May 2026. I will stop before generating APEX admin SQL or change steps for this environment.
+Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports only currently supported APEX releases: 26.1, 24.2, and 24.1 as of June 2026. I will stop before generating APEX admin SQL or change steps for this environment.
 ```
 
 ```text

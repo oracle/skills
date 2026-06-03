@@ -1,6 +1,6 @@
 # APEX Workspace Resource Governance
 
-Use this workflow when reviewing workspace limits, storage pressure, request ceilings, active session counts, or whether a workspace quota should be adjusted. Keep this topic focused on APEX workspace limits and governance context.
+Use this workflow when reviewing workspace limits, storage pressure, request ceilings, active session counts, or whether a workspace quota should be adjusted. Keep this topic focused on APEX workspace limits and governance context. For Generative AI token limits, remaining tokens, AI service utilization, or token consumption per application, route to `../monitoring/ai-token-monitoring.md`.
 
 DB skill in use: `db/performance/ash-analysis.md`, `db/performance/awr-reports.md`, `db/performance/wait-events.md`, and `db/monitoring/space-management.md` for generic CPU, I/O, wait-event, AWR/ASH, and tablespace analysis. The APEX workspace skill is being used for workspace quota, schema mapping, file-storage, and Resource Manager context.
 
@@ -42,6 +42,8 @@ ORDER BY table_name,
 ## APEX Governance Checks
 
 Use `APEX_WORKSPACES` and supported quota views to review file storage, session/request ceilings, application counts, and Resource Manager mapping. Columns such as `FILE_STORAGE_MAX` and `RM_CONSUMER_GROUP` are version-dependent; inspect columns first.
+
+Generative AI token limits are separate governance signals. Use `../monitoring/ai-token-monitoring.md` for AI service, workspace, provider, and app-level token questions instead of treating AI tokens as storage, session, or Resource Manager quota.
 
 Do not treat database CPU/I/O pressure as a quota problem without mapped-schema and time-window evidence. Use APEX workspace/application/page context to choose a time window, then use the DB skills for generic resource analysis.
 

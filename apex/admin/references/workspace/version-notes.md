@@ -10,25 +10,43 @@ https://docs.oracle.com/en/database/oracle/apex/26.1/htmig/
 https://docs.oracle.com/en/database/oracle/apex/26.1/aeapi/
 ```
 
-Use APEX 24.2 documentation only when the installed or target environment is APEX 24.2:
+Use Oracle's APEX support table for current support status:
+
+```text
+https://www.oracle.com/apex/
+```
+
+As of June 3, 2026, Oracle's published support matrix lists:
+
+| Release | General Availability | Support Ends |
+| --- | --- | --- |
+| 26.1 | May 2026 | November 2027 |
+| 24.2 | January 2025 | July 2027 |
+| 24.1 | June 2024 | December 2026 |
+| 23.2 | November 2023 | May 2026 |
+
+Treat `23.2` as expired for active MCP-backed APEX admin workflows after May 2026. Use it only for explicitly requested legacy-version migration or compatibility analysis.
+
+Use APEX 24.2 or APEX 24.1 documentation only when the installed or target environment is that APEX release:
 
 ```text
 https://docs.oracle.com/en/database/oracle/apex/24.2/
+https://docs.oracle.com/en/database/oracle/apex/24.1/
 ```
 
-Do not use APEX documentation older than 24.2 unless the user explicitly asks for legacy-version migration or compatibility analysis. If the target version is unknown, use APEX 26.1 as the default reference and keep SQL version-tolerant.
+Do not use APEX documentation older than 24.1 unless the user explicitly asks for legacy-version migration or compatibility analysis. If the target version is unknown, use APEX 26.1 as the default reference and keep SQL version-tolerant.
 
 ## Supported Version Gate
 
 Run this gate before any MCP-backed APEX admin workflow. Continue only when the
 active connection has passed the APEX Admin Identity Gate in `apex/admin/SKILL.md`
-and the installed APEX version is in the supported list. As of May 2026, this
-skill supports APEX `26.1`, `24.2`, `24.1`, and `23.2`.
+and the installed APEX version is in the supported list. As of June 2026, this
+skill supports APEX `26.1`, `24.2`, and `24.1`.
 
 ```sql
 SELECT version_no,
        CASE
-           WHEN REGEXP_LIKE(version_no, '^(26\.1|24\.2|24\.1|23\.2)(\.|$)')
+           WHEN REGEXP_LIKE(version_no, '^(26\.1|24\.2|24\.1)(\.|$)')
            THEN 'SUPPORTED'
            ELSE 'UNSUPPORTED'
        END AS apex_admin_skill_support
@@ -42,7 +60,7 @@ instructions.
 Use this message:
 
 ```text
-Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports only currently supported APEX releases: 26.1, 24.2, 24.1, and 23.2 as of May 2026. I will stop before generating APEX admin SQL or change steps for this environment.
+Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports only currently supported APEX releases: 26.1, 24.2, and 24.1 as of June 2026. I will stop before generating APEX admin SQL or change steps for this environment.
 ```
 
 Use these checks before generating version-sensitive SQL. `APEX_INSTANCE_ADMIN` may be a synonym for the real APEX package, so resolve it before checking arguments:

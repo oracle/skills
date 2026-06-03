@@ -49,7 +49,7 @@ admin/
 
 - Workspace lifecycle/provisioning/listing/removal: `references/workspace/lifecycle.md`, `references/workspace/resource-governance.md`, `references/workspace/users-and-auth.md`, `references/workspace/schema-mapping.md`, `references/workspace/removal.md`, `references/workspace/version-notes.md`, `references/workspace/security-review.md`
 - Security/auth/session/export safety: `references/security/guardrails.md`, `references/security/safety-messages.md`, `references/security/audit-columns.md`, `references/security/security-review.md`
-- Monitoring/runtime diagnosis/MCP availability: start broad APEX performance cases and customer-specific `.sql` or `.apx` APEX application export analysis with `references/monitoring/apex-performance-evidence.md`; then route to `references/monitoring/workspace-monitor-activity.md`, `references/monitoring/activity-log.md`, `references/monitoring/error-handling.md`, `references/monitoring/user-journey-replay.md`, `references/monitoring/background-jobs.md`, `references/monitoring/rest-data-sources.md`, `references/monitoring/page-performance.md`, `references/monitoring/export-runtime-risk-review.md`, `references/monitoring/ir-ig-tuning.md`, `references/monitoring/awr-wait-correlation.md`, `references/monitoring/mcp-availability.md`, `references/monitoring/security-review.md`
+- Monitoring/runtime diagnosis/MCP availability: start broad APEX performance cases and customer-specific `.sql` or `.apx` APEX application export analysis with `references/monitoring/apex-performance-evidence.md`; then route to `references/monitoring/workspace-monitor-activity.md`, `references/monitoring/activity-log.md`, `references/monitoring/error-handling.md`, `references/monitoring/user-journey-replay.md`, `references/monitoring/background-jobs.md`, `references/monitoring/rest-data-sources.md`, `references/monitoring/ai-token-monitoring.md`, `references/monitoring/page-performance.md`, `references/monitoring/export-runtime-risk-review.md`, `references/monitoring/ir-ig-tuning.md`, `references/monitoring/awr-wait-correlation.md`, `references/monitoring/mcp-availability.md`, `references/monitoring/security-review.md`
 - Deployment/export/import/patching/instance-administrator bootstrap: `references/deployment/pre-check.md`, `references/deployment/export-review.md`, `references/deployment/import-promotion.md`, `references/deployment/deployment-identity.md`, `references/deployment/instance-admin-bootstrap.md`, `references/deployment/post-deploy-validation.md`, `references/deployment/patching.md`, `references/deployment/security-review.md`
 - New APEX application generation: announce the skill handoff, then route the application-generation work to `apex/apexlang/SKILL.md`. Keep `admin/` loaded only for workspace, deployment identity, connection safety, import/promotion, monitoring, and post-deploy validation context.
 
@@ -97,7 +97,7 @@ The APEX Instance Administrator bootstrap path in `references/deployment/instanc
 
 ## Supported Version Gate
 
-Before any MCP-backed APEX admin workflow, check the installed APEX version from `APEX_RELEASE`. Continue only for APEX releases supported by this skill: `26.1`, `24.2`, `24.1`, and `23.2` as of May 2026. If the detected version is not supported, emit the unsupported-version safety message and stop before generating SQL, PL/SQL, deployment steps, monitoring queries, or workspace changes.
+Before any MCP-backed APEX admin workflow, check the installed APEX version from `APEX_RELEASE`. Continue only for APEX releases supported by this skill: `26.1`, `24.2`, and `24.1` as of June 2026. If the detected version is not supported, emit the unsupported-version safety message and stop before generating SQL, PL/SQL, deployment steps, monitoring queries, or workspace changes.
 
 Use `references/workspace/version-notes.md` for the exact gate query and version-sensitive follow-up checks.
 
@@ -176,10 +176,17 @@ https://docs.oracle.com/en/database/oracle/apex/26.1/htmig/
 https://docs.oracle.com/en/database/oracle/apex/26.1/aeapi/
 ```
 
-Secondary supported entry point when the installed or target environment is APEX 24.2:
+Current APEX support status:
+
+```text
+https://www.oracle.com/apex/
+```
+
+Secondary supported entry points when the installed or target environment is APEX 24.2 or APEX 24.1:
 
 ```text
 https://docs.oracle.com/en/database/oracle/apex/24.2/
+https://docs.oracle.com/en/database/oracle/apex/24.1/
 ```
 
-Do not use APEX documentation older than 24.2 unless the user explicitly asks for legacy-version migration or compatibility analysis. If legacy documentation is needed, label it as legacy and keep the current 26.1 entry point visible.
+Do not use APEX documentation older than 24.1 unless the user explicitly asks for legacy-version migration or compatibility analysis. If legacy documentation is needed, label it as legacy and keep the current 26.1 entry point visible.

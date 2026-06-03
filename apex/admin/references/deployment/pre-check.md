@@ -64,13 +64,14 @@ https://docs.oracle.com/en/database/oracle/apex/26.1/htmig/
 https://docs.oracle.com/en/database/oracle/apex/26.1/aeapi/
 ```
 
-Use APEX 24.2 documentation only when the installed or target environment is APEX 24.2:
+Use APEX 24.2 or APEX 24.1 documentation only when the installed or target environment is that APEX release:
 
 ```text
 https://docs.oracle.com/en/database/oracle/apex/24.2/
+https://docs.oracle.com/en/database/oracle/apex/24.1/
 ```
 
-Do not use APEX documentation older than 24.2 unless the user explicitly asks for legacy-version migration or compatibility analysis. If the target version is unknown, use APEX 26.1 as the default reference and keep SQL version-tolerant.
+Do not use APEX documentation older than 24.1 unless the user explicitly asks for legacy-version migration or compatibility analysis. If the target version is unknown, use APEX 26.1 as the default reference and keep SQL version-tolerant.
 
 Use APEX Diff as a convenience helper to compare standard APEX Dictionary
 views and public PL/SQL APIs across source and target releases, including
