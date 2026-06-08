@@ -47,10 +47,7 @@ page 20 (
         }
         appearance {
             template: @/title-bar
-            templateOptions: [
-                #DEFAULT#
-                t-BreadcrumbRegion--useBreadcrumbTitle
-            ]
+            templateOptions: #DEFAULT#
         }
         componentAppearance {
             breadcrumbTemplate: @/breadcrumb
@@ -94,7 +91,11 @@ page 20 (
         }
         componentAppearance {
             template: @/standard
-            templateOptions: #DEFAULT#
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--horizontalBorders
+            ]
         }
         security {
             authorizationScheme: mustNotBePublicUser

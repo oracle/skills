@@ -70,3 +70,5 @@ region {{regionStaticId}} (
 - `boundingBox.geometryColumnDataType: sdoGeometry` requires `boundingBox.sdoGeometryColumn`.
 - `boundingBox.geometryColumnDataType: longitudeLatitude` requires the min/max longitude and latitude column set.
 - Use bbox metadata only when `mapFeatures` does not include `infiniteMap`.
+- Use this scenario as the default viewport strategy for multi-marker longitude/latitude maps. Source the bounds from the same filtered dataset as the visible layer, for example `min(longitude)`, `min(latitude)`, `max(longitude)`, and `max(latitude)`.
+- Do not replace this with an `initialPositionAndZoom` query that returns `avg(longitude)`, `avg(latitude)`, and a fixed zoom level unless the requirements explicitly specify one known geography.

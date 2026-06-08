@@ -46,30 +46,36 @@ java -version
 
 ## Connecting to Oracle Database
 
-### Basic Username/Password
+> **Do not put passwords on the SQLcl command line.** The examples below omit the password so SQLcl prompts for it, or use a wallet so no password is needed at all. See [Discouraged: Passwords on the Command Line](#discouraged-passwords-on-the-command-line) for the leak surfaces this avoids.
+
+### Basic Connection (Password Prompt)
+
+Omit the password from the connect string. SQLcl prompts for it without echoing input:
 
 ```shell
-sql username/password@hostname:port/service_name
+sql username@hostname:port/service_name
 ```
 
 Example:
 
 ```shell
-sql hr/hr@localhost:1521/FREEPDB1
+sql hr@localhost:1521/FREEPDB1
 ```
+
+SQLcl prompts: `Password? (**********?)`
 
 ### Easy Connect Syntax (EZConnect)
 
 Easy Connect is the most portable connection method and does not require a `tnsnames.ora` file:
 
 ```shell
-sql username/password@//hostname:port/service_name
+sql username@//hostname:port/service_name
 ```
 
 You can also use EZConnect Plus syntax (Oracle 19c+) for additional options:
 
 ```shell
-sql hr/hr@"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=myhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=MYPDB)))"
+sql hr@"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=myhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=MYPDB)))"
 ```
 
 ### TNS Alias
@@ -77,14 +83,14 @@ sql hr/hr@"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=myhost)(PORT=1521))(CONNECT
 If `$TNS_ADMIN` or `$ORACLE_HOME/network/admin/tnsnames.ora` is configured:
 
 ```shell
-sql username/password@MY_TNS_ALIAS
+sql username@MY_TNS_ALIAS
 ```
 
 Set the TNS admin directory explicitly:
 
 ```shell
 export TNS_ADMIN=/path/to/wallet_or_tns
-sql hr/hr@MY_SERVICE
+sql hr@MY_SERVICE
 ```
 
 ### Oracle Cloud (Autonomous Database) Wallet
@@ -95,35 +101,45 @@ Download the wallet ZIP from the Oracle Cloud Console, then unzip it to a local 
 unzip Wallet_MyDB.zip -d /path/to/wallet
 ```
 
-Connect using the wallet:
+Connect using the wallet (SQLcl prompts for the password):
 
 ```shell
-sql username/password@"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcps)(HOST=adb.us-ashburn-1.oraclecloud.com)(PORT=1522))(CONNECT_DATA=(SERVICE_NAME=myadb_high.adb.oraclecloud.com))(SECURITY=(MY_WALLET_DIRECTORY=/path/to/wallet)))"
+sql username@"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcps)(HOST=adb.us-ashburn-1.oraclecloud.com)(PORT=1522))(CONNECT_DATA=(SERVICE_NAME=myadb_high.adb.oraclecloud.com))(SECURITY=(MY_WALLET_DIRECTORY=/path/to/wallet)))"
 ```
 
 Alternatively, set `TNS_ADMIN` to the wallet directory and use the pre-defined TNS aliases it contains:
 
 ```shell
 export TNS_ADMIN=/path/to/wallet
-sql admin/MyPassword123@myadb_high
+sql admin@myadb_high
 ```
 
-### Prompting for Password (Secure)
-
-Omit the password to be prompted (avoids password in shell history):
-
-```shell
-sql hr@localhost:1521/FREEPDB1
-```
-
-SQLcl will prompt: `Password? (**********?)`
+For non-interactive automation, store the database password in an Oracle Secure External Password Store (SEPS) wallet and connect with the `/@alias` form so no password ever appears on the command line or in scripts. See the SQLcl CI/CD skill (`db/sqlcl/sqlcl-cicd.md`) and the Oracle Database Security Guide for SEPS setup.
 
 ### SYSDBA / SYSOPER Connections
 
+Prefer OS authentication for local SYSDBA work — no password is required:
+
 ```shell
-sql sys/password@localhost:1521/ORCL as sysdba
 sql / as sysdba
 ```
+
+For a remote SYSDBA connection, omit the password to be prompted:
+
+```shell
+sql sys@localhost:1521/ORCL as sysdba
+```
+
+### Discouraged: Passwords on the Command Line
+
+Embedding the password in the connect string (`sql user/password@service`) is **discouraged** and should not appear in scripts, documentation, training material, or shared commands. The credential is exposed to:
+
+- Other local users via `ps -ef`, `/proc/<pid>/cmdline`, and Windows process listings.
+- Shell history files such as `~/.bash_history`, `~/.zsh_history`, and PowerShell `ConsoleHost_history.txt`.
+- Terminal scrollback buffers and screen recordings.
+- CI/CD job logs, container logs, and audit pipelines that capture command lines.
+
+If a workflow truly cannot be reorganized to use a prompt, a wallet, or SEPS, treat the inline-password form as a temporary, isolated exception and rotate the credential afterwards.
 
 ### Starting Up and Shutting Down a Database
 
@@ -166,10 +182,10 @@ STARTUP
 
 ### Connecting from Within SQLcl
 
-Use the `CONNECT` command to switch connections without restarting:
+Use the `CONNECT` command to switch connections without restarting. Omit the password so SQLcl prompts:
 
 ```sql
-CONNECT hr/hr@localhost:1521/FREEPDB1
+CONNECT hr@localhost:1521/FREEPDB1
 CONNECT admin@myadb_high
 ```
 
@@ -325,10 +341,10 @@ ARGUMENT output_format VARCHAR2 "Output format: CSV or JSON"
 SELECT * FROM employees WHERE department_id = &department_id;
 ```
 
-Call the script and pass values positionally:
+Call the script and pass values positionally (omit the password so SQLcl prompts):
 
 ```shell
-sql user/pass@service @my_report.sql 90 CSV
+sql user@service @my_report.sql 90 CSV
 ```
 
 Arguments are matched by position to the order they are declared in the script. They support basic types (`NUMBER`, `VARCHAR2`, `DATE`) and an optional description string used by `HELP` within the script.
@@ -497,3 +513,4 @@ After migrating to SQLcl, update your scripts and aliases to use `sql` instead o
 - [Starting and Leaving SQLcl — startup flags and version flag](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/startup-sqlcl-settings.html)
 - [SQLcl Release Notes 25.2](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.html)
 - [SQLcl Release Notes 25.2.1 — Java 17/21 requirement confirmed](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.1.html)
+- [Oracle Database Security Guide 19c — Configuring Authentication (Secure External Password Store)](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/configuring-authentication.html)

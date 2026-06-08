@@ -73,3 +73,5 @@ region {{regionStaticId}} (
 - `geometryColumnDataType: longitudeLatitude` requires `initialLongitudeColumn` and `initialLatitudeColumn`.
 - For `type: sqlQuery`, the SQL select list must expose aliases that exactly match each configured `initial*Column` property.
 - `initialZoomlevelColumn` is optional in SQL mode, but when present the SQL must return that alias explicitly.
+- Do not use this scenario to center a multi-marker map on `avg(latitude)` / `avg(longitude)` with a fixed zoom. For store/customer/location maps with more than one marker, use SQL-derived `boundingBox` instead so the initial viewport fits the data.
+- Use fixed zoom only for a requirement-backed single known geography or one-location map.

@@ -21,7 +21,7 @@ Preconditions
 - The same `resolved_app_path` has already passed SQLcl `apex validate` in the active authenticated SQLcl user session.
 
 Canonical flow
-1. Open one authenticated SQLcl user session with `db_connection_name`, trying `sql <db_connection_name>` first and falling back to `sql /nolog` plus `connect <db_connection_name>` inside that same session when needed.
+1. Open one authenticated SQLcl user session with `db_connection_name`, trying `sql -name <db_connection_name>` first, then legacy `sql <db_connection_name>`, and falling back to `sql /nolog` plus `connect <db_connection_name>` inside that same session when needed.
 2. Prefer the resolved build-root runtime via `apex sql`; otherwise use the PATH SQLcl session.
 3. Run `apex validate -input <resolved_app_path>` in that session if a valid same-session runtime status is not already active.
 4. If the active runtime session reports multiple-workspace ambiguity, resolve the workspace id automatically for the active `db_connection_name` and restart the same real-SQLcl sequence immediately with an explicit run-scoped `-workspaceid`.

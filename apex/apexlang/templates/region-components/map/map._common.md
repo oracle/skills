@@ -98,6 +98,8 @@ Standardize the Oracle APEX Maps surface using the attached `MapsLang.apx` struc
 - `useVectorTiles` is a layer data-fetch optimization. It is not a styling shortcut and does not relax source-location or geometry restrictions.
 - `queryResults` initial positioning is intentionally still visible even though it conflicts with `useVectorTiles`; Builder enforces the rejection through callback validation rather than by hiding the property.
 - `INFINITE_MAP` disables bbox authoring metadata.
+- Multi-marker maps should fit the data, not center on an average point. Do not use `avg(latitude)` / `avg(longitude)` with a fixed zoom level for store/customer/location maps; use `boundingBox` with min/max coordinates or another query-results viewport pattern.
+- Fixed `initialZoomlevelColumn` values are appropriate only for a requirement-backed single geography or known one-location viewport.
 - `MAP_HAS_SPATIAL_INDEX` is a performance hint, not a guarantee that a spatial index will always be used.
 - The layer link contract uses `linkTargetType` plus helper properties under the `LINK_TARGET_` prefix rather than a single raw `linkTarget` payload.
 - Runtime mutation methods and popup helpers must be documented separately from declarative metadata because they exist only after the widget initializes in the browser.

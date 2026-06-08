@@ -146,6 +146,8 @@ layer {{layer.staticId}} (
 
 - Heat-map layers do not expose the normal tooltip, link, or info-window paths.
 - Use `tooltip { column: ... }` as the default popup path for the attached-style standard layer.
+- Context-sensitive SQL-backed layers must use live-valid refresh/session-state patterns for the active compiler. Do not emit unsupported map-layer `source.pageItemsToSubmit`, and do not use `v()`/`nv()` session-state reads as a workaround.
+- Marker edit/open behavior must use a declarative layer `link` with target page and item mappings, backed by `columnMapping.primaryKeyColumn`.
 - Keep line, polygon, and 3D display-specific metadata in the dedicated scenario templates rather than re-expanding the shared base layer shape.
 - `functionBody` is supported for map layers, but it is an advanced escape hatch:
   - it must return SQL text

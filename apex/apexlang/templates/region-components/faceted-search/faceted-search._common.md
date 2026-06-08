@@ -44,10 +44,15 @@ Document the native faceted-search region shell and its filter child metadata bo
   - `range`
 - For discrete facets (`checkboxGroup`, `radioGroup`, `selectList`), prefer:
   - `lov { type: distinctValues }`
+- For `checkboxGroup` and `radioGroup` facets, emit:
+  - `listEntries { maxDisplayedEntries: 10 }`
+  - add `displayFilterInitially: true` when the facet can have many values, especially Product, Customer, Store, Assignee, Owner, User, Employee, Supplier, Email, SKU, name, or title facets
 - For free-text search facets, use:
   - `source { dbColumns: COL_A,COL_B,... }`
 - For range facets, use:
   - `source { databaseColumn: <col> dataType: number|date }`
+- For date/time facets, use `dataType: date` even when the schema column is `TIMESTAMP`; the facets runtime expects the date facet type, not `timestamp` or `varchar2`.
+- For string/discrete facets, omit `source.dataType`; never emit `varchar2`, `VARCHAR2`, `STRING`, or report-column data type labels in faceted-search facet sources.
 
 ## Minimal Child Examples
 
@@ -78,6 +83,26 @@ facet P7_F_STATUS (
   }
   source {
     databaseColumn: ORDER_STATUS
+  }
+)
+
+facet P7_F_PRODUCT (
+  type: checkboxGroup
+  label {
+    label: Product
+  }
+  lov {
+    type: distinctValues
+  }
+  layout {
+    sequence: 25
+  }
+  listEntries {
+    maxDisplayedEntries: 10
+    displayFilterInitially: true
+  }
+  source {
+    databaseColumn: PRODUCT_NAME
   }
 )
 
@@ -130,7 +155,10 @@ region {{regionStaticId}} (
 - Facet columns must exist in the results region source query.
 - Facet names must be page-scoped and collision-safe (for example `P{page}_FACET_*` or `FS_*`); avoid generic names like `FACET_SEARCH`.
 - `listEntries.maxDisplayedEntries` is allowed only when facet `type` is `checkboxGroup` or `radioGroup`.
+- For `checkboxGroup` and `radioGroup` facets, set `listEntries.maxDisplayedEntries`; default to `10` and keep deliberate values between `5` and `15`.
+- For high-cardinality value lists, set `listEntries.displayFilterInitially: true`.
 - For all other facet types (including `range`), omit the `listEntries` block.
+- Facet source data types are not generic SQL metadata. Use only `date` for date/time facets and `number` for numeric facets. Omit `source.dataType` for string facets so the runtime does not receive unsupported `VARCHAR2` facet metadata.
 - Do not emit internal runtime tokens such as `NATIVE_SEARCH` or `NATIVE_SELECT_LIST` in APEXlang unless a compiler-validated example explicitly requires them; the canonical emitted DSL in this repo uses the simple type names above.
 - Keep facet definitions declarative; avoid custom JS unless required.
 - Do not use `slot: body` plus `columnSpan` values for the canonical faceted-search sidebar.

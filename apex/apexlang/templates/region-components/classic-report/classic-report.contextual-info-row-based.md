@@ -99,6 +99,7 @@ region {{regionStaticId}} (
 # Conditional Rendering Rules
 
 - Refer to `classic-report._common.md` for optional attributes and guardrails.
+- For contextual-info appearance, use `template: @/contextual-info` with `templateOptions` exactly `#DEFAULT#`, `t-Region--hideHeader js-addHiddenHeadingRoleDesc`, and `t-Region--noUI`.
 - When `appearance.templateOptions` contains more than one accepted value, emit bracketed multi-line array syntax with one accepted value per line; never use inline comma-separated arrays.
 - Omit `headerAndFooter` when no header/footer values are provided.
 - Omit `messages` when `messages.whenNoDataFound` is not provided.

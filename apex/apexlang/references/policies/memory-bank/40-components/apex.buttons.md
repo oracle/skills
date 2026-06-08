@@ -135,6 +135,7 @@ button STATIC_ID_OR_NAME (
 ### Icon usage
 - If buttonTemplate ∈ {@/text-with-icon, @/icon} then icon may be set.
 - If buttonTemplate = @/text then icon must be omitted.
+- Button icons must be Font APEX `fa-*` classes only; do not use Material, JET, image, custom CSS, or alias icon values.
 
 ### Server-side condition
 - Validate against the canonical catalog (references/policies/memory-bank/20-data/apex.logic.md).

@@ -14,25 +14,26 @@ Define the shared variable contract, guardrails, and output skeleton for Content
 # Generation Rules (MANDATORY)
 
 1. Use `type: themeTemplateComponent/contentRow`.
-2. Use `componentAppearance.display: partial` or `report` only.
-3. For `primaryActions`, allow only `template: button` or `template: menu`.
-4. Use `databaseColumn` for column source mappings.
-5. Keep link/action behavior explicit. Use a structured `behavior.target` for same-application page targets when supported; use `behavior.type` plus `behavior.targetUrl` for URL-style targets.
-6. Use `settings.displayAvatar` to enable avatar rendering; do not place `displayAvatar` inside `plugin-avatar`.
-7. Use `settings.displayBadge` to enable badge rendering; do not place `displayBadge` inside `plugin-badge`.
-8. Use `plugin-badge.icon` only for badge icon configuration when the prompt explicitly requests an icon.
-9. Use `plugin-badge.position` only for badge placement configuration when the prompt explicitly requests a start/end placement override.
-10. Close component blocks declared with parentheses (for example `action ... (` or `column ... (`) using `)` after nested blocks.
-11. Keep plugin attribute names and enumerated values aligned with `content-row._template_options.md`, `../avatar._template_options.md`, and `../badge._template_options.md`.
-12. Content Row display settings that map to query columns must use `&COLUMN_NAME.` substitution syntax, for example `title: &ORDER_LABEL.`. Do not emit bare column aliases such as `title: ORDER_LABEL` for `overline`, `title`, `description`, or `miscellaneous`.
-13. Native row selection uses `rowSelection` in report mode. Use `type: focusOnly` for focus behavior without persisted selection state, `type: singleSelection` with `currentSelectionPageItem` for one selected row, or `type: multipleSelection` with both `currentSelectionPageItem` and `selectAllPageItem` for multi-select. The current-selection item should normally be a same-page hidden item that stores selected row value(s); the select-all item should be a same-page checkbox. `rowSelection.currentSelectionPageItem` is native selection state only and does not satisfy master-detail drill-down or parent-child context setting.
-14. SQL-backed Content Row regions must use top-level `orderBy {}` for deterministic ordering. Do not put `ORDER BY` inside `source.sqlQuery`.
-15. Use `orderBy { type: staticValue orderByClause: ... }` by default. Use `orderBy { type: item ... }` only when an available same-page page item controls the sort.
-16. When emitting `pagination {}` for report-mode Content Row, `pagination.type` is required and must be `page` or `scroll`. Do not reuse classic-report pagination enums such as `rowRangesXToYNoPagination`.
-17. When `rowSelection` is emitted with any non-null mode, at least one immediate child `column (...)` must mark the row identity with `source.primaryKey: true`.
-18. When any Content Row child column uses grouping, emit top-level `orderBy {}` and order by every grouped column first, in grouping order, before any secondary tie-breakers.
-19. In report mode, explicit child `column (...)` metadata is required and should match the delivered region source projection by default.
-20. Do not satisfy the compiler by adding only a minimal subset of child columns when the source projects more fields. By default, emit child `column (...)` blocks that match the region source columns in order.
+2. Use `appearance.template: @/standard` for visible report-mode Content Row list/master regions unless a narrower, documented structural exception applies. Do not use `@/blank-with-attributes` for master/detail parent lists.
+3. Use `componentAppearance.display: partial` or `report` only.
+4. For `primaryActions`, allow only `template: button` or `template: menu`.
+5. Use `databaseColumn` for column source mappings.
+6. Keep link/action behavior explicit. Use a structured `behavior.target` for same-application page targets when supported; use `behavior.type` plus `behavior.targetUrl` for URL-style targets.
+7. Use `settings.displayAvatar` to enable avatar rendering; do not place `displayAvatar` inside `plugin-avatar`.
+8. Use `settings.displayBadge` to enable badge rendering; do not place `displayBadge` inside `plugin-badge`.
+9. Use `plugin-badge.icon` only for badge icon configuration when the prompt explicitly requests an icon.
+10. Use `plugin-badge.position` only for badge placement configuration when the prompt explicitly requests a start/end placement override.
+11. Close component blocks declared with parentheses (for example `action ... (` or `column ... (`) using `)` after nested blocks.
+12. Keep plugin attribute names and enumerated values aligned with `content-row._template_options.md`, `../avatar._template_options.md`, and `../badge._template_options.md`.
+13. Content Row display settings that map to query columns must use `&COLUMN_NAME.` substitution syntax, for example `title: &ORDER_LABEL.`. Do not emit bare column aliases such as `title: ORDER_LABEL` for `overline`, `title`, `description`, or `miscellaneous`.
+14. Native row selection uses `rowSelection` in report mode. Use `type: focusOnly` for focus behavior without persisted selection state, `type: singleSelection` with `currentSelectionPageItem` for one selected row, or `type: multipleSelection` with both `currentSelectionPageItem` and `selectAllPageItem` for multi-select. The current-selection item should normally be a same-page hidden item that stores selected row value(s); the select-all item should be a same-page checkbox. `rowSelection.currentSelectionPageItem` is native selection state only and does not satisfy master-detail drill-down or parent-child context setting.
+15. SQL-backed Content Row regions must use top-level `orderBy {}` for deterministic ordering. Do not put `ORDER BY` inside `source.sqlQuery`.
+16. Use `orderBy { type: staticValue orderByClause: ... }` by default. Use `orderBy { type: item ... }` only when an available same-page page item controls the sort.
+17. When emitting `pagination {}` for report-mode Content Row, `pagination.type` is required and must be `page` or `scroll`. Do not reuse classic-report pagination enums such as `rowRangesXToYNoPagination`.
+18. When `rowSelection` is emitted with any non-null mode, at least one immediate child `column (...)` must mark the row identity with `source.primaryKey: true`.
+19. When any Content Row child column uses grouping, emit top-level `orderBy {}` and order by every grouped column first, in grouping order, before any secondary tie-breakers.
+20. In report mode, explicit child `column (...)` metadata is required and should match the delivered region source projection by default.
+21. Do not satisfy the compiler by adding only a minimal subset of child columns when the source projects more fields. By default, emit child `column (...)` blocks that match the region source columns in order.
 
 ---
 

@@ -466,7 +466,7 @@ ALTER DATABASE OPEN;
 
 ## See Also
 
-- [RMAN Basics: Commands, Configuration, and Operations](../admin/rman-basics.md) — Day-to-day RMAN command reference
+- [RMAN Basics: Commands, Configuration, and Operations](rman-basics.md) — Day-to-day RMAN command reference
 
 ## Sources
 

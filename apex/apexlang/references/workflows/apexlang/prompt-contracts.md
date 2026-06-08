@@ -70,6 +70,20 @@ Required response order for non-trivial structural generation:
 2. `Generation Plan`
 3. generated APEXlang
 
+### Application Spec
+
+Required before complete application generation from functional requirements plus model/schema metadata.
+
+The spec must use `references/workflows/apexlang/application-spec.template.md` and include:
+
+- source evidence and conflict status
+- full page inventory
+- application composition plan
+- rich UI pattern plan using native APEX components
+- LOVs, validation behavior, modal/report-to-form behavior, and test plan
+- missing inputs and generation/runtime blockers
+- project-root `.apexlang/app-ux-contract.json` with non-empty `sourceEvidence`, `pageInventory`, `compositionPlan`, `richUiPatternPlan`, `lovPlan`, `behaviorPlan`, and `testPlan`
+
 ## Workflow Precedence
 
 Use this precedence order for every generation and revision task:
@@ -86,6 +100,20 @@ Do not:
 - skip to “best judgment” because a template seems close enough
 - invent target pages, target item names, enum values, slots, or block shapes when the workflow cannot prove them
 - treat local validator success as permission to infer missing structure
+
+## Validator Feedback Contract
+
+When local validation, live validation, VSCode Problems, `problems.json`, or `validation-report.json` emits rule IDs, feed those findings back into critique and revision using `assets/validator-fix-recipes.json`.
+
+For each reported issue, the critique/revision loop must preserve:
+
+- `rule_id`
+- cause
+- deterministic fix
+- owning guidance or template
+- verification result after rerun
+
+If a rule ID has no deterministic recipe and the owning guidance does not prove a fix, keep the run blocked with Required Revisions or Missing Inputs instead of guessing.
 
 ## Rule IDs
 
@@ -217,6 +245,30 @@ Invalid:
 
 ```text
 I could not prove the target item names, so I invented `P4_ID` to keep moving.
+```
+
+Ownership:
+- Draft prompt
+- Critique prompt
+
+### APPLICATION_SPEC_REQUIRED_001
+
+Statement:
+- Complete app generation from FR/model sources must produce an implementation-ready application spec from `application-spec.template.md` before drafting non-trivial `.apx` artifacts.
+
+Why:
+- Rich application generation needs page inventory, composition, shared components, UI pattern choices, data evidence, and tests locked before page-by-page APEXlang drafting starts.
+
+Valid:
+
+```text
+I completed the application spec, including the Application Composition Plan and Rich UI Pattern Plan, then generated page artifacts from that spec.
+```
+
+Invalid:
+
+```text
+I skipped the spec and started drafting pages directly from the requirements.
 ```
 
 Ownership:
@@ -399,6 +451,7 @@ Ownership:
 
 Statement:
 - Classic Report regions must use the canonical shared `appearance` block and the canonical report-template `componentAppearance` block.
+- Canonical Classic Report component options are `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`; do not emit alternating-row or row-highlight options by default.
 
 Why:
 - This is a high-drift area where template and import behavior must stay aligned. Live APEXlang validation on 26.1 maps the Classic Report report template to property `411` and reports missing values as `componentAppearance - template (string)`.
@@ -412,7 +465,11 @@ appearance {
 }
 componentAppearance {
   template: @/standard
-  templateOptions: #DEFAULT#
+  templateOptions: [
+    #DEFAULT#
+    t-Report--stretch
+    t-Report--horizontalBorders
+  ]
 }
 ```
 
@@ -441,7 +498,11 @@ Valid:
 ```apx
 componentAppearance {
   template: @/standard
-  templateOptions: #DEFAULT#
+  templateOptions: [
+    #DEFAULT#
+    t-Report--stretch
+    t-Report--horizontalBorders
+  ]
 }
 ```
 

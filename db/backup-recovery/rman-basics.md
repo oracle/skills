@@ -4,7 +4,7 @@
 
 RMAN (Recovery Manager) is Oracle's built-in backup and recovery tool. Unlike operating-system-level file copies, RMAN understands Oracle's internal block structure, can validate blocks for corruption, skip unused space, perform incremental backups, and integrate with Oracle's media management layer for tape.
 
-This guide covers the day-to-day RMAN commands a DBA needs to operate, configure, and report on backups. For deeper coverage of architecture, retention policies, and recovery scenarios, see `backup-recovery.md`.
+This guide covers the day-to-day RMAN commands a DBA needs to operate, configure, and report on backups. For deeper coverage of architecture, retention policies, and recovery scenarios, see `rman-overview.md`.
 
 ---
 
@@ -587,7 +587,7 @@ ALTER SYSTEM SET CONTROL_FILE_RECORD_KEEP_TIME = 31 SCOPE=BOTH;
 
 ## See Also
 
-- [Oracle RMAN Backup and Recovery](../admin/backup-recovery.md) — RMAN architecture, backup strategy, and recovery scenarios
+- [Oracle RMAN Backup and Recovery](rman-overview.md) — RMAN architecture, backup strategy, and recovery scenarios
 
 ## Sources
 

@@ -3,6 +3,20 @@
   "description": "Compact subcatalog for APEXlang. Load this before broader reference packages.",
   "domains": [
     {
+      "id": "app-from-fr-and-model",
+      "summary": "Complete APEX app generation from functional requirements plus authoritative model or schema metadata.",
+      "keywords": [
+        "create app",
+        "generate app",
+        "create app from fr and model",
+        "functional requirements",
+        "fr and model",
+        "application spec",
+        "requirements and model"
+      ],
+      "load_path": "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md"
+    },
+    {
       "id": "apex-developer",
       "summary": "Broad orchestration or mixed-domain APEX generation.",
       "keywords": [

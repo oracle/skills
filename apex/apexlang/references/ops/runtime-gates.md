@@ -28,7 +28,7 @@ description: Canonical same-session SQLcl runtime gates for APEXlang validate/im
 1. Resolve `db_connection_name` and the corresponding APEX workspace name.
 2. Run `node tools/apexctl.mjs runtime preflight --db-connection-name <db_connection_name>` and record both runtime candidates. Use `runtime doctor` when the caller wants the same preflight facts without continuing into validation/import.
 3. Prefer the resolved build-root runtime via `apex sql` when the matching local APEX build derived from `db_connection_name` is available and runtime-capable; otherwise use PATH SQLcl.
-4. Run validate-only through the single public agent command: `node tools/apexctl.mjs runtime validate --app-path <absolute_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root> [--execution-mode auto|build-root|path] [--vscode-problems-path <path>]`.
+4. Run validate-only through the single public agent command: `node tools/apexctl.mjs runtime validate --app-path <absolute_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root> [--compiler-oracle-home <compiler_metadata_home>] [--execution-mode auto|build-root|path] [--vscode-problems-path <path>]`.
 5. Treat the internal validate-only roundtrip as the `APEXlang source import` lane. It validates the staged source tree and is not interchangeable with any separate compiled SQL export import path.
 6. Treat preflight as a capability, live-metadata, and target-identity gate. When it successfully resolves runtime capability and live metadata, the run may continue even if the preflight stage budget was exceeded.
 7. Treat live `apex validate` as the first mandatory blocking runtime action in the happy path. For APEX/ORA runtime error text with a live DB connection, if runtime was to actually be tested, query `APEX_DEBUG_MESSAGES` through `references/domains/debugging/apex-debug-messages.md` to resolve the `PAGE_VIEW_ID` execution log before assigning ownership. Route the finding through the same debug/fix/revalidate loop before import is allowed.
@@ -45,9 +45,11 @@ description: Canonical same-session SQLcl runtime gates for APEXlang validate/im
 18. When export backups are produced, create the output directory lazily and write them under `APEXLANG_OUTPUT_ROOT/apex-exports/<app>/`, never under `applications/<app>/`.
 
 ## Rules
+- `--apex-root` selects only the APEX/SQLcl runtime used for live validation. Use `--compiler-oracle-home` only for explicit compiler-truth metadata overrides; otherwise let compiler truth auto-discover the VS Code SQLcl/APEXlang runtime.
 - The validated temp app path is always the canonical live-runtime path for the run.
 - Every validation run must emit `validation-report.json`, `validation-transcript.log`, `problems.json`, and `component-contracts/<build>.json`; `problems.json` is the review interface for repair.
-- Validation requires both compiler-driven target-build evidence and VSCode Problems diagnostics for generated or revised `.apx` artifacts. Missing or failing evidence blocks completion with `VALIDATION_DUAL_SOURCE_REQUIRED_001`.
+- Validation requires live APEX validation evidence from the selected target build. Missing required runtime inputs or missing live runtime evidence blocks completion with `LIVE_RUNTIME_VALIDATION_REQUIRED_001`.
+- Compiler-truth, local lint, and VS Code Problems snapshots are diagnostics after live validation passes; missing VS Code Problems snapshots are recorded as `not_provided`, not as blockers.
 - Patch only reported problems, then rerun `runtime validate` until `live_check_status = pass`.
 - The frozen preflight facts are the canonical handoff for later phases. If a required fact is missing or contradictory, stop in preflight and do not continue.
 - Preflight is a runtime-capability and identity gate, not a browser-debug gate.
@@ -64,6 +66,7 @@ description: Canonical same-session SQLcl runtime gates for APEXlang validate/im
 - The repo may keep heavy validator internals behind `node tools/apexctl.mjs`, but SQLcl command execution itself stays direct.
 - Prefer direct SQLcl or direct `apex` command help for command shape and capability checks; do not introduce helper scripts when the live task is simply validate/import/export.
 - Runtime target resolution must use structured SQL probes with explicit statement termination and machine-readable probe boundaries. SQL parse failures in target resolution are terminal and must not fall through to import retries.
+- Target-resolution timeout or failure is a terminal import blocker. Live validate success only proves the staged source can compile; it must not be used to justify direct SQLcl import, wrapper bypass, or create-new fallback.
 - Build-root resolution is part of the happy-path runtime selection flow when a matching local build is available.
 - Default `supporting_objects` is `false`. Bundled metadata is read-only guidance. Live DB metadata inspection during preflight must win when it conflicts with bundled metadata.
 - `--import-mode auto|direct` controls the import executor. `auto` may use one direct fallback only after the live APEXlang check passed and the failure was classified as wrapper/session-only.

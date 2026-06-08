@@ -27,7 +27,7 @@ Bundled compiler-truth lookup helper for APEXlang property debugging.
 node tools/query-valid-props.mjs --help
 node tools/query-valid-props.mjs --component column --parent region --list
 node tools/query-valid-props.mjs --component region --group source --when 94=NATIVE_IR --when 957=LOCAL --when 959=TABLE
-node tools/query-valid-props.mjs --oracle-home /path/to/oracle.sql-developer-26.1.2 --component column --parent region --list
+node tools/query-valid-props.mjs --compiler-oracle-home /path/to/oracle.sql-developer-26.1.2 --component column --parent region --list
 node tools/query-valid-props.mjs --template-component metricCard
 node tools/compiler-truth-audit.mjs --app-path applications/my-app --verify-component-attributes
 ```

@@ -5,6 +5,7 @@ Purpose
 
 Required inputs
 - Target table/view, primary key, page number, button names (Save/Create/Delete).
+- Form presentation when it is not the default drawer end/right: standard modal dialog, drawer start/top/bottom, wizard modal dialog, popout-style standard modal dialog, or normal non-modal detail page.
 - If invoked from calendar `createLink`, keep the new modal form on the same base table/view as the calendar source and gather any explicit calendar-to-form item mappings.
 - Every generated form region must include PK source item mappings with `primaryKey: true`; this is mandatory for normal, modal, and drawer pages.
 
@@ -24,12 +25,16 @@ Load
 
 Clarify
 - ARP vs packaged PL/SQL for DML.
+- Presentation only when the user or spec asks for something other than the default: drawer end/right is the default for report row edit/create flows; standard modal dialog, drawer start/top/bottom, wizard modal, popout-style dialog, and normal detail page require explicit requirements or a page design reason.
 - LOV sources (static vs SQL) and FK behavior.
 - If invoked from calendar `createLink`, confirm the target item that receives the selected calendar value(s) such as start date.
 - Keep create-link selected-date prefill separate from drag/drop persistence. `&APEX$NEW_START_DATE.` is allowed for `createLink.items` date prefills, while `:APEX$NEW_START_DATE` / `:APEX$NEW_END_DATE` remain drag/drop persistence bind variables.
 
 Templates
 - templates/page-examples/form-page/form-page._index.md
+- templates/page-layout-templates/modal-dialog/modal-dialog._index.md
+- templates/page-layout-templates/drawer/drawer._index.md (only when drawer is explicitly selected)
+- templates/page-layout-templates/wizard-modal-dialog/wizard-modal-dialog._index.md (only for wizard-style flows)
 
 References
 - references/policies/governance/00-governance.md

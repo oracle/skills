@@ -91,8 +91,7 @@ page 27 (
       templateOptions: [
         #DEFAULT#
         t-Report--stretch
-        t-Report--altRowsDefault
-        t-Report--rowHighlight
+        t-Report--horizontalBorders
       ]
     }
     column TASK_ID (
@@ -261,6 +260,7 @@ page 27 (
       }
       listEntries {
         maxDisplayedEntries: 10
+        displayFilterInitially: true
       }
       source {
         databaseColumn: ASSIGNEE
@@ -293,10 +293,7 @@ page 27 (
     }
     appearance {
       template: @/title-bar
-      templateOptions: [
-        #DEFAULT#
-        t-BreadcrumbRegion--useBreadcrumbTitle
-      ]
+      templateOptions: #DEFAULT#
     }
     componentAppearance {
       breadcrumbTemplate: @/breadcrumb

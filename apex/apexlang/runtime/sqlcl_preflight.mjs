@@ -77,7 +77,7 @@ function probePathSqlcl(executable) {
   const result = {
     candidate: "path",
     runtime_entrypoint: "sql on PATH",
-    authenticated_connect_order: ["sql <db_connection_name>", "sql /nolog + connect <db_connection_name>"],
+    authenticated_connect_order: ["sql -name <db_connection_name>", "sql <db_connection_name>", "sql /nolog + connect <db_connection_name>"],
     sqlcl_found: true,
     executable,
     version_raw: "",
@@ -124,7 +124,7 @@ function probeBuildRootRuntime(buildRootInfo) {
   const result = {
     candidate: "build-root",
     runtime_entrypoint: "apex sql from resolved build root",
-    authenticated_connect_order: ["apex sql (resolved build root)", "sql <db_connection_name>", "sql /nolog + connect <db_connection_name>"],
+    authenticated_connect_order: ["apex sql (resolved build root)", "sql -name <db_connection_name>", "sql <db_connection_name>", "sql /nolog + connect <db_connection_name>"],
     resolved_apex_build_root: buildRootInfo.resolved_apex_build_root,
     recommended_cwd: buildRootInfo.recommended_cwd,
     apex_cli_found: false,
@@ -199,7 +199,7 @@ const pathSqlcl = (() => {
     return {
       candidate: "path",
       runtime_entrypoint: "sql on PATH",
-      authenticated_connect_order: ["sql <db_connection_name>", "sql /nolog + connect <db_connection_name>"],
+      authenticated_connect_order: ["sql -name <db_connection_name>", "sql <db_connection_name>", "sql /nolog + connect <db_connection_name>"],
       sqlcl_found: false,
       executable: "",
       version_raw: "",

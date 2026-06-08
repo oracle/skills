@@ -1,0 +1,129 @@
+{
+  "title": "APEXlang Skills Release Notes",
+  "description": "Download the latest release version",
+  "mastheadUtility": "Oracle APEX",
+  "breadcrumbRoot": "APEXlang Skills",
+  "breadcrumbCurrent": "Release Notes",
+  "downloadUrl": "https://github.com/oracle/skills/",
+  "downloadLabel": "Download",
+  "releases": [
+    {
+      "version": "2026.06.04",
+      "summary": "This release adds the Spec-to-Code layer, giving generation a drafting phase that produces a frozen specification plan before implementation. It also strengthens live validation and import readiness, broadens UX and template quality gates, improves runtime-risk detection, and makes validation failures easier to understand and repair.",
+      "sections": [
+        {
+          "title": "Templates Documentation and Rules",
+          "items": [
+            "Added broader UX quality gates for generated apps, including breadcrumbs, master/detail layouts, dashboard KPI Metric Cards, Classic Report defaults, map viewport rules, modal refresh behavior, and full-app UX traceability.",
+            "Cards regions now support native row navigation actions with validated label, layout, and declarative behavior.target mappings."
+          ]
+        },
+        {
+          "title": "Workflow Process",
+          "items": [
+            "Live APEX validation is now authoritative for packaged APEXlang validation flows.",
+            "Validator now catches more runtime-risky issues, including stale template options, page filename/alias mismatches, invalid Smart Filter targets, missing breadcrumbs, drawer defaults, and unsupported component shapes.",
+            "Validation reports now produce clearer problems.json output and repair guidance.",
+            "Packaging/runtime docs and tests were updated so the public APEXlang package follows the same validation and compiler-truth expectations."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "2026.05.27",
+      "sections": [
+        {
+          "title": "APEX Components, Templates & UI Guidance",
+          "items": [
+            "These changes affect how APEX pages, regions, reports, forms, dashboards, layouts, and template-based UI are generated.",
+            "Classic Reports now use only the canonical appearance block and must not emit `componentAppearance`.",
+            "Form regions now emit only `edit { enabled: true }`; `edit.add`, `edit.update`, and `edit.delete` are rejected for forms.",
+            "Metric Card child columns now require exact supported `source.dataType` values.",
+            "Smart Filters now require the filter region to be declared before the filtered results region.",
+            "Faceted Search guidance was tightened around unsupported runtime properties.",
+            "Dashboards now prefer Metric Card template components for KPI strips instead of native Cards by default.",
+            "Multi-chart dashboards now require a `chart_row_plan`.",
+            "Five-chart dashboards default to one two-column row followed by one three-column row.",
+            "Layout guidance now prefers semantic page-template slots such as `leftColumn` and `body` for sidebar/main layouts.",
+            "Asymmetric layouts were clarified so valid `columnSpan` plus later column patterns are not incorrectly rejected."
+          ]
+        },
+        {
+          "title": "Validation & Runtime Evidence",
+          "items": [
+            "These changes make validation more reliable and easier to troubleshoot.",
+            {
+              "text": "Validation now produces structured evidence:",
+              "items": [
+                "`validation-report.json`",
+                "`validation-transcript.log`",
+                "`problems.json`",
+                "`component-contracts/*.json`"
+              ]
+            },
+            {
+              "text": "Validation now requires stronger evidence from:",
+              "items": [
+                "live APEX validation",
+                "compiler truth",
+                "VSCode Problems diagnostics"
+              ]
+            },
+            "Local validation is treated as syntax hygiene, not as a substitute for live or compiler-backed validation."
+          ]
+        },
+        {
+          "title": "Routing, Catalogs & Intent Detection",
+          "items": [
+            "These changes make routing files clearer and improve how user requests are classified.",
+            {
+              "text": "Renamed routing files to make their purpose clearer:",
+              "items": [
+                "`router-catalog.json` to `routing-catalog-main.json`",
+                "`load-policies.json` to `routing-load-policy.json`",
+                "`routing-index.json` to `routing-assets-index.json`",
+                "`catalog.json` to `domains-catalog.json`"
+              ]
+            },
+            "Moved prompt normalization into governance.",
+            "Generalized translation and localization routing so intent is detected from concepts like localization, multilingual, locale, i18n, text messages, and `APP_TEXT$`."
+          ]
+        },
+        {
+          "title": "Generated Output & Workspace Discovery",
+          "items": [
+            "These changes make it clearer which generated files matter during normal review.",
+            "`artifacts/` and `apex-exports/` are support folders created by the APEXlang workflow. They are useful for logs, validation reports, backups, and troubleshooting, but they are not the files most users need to review.",
+            "For normal changes, review the generated app under `applications/<app-name>/`.",
+            "Review `dist/apexlang/` only when checking the packaged APEXlang skill itself.",
+            "Usually ignore `artifacts/`, because it contains run logs, validation reports, and troubleshooting output.",
+            "Usually ignore `apex-exports/`, because it contains APEX backup/export snapshots.",
+            "Only open `artifacts/` or `apex-exports/` when debugging a failed run, comparing exports, or recovering from a backup.",
+            "The packaged skill no longer treats `artifacts/` or `apex-exports/` as app source when finding apps, reading metadata, or generating pages.",
+            "Added regression tests to make sure generated support folders are ignored during normal app discovery."
+          ]
+        },
+        {
+          "title": "Agent Workflow & Generation Process",
+          "items": [
+            "These changes guide how drafting, critique, and revision agents should work.",
+            "Draft, critique, and revision agents now include the new validation evidence requirements.",
+            "Critique now checks for missing `problems.json`, missing target-build evidence, and missing VSCode Problems diagnostics.",
+            "Generation plans now include dashboard chart row planning where relevant.",
+            "Revision guidance now tells agents to fix only reported validation problems and rerun `runtime validate`."
+          ]
+        },
+        {
+          "title": "Documentation & Naming Consistency",
+          "items": [
+            "These changes make the repository and packaged skill easier to understand.",
+            "Repository and package docs now consistently use APEXlang.",
+            "All the missing template documentation files have been resolved.",
+            "README, AGENTS, governance, SQLcl, runtime-gate, and package docs were updated to match the new boundaries and command flow.",
+            "Docs now better explain when SQLcl/live DB context is required versus when offline drafting is enough."
+          ]
+        }
+      ]
+    }
+  ]
+}

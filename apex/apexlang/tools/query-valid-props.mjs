@@ -24,7 +24,7 @@ function nextValue(argv, index, flag) {
 function parseArgs(argv) {
   const args = {
     javaHome: null,
-    oracleHome: null,
+    compilerOracleHome: null,
     component: null,
     componentTypeId: null,
     parent: null,
@@ -44,8 +44,9 @@ function parseArgs(argv) {
         args.javaHome = nextValue(argv, index, arg);
         index += 1;
         break;
+      case "--compiler-oracle-home":
       case "--oracle-home":
-        args.oracleHome = nextValue(argv, index, arg);
+        args.compilerOracleHome = nextValue(argv, index, arg);
         index += 1;
         break;
       case "--component":
@@ -405,7 +406,8 @@ function printHelp() {
 
 Options:
   --java-home <path>           Compatibility flag; ignored by the current Node implementation
-  --oracle-home <path>         Oracle VS Code extension, dbtools, or SQLcl home override
+  --compiler-oracle-home <path> Oracle VS Code extension, dbtools, SQLcl home, or compiler jar override for compiler metadata
+  --oracle-home <path>         Backward-compatible alias for --compiler-oracle-home
   --component <name>           Semantic component name or dotted alias, for example region, map.layer.link, or chart.series
   --component-type-id <id>     Exact compiler component type id, for example 5110
   --parent <name>              Filter by parent semantic name, for example page or region
@@ -424,7 +426,7 @@ Examples:
   ${command} --component chart.series.marker
   ${command} --template-component metricCard
   ${command} --json > /tmp/apexlang-runtime-map.json
-  ${command} --oracle-home /path/to/oracle.sql-developer-26.1.2 --component-type-id 7320
+  ${command} --compiler-oracle-home /path/to/oracle.sql-developer-26.1.2 --component-type-id 7320
 `);
 }
 
@@ -465,7 +467,7 @@ function renderTemplateComponentProfile(profile) {
 }
 
 function resolveOracleBackedMap(args) {
-  const oracleRuntime = resolveOracleRuntime(args.oracleHome);
+  const oracleRuntime = resolveOracleRuntime(args.compilerOracleHome);
   const { metadata, buildId, metadataHash } = readOracleRuntimeMetadata(oracleRuntime.compilerJarPath);
   const map = buildOracleNormalizedMap({
     metadata,

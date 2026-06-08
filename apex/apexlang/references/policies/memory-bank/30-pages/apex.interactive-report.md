@@ -24,7 +24,7 @@
 - Do not emit `reportColumnQueryId` or `derivedColumn` for interactive report columns; those attributes belong to classic report columns only in this repository contract.
 - Use friendly display names for headings and apply format masks via the `appearance` block.
 - Follow `references/policies/memory-bank/30-pages/apex.report-column-rendering.md` for SQL data-only behavior and column formatting markup placement.
-- When linking to a page in the same application, use declarative page-target syntax at the region or column level when supported, and refresh via `templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md` if a modal dialog is used.
+- When linking to a page in the same application, use declarative page-target syntax at the region or column level when supported. If the target page is modal, the parent page must include an `apexafterclosedialog` dynamic action that refreshes the originating report region via `templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md`.
 - Interactive reports should include a default guidance layer. Provide concise user-facing guidance for business-significant columns and all derived, status, and action columns using the supported guidance hook in the selected template family; when the runtime shape has no dedicated column-help hook, surface that guidance in page or region help.
 - Parent-child child reports must bind to the hidden parent context item and list that item in `source.pageItemsToSubmit`; parent-context create/edit buttons should be placed in the report toolbar slot such as `rightOfInteractiveReportSearchBar`.
 

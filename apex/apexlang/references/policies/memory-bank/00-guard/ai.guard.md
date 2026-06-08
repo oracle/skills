@@ -95,14 +95,14 @@ Error Codes
 - MUST: When the user requests specific regions/items/buttons, source the implementation from templates/** (region-components, template-components, etc.) and cite the exact template used.
 - MUST: Treat `templates/**` as the only active pattern and scaffold source for APEXlang generation.
 - MUST: When generation uses any template under `templates/**`, emit the final DSL from that template's declared output structure exactly.
-- MUST: Run and preserve a passing compiler-truth audit for every generated or revised `.apx` artifact before publish, live validate, or import eligibility.
-- MUST: Treat a missing or failing compiler-truth report as a hard blocker, not as advisory context.
+- MUST: Run and preserve compiler-truth diagnostics for every generated or revised `.apx` artifact before publish, live validate, or import eligibility.
+- MUST: Treat compiler-truth diagnostics as component-contract evidence, but do not let them override a live APEX validation pass.
 - MUST: Treat live APEX validate output from the selected target build as the primary validation gate for generated applications.
-- MUST: At validation handoff, use both compiler-driven truth and VSCode Problems diagnostics as required evidence sources for generated or revised `.apx` files.
-- MUST: Record `VALIDATION_DUAL_SOURCE_REQUIRED_001` and block completion when either the compiler-driven evidence is missing/failing or VSCode Problems diagnostics are missing, unavailable, or contain unresolved generated-artifact errors or warnings.
-- MUST: Use `problems.json` as the compact review interface for validation findings. Sort findings by file, line, severity, compiler type, and message.
+- MUST: Record `LIVE_RUNTIME_VALIDATION_REQUIRED_001` and block completion when required runtime inputs or live APEX validation evidence are missing.
+- MUST: Record VS Code Problems snapshots as diagnostics when provided; missing snapshots are `not_provided` and do not block a live pass.
+- MUST: Use `problems.json` as the compact review interface for live validation findings. Sort findings by file, line, severity, compiler type, and message.
 - MUST: Treat local lint and broad policy/template prose as syntax hygiene or fallback guidance only when they cannot contradict the selected target build.
-- MUST NOT: Mark validation complete, publish, or offer import based only on local validators, template prose, memory-bank policy, or terminal transcript inspection when live/compiler evidence or VSCode Problems evidence is unresolved.
+- MUST NOT: Mark validation complete, publish, or offer import based only on local validators, template prose, memory-bank policy, VS Code Problems snapshots, or terminal transcript inspection when live runtime validation evidence is unresolved.
 - MUST: Preserve the template's emitted DSL tokens exactly, including component `type` values, block names, property names, nesting, and variant-specific syntax.
 - MUST NOT: infer or normalize emitted DSL from folder names, `templateId`, `canonicalDslType`, headings, registry labels, or prose when they conflict with the template's output structure.
 - MUST: If a selected template does not contain an explicit output block, use the nearest concrete emitted example in the same template family; do not invent syntax from metadata alone.
@@ -131,6 +131,19 @@ Error Codes
 
 Error Code
 - `APP_TEMPLATE_ARTIFACT_LEAK_001`
+
+## APEXlang Line Ending Gate (NON-NEGOTIABLE)
+
+Scope
+- Applies to every generated or revised `.apx` artifact.
+
+Rules (Hard Requirements)
+- MUST write `.apx` artifacts with LF line endings only.
+- MUST NOT publish or validate `.apx` files that contain CRLF line endings.
+- MUST treat Windows default CRLF conversion as a source-control/tooling defect for `.apx` files and normalize those files to LF before validation or handoff.
+
+Error Code
+- `APEXLANG_LF_LINE_ENDINGS_REQUIRED_001`
 
 ## Calendar Link Target Resolution Gate (NON-NEGOTIABLE)
 
@@ -244,6 +257,7 @@ Rules (Hard Requirements)
 - MUST: Bound every import-authorized target-resolution run to one intended workspace before deciding whether the run is `update-existing` or `create-new`.
 - MUST: Produce exactly one bounded target-resolution outcome for import-authorized work: `resolved_existing_app`, `not_found_in_workspace`, `ambiguous_candidates`, or `identity_uncertain`.
 - MUST: Reuse that preserved canonical application id for every later workspace-resolution and import step in the same session.
+- MUST NOT: Treat a target-resolution timeout or failure as permission to bypass the wrapper with direct SQLcl import; live validate success is not target-identity evidence.
 - MUST NOT: Treat alias similarity alone as proof of target identity after the canonical live application id is known.
 - MUST: When staged deployment metadata does not match the preserved canonical live application id, reconcile the staged deployment app id to the canonical target before import.
 - MUST: If an import-authorized run later resolves or reports a different application id than the preserved canonical target, block the run, record the mismatch, and treat the reported target as an accidental duplicate or wrong target.

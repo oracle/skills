@@ -55,10 +55,7 @@ page 9 (
         }
         appearance {
             template: @/title-bar
-            templateOptions: [
-                #DEFAULT#
-                t-BreadcrumbRegion--useBreadcrumbTitle
-            ]
+            templateOptions: #DEFAULT#
         }
         componentAppearance {
             breadcrumbTemplate: @/breadcrumb
@@ -81,11 +78,6 @@ page 9 (
             template: @/blank-with-attributes-no-grid
             templateOptions: #DEFAULT#
         }
-        settings {
-            maxSuggestionChips: 0
-            compactNosThreshold: 10000
-        }
-
         filter P9_APPLICATION (
             type: checkboxGroup
             label {

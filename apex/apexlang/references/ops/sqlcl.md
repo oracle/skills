@@ -64,7 +64,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
 - For packaged-build refresh work, keep SQLcl/runtime docs version-aware but scope changes to actual runtime behavior deltas only; do not rewrite the SQLcl contract for component-local metadata changes.
 - Probe both supported runtime candidates:
   - resolved build-root runtime via `apex sql` from the matching local APEX build derived from `db_connection_name`
-  - PATH SQLcl runtime via `sql <db_connection_name>` or `sql /nolog` plus `connect <db_connection_name>`
+  - PATH SQLcl runtime via `sql -name <db_connection_name>`, then legacy `sql <db_connection_name>`, then `sql /nolog` plus `connect <db_connection_name>`
 - Default APEX artifact workflows to check-only; do not ask users to type import intent before the live APEXlang check.
 - After the live APEXlang check passes, offer GUI/clickable choices using plain language: `Check APEXlang code` (recommended) or `Check and import APEXlang code`; include a short purpose summary for each choice, and if GUI choices are unavailable, stop after checking the code and report import as a follow-up.
 - In normal user-facing responses, describe internal check-only runs as `Check APEXlang code` and import-approved runs as `Check and import APEXlang code`.
@@ -85,6 +85,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
 - Treat any existing `apex-exports` path as backup/export material only. Do not use it as app source, metadata source, or app-resolution evidence unless the user explicitly asks for read-only export inspection, migration, or recovery analysis.
 - For existing-app `validate-and-import` runs, resolve the live canonical numeric application id before import, preserve it as session authority, and reuse it for workspace and import targeting.
 - Use a single bounded target resolver for every import-authorized run: scope the lookup to one intended workspace and return exactly one outcome (`resolved_existing_app`, `not_found_in_workspace`, `ambiguous_candidates`, or `identity_uncertain`).
+- Treat target-resolution timeout or failure as a terminal import blocker. A successful live validate proves source syntax only; it does not authorize direct SQLcl import, wrapper bypass, or create-new fallback.
 - Treat `update-existing` as the default import-authorized mode. If the bounded resolver returns `not_found_in_workspace`, stop the update path and require explicit `create-new` confirmation before import.
 - Allow `create-new` only when the bounded resolver returned `not_found_in_workspace`; block create-new for `ambiguous_candidates` and `identity_uncertain`.
 - If staged deployment metadata points at a different app id than the preserved canonical target, reconcile the staged deployment app id before import.

@@ -31,7 +31,7 @@ page 10 (
         dialogTemplate: @/drawer
         templateOptions: [
             #DEFAULT#
-            end
+            js-dialog-class-t-Drawer--pullOutEnd
         ]
     }
     dialog {

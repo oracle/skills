@@ -24,8 +24,14 @@
    - Do not use generic facet names such as `FACET_SEARCH` that may conflict with existing application-level items.
    - Type-scoped `listEntries` rule:
      - Emit `listEntries { maxDisplayedEntries: <n> }` only for `checkboxGroup` and `radioGroup`.
+     - Use `maxDisplayedEntries: 10` by default, with a permitted range of 5-15 when requirements justify a denser or shorter list.
+     - For likely high-cardinality facets such as Product, Customer, Store, Assignee, Owner, User, Employee, Supplier, Email, SKU, or name/title facets, set `displayFilterInitially: true` in `listEntries` so users can search facet values immediately.
      - Do not emit `listEntries` for any other facet type (for example `range`, `selectList`, `search`).
    - Use consistent facet sequencing: search → categorical facets → range facets.
+   - Facet `source.dataType` is runtime-sensitive:
+     - For date/time range facets, emit `source.dataType: date` even when the schema column is `TIMESTAMP`.
+     - For numeric range or numeric ID facets, emit `source.dataType: number`.
+     - For text/discrete string facets, omit `source.dataType`; do not emit `varchar2`, `VARCHAR2`, `STRING`, or other SQL/report data-type labels in faceted-search facet sources.
 5. **Linkage**
    - `filteredRegion` must reference the results region static ID.
    - Do not emit `settings.currentFacetsSelector`; the live importer rejects that property in this runtime.

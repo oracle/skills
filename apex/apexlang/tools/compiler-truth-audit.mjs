@@ -24,6 +24,9 @@ const SUPPORTED_COMPONENTS = new Set([
   "computation",
   "validation"
 ]);
+const COMPILER_METADATA_PROPERTY_ALIASES = new Map([
+  ["app.authentication.scheme", "authenticationScheme"]
+]);
 
 function defaultCommand() {
   return IS_PACKAGED_ROOT
@@ -44,7 +47,7 @@ function parseArgs(argv) {
     appPath: "",
     reportPath: "",
     componentAttributes: "",
-    oracleHome: "",
+    compilerOracleHome: "",
     verifyComponentAttributes: false,
     help: false
   };
@@ -64,8 +67,9 @@ function parseArgs(argv) {
         args.componentAttributes = nextValue(argv, index, arg);
         index += 1;
         break;
+      case "--compiler-oracle-home":
       case "--oracle-home":
-        args.oracleHome = nextValue(argv, index, arg);
+        args.compilerOracleHome = nextValue(argv, index, arg);
         index += 1;
         break;
       case "--verify-component-attributes":
@@ -93,7 +97,8 @@ Options:
   --app-path <path>                 Application root or directory containing .apx files to audit
   --report-path <path>              Write the compiler-truth audit report as JSON
   --component-attributes <path>     Override component-attributes.json path
-  --oracle-home <path>              Oracle VS Code extension, dbtools, SQLcl home, or compiler jar override
+  --compiler-oracle-home <path>     Oracle VS Code extension, dbtools, SQLcl home, or compiler jar override for compiler metadata
+  --oracle-home <path>              Backward-compatible alias for --compiler-oracle-home
   --verify-component-attributes     Verify component-attributes.json provenance against compiler metadata
   --help                            Show this help
 `);
@@ -235,13 +240,26 @@ function addIssue(issues, filePath, lineNumber, code, message, details = {}) {
   });
 }
 
+function compilerMetadataPropertyNames(componentName, groupName, propertyName) {
+  const names = [propertyName];
+  const scopedKey = groupName
+    ? `${componentName}.${groupName}.${propertyName}`
+    : `${componentName}.${propertyName}`;
+  const alias = COMPILER_METADATA_PROPERTY_ALIASES.get(scopedKey);
+  if (alias && !names.includes(alias)) {
+    names.push(alias);
+  }
+  return names;
+}
+
 function validateProperty({ issues, filePath, lineNumber, componentFrame, groupFrame, propertyName }) {
   if (!componentFrame?.record || !propertyName) {
     return;
   }
+  const compilerPropertyNames = compilerMetadataPropertyNames(componentFrame.name, groupFrame?.name || "", propertyName);
   if (groupFrame) {
     const props = componentFrame.record.groups[groupFrame.name] || [];
-    const match = props.find((prop) => prop.propertyName === propertyName);
+    const match = props.find((prop) => compilerPropertyNames.includes(prop.propertyName));
     if (!match) {
       addIssue(
         issues,
@@ -260,7 +278,7 @@ function validateProperty({ issues, filePath, lineNumber, componentFrame, groupF
     return;
   }
 
-  const anyMatch = componentFrame.record.properties.some((prop) => prop.propertyName === propertyName);
+  const anyMatch = componentFrame.record.properties.some((prop) => compilerPropertyNames.includes(prop.propertyName));
   if (!anyMatch) {
     addIssue(
       issues,
@@ -277,7 +295,7 @@ function validateProperty({ issues, filePath, lineNumber, componentFrame, groupF
   }
 }
 
-function auditApxText(filePath, text, map) {
+export function auditApxText(filePath, text, map) {
   const issues = [];
   const observations = [];
   const stack = [];
@@ -410,7 +428,7 @@ async function writeReport(reportPath, payload) {
 }
 
 export async function runCompilerTruthAudit(options = {}) {
-  const { map, provenance } = buildCompilerContext(options.oracleHome || "");
+  const { map, provenance } = buildCompilerContext(options.compilerOracleHome || options.oracleHome || "");
   const issues = [];
   const observations = [];
   const targets = [];
@@ -463,7 +481,11 @@ async function main() {
   return result.code;
 }
 
-if (import.meta.url === pathToFileURL(SCRIPT_PATH).href) {
+const INVOKED_AS_MAIN = process.argv[1]
+  ? import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
+  : false;
+
+if (INVOKED_AS_MAIN) {
   try {
     process.exitCode = await main();
   } catch (error) {

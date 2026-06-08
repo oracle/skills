@@ -11,7 +11,7 @@ description: Standard standalone breadcrumb region.
 
 ```
 region {{regionStaticId}} (
-  name: {{name}}
+  name: {{page.title}}
   type: breadcrumb
   source {
     breadcrumb: @{{source.breadcrumb}}

@@ -39,6 +39,10 @@ Grid and layout rules:
 - Use `startNewRow: false` to place equal-width siblings side-by-side
 - Omit `column`/`columnSpan` unless the row is intentionally asymmetric
 - Dashboard pages with KPI strips, chart rows, report/detail rows, or side-by-side component rows must define a `layout_row_plan` before emitting regions.
+- The artifact must match the `layout_row_plan`: first region in each row omits `startNewRow`; second-and-later regions in the same row set `startNewRow: false`.
+- Treat `startNewRow: false` on the first region of a planned dashboard row as a layout failure because it collapses the row into the previous visual group.
+- A `layout_row_plan` entry represents one physical row, not a group of stacked rows. Full-width stacked detail, contextual summary, and cards sections must be separate one-region row-plan entries; never list multiple stacked full-width regions in one entry.
+- Do not use a generic `dashboard-chart-flow` recipe. Split dashboard charts into explicit `two-up-equal` and `three-up-equal` row entries.
 - Default dashboard rows:
   - KPI strips: equal-width implicit flow
   - 2 charts: one `two-up-equal` row
@@ -46,7 +50,7 @@ Grid and layout rules:
   - 4 charts: two `two-up-equal` rows
   - 5 charts: one `two-up-equal` row, then one `three-up-equal` row
   - More than 5 charts: repeat `two-up-equal` and `three-up-equal` rows, preferring balanced rows
-  - detail regions below analytics: stacked full-width
+  - detail regions below analytics: stacked full-width, one row-plan entry per full-width region
 - For each chart row, the first chart omits `startNewRow`; second-and-later charts in that row use `startNewRow: false`.
 - Do not literally stack multiple dashboard charts unless the user explicitly requests vertical stacking or a chart is intentionally a detail/full-width section.
 
@@ -85,6 +89,7 @@ Authoritative references:
 Rules and guidance:
 - Default aggregate KPI strips to one Metric Card region backed by one SQL query.
 - Normalize multi-metric KPI strips with one row per metric, commonly using `UNION ALL` across per-metric SELECTs that project the same aliases in the same order.
+- Do not emit aggregate KPI tiles as `classicReport` regions. A query that projects `metric_value`, `metric_title`, or similar single-value KPI aliases belongs in `themeTemplateComponent/metricCard`.
 - Display concise metric values with a short title and optional meta text.
 - Emit explicit Metric Card child `column (...)` metadata for every projected field.
 - Use native `type: cards` for KPI-like tiles only when the user explicitly specifies Cards/native cards; otherwise reserve Cards for entity/media/navigation card grids.

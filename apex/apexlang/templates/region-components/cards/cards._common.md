@@ -16,6 +16,7 @@ Standardize the output shape, variable contracts, metadata lookup anchors, and g
 3. When cards display images, use the native cards `media` block with exactly one source-specific value mapping: `blobColumn`, `urlColumn`, or `imageUrl`.
 4. Emit `blobAttributes` only when `media.source: blobColumn` is selected; use it only for supported companion metadata column aliases.
 5. Emit media presentation properties only for meaningful non-default values: `position: first | background`, `appearance: square | widescreen`, and `sizing: cover`.
+6. When cards need row navigation, emit native Cards `action` blocks with `label`, `layout.sequence`, and declarative `behavior.target`; native Cards actions must not emit `position`.
 
 # Variable Contract
 
@@ -55,6 +56,10 @@ Standardize the output shape, variable contracts, metadata lookup anchors, and g
 | media.sizing | optional | enum | Non-default media sizing: `cover`. |
 | blobAttributes.mimeTypeColumn | optional | string | SQL projection alias for the image MIME type column; valid only with `media.source: blobColumn`. |
 | blobAttributes.lastUpdatedColumn | optional | string | SQL projection alias for the image last-updated column; valid only with `media.source: blobColumn`. |
+| action.label | conditional | string | Required when a Cards action is emitted. Keep the label concise. |
+| action.layout.sequence | conditional | number | Required when a Cards action is emitted. |
+| action.behavior.target.page | conditional | number | Target page for the row navigation action. |
+| action.behavior.target.items | conditional | object | Target page item mappings. Derive target page item and source column mappings from the UX contract, form PK metadata, or schema FK/PK evidence. |
 | columns | not supported | n/a | Do not emit report-style child `column (...)` blocks for cards regions unless a future compiler contract explicitly proves support. |
 
 # Output Template – Full
@@ -133,6 +138,36 @@ appearance: square
 sizing: cover
 ```
 
+# Row Navigation Action Shape
+
+Use this native Cards action shape when each card row should navigate to a target page:
+
+```apexlang
+action action (
+    label: {{actionLabel}}
+    layout {
+        sequence: {{actionSequence}}
+    }
+    behavior {
+        target: {
+            page: {{targetPage}}
+            items: {
+                {{targetPageItem}}: &{{sourceColumn}}.
+            }
+            clearCache: {{targetPage}}
+        }
+    }
+)
+```
+
+Prefer the declarative `behavior.target` object for Cards row navigation. Use `behavior.targetUrl`, `behavior.type`, or `behavior.linkAttributes` only when direct compiler truth proves the selected runtime supports the required non-declarative behavior. Native Cards actions must not emit `position`; `position` belongs to template-component actions such as Content Row, not native Cards actions.
+
+Derive `{{targetPageItem}}` and `{{sourceColumn}}` from one of these evidence sources before emitting the action:
+
+- UX contract navigation or modal target mapping.
+- Target form primary-key item metadata.
+- Schema FK/PK evidence tying the source row to the target page entity.
+
 # Conditional Rendering Rules
 
 - For BLOB-backed Cards images, project the raw BLOB expression in SQL for display only, keep companion image metadata columns projected when available, define `card.primaryKeyColumn1`, and emit `media { source: blobColumn blobColumn: <BLOB_COLUMN_ALIAS> }`.
@@ -146,7 +181,9 @@ sizing: cover
 - Emit `position`, `appearance`, and `sizing` only for explicit non-default media presentation requirements. Accepted values are `position: first | background`, `appearance: square | widescreen`, and `sizing: cover`.
 - Never emit `position: first`, `appearance: square`, or `sizing: cover` just to mirror APEX defaults.
 - Keep BLOB-backed media attributes in the dedicated `media` block. Do not model Cards BLOB images with report-style `column (...)` blocks or report BLOB length expressions.
-- Use card-level actions only when the owning design requires them.
+- Use card-level actions only when the owning design requires row navigation.
+- Native Cards actions use `label` plus declarative `behavior.target`; do not emit `position`, `slot`, or template-component action placement properties.
+- Every source column referenced in a Cards action item mapping such as `&{{sourceColumn}}.` must be projected by the Cards source.
 - Default card-region display style uses the base cards template with no additional style token in `appearance.templateOptions`.
 - If the design calls for Style A, add `style-a` to `appearance.templateOptions`.
 - If the design calls for Style B, add `style-b` to `appearance.templateOptions`; this style centers the title and subtitle and uses a larger card presentation.
@@ -190,6 +227,7 @@ sizing: cover
 - Do not render a cards badge as ad-hoc HTML when the same outcome can be expressed with native `iconAndBadge.badgeColumn`, `badgeLabel`, and `badgeCssClasses`.
 - Do not emit cards identity or pagination properties unless explicitly confirmed by the active compiler contract.
 - Do not use report-only cards properties such as `performance.maxRowsToProcess`.
+- Do not emit `position` on native Cards actions.
 - Do not add media properties beyond `source`, `blobColumn`, `urlColumn`, `url`, `position`, `appearance`, and `sizing`, or `blobAttributes` properties beyond `mimeTypeColumn` and `lastUpdatedColumn`, unless compiler-backed truth proves them for the active runtime.
 - Keep HTML expressions small and escaped when output includes user data.
 - Do not emit `title.htmlExpression` or `subtitle.htmlExpression` without `advancedFormatting: true`.

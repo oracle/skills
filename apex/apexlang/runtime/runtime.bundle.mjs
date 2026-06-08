@@ -1117,6 +1117,7 @@ const LOCAL_CHECK_OK_TOKEN = "APEXLANG_LOCAL_CHECK_OK";
 const LOCAL_CHECK_FAILED_TOKEN = "APEXLANG_LOCAL_CHECK_FAILED";
 const LIVE_CHECK_OK_TOKEN = "APEXLANG_LIVE_CHECK_OK";
 const LIVE_CHECK_FAILED_TOKEN = "APEXLANG_LIVE_CHECK_FAILED";
+const LIVE_RUNTIME_VALIDATION_RULE_ID = "LIVE_RUNTIME_VALIDATION_REQUIRED_001";
 const LOCAL_VALIDATION_VALIDATOR_OUTPUT_PATTERN =
   /\b(?:APEXLANG_LOCAL_CHECK_[A-Z0-9_]+|APEXCTL_APEXLANG_VALIDATE_[A-Z0-9_]+|APEXLANG_DSL_LINT_[A-Z0-9_]+|VALIDATION_LINT_[A-Z0-9_]+|Vocabulary compatibility check|DSL_RULE_[A-Z0-9_]+|validate_apexlang(?:_vocab)?\.py|validate_validations\.py)\b/i;
 const LOCAL_VALIDATION_WRAPPER_FAILURE_PATTERNS = [
@@ -1133,7 +1134,7 @@ const CACHEABLE_SOURCE_LANE_FAILURE_CLASSES = new Set([
 const STAGE_BUDGETS_MS = Object.freeze({
   preflight: 60000,
   local_validate: 30000,
-  target_resolve: 30000,
+  target_resolve: 120000,
   live_validate: 30000,
   import: 60000
 });
@@ -1253,7 +1254,7 @@ async function runTimedStage(summary, phase, inputPayload, runner, options = {})
       if (!allowBudgetOverrun) {
         stage.status = "fail";
         stage.failure_class = `${phase}_timeout`;
-        stage.next_safe_action = `Investigate why ${phase} exceeded the configured budget.`;
+        stage.next_safe_action = stageTimeoutNextSafeAction(phase);
         summary.phase_reports.push(stage);
         return {
           ok: false,
@@ -1293,6 +1294,44 @@ function nextPhaseLabel(phase) {
     return "live_validate";
   }
   return "completion";
+}
+
+function stageTimeoutNextSafeAction(phase) {
+  if (phase === "target_resolve") {
+    return "Target resolution exceeded the configured budget. Import remains blocked; do not bypass with direct apex import.";
+  }
+  return `Investigate why ${phase} exceeded the configured budget.`;
+}
+
+function targetResolutionBypassBlockedAction() {
+  return "Resolve the target application identity in the bounded target resolver before import. Live validate success proves source syntax only; do not bypass target resolution with direct apex import.";
+}
+
+function targetResolutionAllowsImport(summary) {
+  if (summary.target_resolution_mode === "update-existing") {
+    return summary.target_resolution_status === "resolved_existing_app" &&
+      Number.isInteger(summary.canonical_application_id) &&
+      summary.canonical_application_id > 0;
+  }
+  if (summary.target_resolution_mode === "create-new") {
+    return summary.target_resolution_status === "not_found_in_workspace" &&
+      summary.create_new_confirmed === true;
+  }
+  return false;
+}
+
+function applyTargetResolutionBlockedSummary(summary, failureClass, recommendedNextAction = targetResolutionBypassBlockedAction()) {
+  summary.validate_status = "blocked";
+  summary.live_check_status = "blocked";
+  summary.final_check_status = "blocked";
+  summary.import_status = "blocked";
+  summary.runtime_gate_status = "fail";
+  summary.failure_class = failureClass;
+  summary.blocking_reason = failureClass;
+  summary.direct_import_fallback_allowed = false;
+  summary.recommended_next_action = recommendedNextAction;
+  summary.notes.push("Import remains blocked because target resolution did not prove an authorized target.");
+  summary.notes.push("Live validate success is not target-identity evidence.");
 }
 
 function buildFrozenPreflightFacts({
@@ -3083,6 +3122,9 @@ export async function runSqlclPreflight(options = {}) {
  * Create the standard runtime roundtrip summary envelope.
  */
 function buildRoundtripSummary(base) {
+  const reportPath = path.resolve(base.reportPath || DEFAULT_ROUNDTRIP_REPORT);
+  const transcriptPath = path.resolve(base.transcriptPath || DEFAULT_ROUNDTRIP_LOG);
+  const problemsPath = path.resolve(base.problemsPath || path.join(path.dirname(reportPath), "problems.json"));
   return {
     timestamp: new Date().toISOString(),
     final_app_path: path.resolve(base.appPath),
@@ -3127,6 +3169,9 @@ function buildRoundtripSummary(base) {
     candidate_count: 0,
     candidate_ids: [],
     candidate_evidence_level: "",
+    target_resolution_required_for_import: true,
+    direct_import_bypass_forbidden: true,
+    direct_import_fallback_allowed: false,
     create_new_confirmation_required: false,
     create_new_confirmed: Boolean(base.createNewConfirmed),
     source_application_id: null,
@@ -3196,8 +3241,13 @@ function buildRoundtripSummary(base) {
     blocking_reason: "",
     environment_blocker_detected: false,
     environment_blocker_details: "",
-    transcript_path: path.resolve(base.transcriptPath || DEFAULT_ROUNDTRIP_LOG),
-    report_path: path.resolve(base.reportPath || DEFAULT_ROUNDTRIP_REPORT),
+    transcript_path: transcriptPath,
+    report_path: reportPath,
+    problems_path: problemsPath,
+    validation_feedback_status: "not-run",
+    problem_count: 0,
+    unresolved_count: 0,
+    repair_loop_required: false,
     notes: []
   };
 }
@@ -3524,8 +3574,11 @@ function syncCheckAliases(summary) {
 
 async function writeRoundtripArtifacts(summary, transcript) {
   syncCheckAliases(summary);
+  const problemsPayload = buildRoundtripProblemsPayload(summary, transcript);
+  applyRoundtripProblemSummary(summary, problemsPayload);
   await ensureDir(path.dirname(summary.transcript_path));
   await fs.writeFile(summary.transcript_path, `${transcript.trimEnd()}\n`, "utf8");
+  await writeJson(summary.problems_path, problemsPayload);
   await writeJson(summary.report_path, summary);
 }
 
@@ -3597,16 +3650,19 @@ function sortProblems(problems = []) {
   return [...problems].sort((left, right) => problemSortKey(left).localeCompare(problemSortKey(right)));
 }
 
-function parseTranscriptProblems(transcript = "") {
+function parseLiveProblemLines(lines = []) {
   const problems = [];
-  const lines = String(transcript || "").split(/\r?\n/);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index].trim();
-    if (!line || /_CHECK_OK\b/.test(line)) {
+    if (
+      !line ||
+      /\b(?:APEXLANG_DSL_LINT_OK|VALIDATION_LINT_OK|APEXLANG_LOCAL_CHECK_OK|APEXLANG_LIVE_CHECK_OK)\b/.test(line) ||
+      /\b(?:APEXLANG_LOCAL_CHECK_FAILED|APEXCTL_APEXLANG_VALIDATE_FAILED)\b/.test(line)
+    ) {
       continue;
     }
     const hasProblemSignal =
-      /\b(ORA-\d+|SP2-\d+|PLS-\d+|APEXLANG_[A-Z0-9_]+|DSL_[A-Z0-9_]+|COMPILER_TRUTH_[A-Z0-9_]+|INVALID_[A-Z0-9_]+|MISSING_[A-Z0-9_]+|Error!|\berror\b|\bwarning\b)\b/i.test(line);
+      /\b(ORA-\d+|SP2-\d+|PLS-\d+|APEXLANG_(?:COMPILE|IMPORT|LIVE)_[A-Z0-9_]+|DSL_[A-Z0-9_]+|INVALID_[A-Z0-9_]+|MISSING_[A-Z0-9_]+|Error!|\berror\b|\bwarning\b)\b/i.test(line);
     if (!hasProblemSignal) {
       continue;
     }
@@ -3621,6 +3677,99 @@ function parseTranscriptProblems(transcript = "") {
     }, "apex_validate"));
   }
   return problems;
+}
+
+function parseLiveTranscriptProblems(transcript = "") {
+  const sections = [];
+  let current = { heading: "", lines: [] };
+  for (const line of String(transcript || "").split(/\r?\n/)) {
+    const headingMatch = line.match(/^##\s+(.+?)\s*$/);
+    if (headingMatch) {
+      if (current.heading || current.lines.length > 0) {
+        sections.push(current);
+      }
+      current = { heading: headingMatch[1], lines: [] };
+      continue;
+    }
+    current.lines.push(line);
+  }
+  if (current.heading || current.lines.length > 0) {
+    sections.push(current);
+  }
+
+  const liveSections = sections.filter((section) =>
+    /(roundtrip|live_validate|live_import|direct_import|apex_validate|sql_(?:name_)?alias|sql_nolog)/i.test(section.heading)
+  );
+  return liveSections.flatMap((section) => parseLiveProblemLines(section.lines));
+}
+
+function buildProblemsPayload({ liveResult = {}, compilerTruth = {}, vscodeProblems = {}, report = {} } = {}) {
+  const liveStatus = String(liveResult.status || liveResult.live_check_status || report.live_check_status || "blocked");
+  const appPath = liveResult.appPath || report.app_path || "";
+  const problems = liveStatus === "pass"
+    ? []
+    : sortProblems(parseLiveTranscriptProblems(liveResult.transcript || ""));
+  const unresolvedProblems = problems.filter((problem) => ["error", "warning"].includes(problem.severity));
+  return {
+    generated_at: new Date().toISOString(),
+    build: liveResult.build || compilerTruth.build || report.target_build || "unknown",
+    app_path: appPath,
+    live_check_status: liveResult.live_check_status || liveStatus,
+    import_intent: liveResult.importIntent || report.import_intent || "",
+    import_status: liveResult.importStatus || report.import_status || "",
+    warnings_as_errors: true,
+    repair_recipe_catalog: "assets/validator-fix-recipes.json",
+    sort_order: ["file", "line", "severity", "compiler_type", "message"],
+    problem_count: problems.length,
+    unresolved_count: unresolvedProblems.length,
+    diagnostic_sources: {
+      compiler_truth: {
+        status: compilerTruth.status || "not_run",
+        problem_count: Array.isArray(compilerTruth.problems) ? compilerTruth.problems.length : 0
+      },
+      vscode_problems: {
+        status: vscodeProblems.status || "not_provided",
+        unresolved_count: vscodeProblems.unresolved_count ?? null
+      }
+    },
+    problems
+  };
+}
+
+function buildRoundtripProblemsPayload(summary, transcript = "") {
+  return buildProblemsPayload({
+    liveResult: {
+      status: summary.live_check_status,
+      live_check_status: summary.live_check_status,
+      transcript,
+      appPath: summary.final_app_path,
+      build: summary.target_build || "unknown",
+      importIntent: summary.import_intent_choice,
+      importStatus: summary.import_status
+    },
+    report: {
+      app_path: summary.final_app_path,
+      live_check_status: summary.live_check_status,
+      import_intent: summary.import_intent_choice,
+      import_status: summary.import_status,
+      target_build: summary.target_build || "unknown"
+    }
+  });
+}
+
+function applyRoundtripProblemSummary(summary, problemsPayload) {
+  summary.problem_count = problemsPayload.problem_count;
+  summary.unresolved_count = problemsPayload.unresolved_count;
+  summary.repair_loop_required = problemsPayload.unresolved_count > 0;
+  summary.validation_feedback_status = problemsPayload.unresolved_count > 0
+    ? "repair-required"
+    : "clean";
+  if (summary.repair_loop_required && !summary.recommended_next_action) {
+    summary.recommended_next_action = "Feed problems.json through assets/validator-fix-recipes.json, patch the reported warnings/errors, then rerun validation before import.";
+  }
+  if (summary.repair_loop_required) {
+    summary.notes.push(`Validation feedback written to ${summary.problems_path}.`);
+  }
 }
 
 function compilerTruthProblems(report = {}) {
@@ -3638,12 +3787,12 @@ function compilerTruthProblems(report = {}) {
 async function loadVscodeProblemsEvidence({ vscodeProblemsPath = "", appPath = "" } = {}) {
   if (!vscodeProblemsPath) {
     return {
-      status: "unavailable",
-      source: "unavailable",
+      status: "not_provided",
+      source: "not_provided",
       checked_paths: [],
       unresolved_count: null,
       problems: [],
-      blocking_reason: "VSCode Problems diagnostics were not provided to the runtime validate command."
+      blocking_reason: ""
     };
   }
   const payload = await readJson(vscodeProblemsPath);
@@ -3671,7 +3820,7 @@ async function loadVscodeProblemsEvidence({ vscodeProblemsPath = "", appPath = "
     checked_paths: [...new Set(problems.map((problem) => problem.file).filter(Boolean))].sort(),
     unresolved_count: unresolved.length,
     problems,
-    blocking_reason: unresolved.length === 0 ? "" : "VSCode Problems diagnostics contain unresolved generated-artifact issues."
+    blocking_reason: unresolved.length === 0 ? "" : "VS Code Problems snapshot contains unresolved generated-artifact issues."
   };
 }
 
@@ -3763,10 +3912,11 @@ export async function runRuntimeValidate(options = {}) {
   const report = {
     timestamp: new Date().toISOString(),
     validation_flow: "deterministic_live_validator_first",
-    rule_id: "VALIDATION_DUAL_SOURCE_REQUIRED_001",
+    rule_id: LIVE_RUNTIME_VALIDATION_RULE_ID,
     app_path: appPath,
     db_connection_name: options.dbConnectionName || "",
     apex_root: options.apexRoot || "",
+    compiler_oracle_home: options.compilerOracleHome || "",
     live_check_status: "blocked",
     validation_status: "blocked",
     warnings_as_errors: true,
@@ -3781,8 +3931,13 @@ export async function runRuntimeValidate(options = {}) {
     },
     validation_sources: {
       live_validator: { status: "blocked", source: "runtime validate-only roundtrip" },
-      compiler_truth: { status: "blocked", report_path: paths.compilerTruthReportPath },
-      vscode_problems: { status: "unavailable", source: "unavailable", unresolved_count: null }
+      compiler_truth: { status: "not_run", report_path: paths.compilerTruthReportPath },
+      vscode_problems: { status: "not_provided", source: "not_provided", unresolved_count: null }
+    },
+    diagnostic_sources: {
+      local_lint: { status: "not_run", source: "runtime validate-only roundtrip" },
+      compiler_truth: { status: "not_run", report_path: paths.compilerTruthReportPath },
+      vscode_problems: { status: "not_provided", source: "not_provided", unresolved_count: null }
     },
     problem_count: 0,
     unresolved_count: 0,
@@ -3824,9 +3979,18 @@ export async function runRuntimeValidate(options = {}) {
       report_path: paths.roundtripReportPath,
       transcript_path: paths.transcriptPath
     };
+    report.diagnostic_sources.local_lint = {
+      status: roundtripResult.payload.local_validation_status || roundtripResult.payload.local_check_status || "not_run",
+      execution_status: roundtripResult.payload.local_validation_execution_status || "",
+      entrypoint: roundtripResult.payload.local_validation_entrypoint_used || "",
+      policy: "advisory"
+    };
     report.target_build = roundtripResult.payload.target_build || "";
     report.resolved_apex_build_root = roundtripResult.payload.resolved_apex_build_root || "";
     report.execution_mode_used = roundtripResult.payload.execution_mode_used || "";
+    if (report.validation_sources.live_validator.status !== "pass") {
+      report.blocking_reasons.push("Live APEX validation did not pass or did not produce pass evidence.");
+    }
   }
 
   const compilerArgs = [
@@ -3837,8 +4001,8 @@ export async function runRuntimeValidate(options = {}) {
     "--report-path",
     paths.compilerTruthReportPath
   ];
-  if (options.apexRoot) {
-    compilerArgs.push("--oracle-home", options.apexRoot);
+  if (options.compilerOracleHome) {
+    compilerArgs.push("--compiler-oracle-home", options.compilerOracleHome);
   }
   const compilerResult = appPath
     ? await deps.runCommand("node", compilerArgs, { allowFailure: true, passthrough: false })
@@ -3849,9 +4013,10 @@ export async function runRuntimeValidate(options = {}) {
     report_path: paths.compilerTruthReportPath,
     output: cleanOutput(compilerResult).slice(0, 4000)
   };
-  if (report.validation_sources.compiler_truth.status !== "pass") {
-    report.blocking_reasons.push("Compiler-truth audit failed or was unavailable.");
-  }
+  report.diagnostic_sources.compiler_truth = {
+    ...report.validation_sources.compiler_truth,
+    policy: "advisory_when_live_validation_passes"
+  };
 
   const componentAttributes = (await deps.readJsonIfExists(componentAttributesPath())) || {};
   const componentContract = buildComponentContracts(componentAttributes, {
@@ -3871,39 +4036,40 @@ export async function runRuntimeValidate(options = {}) {
     unresolved_count: vscodeEvidence.unresolved_count,
     blocking_reason: vscodeEvidence.blocking_reason || ""
   };
-  if (vscodeEvidence.status !== "pass") {
-    report.blocking_reasons.push(vscodeEvidence.blocking_reason || "VSCode Problems diagnostics did not pass.");
-  }
+  report.diagnostic_sources.vscode_problems = {
+    ...report.validation_sources.vscode_problems,
+    policy: "advisory_when_live_validation_passes"
+  };
 
   const transcript = await fs.readFile(paths.transcriptPath, "utf8").catch(() => "");
-  const problems = sortProblems([
-    ...parseTranscriptProblems(transcript),
-    ...compilerTruthProblems(compilerReport),
-    ...vscodeEvidence.problems
-  ]);
-  const unresolvedProblems = problems.filter((problem) => ["error", "warning"].includes(problem.severity));
-  const problemsPayload = {
-    generated_at: new Date().toISOString(),
-    build: componentContract.build,
-    app_path: appPath,
-    live_check_status: report.live_check_status,
-    warnings_as_errors: true,
-    sort_order: ["file", "line", "severity", "compiler_type", "message"],
-    problem_count: problems.length,
-    unresolved_count: unresolvedProblems.length,
-    problems
-  };
-  report.problem_count = problems.length;
-  report.unresolved_count = unresolvedProblems.length;
-  if (unresolvedProblems.length > 0) {
+  const compilerProblems = compilerTruthProblems(compilerReport);
+  const problemsPayload = buildProblemsPayload({
+    liveResult: {
+      status: report.validation_sources.live_validator.status,
+      live_check_status: report.live_check_status,
+      transcript,
+      appPath,
+      build: componentContract.build,
+      importStatus: "skipped"
+    },
+    compilerTruth: {
+      status: report.validation_sources.compiler_truth.status,
+      build: componentContract.build,
+      problems: compilerProblems
+    },
+    vscodeProblems: vscodeEvidence,
+    report
+  });
+  report.problem_count = problemsPayload.problem_count;
+  report.unresolved_count = problemsPayload.unresolved_count;
+  if (problemsPayload.unresolved_count > 0) {
     report.blocking_reasons.push("problems.json contains unresolved validation problems.");
   }
 
   report.validation_status =
-    report.blocking_reasons.length === 0 &&
     report.validation_sources.live_validator.status === "pass" &&
-    report.validation_sources.compiler_truth.status === "pass" &&
-    report.validation_sources.vscode_problems.status === "pass"
+    problemsPayload.unresolved_count === 0 &&
+    !report.blocking_reasons.some((reason) => /^Missing required /.test(reason))
       ? "pass"
       : "fail";
   report.import_eligibility = report.validation_status === "pass" ? "validate-only-passed" : "blocked";
@@ -3996,8 +4162,14 @@ async function resolveCanonicalApplicationIdentityForRuntime(options = {}) {
   };
 }
 
-function runPathSession({ dbConnectionName, input, labelPrefix = "sql" }) {
-  const attempts = [
+export function buildPathSessionAttempts({ dbConnectionName, input, labelPrefix = "sql" }) {
+  return [
+    {
+      label: `${labelPrefix}_sql_name_alias`,
+      command: "sql",
+      args: ["-name", dbConnectionName],
+      input
+    },
     {
       label: `${labelPrefix}_sql_alias`,
       command: "sql",
@@ -4011,6 +4183,10 @@ function runPathSession({ dbConnectionName, input, labelPrefix = "sql" }) {
       input: `connect ${dbConnectionName}\n${input}`
     }
   ];
+}
+
+function runPathSession({ dbConnectionName, input, labelPrefix = "sql" }) {
+  const attempts = buildPathSessionAttempts({ dbConnectionName, input, labelPrefix });
   const transcript = [];
   let lastResult = null;
   for (const attempt of attempts) {
@@ -4533,14 +4709,30 @@ export async function runRuntimeRoundtrip(options = {}) {
       if (!targetResolution.success) {
         const error = new Error(targetResolution.message || "Target resolution failed.");
         error.stageFailureClass = targetResolution.blockingReason || "target_resolution_failed";
-        error.nextSafeAction = "Fix the target resolution failure before live validate or import.";
+        error.nextSafeAction = targetResolutionBypassBlockedAction();
         throw error;
       }
       if (summary.target_resolution_mode === "update-existing" && targetResolution.targetResolutionStatus !== "resolved_existing_app") {
         const error = new Error(targetResolution.message || "Target resolution did not prove a unique existing app target.");
         error.stageFailureClass = targetResolution.targetResolutionStatus || "target_resolution_failed";
-        error.nextSafeAction = "Resolve the target application identity before import.";
+        error.nextSafeAction = targetResolutionBypassBlockedAction();
         throw error;
+      }
+      if (summary.target_resolution_mode === "create-new") {
+        if (targetResolution.targetResolutionStatus !== "not_found_in_workspace") {
+          const error = new Error(targetResolution.message || "Create-new import did not prove the app is absent from the workspace.");
+          error.stageFailureClass = `create_new_${targetResolution.targetResolutionStatus || "target_resolution_failed"}`;
+          error.nextSafeAction = targetResolutionBypassBlockedAction();
+          throw error;
+        }
+        if (!summary.create_new_confirmed) {
+          summary.create_new_confirmation_required = true;
+          const error = new Error("Create-new import requires explicit confirmation after target resolution proves not_found_in_workspace.");
+          error.stageFailureClass = "create_new_confirmation_required";
+          error.nextSafeAction = "Confirm create-new explicitly after target resolution proves not_found_in_workspace, or rerun update-existing for an existing app.";
+          throw error;
+        }
+        summary.create_new_confirmation_required = false;
       }
       if (targetResolution.canonicalIdentity) {
         summary.canonical_application_id = targetResolution.canonicalIdentity.applicationId;
@@ -4548,13 +4740,16 @@ export async function runRuntimeRoundtrip(options = {}) {
         summary.canonical_resolution_source = targetResolution.resolutionSource;
         summary.canonical_mapping_status = "resolved";
       }
+      summary.direct_import_fallback_allowed = targetResolutionAllowsImport(summary);
       return targetResolution;
     }
   );
   if (!targetResolveStage.ok) {
-    summary.runtime_gate_status = "fail";
-    summary.failure_class = targetResolveStage.stage.failure_class;
-    summary.blocking_reason = targetResolveStage.stage.failure_class;
+    applyTargetResolutionBlockedSummary(
+      summary,
+      targetResolveStage.stage.failure_class,
+      targetResolveStage.stage.next_safe_action || targetResolutionBypassBlockedAction()
+    );
     await deps.writeRoundtripArtifacts(summary, transcriptParts.join("\n"));
     return buildRoundtripResult(1, summary);
   }
@@ -4620,6 +4815,12 @@ export async function runRuntimeRoundtrip(options = {}) {
       import_mode: summary.import_mode_requested
     },
     async () => {
+      if (!targetResolutionAllowsImport(summary)) {
+        const error = new Error("Import requires proven target resolution authorization.");
+        error.stageFailureClass = "target_resolution_import_guard_failed";
+        error.nextSafeAction = targetResolutionBypassBlockedAction();
+        throw error;
+      }
       let importRun;
       if (summary.import_mode_requested === "direct") {
         summary.import_mode_used = "direct";
@@ -4690,6 +4891,11 @@ export async function runRuntimeRoundtrip(options = {}) {
     }
   );
   if (!importStage.ok) {
+    if (importStage.stage.failure_class === "target_resolution_import_guard_failed") {
+      applyTargetResolutionBlockedSummary(summary, importStage.stage.failure_class);
+      await deps.writeRoundtripArtifacts(summary, transcriptParts.join("\n"));
+      return buildRoundtripResult(1, summary);
+    }
     summary.import_status = "fail";
     summary.runtime_gate_status = "fail";
     summary.failure_class = importStage.stage.failure_class;

@@ -5,7 +5,7 @@
 Purpose
 - Provide the canonical live-runtime gate for APEXlang artifact workflows.
 - Enforce direct SQLcl `apex validate` before any optional import.
-- Make the target APEX build plus VSCode Problems diagnostics the validation sources of truth.
+- Make live APEX validation from the selected target build the validation source of truth.
 - Block completion until the live APEXlang check is proven; import eligibility is proven only after an explicit post-check import choice.
 
 Scope
@@ -21,13 +21,15 @@ Preconditions
 
 Runtime contract
 - Use direct SQLcl commands only.
-- Default to `validate-only` for every APEX artifact workflow through `node tools/apexctl.mjs runtime validate --app-path <absolute_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root>`.
+- Default to `validate-only` for every APEX artifact workflow through `node tools/apexctl.mjs runtime validate --app-path <absolute_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root> [--compiler-oracle-home <compiler_metadata_home>]`.
+- `--apex-root` selects only the APEX/SQLcl runtime used for live validation. Use `--compiler-oracle-home` only when explicitly overriding compiler-truth metadata discovery.
 - The validate command must emit `validation-report.json`, `validation-transcript.log`, `problems.json`, and `component-contracts/<build>.json`.
-- Require both compiler-driven target-build evidence and VSCode Problems diagnostics for generated or revised `.apx` artifacts. Missing or failing evidence records `VALIDATION_DUAL_SOURCE_REQUIRED_001` and blocks completion.
+- Require live APEX validation evidence for generated or revised `.apx` artifacts. Missing required runtime inputs or missing live runtime evidence records `LIVE_RUNTIME_VALIDATION_REQUIRED_001` and blocks completion.
+- Treat compiler-truth, local lint, and VS Code Problems snapshots as diagnostics after live validation passes.
 - After the live APEXlang check passes, offer GUI/clickable choices: `Check APEXlang code` (recommended) or `Check and import APEXlang code`; include a short purpose summary and, if GUI choices are unavailable, stop after checking the code and report import as a follow-up.
 - Probe both supported runtime paths and select the live runtime path before validate/import:
   - resolved build-root runtime via `apex sql`
-  - PATH SQLcl runtime via `sql <db_connection_name>` or `sql /nolog` plus `connect <db_connection_name>`
+  - PATH SQLcl runtime via `sql -name <db_connection_name>`, then legacy `sql <db_connection_name>`, then `sql /nolog` plus `connect <db_connection_name>`
 - `apex validate -input <resolved_app_path>` is mandatory for every live runtime run.
 - `validate-and-import` runs for existing apps must resolve and preserve a canonical live numeric application id before any import-authorized continuation.
 - If staged deployment metadata does not match that canonical application id, reconcile `resolved_app_path` to the canonical target before import.
@@ -38,17 +40,17 @@ Runtime contract
 - If SQLcl explicitly reports multiple-workspace ambiguity, resolve the workspace id automatically for the active `db_connection_name` and restart the same real-SQLcl sequence with a run-scoped explicit `-workspaceid`.
 
 Execution
-1. Run `node tools/apexctl.mjs runtime validate --app-path <resolved_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root> --vscode-problems-path <problems_snapshot_path>` when a VSCode Problems snapshot is available.
+1. Run `node tools/apexctl.mjs runtime validate --app-path <resolved_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root>`, adding `--vscode-problems-path <problems_snapshot_path>` only when a VS Code Problems snapshot already exists and `--compiler-oracle-home <compiler_metadata_home>` only for an explicit compiler metadata override.
 2. Persist the emitted compact validation artifacts under the run artifact directory.
 3. Review `problems.json`, sorted by file, line, severity, compiler type, and message.
 4. Patch only reported problems; local validators are syntax hygiene unless produced from the same target build metadata.
 5. Attempt the live APEXlang check at most 3 times in one run.
 6. For each failed attempt with real SQLcl/compiler output, route to `references/domains/README.md`, apply the smallest concrete fix, rerun syntax hygiene checks as needed, and rerun `runtime validate`.
 7. If SQLcl reports multiple-workspace ambiguity, resolve the workspace id automatically for the active `db_connection_name` and rerun `runtime validate` with the run-scoped explicit `-workspaceid`.
-8. After live validate and VSCode Problems evidence pass, run runtime UI verification for changed pages before any import continuation when the caller requested it. Prefer Chrome DevTools MCP when provided; otherwise use the runtime verifier's inferred page URLs plus HTTP/HTML artifacts.
+8. After live validate passes, run runtime UI verification for changed pages before any import continuation when the caller requested it. Prefer Chrome DevTools MCP when provided; otherwise use the runtime verifier's inferred page URLs plus HTTP/HTML artifacts.
 9. Treat critical runtime verification findings such as login redirects, HTTP failures, APEX/ORA error text, or missing live state needed for the active fix as blocking. Route them through debugging before any import attempt.
 10. If a build-root runtime attempt fails before real `apex validate` / `apex import` output because of sandbox-only filesystem/setup errors such as `EPERM`, `ENOENT`, or build-root `workdir/*` write failures, classify the result as an environment blocker, do not consume the 3-attempt validate budget, do not route to the debugging/fix loop, and continue with the real live build-root roundtrip in an execution context that can write the required build-root work files.
-11. Record `resolved_app_path` as the canonical validated path only after live validate, compiler evidence, and VSCode Problems evidence pass.
+11. Record `resolved_app_path` as the canonical validated path after live validate passes.
 12. Mark import eligibility only when the validate-only gate succeeds in that session and the post-check GUI choice resolves to import.
 
 Outputs
@@ -62,8 +64,8 @@ Outputs
 - recorded command outcome in the run report and transcript
 
 Failure handling
-- Missing compiler-driven evidence or VSCode Problems evidence: stop with `VALIDATION_DUAL_SOURCE_REQUIRED_001`.
-- Local validator failure: treat as syntax hygiene unless the check is target-build-derived; do not override live/compiler evidence from the selected build.
+- Missing required runtime inputs or live runtime evidence: stop with `LIVE_RUNTIME_VALIDATION_REQUIRED_001`.
+- Local validator, compiler-truth, or VS Code Problems findings: record as diagnostics unless live validation cannot run.
 - Sandbox-only build-root filesystem/setup blocker before real validate/import output: stop the sandbox attempt, keep the run out of the debugging/fix loop, and continue in a real live build-root execution context without consuming validate-attempt budget.
 - Validation failure with a real SQLcl/compiler outcome: route to debugging, then retry from a fresh real SQLcl session until the third failed validate attempt.
 - Third failed validate attempt: stop and surface actionable findings plus the owning layer.

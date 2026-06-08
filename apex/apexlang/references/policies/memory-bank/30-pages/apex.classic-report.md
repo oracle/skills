@@ -6,6 +6,10 @@
 ### Rules (Non-Negotiable)
 1. Use `pageTemplate: @/standard` (or other documented layout) with `templateOptions: #DEFAULT#`.
 2. Main report region must use `type: classicReport` and follow the canonical Classic Report `appearance` and `componentAppearance` blocks owned by `references/policies/memory-bank/40-components/apex.templates.md`.
+   - Classic Report `componentAppearance.templateOptions` defaults to `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`.
+   - Alternating rows are disabled by omission; do not emit `t-Report--altRowsDefault` or `t-Report--staticRowColors`.
+   - Do not emit row-highlighting by default.
+   - Contextual Info Classic Reports are the documented appearance override: use `appearance.template: @/contextual-info` and `appearance.templateOptions` exactly `#DEFAULT#`, `t-Region--hideHeader js-addHiddenHeadingRoleDesc`, and `t-Region--noUI`.
 3. Default pagination is `rowRangesXToYNoPagination` with a `whenNoDataFound` message; switch to another catalog type only when user intent demands it or performance requirements warrant.
 4. Apply navigation/breadcrumb requirements from `apex.page.md`.
 5. When report navigation is added or changed, ask every time which link mode is required: same application page, another application page, or URL redirect.
@@ -25,7 +29,7 @@
 ### Guidance
 - Mirror `templates/page-examples/classic-report-page/classic-report-page._index.md` for structure, column ordering, and the canonical Classic Report `appearance` and `componentAppearance` blocks.
 - Keep classic report `appearance.templateOptions` to exact accepted values. `#DEFAULT#` stays standalone, documented composite values remain one atomic entry when the catalog/runtime lists them that way, and inline comma arrays remain invalid.
-- Emit `componentAppearance { template: @/standard templateOptions: #DEFAULT# }` on Classic Report regions. `appearance` controls the outer region wrapper; `componentAppearance` controls the report component template required by runtime validation. In the 26.1 compiler metadata this is property `411`, and live validation reports omissions as `Missing required parameter (411): componentAppearance - template (string)`.
+- Emit the canonical Classic Report `componentAppearance` block with `template: @/standard` and a multi-line `templateOptions` array containing `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`. `appearance` controls the outer region wrapper; `componentAppearance` controls the report component template required by runtime validation. In the 26.1 compiler metadata this is property `411`, and live validation reports omissions as `Missing required parameter (411): componentAppearance - template (string)`.
 - For interactive behaviours, add dynamic actions via the appropriate component templates rather than inline code.
 - For HTML-rendered status badges/highlights, use `columnFormatting.htmlExpression` with implicit plain-text columns.
 - Do not emit `type: richText` for `columnFormatting.htmlExpression` patterns.
