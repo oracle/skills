@@ -1,0 +1,4 @@
+interface:
+  display_name: "OCI Functions Deploy"
+  short_description: "Local Fn-context-guided OCI Functions deploy with optional advanced networking"
+  default_prompt: "Use $oci-functions-deploy to validate local prerequisites, resolve Fn context values, and deploy an OCI Function. Only enter networking setup if explicitly requested."
