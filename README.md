@@ -14,6 +14,29 @@ npx skills add oracle/skills/graal
 ...
 ```
 
+### Install in Claude Code
+
+This repository also ships as a Claude Code plugin marketplace (`.claude-plugin/marketplace.json`), where each domain folder (`apex`, `db`, `fusion`, `graal`, `oci`) is published as its own plugin.
+
+Register the marketplace, then install the domain plugins you need:
+
+```bash
+# Register this repo as a marketplace
+/plugin marketplace add oracle/skills
+
+# Install one or more domain plugins
+/plugin install db@oracle-skills
+/plugin install graal@oracle-skills
+```
+
+Already cloned the repo locally? Point the marketplace at the local path instead:
+
+```bash
+/plugin marketplace add ./
+```
+
+Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are tracked in `.claude/settings.json` under `enabledPlugins`.
+
 ## Repository Goals
 
 - Provide Oracle-wide skills in one repository.
