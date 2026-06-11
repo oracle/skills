@@ -51,7 +51,7 @@ Pick the smallest relevant verification query after MCP recovers:
 ```sql
 SELECT version_no,
        CASE
-           WHEN REGEXP_LIKE(version_no, '^(26\.1|24\.2|24\.1|23\.2)(\.|$)')
+           WHEN REGEXP_LIKE(version_no, '^(26\.1|24\.2|24\.1)(\.|$)')
            THEN 'SUPPORTED'
            ELSE 'UNSUPPORTED'
        END AS apex_admin_skill_support
