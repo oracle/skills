@@ -1,11 +1,11 @@
 ---
 name: db
-description: Oracle Database guidance for SQL, PL/SQL, SQLcl, ORDS, administration, app development, performance, security, migrations, and agent-safe database workflows. Use when the user asks to write, edit, rewrite, review, format, debug, tune, or explain SQL; create or refactor PL/SQL; use SQLcl, Liquibase, ORDS, JDBC, node-oracledb, Python, Java, .NET, or database frameworks; troubleshoot queries, sessions, locks, waits, indexes, optimizer plans, AWR, ASH, migrations, schemas, users, roles, privileges, backup, recovery, Data Guard, RAC, multitenant, containers, monitoring, auditing, encryption, VPD, or safe agent database operations.
+description: Oracle Database guidance for SQL, PL/SQL, SQLcl, ORDS, administration, app development, performance, security, migrations, Maximum Availability Architecture (MAA), and agent-safe database workflows. Use when the user asks to write, edit, rewrite, review, format, debug, tune, or explain SQL; create or refactor PL/SQL; use SQLcl, Liquibase, ORDS, JDBC, node-oracledb, Python, Java, .NET, or database frameworks; troubleshoot queries, sessions, locks, waits, indexes, optimizer plans, AWR, ASH, migrations, schemas, users, roles, privileges, backup, recovery, Data Guard, RAC, Exadata, MAA tiers, Oracle Update Advisor, multitenant, containers, monitoring, auditing, encryption, VPD, or safe agent database operations.
 ---
 
 # Oracle Database Skills
 
-This domain contains Oracle Database skills for administration, SQL and PL/SQL development, performance tuning, security, ORDS, SQLcl, migrations, frameworks, OCR container guidance, and agent-safe database workflows.
+This domain contains Oracle Database skills for administration, SQL and PL/SQL development, performance tuning, security, ORDS, SQLcl, migrations, Maximum Availability Architecture, frameworks, OCR container guidance, and agent-safe database workflows.
 
 ## How to Use This Domain
 
@@ -26,6 +26,7 @@ db/
 ├── devops/
 ├── features/
 ├── frameworks/
+├── maa/
 ├── migrations/
 ├── monitoring/
 ├── ords/
@@ -50,6 +51,7 @@ db/
 | Schema migrations, online operations, edition-based redefinition, testing, version control | `db/devops/` |
 | AQ, DBMS_SCHEDULER, materialized views, DBLinks, APEX, vector search, SELECT AI | `db/features/` |
 | SQLAlchemy, Django, Pandas, Spring JPA, MyBatis, TypeORM, Sequelize, Dapper, GORM | `db/frameworks/` |
+| Maximum Availability Architecture, MAA tiers, Data Guard/RAC/Exadata MAA, Oracle Update Advisor, Edition-Based Redefinition, ZDLRA, mission-critical availability | `db/maa/` |
 | Migrations from PostgreSQL, MySQL, SQL Server, MongoDB, Snowflake, and more | `db/migrations/` |
 | Alert log, ADR, health monitor, space management, top SQL | `db/monitoring/` |
 | ORDS architecture, installation, REST design, authentication, monitoring, ORDS Concert Sample App | `db/ords/` |
@@ -69,6 +71,7 @@ db/
 - `db/devops/schema-migrations.md`
 - `db/agent/schema-discovery.md`
 - `db/containers/container-selection-matrix.md`
+- `db/maa/maa-overview.md`
 - `db/backup-recovery/autonomous-recovery-service.md`
 - `db/backup-recovery/cloud-protect.md`
 
@@ -82,3 +85,4 @@ db/
 | Build a Java JDBC service | `java-oracle-jdbc` → `java-oracle-jdbc/dependencies` → `java-oracle-jdbc/connections` → `java-oracle-jdbc/sql` → `java-oracle-jdbc/pooling-production` |
 | Perform agent-safe schema change | `schema-discovery` → `destructive-op-guards` → `idempotency-patterns` → `schema-migrations` |
 | Set up AI-driven database access via MCP | `sqlcl-basics` (save connections) → `security/privilege-management` (least-privilege user) → `sqlcl-mcp-server` (configure + start) |
+| Answer an MAA architecture or availability question | `maa-overview` → `maa-knowledge-sources` → relevant product documentation |
