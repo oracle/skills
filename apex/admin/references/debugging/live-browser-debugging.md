@@ -15,10 +15,10 @@ This reference owns:
 
 This reference does not own:
 
-- APEX Debug/Trace policy, retention, or SQL-backed report queries. Use `workspace-monitor-activity.md`, `activity-log.md`, `page-performance.md`, and `error-handling.md`.
-- Session Replay or SQL-backed journey reconstruction. Use `user-journey-replay.md`.
-- Static export risk review. Use `export-runtime-risk-review.md`.
-- MCP/database availability decisions. Use `mcp-availability.md`.
+- APEX Debug/Trace policy, retention, or SQL-backed report queries. Use `../monitoring/workspace-monitor-activity.md`, `../monitoring/activity-log.md`, `../monitoring/page-performance.md`, and `../monitoring/error-handling.md`.
+- Session Replay or SQL-backed journey reconstruction. Use `../monitoring/user-journey-replay.md`.
+- Static export risk review. Use `../monitoring/export-runtime-risk-review.md`.
+- MCP/database availability decisions. Use `../monitoring/mcp-availability.md`.
 - AWR, ASH, SQL Monitor, wait events, execution plans, ORDS pool diagnostics, users, grants, quotas, tablespaces, or schema changes. Route to the relevant DB/ORDS skill.
 - Generating or materially changing APEX application artifacts. Route to `apex/apexlang/SKILL.md`.
 
@@ -50,16 +50,22 @@ For browser-guided tools such as Codex, the user can start with:
 Use the APEX admin live browser debugging workflow. I am already signed in to APEX in this browser. This is a <dev/test/production> environment. Reproduce the issue on application <APP_ID>, page <PAGE_ID>. You may inspect visible UI, screenshots, browser console, and network metadata. Do not submit state-changing actions without asking me first. Do not use database access for this step.
 ```
 
-If Debug or Trace is needed, ask for explicit confirmation and route the policy decision to `workspace-monitor-activity.md`.
+If Debug or Trace is needed, ask for explicit confirmation and route the policy decision to `../monitoring/workspace-monitor-activity.md`.
+
+## Protocol File
+
+Before browser-guided debugging starts, load `protocol-file.md` and create or update the local operation protocol file. Use a browser-specific timestamped name such as `apex-browser-debug-protocol-YYYYMMDD-HHMMSS.md` when the user provides a directory.
 
 ## Start Flow
 
 1. Confirm whether the browser session is a development, test, or production environment.
 2. Confirm the target workspace or application, page, user journey, symptom, and approximate time window.
-3. State that browser inspection alone does not require database access.
-4. Reproduce the issue with the smallest safe click path.
-5. Capture only non-secret correlation facts: application ID or alias, page ID or title, visible error text, request timestamp with timezone, action name, AJAX or submit path, HTTP status, duration, and whether the behavior is reproducible.
-6. If the browser evidence points to APEX runtime logs, load the relevant APEX monitoring reference. If it points to DB/ORDS evidence, stop and ask before handoff.
+3. Ask for the local protocol output directory or exact file path if none was provided.
+4. State that browser inspection alone does not require database access.
+5. Create or update the protocol file with the initial scope before reproducing the issue.
+6. Reproduce the issue with the smallest safe click path.
+7. Capture only non-secret correlation facts: application ID or alias, page ID or title, visible error text, request timestamp with timezone, action name, AJAX or submit path, HTTP status, duration, and whether the behavior is reproducible.
+8. If the browser evidence points to APEX runtime logs, load the relevant APEX monitoring reference. If it points to DB/ORDS evidence, stop and ask before handoff.
 
 ## APEX Debug And Developer Toolbar
 
@@ -73,7 +79,7 @@ Allowed observations:
 
 Guardrails:
 
-- Do not enable Debug or Trace broadly from this reference. Use `workspace-monitor-activity.md` for Debug/Trace controls and require the narrow app/page/user/session/timebox there.
+- Do not enable Debug or Trace broadly from this reference. Use `../monitoring/workspace-monitor-activity.md` for Debug/Trace controls and require the narrow app/page/user/session/timebox there.
 - Do not paste item values, cookies, authorization headers, credential static IDs, tokens, or full URLs with secrets into chat or artifacts.
 - Do not use the Developer Toolbar to edit application definitions from this reference. Route app artifact changes to APEXlang or the appropriate APEX admin deployment workflow.
 
@@ -89,15 +95,17 @@ Classify browser evidence by request type:
 
 For network review, record only metadata needed for triage: path shape, method, status, timing, initiator or action, response size class, and timestamp. HAR files must be redacted before use: remove cookies, authorization headers, bearer tokens, session IDs, request bodies, and secret-bearing URLs.
 
+For token efficiency, do not paste full network tables, DOM snapshots, screenshots, HAR files, or console dumps into chat. Update the protocol file with the few correlation facts that matter, then load deeper APEX monitoring references only when those facts point to a specific APEX-side next step.
+
 ## Correlation Targets
 
 Use browser evidence to identify what to load next:
 
-- visible page latency, AJAX latency, request count, or slow render: `page-performance.md` and `activity-log.md`;
-- error message, failed process, unhandled exception, or debug link: `error-handling.md`;
-- reproduced multi-step journey or missing navigation step: `user-journey-replay.md`;
-- REST, Web Source, or outbound call issue: `rest-data-sources.md`;
-- automation, background process, or job symptom: `background-jobs.md`;
+- visible page latency, AJAX latency, request count, or slow render: `../monitoring/page-performance.md` and `../monitoring/activity-log.md`;
+- error message, failed process, unhandled exception, or debug link: `../monitoring/error-handling.md`;
+- reproduced multi-step journey or missing navigation step: `../monitoring/user-journey-replay.md`;
+- REST, Web Source, or outbound call issue: `../monitoring/rest-data-sources.md`;
+- automation, background process, or job symptom: `../monitoring/background-jobs.md`;
 - SQL ID, wait event, AWR/ASH, SQL Monitor, ORDS pool, gateway, or infrastructure symptom: DB/ORDS skill handoff.
 
 When correlation uses live APEX SQL or APIs, apply the APEX Admin Identity Gate from `apex/admin/SKILL.md`. A browser session proves only browser authentication; it does not prove MCP database identity or permission to query APEX metadata.
@@ -117,6 +125,7 @@ Prefer a non-production environment for destructive or externally visible reprod
 
 Keep browser-debug output compact:
 
+- local protocol file path and whether it was updated successfully;
 - symptom reproduced or not reproduced;
 - environment classification and browser-tool capability used;
 - page/app/session/time correlation facts;

@@ -15,6 +15,14 @@ Connection confirmation: I am connected as SESSION_USER=<SESSION_USER>, CURRENT_
 ```
 
 ```text
+SYSTEM confirmation required: I am connected as SESSION_USER=SYSTEM, CURRENT_USER=SYSTEM, ISDBA=FALSE. SYSTEM is a privileged APEX admin identity for this workflow. Scope: <APEX_ADMIN_SCOPE>. Targets: <TARGETS>. I will not put passwords in chat or logged MCP SQL. Reply exactly YES in uppercase to allow this APEX-admin-scoped work under SYSTEM.
+```
+
+```text
+Protocol file required: this APEX admin workflow includes <DEBUGGING_OR_LIVE_ACTION>. I need a local output directory or exact Markdown file path for the operation protocol before I continue. The protocol will stay outside the skill tree and will redact secrets, tokens, request bodies, item values, cookies, and unnecessary personal data.
+```
+
+```text
 DB skill handoff: this evidence or action belongs to <DB_SKILL_PATH>. I will use that DB skill's required connection/user for the DB work and keep the APEX admin identity only for APEX workspace, application, page, session, request, and time-window context.
 ```
 
@@ -62,4 +70,4 @@ Unsupported APEX version detected: <VERSION_NO>. The APEX admin skill supports o
 APEX MCP availability check failed: the MCP transport is closed, so I cannot safely verify or change APEX state from here. I will pause the APEX workflow until the MCP tool channel is available again.
 ```
 
-Emit these messages before continuing when the request involves APEX application generation handoff, MCP-backed application create/import connection confirmation, DB-skill handoff, unsupported APEX versions, broad grants, direct internal repository writes, destructive changes, interrupted provisioning recovery, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.
+Emit these messages before continuing when the request involves APEX application generation handoff, MCP-backed application create/import connection confirmation, required local protocol output, DB-skill handoff, unsupported APEX versions, broad grants, direct internal repository writes, destructive changes, interrupted provisioning recovery, sensitive logs/exports, session-state security assumptions, audit triggers, version-sensitive APEX views, or unavailable MCP-backed database access.

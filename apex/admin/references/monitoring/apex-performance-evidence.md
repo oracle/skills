@@ -56,7 +56,7 @@ Static file analysis of APEX exports, AWR HTML/TEXT reports, HAR files, CSV extr
 
 Announce that boundary before running the static analysis. If live evidence becomes necessary afterward, stop and ask for the appropriate APEX admin connection or DB-skill handoff before using any database access.
 
-Live APEX-side evidence gathering through MCP requires the confirmed APEX admin identity from `apex/admin/SKILL.md`: APEX dictionary queries, `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_DEBUG_MESSAGES`, supported APEX views, APEX debug/error logs, and APEX API checks must not run under `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime users, generic deployment users, or unknown accounts.
+Live APEX-side evidence gathering through MCP requires the confirmed APEX admin identity from `apex/admin/SKILL.md`: APEX dictionary queries, `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_DEBUG_MESSAGES`, supported APEX views, APEX debug/error logs, and APEX API checks must not run under `SYS`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime users, generic deployment users, or unknown accounts. `SYSTEM` is allowed only after the exact uppercase `YES` confirmation required by the APEX Admin Identity Gate.
 
 Ask for an explicit DB-skill handoff and that DB skill's required connection/user when the next step needs live generic database or ORDS evidence, such as `DBA_HIST_ACTIVE_SESS_HISTORY`, `V$SQL`, `DBMS_XPLAN`, object/index/statistics inspection, grants, parameter checks, or ORDS pool/runtime diagnostics. Do not reuse the APEX admin connection for this handoff unless the selected DB skill explicitly accepts it.
 

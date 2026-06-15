@@ -33,7 +33,7 @@ FROM dual;
 Connection confirmation: I am connected as SESSION_USER=<SESSION_USER>, CURRENT_USER=<CURRENT_USER>, ISDBA=<ISDBA>. This APEX admin workflow requires the intended APEX admin identity. Confirm this connection is the APEX admin identity for the target workspace/import before I continue.
 ```
 
-If `SESSION_USER` or `CURRENT_USER` is `SYS` or `SYSTEM`, `IS_DBA` is `TRUE`, or the user cannot confirm this is the APEX admin identity, stop and ask for the confirmed APEX admin connection. Do not use a generic deployment user inside this APEX admin skill; route generic database deployment work to the DB skill and use that skill's required connection/user.
+If `SESSION_USER` or `CURRENT_USER` is `SYS`, `IS_DBA` is `TRUE`, or the user cannot confirm this is the APEX admin identity, stop and ask for the confirmed APEX admin connection. If the identity is `SYSTEM`, continue only after the exact uppercase `YES` confirmation required by `apex/admin/SKILL.md`. Do not use a generic deployment user inside this APEX admin skill; route generic database deployment work to the DB skill and use that skill's required connection/user.
 
 ## Version And Package Checks
 

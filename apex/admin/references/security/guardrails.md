@@ -6,7 +6,9 @@ Apply these APEX-specific rules before generating SQL, scripts, or operational s
 
 Keep APEX role boundaries clear: workspace administrator, developer, end user, parsing schema, database-login user, ORDS/APEX runtime account, and DBA/admin account are different security contexts.
 
-Run live MCP-backed APEX admin work only under the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not use `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts for APEX-owned queries or operations.
+Run live MCP-backed APEX admin work only under the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not use `SYS`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts for routine APEX-owned queries or operations.
+
+`SYSTEM` without `SYSDBA` is allowed for APEX-admin-scoped work only after the exact uppercase `YES` confirmation defined in `apex/admin/SKILL.md`. The confirmation must show the verified identity, target objects, action scope, password-handling path when relevant, and risk summary. This does not authorize generic DB/ORDS/performance work.
 
 Do not treat parsing schemas as personal interactive logins in production. If a parsing schema is only technical, keep it narrow and document whether it should be locked outside deployment windows.
 

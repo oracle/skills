@@ -3,7 +3,8 @@
 Use this checklist after substantial workspace provisioning, import/export, schema mapping, resource governance, or removal work.
 
 - Scope: the workflow stayed APEX-specific; generic privilege, auditing, security, SQL tuning, ASH/AWR, SQLcl, ORDS, or resource diagnosis was routed to the relevant `db/...` skill with a visible `DB skill in use:` message.
-- APEX admin identity: every live MCP-backed workspace step used the confirmed APEX admin identity, not `SYS`, `SYSTEM`, `SYSDBA`, a parsing schema, workspace user, ORDS/APEX runtime account, generic deployment user, or unknown account.
+- APEX admin identity: every live MCP-backed workspace step used the confirmed APEX admin identity, not `SYS`, `SYSDBA`, a parsing schema, workspace user, ORDS/APEX runtime account, generic deployment user, or unknown account. If `SYSTEM` was used, the exact uppercase `YES` confirmation, scope, targets, and risk summary were recorded before workspace work continued.
+- Protocol file: workspace provisioning, removal, user changes, schema mapping, and debugging workflows created or updated a local protocol file outside the skill tree before the work began.
 - DB handoff identity: every generic DB step used the selected DB skill's required connection/user rather than silently reusing the APEX admin connection.
 - Licensed diagnostics: AWR and ASH usage called out Diagnostics Pack requirements before historical database-performance views were used.
 - Provisioning side effects: `WORKSPACE_PROVISION_DEMO_OBJECTS` was checked before workspace creation, and any demonstration applications/database objects were explicitly desired or explicitly prevented.

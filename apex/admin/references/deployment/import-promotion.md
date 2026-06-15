@@ -10,7 +10,7 @@ If the workflow creates or scaffolds a new APEX application artifact before impo
 APEXlang skill in use: apex/apexlang/SKILL.md for APEX application generation. The APEX admin skill is being used only for workspace, deployment identity, connection safety, and post-deploy validation.
 ```
 
-Before MCP-backed import or create-new materialization, verify the connection identity and continue only after the user confirms it is the intended APEX admin identity for the target workspace/import. Block `SYS`, `SYSTEM`, `ISDBA = TRUE`, generic deployment users, parsing schemas, workspace users, ORDS/APEX runtime accounts, and unknown identities. Route generic database deployment work to the DB skill and use that skill's required connection/user.
+Before MCP-backed import or create-new materialization, verify the connection identity and continue only after the user confirms it is the intended APEX admin identity for the target workspace/import. Block `SYS`, `ISDBA = TRUE`, generic deployment users, parsing schemas, workspace users, ORDS/APEX runtime accounts, and unknown identities. If the identity is `SYSTEM`, continue only after the exact uppercase `YES` confirmation required by `apex/admin/SKILL.md`. Route generic database deployment work to the DB skill and use that skill's required connection/user.
 
 ```sql
 BEGIN

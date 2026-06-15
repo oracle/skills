@@ -34,7 +34,7 @@ Route out of this skill when the task is:
 
 ## Identity Gate
 
-Live MCP-backed checks require the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not query APEX AI metadata, activity logs, debug logs, or APEX APIs under `SYS`, `SYSTEM`, `SYSDBA`, app parsing schemas, workspace users, ORDS/APEX runtime users, generic deployment users, or unknown accounts.
+Live MCP-backed checks require the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not query APEX AI metadata, activity logs, debug logs, or APEX APIs under `SYS`, `SYSDBA`, app parsing schemas, workspace users, ORDS/APEX runtime users, generic deployment users, or unknown accounts. `SYSTEM` is allowed only after the exact uppercase `YES` confirmation required by the APEX Admin Identity Gate.
 
 Static review of APEX exports does not require database access. Announce that boundary before file-only analysis.
 

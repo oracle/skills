@@ -6,7 +6,7 @@ If the user asks for an APEX Instance Administrator, APEX Administration Service
 
 Use `APEX_WORKSPACE_APEX_USERS` when you need supported workspace-user metadata for administrators, developers, and end users. Check column availability first on older or managed APEX environments.
 
-MCP-backed workspace-user reads or changes must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not create, unlock, reset, or inspect APEX workspace users under `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts.
+MCP-backed workspace-user reads or changes must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not create, unlock, reset, or inspect APEX workspace users under `SYS`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts. `SYSTEM` is allowed only after the exact uppercase `YES` confirmation required by the APEX Admin Identity Gate.
 
 ## Temporary Password Policy
 

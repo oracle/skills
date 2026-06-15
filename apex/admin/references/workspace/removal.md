@@ -4,7 +4,7 @@ Use this topic for guarded test-workspace removal and cleanup. Treat removal as 
 
 Version check: use `ALL_TAB_COLUMNS` and `ALL_ARGUMENTS` before assuming workspace inventory columns or `APEX_INSTANCE_ADMIN.REMOVE_WORKSPACE` parameters.
 
-MCP-backed workspace inventory and removal must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not remove or inventory APEX workspace objects under `SYS`, `SYSTEM`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts.
+MCP-backed workspace inventory and removal must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not remove or inventory APEX workspace objects under `SYS`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts. `SYSTEM` is allowed only after the exact uppercase `YES` confirmation required by the APEX Admin Identity Gate.
 
 ## Safety Rules
 

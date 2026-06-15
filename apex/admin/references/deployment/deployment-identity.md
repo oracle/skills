@@ -4,17 +4,20 @@ Use this topic when deciding which database identity should run an APEX-related 
 
 ## Identity Types
 
-- **APEX instance admin identity**: A dedicated non-SYS/SYSTEM database account granted `APEX_ADMINISTRATOR_ROLE`. Use for APEX workspace lifecycle, workspace-schema mappings, APEX instance settings, and supported `APEX_INSTANCE_ADMIN` APIs.
+- **APEX instance admin identity**: Prefer a dedicated non-SYS/SYSTEM database account granted `APEX_ADMINISTRATOR_ROLE`. Use for APEX workspace lifecycle, workspace-schema mappings, APEX instance settings, and supported `APEX_INSTANCE_ADMIN` APIs.
 - **Deployment or install identity**: A controlled compile-time account used to install or update database objects, grants, supporting objects, Liquibase changesets, or SQLcl Projects artifacts. Prefer least privilege and clear auditability. This may be an app-scoped admin user when the environment supports it.
 - **App object owner identity**: The schema that owns application objects. Use when the environment requires app-user deployment or when installation is intentionally scoped to a single schema.
 - **Runtime identity**: The schema or database account used by the running application. Keep runtime privileges smaller than compile-time deployment privileges.
 - **DBA identity**: A privileged identity such as `SYS`, `SYSTEM`, `ADMIN`, or `SYSDBA`. Use only for explicit database administration, APEX installation/upgrade/patching when Oracle documentation requires it, emergency repair, or grant bootstrapping.
+- **Privileged SYSTEM APEX admin identity**: `SYSTEM` without `SYSDBA` may be used for APEX-admin-scoped work only after the exact uppercase `YES` confirmation required by `apex/admin/SKILL.md`.
 
 ## Decision Guide
 
-All live MCP-backed work that remains in the APEX admin skill must use a confirmed APEX instance admin identity. Do not use `SYS`, `SYSTEM`, `SYSDBA`, app parsing schemas, workspace developers/end users, ORDS/APEX runtime accounts, or generic deployment users as the routine MCP/default connection.
+All live MCP-backed work that remains in the APEX admin skill must use a confirmed APEX instance admin identity. Do not use `SYS`, `SYSDBA`, app parsing schemas, workspace developers/end users, ORDS/APEX runtime accounts, or generic deployment users as the routine MCP/default connection. `SYSTEM` is allowed only as a privileged APEX admin identity after exact uppercase `YES` confirmation.
 
 On Autonomous Database or APEX Service, the service `ADMIN` account may be the available administration identity for APEX workspace provisioning or related APEX administration. Treat it as privileged: confirm `SESSION_USER`, `CURRENT_USER`, and `ISDBA`, ask the user whether to continue with that identity, and keep the work strictly APEX-admin-scoped.
+
+When the user intentionally chooses `SYSTEM`, it may run APEX-admin-scoped work only when `SESSION_USER = SYSTEM`, `CURRENT_USER = SYSTEM`, and `ISDBA = FALSE`. Show the exact target objects, exact SQL or SQLcl action class, password-handling path when relevant, and risk summary, then require the user to reply with exactly `YES` in uppercase. Do not put passwords in chat, scripts, SQL text, or logged MCP tool calls. This permits APEX admin account creation/grants, workspace lifecycle work, imports, monitoring queries, debug-log queries, and supported APEX API automation. It does not permit generic DB/ORDS/performance work.
 
 For APEX application import metadata and `APEX_APPLICATION_INSTALL` calls handled by this skill, use the confirmed APEX admin identity. Confirm the target application, workspace, parsing schema, and whether the import updates an existing app or creates a new one.
 
@@ -34,5 +37,5 @@ For read-only APEX performance triage, use either static evidence with no live d
 - Do not require app object owners to retain broad DDL privileges at runtime just because deployment is convenient.
 - Do not recommend `DBA`, `SYSDBA`, `CREATE ANY TABLE`, `GRANT ANY PRIVILEGE`, or cross-schema `ANY` privileges for routine APEX work unless the user explicitly asks for privileged database deployment and the risk is called out.
 - Do not use `SYS` for SQLcl/Liquibase deployment workflows.
-- If `SYSTEM` or another privileged DB admin identity is proposed for deployment, classify the task as DB deployment, require explicit scope, keep it out of routine APEX MCP operations, and prefer a custom least-privilege install user where practical. Treat managed-service `ADMIN` as an APEX admin identity only when the user explicitly confirms that role for the APEX-scoped task.
+- If `SYSTEM` or another privileged DB admin identity is proposed for deployment, classify the task as DB deployment unless the work is explicitly APEX-admin-scoped and the `SYSTEM` confirmation gate has passed. Require explicit scope and prefer a custom least-privilege install user where practical. Treat managed-service `ADMIN` as an APEX admin identity only when the user explicitly confirms that role for the APEX-scoped task.
 - Record the selected identity model in deployment notes: `apex_instance_admin`, `deployment_install_user`, `app_object_owner`, `runtime_user`, or `dba_admin`.
