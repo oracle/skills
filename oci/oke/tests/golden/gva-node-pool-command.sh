@@ -1,0 +1,12 @@
+oci ce node-pool create \
+  --compartment-id "<compartment_ocid>" \
+  --cluster-id "<cluster_ocid>" \
+  --name "gva-workers" \
+  --kubernetes-version "v1.31.1" \
+  --node-shape "VM.Standard.E5.Flex" \
+  --node-shape-config '{"ocpus":2,"memoryInGBs":16}' \
+  --size 3 \
+  --cni-type OCI_VCN_IP_NATIVE \
+  --placement-configs '[{"availabilityDomain":"GrCh:US-ASHBURN-AD-1","subnetId":"<primary_subnet_ocid>"}]' \
+  --node-source-details '{"sourceType":"IMAGE","imageId":"<image_ocid>"}' \
+  --secondary-vnics '[{"createVnicDetails":{"ipCount":32,"applicationResources":["frontend"],"assignPublicIp":false,"displayName":"frontend-vnic","nsgIds":null,"subnetId":"<secondary_subnet_ocid>","skipSourceDestCheck":false},"displayName":"frontend-vnic"}]'
