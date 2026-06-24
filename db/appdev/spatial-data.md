@@ -137,6 +137,18 @@ SEMI_MAJOR_AXIS INV_FLATTENING SEMI_MINOR_AXIS     UOM_ID    SHIFT_X    SHIFT_Y 
         6378388            297      6356911.95       9001      -90.7     -106.1     -119.2       4.09       .218      -1.05         1.37
 ```
 
+In the preceding example, the `UOM_ID` represents the unit of measure for `SEMI_MAJOR_AXIS` (a) and `SEMI_MINOR_AXIS` (b). `INV_FLATTENING` is `a/(a-b)` and has no associated unit. Shifts are in meters, rotation angles are given in arc seconds, and scale adjustment in parts per million. To interpret the `UOM_ID`, the units table can be queried, as shown in the following example:
+
+```sql
+SELECT unit_of_meas_name FROM SDO_UNITS_OF_MEASURE WHERE uom_id = 9001;
+```
+
+```txt
+UNIT_OF_MEAS_NAME
+-----------------
+metre
+```
+
 ##### List of most common coordinate systems
 
 | SDO_SRID | Constant | Name | Description |
@@ -537,7 +549,6 @@ WHERE
   sdo_lb > sdo_ub
 ORDER BY
   table_name;
-
 ```
 
 ## Spatial indexes
@@ -636,6 +647,8 @@ INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2 PARAMETERS ('sdo_indx_dims=3');
 -- Note: `sdo_indx_dims=2` is the default and does not need to be specified explicitly.
 ```
 
+### Spatial index metadata
+
 Information about the created indexes can be retrieved using the following queries:
 
 ```sql
@@ -717,7 +730,13 @@ WHERE
 ORDER BY
   i.table_name,
   i.index_name;
+```
 
+### Spatial index validations
+
+Use the following queries to detect any issues related to spatial indexes:
+
+```sql
 -- Check for spatial tables without a spatial index
 SELECT
   table_name,
@@ -775,199 +794,994 @@ ORDER BY
   table_name;
 ```
 
+### Spatial index recommendations
+
 After performing bulk loads, it is recommended to rebuild the spatial index.
 
 ```sql
 -- Rebuild a spatial index, e.g., after bulk loads
 ALTER INDEX polygons3d_geom_sidx REBUILD;
 ```
-## Spatial Operators
 
-Oracle spatial uses **operators** (not functions) for primary spatial predicates. The optimizer uses these operators to leverage the spatial index.
+## Query spatial data
 
-### SDO_RELATE: General Topological Relationship
+Spatial operators, procedures, and functions are used to efficiently query spatial data.
 
-`SDO_RELATE` tests the topological relationship between two geometries using the 9-intersection model (DE-9IM).
+The following performance-related guidelines apply to the use of spatial operators, procedures, and functions:
 
-```sql
--- Find all stores within a district boundary polygon
-SELECT s.store_id, s.store_name
-FROM   store_locations s,
-       district_boundaries d
-WHERE  d.district_name = 'Bay Area'
-  AND  SDO_RELATE(
-           s.location,          -- geometry 1 (indexed column)
-           d.boundary,          -- geometry 2
-           'mask=INSIDE'        -- relationship mask
-       ) = 'TRUE';
-```
+* If an operator and a procedure or function perform comparable operations, and if the operator satisfies your requirements, use the operator. For example, unless you need to do otherwise, use `SDO_RELATE` instead of `SDO_GEOM.RELATE`, and use `SDO_WITHIN_DISTANCE` instead of `SDO_GEOM.WITHIN_DISTANCE`.
+* Starting from *Oracle AI Database 26ai*, the conditions used with operators in the `WHERE` clause of a Spatial query can be boolean expressions that evaluate to TRUE. For example, the condition `SDO_WITHIN_DISTANCE(arg1, arg2, 'distance = <some_dist_val>')` must return `TRUE` when included in the `WHERE` clause. However, the old syntax of specifying the condition in the form `SDO_WITHIN_DISTANCE(arg1, arg2, 'distance = <some_dist_val>') = 'TRUE'` (with `TRUE` in uppercase only) continues to be supported.
+* With operators, use the `/*+ ORDERED */` optimizer hint if the query window comes from a table. The hint must be used hint if multiple windows come from a table.
 
-**Relationship Masks:**
+### Spatial Operators
+
+Oracle Spatial uses **operators** (not functions) for primary spatial predicates. Spatial operators perform most efficiently when the geometry column in the first parameter has a spatial index defined on it. The optimizer uses these operators to leverage the spatial index.
+
+#### Topological Relationships
+
+The spatial operator `SDO_RELATE` categorizes the topological relationship between two geometries (points, lines, polygons) using a 9-intersection model (DE-9IM).
+
+Oracle Spatial identifies the following relationships:
 
 | Mask | Description |
 |---|---|
-| `TOUCH` | Boundaries touch, interiors don't intersect |
-| `OVERLAPBDYDISJOINT` | Overlap with disjoint boundaries |
-| `OVERLAPBDYINTERSECT` | Overlap with intersecting boundaries |
-| `EQUAL` | Geometrically equal |
-| `INSIDE` | Geometry 1 is inside geometry 2 |
-| `COVEREDBY` | Geometry 1 is covered by (or inside) geometry 2 |
-| `CONTAINS` | Geometry 1 contains geometry 2 |
-| `COVERS` | Geometry 1 covers (or contains) geometry 2 |
-| `ANYINTERACT` | Any interaction (most commonly used) |
-| `ON` | Geometry 1 is on boundary of geometry 2 |
+|`DISJOINT` | The boundaries and interiors do not intersect. |
+|`TOUCH` | The boundaries intersect but the interiors do not intersect. |
+|`OVERLAPBDYDISJOINT` | The interior of one object intersects the boundary and interior of the other object, but the two boundaries do not intersect. This relationship occurs, for example, when a line originates outside a polygon and ends inside that polygon. |
+|`OVERLAPBDYINTERSECT` | The boundaries and interiors of the two objects intersect. |
+|`EQUAL` | The two objects have the same boundary and interior. |
+|`CONTAINS` | The interior and boundary of one object is completely contained in the interior of the other object. |
+|`COVERS` | The boundary and interior of one object is completely contained in the interior or the boundary of the other object, their interiors intersect, and the boundary or the interior of one object and the boundary of the other object intersect. |
+|`INSIDE` | The opposite of `CONTAINS`. A `INSIDE` B implies B `CONTAINS` A. |
+|`COVEREDBY` | The opposite of `COVERS`. A `COVEREDBY` B implies B `COVERS` A. |
+|`ON` | The interior and boundary of one object is on the boundary of the other object. This relationship occurs, for example, when a line is on the boundary of a polygon. |
+|`ANYINTERACT` | The objects are non-disjoint. |
+
+##### SDO_RELATE query examples
 
 ```sql
--- ANYINTERACT: find any geometries that touch, overlap, or contain each other
-SELECT s.store_id, s.store_name
-FROM   store_locations s,
-       flood_zones f
-WHERE  f.risk_level = 'HIGH'
-  AND  SDO_RELATE(s.location, f.boundary, 'mask=ANYINTERACT') = 'TRUE';
+-- Find all stores within a district boundary polygon
+SELECT
+  s.store_id,
+  s.store_name
+FROM
+  store_locations s,
+  district_boundaries d
+WHERE
+  d.district_name = 'Bay Area'
+  AND SDO_RELATE(
+    s.location,          -- geometry 1 (indexed column)
+    d.boundary,          -- geometry 2
+    'mask=inside'        -- relationship mask
+  ) = 'TRUE';
 
--- multi-ple masks combined with +
-SELECT * FROM parcel_map p, utility_lines u
-WHERE  SDO_RELATE(p.geom, u.geom, 'mask=TOUCH+OVERLAPBDYINTERSECT') = 'TRUE';
+-- Find all counties that are inside or covered by the state of New York.  Combine multiple masks with a plus sign (+).
+SELECT
+  county,
+  c.state_abrv
+FROM
+  us_states   s,
+  us_counties c
+WHERE
+  s.state = 'New York'
+  AND SDO_RELATE(
+    c.geom,
+    s.geom,
+    'mask=inside+coveredby'
+  ) = 'TRUE';
+
+-- Determine the topological relationship between each pair of geometries
+SELECT
+  *
+FROM (
+  SELECT
+    c.name AS city,
+    s.name AS state,
+    SDO_GEOM.RELATE(
+      c.geom,
+      'determine',
+      s.geom,
+      0.05
+    ) relate
+  FROM
+    us_cities c,
+    us_states s
+  );
 ```
 
-### SDO_WITHIN_DISTANCE: Proximity Search
+##### SDO_DISJOINT query examples
+
+```sql
+-- True DISJOINT but returning wrong results: Find cities that do not interact with California
+SELECT
+  c.city,
+  c.state,
+  c.geom
+FROM
+  us_cities c,
+  us_states s
+WHERE
+  c.state = 'CA'
+  AND SDO_RELATE(
+    c.geom,
+    s.geom,
+    'mask=disjoint'
+  ) = 'TRUE';
+
+-- Best approach for DISJOINT: Find cities that do not interact with California
+SELECT
+  c.name,
+  c.state,
+  c.geom
+FROM
+  us_cities c
+WHERE
+  ROWID NOT IN (
+    SELECT
+      c.rowid
+    FROM
+      us_states s,
+      us_cities c
+    WHERE
+      SDO_ANYINTERACT(
+        c.geom,
+        s.geom
+      ) = 'TRUE'
+      AND c.state = 'CA'
+  );
+```
+
+##### SDO_TOUCH query examples
+
+```sql
+SELECT
+  s2.name AS state
+FROM
+  us_states s1,
+  us_states s2
+WHERE
+  s1.name = 'California'
+  AND SDO_RELATE(
+    s2.geom,
+    s1.geom,
+    'mask=touch'
+  ) = 'TRUE';
+
+SELECT
+  s2.name AS state
+FROM
+  us_states s1,
+  us_states s2
+WHERE
+  s1.name = 'California'
+  AND sdo_touch(
+    s2.geom,
+    s1.geom
+  );
+```
+
+##### SDO_ANYINTERACT query examples
+
+```sql
+-- ANYINTERACT: Find any geometries that TOUCH, OVERLAP, or CONTAIN each other
+SELECT
+  s.store_id,
+  s.store_name
+FROM
+  store_locations s,
+  flood_zones f
+WHERE
+  f.risk_level = 'HIGH'
+  AND SDO_RELATE(
+    s.location,
+    f.boundary,
+    'mask=anyinteract'
+  ) = 'TRUE';
+
+SELECT
+  s.store_id,
+  s.store_name
+FROM
+  store_locations s,
+  flood_zones f
+WHERE
+  f.risk_level = 'HIGH'
+  AND SDO_ANYINTERACT(
+    s.location,
+    f.boundary
+  );
+```
+
+##### OVERLAPBDYINTERSECT query examples
+
+```sql
+SELECT
+  *
+FROM
+  parcel_map p,
+  utility_lines u
+WHERE
+  SDO_RELATE(
+    p.geom,
+    u.geom,
+    'mask=overlapbdyintersect'
+  ) = 'TRUE';
+
+SELECT
+  *
+FROM
+  parcel_map p,
+  utility_lines u
+WHERE
+  SDO_OVERLAPBDYINTERSECT(
+    p.geom,
+    u.geom
+  );
+```
+
+##### SDO_CONTAINS query examples
+
+```sql
+-- Find all stores that are contained in a territory
+SELECT
+  s.store_id,
+  s.store_name
+FROM
+  store_locations s,
+  sales_territories t
+WHERE
+  t.territory_id = 7
+  AND SDO_CONTAINS(
+    t.boundary,
+    s.location
+  ) = 'TRUE';
+```
+
+##### SDO_INSIDE query examples
+
+```sql
+-- Find the territory in which a store is located. SDO_INSIDE is the reverse of SDO_CONTAINS.
+SELECT
+  t.territory_name
+FROM
+  store_locations s,
+  sales_territories t
+WHERE
+  s.store_id = 42
+  AND SDO_INSIDE(
+    s.location,
+    t.boundary
+  ) = 'TRUE';
+
+-- Find all counties inside Colorado
+SELECT
+  county,
+  c.state
+FROM
+  us_states s,
+  us_counties c
+WHERE
+  s.state = 'Colorado'
+  AND sdo_inside(
+    c.geom,
+    s.geom
+  ) = 'TRUE';
+```
+
+##### SDO_OVERLAPS query examples
+
+```sql
+-- Find all parks that overlap the state of Wyoming
+SELECT
+  p.name
+FROM
+  us_parks  p,
+  us_states s
+WHERE
+  s.state = 'Wyoming'
+  AND sdo_overlaps(
+    p.geom,
+    s.geom
+  ) = 'TRUE'
+ORDER BY
+  p.name;
+```
+
+#### Spatial joins
+
+`SDO_JOIN` is a table function that performs a spatial join based on one or more topological relationships. It is recommended to use when full table scans are performed.
+
+Notes:
+
+* The two geometries columns must have the same SRID value and the same number of dimensions.
+* For best performance, use the /*+ ORDERED */ optimizer hint, and specify the SDO_JOIN table function first in the FROM clause.
+
+##### SDO_JOIN query examples
+
+```sql
+BEGIN
+  FOR j IN (
+    SELECT
+      *
+    FROM
+      TABLE(
+        SDO_JOIN(
+          'US_CITIES',           -- Name of the first table to be used in the spatial join operation
+          'LOCATION',            -- Name of the SDO_GEOMETRY column in the first table. It must have an R-Tree index.
+          'US_COUNTIES',         -- Name of the second table to be used in the spatial join operation
+          'GEOM',                -- Name of the SDO_GEOMETRY column in the second table. It must have an R-Tree index.
+          'MASK=ANYINTERACT'     -- Masking operator for the topological relationship
+        )
+      )
+  )
+  LOOP
+    UPDATE
+      us_cities ci
+    SET
+      county_id = (
+        SELECT
+          id
+        FROM
+          us_counties co
+        WHERE
+          co.rowid = j.rowid2
+      )
+    WHERE
+      ci.rowid = j.rowid1;
+  END LOOP;
+END;
+/
+
+
+#### Proximity Search
+
+The `SDO_WITHIN_DISTANCE` operator identifies spatial objects that are within some specified distance of a given object, such as an area of interest or point of interest.
+
+##### SDO_WITHIN_DISTANCE query examples
 
 ```sql
 -- Find stores within 5 km of a given point (e.g., customer location)
-SELECT s.store_id, s.store_name, s.city
-FROM   store_locations s
-WHERE  SDO_WITHIN_DISTANCE(
-           s.location,                                              -- indexed geometry
-           SDO_GEOMETRY(2001, 4326,
-               SDO_POINT_TYPE(-122.4000, 37.7700, NULL), NULL, NULL),  -- query point
-           'distance=5 unit=km'                                     -- distance spec
-       ) = 'TRUE';
+SELECT
+  s.store_id,
+  s.store_name,
+  s.city
+FROM
+  store_locations s
+WHERE
+  SDO_WITHIN_DISTANCE(
+    s.location,              -- spatially indexed geometry
+    SDO_GEOMETRY(
+      2001,
+      4326,
+      SDO_POINT_TYPE(
+        -122.4000,
+        37.7700,
+        NULL),
+      NULL,
+      NULL
+    ),                       -- query point
+    'distance=5 unit=km'     -- distance specification
+) = 'TRUE';
 
--- Order results by actual distance
-SELECT s.store_id, s.store_name,
-       SDO_GEOM.SDO_DISTANCE(
-           s.location,
-           SDO_GEOMETRY(2001, 4326, SDO_POINT_TYPE(-122.4000, 37.7700, NULL), NULL, NULL),
-           0.001,   -- tolerance
-           'unit=km'
-       ) AS distance_km
-FROM   store_locations s
-WHERE  SDO_WITHIN_DISTANCE(
-           s.location,
-           SDO_GEOMETRY(2001, 4326, SDO_POINT_TYPE(-122.4000, 37.7700, NULL), NULL, NULL),
-           'distance=5 unit=km'
-       ) = 'TRUE'
-ORDER  BY distance_km;
+-- Similar query that orders the results by the actual distance
+SELECT
+  s.store_id,
+  s.store_name,
+  SDO_GEOM.SDO_DISTANCE(
+      s.location,
+      SDO_GEOMETRY(
+        2001,
+        4326,
+        SDO_POINT_TYPE(
+          -122.4000,
+          37.7700,
+          NULL),
+        NULL,
+        NULL
+      ),
+      0.001,              -- tolerance
+      'unit=km'
+  ) AS distance_km
+FROM
+  store_locations s
+WHERE
+  SDO_WITHIN_DISTANCE(
+    s.location,
+    SDO_GEOMETRY(
+      2001,
+      4326,
+      SDO_POINT_TYPE(
+        -122.4000,
+        37.7700,
+        NULL),
+      NULL,
+      NULL
+    ),
+    'distance=5 unit=km'
+  ) = 'TRUE'
+ORDER BY
+  distance_km;
+
+-- Find cities within distance from interstate
+SELECT
+  c.city,
+  c.state,
+  c.geom
+FROM
+  us_interstates i,
+  us_cities c
+WHERE
+  i.interstate = 'I275'
+  AND SDO_WITHIN_DISTANCE(
+    c.geom,
+    i.geom,
+    'distance=15 unit=mile'
+  ) = 'TRUE';
+
+-- Find cities NOT within distance from interstate: correct results, but inefficient
+SELECT
+  c.city,
+  c.state,
+  c.geom
+FROM
+  us_interstates i,
+  us_cities c
+WHERE
+  i.interstate = 'I275'
+  AND sdo_within_distance (
+    c.geom,
+    i.geom,'distance=15 unit=mile'
+  ) <> 'TRUE';
+
+-- Find cities NOT within distance from interstate: better approach
+SELECT
+  c.city,
+  c.state,
+  c.geom
+FROM
+  us_cities c
+WHERE
+  ROWID NOT IN (
+  SELECT
+    c.rowid
+  FROM
+    us_interstates i,
+    us_cities c
+    WHERE
+      i.interstate = 'I275'
+      AND sdo_within_distance (
+        c.geom,
+        i.geom,
+        'distance=15 unit=mile'
+        ) = 'TRUE'
+ );
+
+-- Cities within 15 miles and 30 miles from interstate - first option
+SELECT
+  *
+FROM
+  (
+    SELECT
+      c.city,
+      c.state,
+      SDO_GEOM.SDO_DISTANCE(
+        c.geom,
+        i.geom, 0.5,
+        'unit=mile') distance
+    FROM
+      us_interstates i,
+      us_cities c
+    WHERE
+      i.interstate = 'I275'
+      AND SDO_WITHIN_DISTANCE(
+        c.geom,
+        i.geom,
+        'distance=30 unit=mile'
+      ) = 'TRUE'
+  )
+WHERE
+  distance >= 15
+ORDER BY
+  distance;
+
+-- Cities within 15 miles and 30 miles from interstate - another option
+SELECT
+  c.city,
+  c.state,
+  SDO_GEOM.SDO_DISTANCE(
+    c.geom,
+    i.geom,
+    0.5,
+    'unit=mile'
+  ) distance
+FROM
+  us_interstates i,
+  us_cities c
+WHERE
+  i.interstate = 'I275'
+  AND SDO_WITHIN_DISTANCE(
+    c.geom,
+    i.geom,
+    'distance=30 unit=mile'
+  ) = 'TRUE'
+  AND SDO_GEOM.SDO_DISTANCE(
+    c.geom,
+    i.geom,
+    0.5, 'unit=mile'
+  ) >= 15
+ORDER BY
+  distance;
 ```
 
-### SDO_NN: Nearest Neighbor Search
+#### Point-In-Polygon searches
+
+The parallel-enabled Point-In-Polygon table function is the optimized approach to find points in polygons. It takes an arbitrary set of rows whose first column is a point’s x-coordinate value and the second column is a point’s y-coordinate value and returns the rows that match the selection criteria.
 
 ```sql
+-- List all cities and the states in which they are located
+SELECT /*+ parallel(2) */
+  t.name AS city,
+  s.name AS state,
+  t.pt_long,
+  t.pt_lat,
+  t.id
+FROM
+  us_states s,
+  TABLE(
+    SDO_POINTINPOLYGON(
+      CURSOR (
+        SELECT
+          c.geom.sdo_point.x AS pt_long,
+          c.geom.sdo_point.y AS pt_lat,
+          id,
+          name
+        FROM
+          us_cities c
+      ),
+      s.geom,
+      0.05
+    )
+  ) t;
+
+-- List all cities in Wisonsin
+SELECT /*+ parallel(2) */
+  t.name AS city,
+  s.name AS state,
+  t.pt_long,
+  t.pt_lat,
+  t.id
+FROM
+  us_states s,
+  TABLE(
+    SDO_POINTINPOLYGON(
+      CURSOR (
+        SELECT
+          c.geom.sdo_point.x AS pt_long,
+          c.geom.sdo_point.y AS pt_lat,
+          id,
+          name
+        FROM
+          us_cities c
+      ),
+      s.geom,
+      0.05
+    )
+  ) t
+WHERE
+  s.name = 'Wisconsin'
+```
+
+#### Nearest neighbor search
+
+```sql
+-- Find the five nearest cities to the boundaries of California. This query returns 5 random cities in California.
+SELECT
+  c.city,
+  c.state
+FROM
+  us_states s,
+  us_cities c
+WHERE
+  s.state = 'California'
+  AND SDO_NN(
+    c.geom,
+    s.geom,
+    'sdo_num_res=5'
+  ) = 'TRUE';
+
+-- Find the five nearest cities to the boundaries of California. This query returns the right results.
+SELECT
+  c.city,
+  c.state
+FROM
+  us_states s,
+  us_cities c
+WHERE
+  s.state = 'California'
+  AND SDO_NN(
+    c.geom,
+    s.geom,
+    'sdo_batch_size=0',
+    1                         -- correlation number (must match SDO_NN_DISTANCE ancillary operator)
+  ) = 'TRUE'
+  AND SDO_NN_DISTANCE(1) > 0  -- Ancillary operator in the ORDER BY clause to have the results returned in distance order
+  AND ROWNUM <= 5;
+
 -- Find the 3 nearest stores to a customer location
-SELECT s.store_id, s.store_name,
-       SDO_NN_DISTANCE(1) AS distance_meters
-FROM   store_locations s
-WHERE  SDO_NN(
-           s.location,
-           SDO_GEOMETRY(2001, 4326, SDO_POINT_TYPE(-122.4000, 37.7700, NULL), NULL, NULL),
-           'sdo_num_res=3 unit=meter',
-           1          -- correlation number (must match SDO_NN_DISTANCE argument)
-       ) = 'TRUE'
-ORDER  BY distance_meters;
+SELECT
+  s.store_id,
+  s.store_name,
+  SDO_NN_DISTANCE(1) AS distance_meters
+FROM
+  store_locations s
+WHERE
+  SDO_NN(
+    s.location,
+    SDO_GEOMETRY(
+      2001,
+      4326,
+      SDO_POINT_TYPE(
+        10.256,
+        53,653,
+        NULL
+      ),
+      NULL,
+      NULL
+    ),
+    'sdo_num_res=3 unit=meter',
+    1
+) = 'TRUE'
+ORDER BY
+  distance_meters;
 
 -- SDO_NN with additional filter (stores that are open)
-SELECT s.store_id, s.store_name, SDO_NN_DISTANCE(1) AS dist
-FROM   store_locations s
-WHERE  SDO_NN(s.location,
-              SDO_GEOMETRY(2001, 4326, SDO_POINT_TYPE(-122.4, 37.77, NULL), NULL, NULL),
-              'sdo_num_res=10', 1) = 'TRUE'
-  AND  s.is_open = 'Y'
-ORDER  BY dist
+SELECT
+  s.store_id,
+  s.store_name,
+  SDO_NN_DISTANCE(1) AS distance
+FROM
+  store_locations s
+WHERE
+  SDO_NN(
+    s.location,
+    SDO_GEOMETRY(
+      2001,
+      4326,
+      SDO_POINT_TYPE(
+        10.256,
+        53.653,
+        NULL
+      ),
+      NULL,
+      NULL
+    ),
+    'sdo_num_res=10',
+    1
+  ) = 'TRUE'
+  AND´s.is_open = 'Y'
+ORDER BY
+  distance
 FETCH FIRST 3 ROWS ONLY;
 ```
 
-### SDO_CONTAINS and SDO_INSIDE
+### Spatial functions and procedures
+
+The `SDO_GEOM` package contains subprograms for working with geometries. They can be categorized into:
+
+* Relationship (True/False) between two geometries, such as `SDO_GEOM.RELATE`, or `SDO_GEOM.WITHIN_DISTANCE`
+* Validate and rectify geometries, such as `SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT`, `SDO_GEOM.VALIDATE_LAYER_WITH_CONTEXT`, `SDO_UTIL.RECTIFY_GEOMETRY` or `SDO_GEOM.SDO_SELF_UNION`
+* Single-geometry operations, such as `SDO_GEOM.SDO_CENTROID`, `SDO_GEOM.SDO_POINTONSURFACE`, or `SDO_GEOM.SDO_VOLUME`
+* Two-geometry operations, such as `SDO_GEOM.SDO_DISTANCE`, `SDO_GEOM.SDO_UNION`, `SDO_GEOM.SDO_DIFFERENCE`, or `SDO_GEOM.SDO_MAXDISTANCE`
+
+#### Validate and fix geometries
+
+Geometries stored in the Oracle Database have to be compliant to the Open Geospatial Consortium simple features specification.  All geometry data should be validated. Any validation errors should be fixed before performing any spatial operations on the data. The recommended procedure for validating spatial data is as follows:
+
+* Use `SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT` or `SDO_GEOM.VALIDATE_LAYER_WITH_CONTEXT` procedure on all spatial data loaded into the database.
+* For any geometries that are invalid, use `SDO_UTIL.RECTIFY_GEOMETRY` to fix them.
+
+`SDO_UTIL.RECTIFY_GEOMETRY` typically corrects the most common errors, such as duplicate points, polygon orientation errors, or polygon construction errors. However, any error may, in turn, hide other errors, which the function is not designed to correct.
+
+Here is what happens behind the scenes:
+
+* The function validates the geometry.
+* If correct, it returns it unchanged.
+* If it detects one of the known errors, it tries to correct it.
+* If it detects any uncorrectable error, it fails with an exception.
+* It repeats the process until there are no more errors or it finds an uncorrectable error.
+
+##### Example to validate geometries and fix invalid geometry
 
 ```sql
--- Find all points inside a polygon
-SELECT s.store_id, s.store_name
-FROM   store_locations s,
-       sales_territories t
-WHERE  t.territory_id = 7
-  AND  SDO_CONTAINS(t.boundary, s.location) = 'TRUE';
+DECLARE
+-- Declare a custom exception for uncorrectable geometries
+-- "ORA-13199: the given geometry cannot be rectified"
+  cannot_rectify EXCEPTION;
+  PRAGMA exception_init(cannot_rectify, -13199);
+  v_geometry_fixed SDO_GEOMETRY;
+BEGIN
+  -- Process the invalid geometries
+  FOR e IN (
+    SELECT
+      rowid,
+      geometry
+    FROM
+      us_counties
+    WHERE
+      SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT(
+        geometry,
+        0.05
+      ) <> 'TRUE'
+  )
+  LOOP
+  -- Try and rectify the geometry. Throws an exception if it cannot be corrected.
+  BEGIN
+    v_geometry_fixed := SDO_UTIL.RECTIFY_GEOMETRY(e.geometry, 0.05);
 
--- SDO_INSIDE: reverse of CONTAINS
-SELECT t.territory_name
-FROM   store_locations s,
-       sales_territories t
-WHERE  s.store_id = 42
-  AND  SDO_INSIDE(s.location, t.boundary) = 'TRUE';
+    EXCEPTION
+      WHEN cannot_rectify THEN
+        v_geometry_fixed := NULL;
+    END;
+
+    IF v_geometry_fixed IS NOT NULL THEN
+      -- Update the base table with the rectified geometry
+      UPDATE
+        us_counties
+      SET
+        geometry = v_geometry_fixed
+      WHERE
+        rowid = e.rowid;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully corrected the invalid geometry with rowid=' || e.rowid);
+    ELSE
+      dbms_output.put_line('*** Unable to correct the invalid geometry with rowid=' || e.rowid);
+    END IF;
+
+    COMMIT;
+  END LOOP;
+END;
+/
+
+-- Validate geometry before insert
+DECLARE
+  v_result VARCHAR2(100);
+BEGIN
+  v_result := SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT(
+    SDO_GEOMETRY(
+      2003,
+      4326,
+      NULL,
+      SDO_ELEM_INFO_ARRAY(1, 1003, 1),
+      SDO_ORDINATE_ARRAY(0,0, 1,0, 1,1, 0,1, 0,0)
+    ),
+    0.001
+  );
+  IF v_result != 'TRUE' THEN
+    RAISE_APPLICATION_ERROR(-20010, 'Invalid geometry: ' || v_result);
+  END IF;
+END;
+/
 ```
 
----
+#### Measure single geometries
 
-## SDO_GEOM Functions: Measurements and Operations
+```sql
+-- Return the volume of a solid geometry
+SELECT
+  p.id,
+  SDO_GEOM.SDO_VOLUME(p.geometry, 0.005)
+FROM
+  polygons3d p
+WHERE
+  p.id = 12;
+
+-- Return the perimeter of a county in kilometers
+SELECT
+  c.county,
+  SDO_GEOM.SDO_LENGTH(c.geometry, m.diminfo, 'unit=km') AS perimeter_km
+FROM
+  us_counties c,
+  user_sdo_geom_metadata m
+WHERE
+  c.county = 'Kauai'
+  AND m.table_name = 'US_COUNTIES'
+  AND m.column_name = 'GEOMETRY'
+
+-- Find the length in miles of a river in each county it traverses
+SELECT
+  c.county,
+  c.state,
+  SDO_GEOM.SDO_LENGTH(
+    SDO_GEOM.SDO_INTERSECTION(
+      c.geom,
+      r.geom,
+      0.5
+    ),
+    0.5,
+    'unit=km'
+  ) length
+FROM
+  us_counties c,
+  us_rivers r
+WHERE
+  SDO_ANYINTERACT (c.geom, r.geom) = 'TRUE'
+  AND r.name = 'North Platte';
+
+-- Find the length in miles of a river in each county it traverses and roll it up by state
+SELECT
+  c.state,
+  SUM(
+    SDO_GEOM.SDO_LENGTH(
+      SDO_GEOM.SDO_INTERSECTION(
+        c.geom,
+        r.geom,
+        0.5
+      ),
+      0.5,
+      'unit=km'
+    )
+  ) length
+FROM
+  us_counties c,
+  us_rivers r
+WHERE
+  SDO_ANYINTERACT(c.geom, r.geom) = 'TRUE'
+  AND r.name = 'North Platte'
+GROUP BY
+  ROLLUP(c.state);
+
+-- Return the centroid of a county
+SELECT
+  c.county,
+  c.state,
+  SDO_GEOM.SDO_CENTROID(c.geometry, m.diminfo) AS centroid_pt
+FROM
+  us_counties c,
+  user_sdo_geom_metadata m
+WHERE
+  c.county = 'Orange'
+  AND m.table_name = 'US_COUNTIES'
+  AND m.column_name = 'GEOMETRY'
+ORDER BY
+  c.state;
+```
+
+#### Measure two geometries
 
 ```sql
 -- Calculate distance between two points
-SELECT SDO_GEOM.SDO_DISTANCE(
-    SDO_GEOMETRY(2001, 4326, SDO_POINT_TYPE(-122.4194, 37.7749, NULL), NULL, NULL),
-    SDO_GEOMETRY(2001, 4326, SDO_POINT_TYPE(-118.2437, 34.0522, NULL), NULL, NULL),
+SELECT
+  SDO_GEOM.SDO_DISTANCE(
+    SDO_GEOMETRY(
+      2001,
+      4326,
+      SDO_POINT_TYPE(-122.4194, 37.7749, NULL),
+      NULL,
+      NULL
+    ),
+    SDO_GEOMETRY(
+      2001,
+      4326,
+      SDO_POINT_TYPE(-118.2437, 34.0522, NULL),
+      NULL,
+      NULL
+    ),
     0.001,         -- tolerance
     'unit=km'
 ) AS sf_to_la_km
-FROM DUAL;
-
--- Calculate area of a polygon
-SELECT SDO_GEOM.SDO_AREA(
-    SDO_GEOMETRY(
-        2003, 4326, NULL,
-        SDO_ELEM_INFO_ARRAY(1, 1003, 1),
-        SDO_ORDINATE_ARRAY(-122.45, 37.75, -122.40, 37.75,
-                           -122.40, 37.80, -122.45, 37.80, -122.45, 37.75)
-    ),
-    0.001,         -- tolerance
-    'unit=sq_km'   -- square kilometers
-) AS area_sq_km
-FROM DUAL;
-
--- Calculate length/perimeter
-SELECT SDO_GEOM.SDO_LENGTH(geom, 0.001, 'unit=km') AS length_km
-FROM   road_segments
-WHERE  road_id = 101;
-
--- Buffer: create a polygon at a fixed distance from a geometry
-SELECT SDO_GEOM.SDO_BUFFER(
-    location,
-    5000,         -- 5000 meters
-    0.001         -- tolerance
-) AS five_km_buffer
-FROM   store_locations
-WHERE  store_id = 1;
-
--- Union of geometries
-SELECT SDO_GEOM.SDO_UNION(geom_a, geom_b, 0.001) AS merged_geom
-FROM   (SELECT a.boundary AS geom_a, b.boundary AS geom_b
-        FROM   sales_territories a, sales_territories b
-        WHERE  a.territory_id = 1 AND b.territory_id = 2);
-
--- Intersection
-SELECT SDO_GEOM.SDO_INTERSECTION(
-    polygon_a, polygon_b, 0.001
-) AS intersection_geom
-FROM   geometry_pairs;
+FROM
+  DUAL;
 ```
 
-## Putting it all together
+#### Aggregate geometries
 
-Here is the sample workflow to walk through:
+```sql
+-- Union of two geometries
+SELECT
+  SDO_GEOM.SDO_UNION(geom_a, geom_b, 0.001) AS aggr_geom
+FROM (
+  SELECT
+    a.boundary AS geom_a,
+    b.boundary AS geom_b
+  FROM
+    sales_territories a,
+    sales_territories b
+  WHERE
+    a.territory_id = 1
+    AND b.territory_id = 2
+  );
+
+-- Intersection of two geometries
+SELECT
+  SDO_GEOM.SDO_INTERSECTION(
+    polygon_a,
+    polygon_b,
+    0.001
+  ) AS intersect_geom
+FROM
+  geometry_pairs;
+
+-- How much space does Yellowstone National Park occupy in each state?
+SELECT
+  s.state,
+  SDO_GEOM.SDO_AREA(
+    SDO_GEOM.SDO_INTERSECTION(
+      s.geom,
+      p.geom,
+      0.5
+    ),
+    0.5,
+    'unit=sq_km'
+  ) area
+FROM
+  us_states s,
+  us_parks p
+WHERE
+  SDO_ANYINTERACT(s.geom, p.geom) = 'TRUE'
+  AND p.name = 'Yellowstone NP'
+ORDER BY
+  area DESC;
+
+-- What percentage of Yellowstone National Park lies in each state ?
+WITH p AS (
+  SELECT
+    s.state,
+    SDO_GEOM.SDO_AREA(
+      SDO_GEOM.SDO_INTERSECTION(
+        s.geom,
+        p.geom,
+        0.5
+      ),
+      0.5,
+      'unit=sq_km'
+    ) area
+  FROM
+    us_states s,
+    us_parks p
+  WHERE
+    SDO_ANYINTERACT(s.geom, p.geom) = 'TRUE'
+    AND p.name = 'Yellowstone NP'
+  )
+SELECT
+  state,
+  area,
+  RATIO_TO_REPORT(area) OVER () * 100 AS pct
+FROM
+  p
+ORDER BY
+  pct DESC;
+
+-- Return the topological difference of two geometries.
+SELECT
+  SDO_GEOM.SDO_DIFFERENCE(
+    s.geom,
+    m1.diminfo,
+    p.geom,
+    m2.diminfo
+  )
+FROM
+  us_parks p,
+  us_states,
+  user_sdo_geom_metadata m1,
+  user_sdo_geom_metadata m1
+WHERE
+  m1.table_name = 'US_PARKS'
+  AND m.column_name = 'GEOM'
+  AND m2.table_name = 'US_STATES'
+  AND m.column_name = 'GEOM'
+  AND p.name = 'Yellowstone NP'
+  AND s.name = 'Wyoming';
+```
+
+## Getting started
+
+Here is the sample workflow to walk through before querying the data:
 
 1. Create two spatial tables, one for point geometries and one for polygons.
 2. Populate the tables with sample data.
 3. Register the spatial metadata.
 4. Validate the geometries.
 5. Create the spatial indexes.
-6. Execute spatial queries.
 
 The following scripts work with basic table defintions and randomly generated sample data.
 
@@ -1333,14 +2147,8 @@ ORDER BY
 --
 -- Step 5
 --
-
-```
-
-```sql
---
--- Step 6
---
-
+CREATE INDEX LOCATIONS_LOCATION_SIDX ON locations(location) INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2 PARAMETERS ('layer_gtype=POINT');
+CREATE INDEX AREAS_GEOM_SIDX ON areas(geom) INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2;
 ```
 
 ## Working with standard spatial data formats
@@ -1349,33 +2157,73 @@ ORDER BY
 
 ```sql
 -- Convert SDO_GEOMETRY to GeoJSON
-SELECT SDO_UTIL.TO_GEOJSON(location) AS geojson
-FROM   store_locations
-WHERE  store_id = 1;
+SELECT
+  SDO_UTIL.TO_GEOJSON(location) AS geojson
+FROM
+  store_locations
+WHERE
+  store_id = 1;
 -- Returns: {"type":"Point","coordinates":[-122.4194,37.7749]}
 
 -- Convert GeoJSON to SDO_GEOMETRY
-SELECT SDO_UTIL.FROM_GEOJSON(
+SELECT
+  SDO_UTIL.FROM_GEOJSON(
     '{"type":"Point","coordinates":[-122.4194,37.7749]}'
-) AS location
+  ) AS location
 FROM DUAL;
 
 -- Full feature collection for REST API
-SELECT JSON_ARRAYAGG(
+SELECT
+  JSON_ARRAYAGG(
     JSON_OBJECT(
-        'type' VALUE 'Feature',
-        'id'   VALUE store_id,
-        'geometry' VALUE JSON(SDO_UTIL.TO_GEOJSON(location)),
-        'properties' VALUE JSON_OBJECT(
-            'name' VALUE store_name,
-            'city' VALUE city
-        )
+      'type' VALUE 'Feature',
+      'id'   VALUE store_id,
+      'geometry' VALUE JSON(SDO_UTIL.TO_GEOJSON(location)),
+      'properties' VALUE JSON_OBJECT(
+        'name' VALUE store_name,
+        'city' VALUE city
+      )
     )
 ) AS geojson_collection
-FROM   store_locations;
+FROM
+  store_locations;
+
+-- Generate a GeoJSON feature collection from SDO_GEOMETRY
+SELECT
+  JSON_OBJECT (
+    'type' VALUE 'FeatureCollection',
+    'features' VALUE JSON_ARRAYAGG (
+      JSON_OBJECT (
+        'type' VALUE 'Feature',
+        'properties' VALUE JSON_OBJECT (
+          'CODST'     VALUE codst,
+          'NUME'      VALUE nume,
+          'CMR'       VALUE cmr,
+          'JUDET'     VALUE judet,
+          'LAT'       VALUE lat,
+          'LONG_SGCV' VALUE long_sgcv
+        ),
+        'geometry' VALUE G.GEOM.GET_GEOJSON() FORMAT JSON RETURNING CLOB
+      ) RETURNING CLOB
+    ) RETURNING CLOB
+  ) AS "{}json_document"
+FROM
+  meteo_stations g;
 ```
 
----
+## Common ORA error messages
+
+| Error code | Description |
+|---|---|
+| ORA-13349 | Polygon boundary crosses itself |
+| ORA-13356 | Duplicate vertices |
+| ORA-13367 | Wrong orientation for interior/exterior rings |
+| ORA-13350 | Two or more rings of a complex polygon touch |
+| ORA-13351 | Two or more rings of a complex polygon overlap |
+| ORA-13353 | The ELEM_INFO_ARRAY in an SDO_GEOMETRY definition has more or fewer elements than expected |
+| ORA-13354 | Incorrect offset in ELEM_INFO_ARRAY |
+| ORA-13354 | SDO_ORDINATE_ARRAY not grouped by number of dimensions specified |
+| ORA-13236 | Internal error in R-tree processing: [SDO_Join in active txns not supported] |
 
 ## Best Practices
 
@@ -1386,31 +2234,11 @@ FROM   store_locations;
 * **Pre-compute common distances** for frequently compared geometry pairs and store them as regular NUMBER columns with B-tree indexes.
 * **Use `SDO_NN` for nearest-neighbor queries** rather than `SDO_WITHIN_DISTANCE` with large radii, which scans more of the index.
 * **Partition large spatial tables** by geographic region (e.g., by state or country) to enable partition pruning in spatial queries.
-* **Validate geometry before insertion** using `SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT`.
-
-```sql
--- Validate geometry before insert
-DECLARE
-    v_result VARCHAR2(100);
-BEGIN
-    v_result := SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT(
-        SDO_GEOMETRY(2003, 4326, NULL,
-            SDO_ELEM_INFO_ARRAY(1, 1003, 1),
-            SDO_ORDINATE_ARRAY(0,0, 1,0, 1,1, 0,1, 0,0)
-        ),
-        0.001
-    );
-    IF v_result != 'TRUE' THEN
-        RAISE_APPLICATION_ERROR(-20010, 'Invalid geometry: ' || v_result);
-    END IF;
-END;
-```
-
----
+* **Validate geometries** after load and before creating a spatial index.
 
 ## Common Mistakes
 
-### Mistake 1: Creating Spatial Index Without Metadata
+### Mistake 1: Creating spatial index without metadata
 
 ```sql
 -- WRONG: will fail with ORA-13203
@@ -1450,9 +2278,7 @@ A polygon's first and last coordinate pairs must be identical to close the ring.
 
 ### Mistake 5: Wrong Tolerance for Coordinate System
 
-Using a very small tolerance (e.g., 0.000001) with projected coordinates in meters (where units are large numbers) causes nearly every operation to return unexpected results. Match tolerance to the unit scale of the SRID.
-
----
+Using a very small tolerance (e.g., 0.000001) with projected coordinates in meters (where units are large numbers) causes nearly every operation to return unexpected results. Match the tolerance value to the unit scale of the SRID.
 
 ## Oracle Version Notes (19c vs 26ai)
 
@@ -1462,5 +2288,9 @@ Using a very small tolerance (e.g., 0.000001) with projected coordinates in mete
 
 ## Sources
 
+### Oracle Documentation
+
 * [Oracle Database 19c, Spatial Developer's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/spatl/)
 * [Oracle AI Database 26ai, Spatial Developer's Guide](https://docs.oracle.com/en/database/oracle/oracle-database/26/spatl/)
+* [Oracle Database Error Messages](https://docs.oracle.com/en/error-help/db/ora-index.html)
+* [Use Oracle Spatial with Autonomous AI Database](https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/spatial-autonomous-database.html)
