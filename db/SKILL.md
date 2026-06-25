@@ -1,6 +1,6 @@
 ---
 name: db
-description: Oracle Database guidance for SQL, PL/SQL, SQLcl, ORDS, administration, app development, performance, security, migrations, Maximum Availability Architecture (MAA), and agent-safe database workflows. Use when the user asks to write, edit, rewrite, review, format, debug, tune, or explain SQL; create or refactor PL/SQL; use SQLcl, Liquibase, ORDS, JDBC, node-oracledb, Python, Java, .NET, or database frameworks; troubleshoot queries, sessions, locks, waits, indexes, optimizer plans, AWR, ASH, migrations, schemas, users, roles, privileges, backup, recovery, Data Guard, RAC, Exadata, MAA tiers, Oracle Update Advisor, multitenant, containers, monitoring, auditing, encryption, VPD, or safe agent database operations.
+description: Oracle Database guidance for SQL, PL/SQL, SQLcl, ORDS, administration, app development, performance, security, migrations, Maximum Availability Architecture (MAA), and agent-safe database workflows. Use when the user asks to write, edit, rewrite, review, format, debug, tune, or explain SQL; create or refactor PL/SQL; use SQLcl, Liquibase, ORDS, JDBC, node-oracledb, Python, Java, .NET, or database frameworks; troubleshoot queries, sessions, locks, waits, indexes, optimizer plans, AWR, ASH, migrations, schemas, users, roles, privileges, backup, recovery, Data Guard, RAC, Exadata, MAA tiers, Oracle Update Advisor, multicloud MAA, multitenant, containers, monitoring, auditing, encryption, VPD, or safe agent database operations.
 ---
 
 # Oracle Database Skills
@@ -51,7 +51,7 @@ db/
 | Schema migrations, online operations, edition-based redefinition, testing, version control | `db/devops/` |
 | AQ, DBMS_SCHEDULER, materialized views, DBLinks, APEX, vector search, SELECT AI | `db/features/` |
 | SQLAlchemy, Django, Pandas, Spring JPA, MyBatis, TypeORM, Sequelize, Dapper, GORM | `db/frameworks/` |
-| Maximum Availability Architecture, MAA tiers, Data Guard/RAC/Exadata MAA, Oracle Update Advisor, Edition-Based Redefinition, ZDLRA, mission-critical availability | `db/maa/` |
+| Maximum Availability Architecture, MAA tiers, Data Guard/RAC/Exadata MAA, Oracle Update Advisor, Edition-Based Redefinition, ZDLRA, multicloud MAA, mission-critical availability | `db/maa/` |
 | Migrations from PostgreSQL, MySQL, SQL Server, MongoDB, Snowflake, and more | `db/migrations/` |
 | Alert log, ADR, health monitor, space management, top SQL | `db/monitoring/` |
 | ORDS architecture, installation, REST design, authentication, monitoring, ORDS Concert Sample App | `db/ords/` |
