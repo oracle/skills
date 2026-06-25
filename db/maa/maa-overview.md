@@ -4,7 +4,7 @@
 
 Oracle Maximum Availability Architecture (MAA) is Oracle's best-practice framework for designing, deploying, operating, and validating highly available Oracle Database environments. Use this guide when a user asks about MAA reference architectures, availability tiers, Data Guard, RAC, Exadata, backup and recovery, patching, rolling maintenance, Oracle Update Advisor, Edition-Based Redefinition, Zero Data Loss Recovery Appliance, multicloud, or mission-critical availability.
 
-MAA guidance should be source-aware. Prefer current public Oracle documentation and Oracle MAA publications over memory, and call out when an answer depends on product release, deployment model, service type, or non-public support content that is not included in this catalog.
+MAA guidance should be source-aware. Prefer current public Oracle documentation and Oracle MAA publications over memory, and call out when an answer depends on product release, deployment model, or service type.
 
 ---
 
@@ -45,7 +45,7 @@ MAA guidance should be source-aware. Prefer current public Oracle documentation 
 
 - Separate durable MAA principles from release-specific or support-policy details.
 - Ask for missing version/platform details only when a wrong assumption would materially change the recommendation.
-- If a question depends on non-public support content, say that this public skill only includes public Oracle material available in the catalog.
+- Answer from public Oracle material available in the catalog and cite the source links used.
 - For operational runbooks, include verification and rollback considerations where appropriate.
 - For agent or automation use cases, check whether a public API or machine-readable tool exists before proposing screen-driven workflows.
 

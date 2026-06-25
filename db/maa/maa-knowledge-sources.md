@@ -8,7 +8,7 @@ This catalog identifies primary public Oracle Maximum Availability Architecture 
 - Use this file as a navigation and summarization layer, not as a replacement for retrieving the current source when exact details matter.
 - Weight sources in this order for external-facing answers: public MAA documentation, product documentation, public API/tool documentation, white papers and technical briefs, Oracle MAA blogs.
 - Use blogs for announcements, examples, and context. Use documentation for supportability and procedural detail.
-- Authentication-gated support resources are intentionally excluded from this external-use catalog.
+- Use only public Oracle sources from this external-use catalog.
 
 ## Topic Guide
 
@@ -145,7 +145,7 @@ Primary sources:
 
 ### Security, Health, And Operations
 
-Use these sources for security architecture, Exadata security, health diagnostics, and operational readiness. For vulnerability findings or support-specific diagnostics, answer only from the public sources in this external catalog.
+Use these sources for security architecture, Exadata security, health diagnostics, and operational readiness. Answer only from the public sources in this external catalog.
 
 Primary sources:
 
