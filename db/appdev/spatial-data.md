@@ -10,7 +10,7 @@ Additional features and tools meant to work with spatial data are available, suc
 * inside `$ORACLE_HOME/md/demo/examples`after installing the *Oracle AI Database Examples*
 * as *Oracle Spatial Studio*, a self-service, no-code web application that allows you to visualize, explore, and analyze geospatial data. It can be downloaded from [here](https://www.oracle.com/database/technologies/spatial-studio/oracle-spatial-studio-downloads.html) and used without any licensing costs.
 
-This document focuses on the support for **vector data** in Oracle Spatial introduced with Oracle Database version 8i via the object-relational data type `SDO_GEOMETRY`.   
+This document focuses on the support for **vector data** in Oracle Spatial introduced with Oracle Database version 8i via the object-relational data type `SDO_GEOMETRY`.  
 Vector data are also known as geometries or features, representing spatial objects that can be points, lines, polygons, curves, and combinations of these.
 
 The Oracle Spatial support for vector data is conformant with the **Open Geospatial Consortium (OGC) Simple Features Specification 1.1.1**.
@@ -68,7 +68,7 @@ Note: The constants were introduced with Oracle Database version 23ai.
 
 #### SDO_SRID
 
-**Coordinate systems**, or **Coordinate Reference Systems**, identified by their Spatial Reference ID (SRID), are used to precisely define locations on the Earth´s surface.  
+**Coordinate systems**, or **Coordinate Reference Systems**, identified by their Spatial Reference ID (SRID), are used to precisely define locations on the Earth´s surface.
 
 A database containing most of the world-wide coordinate systems is available via http://epsg.io.
 SRIDs are equivalent with the codes used in the EPSG database.
@@ -422,9 +422,11 @@ VALUES (
 
 **Every SDO_GEOMETRY column in a table must be registered as metadata**. Only then a spatial index can be created which helps to efficiently query spatial data. The geometry (aka spatial) metadata describe the dimensions, lower and upper bounds, and tolerance in each dimension. It is stored in a global table owned by `MDSYS`. This global table is accessible via the `USER_SDO_GEOM_METADATA` updatable view.
 
-Remember, all geometries in a `SDO_GEOMETRY` column must have the same `SDO_SRID` value. Otherwise the spatial index creation will fail.
+Notes:
 
-Note, that effective with Oracle AI Database 26ai, the geometry metadata is automatically created in `USER_SDO_GEOM_METADATA` once a spatial index is created on a geometry column.
+* The tolerance value defines the distance two points representing vertices on lines or polygons can be apart and still be considered the same. It must be a positive number.
+* All geometries in a `SDO_GEOMETRY` column must have the same `SDO_SRID` value. Otherwise the spatial index creation will fail.
+* Effective with Oracle AI Database 23ai, the geometry metadata is automatically created in `USER_SDO_GEOM_METADATA` once a spatial index is created on a geometry column.
 
 ### USER_SDO_GEOM_METADATA definition
 
@@ -504,7 +506,7 @@ VALUES (
 COMMIT;
 ```
 
-The validity of entries in the USER_SDO_GEOM_METADATA can be verified using the following queries:
+The validity of entries in the `USER_SDO_GEOM_METADATA` can be verified using the following queries:
 
 ```sql
 -- Verify that the metadata was inserted correctly
@@ -556,7 +558,7 @@ ORDER BY
 A spatial index typically enables efficient performance when querying vector data. A spatial index can be created as:
 
 * R-tree index (Rectangle tree)
-* CBTREE index (optimized index for large point datasets)
+* CBTREE index (Composite B-Tree index, optimized for large point datasets)
 * Cross-schema spatial index
 * Partitioned spatial index
 
@@ -645,6 +647,23 @@ INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2 LOCAL;
 CREATE INDEX polygons3d_geom_sidx ON polygons3d (geom)
 INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2 PARAMETERS ('sdo_indx_dims=3');
 -- Note: `sdo_indx_dims=2` is the default and does not need to be specified explicitly.
+
+-- Create a Local Partitioned Spatial Index specifying the UNUSABLE keyword followed by ALTER INDEX REBUILD statements that are called in parallel
+CREATE INDEX geometry_data_geom_sidx ON geometry_data (geom)
+INDEXTYPE IS mdsys.spatial_index_v2
+PARAMETERS ('tablespace=tbs1 work_tablespace=work_tbs')
+LOCAL UNUSABLE;
+
+ALTER INDEX sp_idx REBUILD PARTITION ip1;
+ALTER INDEX sp_idx REBUILD PARTITION ip2;
+...
+ALTER INDEX sp_idx REBUILD PARTITION ip10;
+
+-- Delete a spatial index
+DROP INDEX polygons3d_geom_sidx;
+
+-- Clean up a spatial index after a failure using FORCE. It also forces the deletion to be performed even if the index is marked in-process.
+DROP INDEX geometry_data_geom_sidx FORCE;
 ```
 
 ### Spatial index metadata
@@ -2227,14 +2246,17 @@ FROM
 
 ## Best Practices
 
+* **Validate all geometries** after load, update and fix any validation errors before perforing any operations on the data, such as creating a spatial index.
 * **Always register `USER_SDO_GEOM_METADATA`** before creating a spatial index. The metadata defines the valid coordinate extent and tolerance.
 * **Use WGS84 (SRID=4326)** for general-purpose geographic data (GPS coordinates). Use projected coordinate systems (UTM, State Plane) when precise metric distances are required.
+* **Gather statistics** on tables and spatial indexes.
 * **Set tolerance appropriately**: ~0.00001 degrees (≈1 meter) for geographic data, 0.001 for projected data in meters. Too tight a tolerance causes false "not equal" results; too loose conflates nearby features.
 * **Use spatial operators (`SDO_RELATE`, `SDO_NN`)** in WHERE clauses — not spatial functions (`SDO_GEOM.*`) — to leverage the spatial index.
+* To optimize the performance of spatial operator, set the database system parameter **SPATIAL_VECTOR_ACCELERATION** to TRUE. It is also the recommended default value.
 * **Pre-compute common distances** for frequently compared geometry pairs and store them as regular NUMBER columns with B-tree indexes.
 * **Use `SDO_NN` for nearest-neighbor queries** rather than `SDO_WITHIN_DISTANCE` with large radii, which scans more of the index.
 * **Partition large spatial tables** by geographic region (e.g., by state or country) to enable partition pruning in spatial queries.
-* **Validate geometries** after load and before creating a spatial index.
+* A **composite B-tree spatial index** is used for fast spatial query performance on point data. It also improves the performance for spatial index creation and when performing concurrent DML on spatial data.
 
 ## Common Mistakes
 
@@ -2279,6 +2301,14 @@ A polygon's first and last coordinate pairs must be identical to close the ring.
 ### Mistake 5: Wrong Tolerance for Coordinate System
 
 Using a very small tolerance (e.g., 0.000001) with projected coordinates in meters (where units are large numbers) causes nearly every operation to return unexpected results. Match the tolerance value to the unit scale of the SRID.
+
+### Mistake 6: Using SDO_JOIN on tables with a CBTree spatial index
+
+The SDO_JOIN operator is not supported when a composite B-tree spatial index is used.
+
+### Mistake 7: Delete or modify any Oracle-supplied information
+
+Do not modify or delete any Oracle-supplied information in any of the tables or views that are used for coordinate system support. This includes all objects owned by the database user `MDSYS`.
 
 ## Oracle Version Notes (19c vs 26ai)
 
