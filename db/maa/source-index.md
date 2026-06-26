@@ -1,6 +1,8 @@
-# MAA Knowledge Sources
+# MAA Source Index
 
-This catalog identifies primary public Oracle Maximum Availability Architecture (MAA) sources for source selection, source weighting, and answer grounding. It keeps authoritative links and adds concise, original summaries so agents can choose the right source quickly.
+Use this file only when exact public source links, citations, freshness checks, or less common source lookup is needed. For normal answers, load the focused topic files first and use their built-in MAA guidance.
+
+This index identifies primary public Oracle Maximum Availability Architecture (MAA) sources for source selection, source weighting, and answer grounding. It keeps authoritative links and concise summaries so agents can choose the right source quickly without treating the full URL catalog as the main context.
 
 ## Retrieval Principles
 
@@ -8,7 +10,6 @@ This catalog identifies primary public Oracle Maximum Availability Architecture 
 - Use this file as a navigation and summarization layer, not as a replacement for retrieving the current source when exact details matter.
 - Weight sources in this order for external-facing answers: public MAA documentation, product documentation, public API/tool documentation, white papers and technical briefs, Oracle MAA blogs.
 - Use blogs for announcements, examples, and context. Use documentation for supportability and procedural detail.
-- Use only public Oracle sources from this external-use catalog.
 
 ## Topic Guide
 
@@ -27,7 +28,7 @@ Primary sources:
 
 ### Oracle AI Database Cloud And Multicloud
 
-Use these sources for Oracle AI Database cloud deployment best practices, certified multicloud combinations, and cross-cloud MAA architecture discussions. Focus on topology, client connectivity, DNS, Data Guard role transitions, service placement, security boundaries, and cloud-specific operational responsibilities.
+Use these sources for Oracle AI Database cloud deployment best practices, certified multicloud combinations, and cross-cloud MAA architecture discussions. Focus on topology, client connectivity, DNS, Data Guard role transitions, service placement, security boundaries, and cloud-specific operational responsibilities. For multicloud, treat OCI Full Stack DR as integration for supported Oracle database resources rather than a general-purpose discovery/orchestration layer for non-OCI application resources.
 
 Primary sources:
 
@@ -135,7 +136,7 @@ Primary sources:
 
 ### OCI Full Stack Disaster Recovery
 
-Use these sources when the user asks about full-stack disaster recovery, DR orchestration, generative AI log summarization, or MCP-based integrations. Distinguish full-stack orchestration from database-level Data Guard configuration.
+Use these sources when the user asks about OCI full-stack disaster recovery, DR orchestration, generative AI log summarization, or MCP-based integrations. Distinguish OCI application-stack orchestration from database-level Data Guard configuration. In multicloud, OCI Full Stack DR can integrate with supported Oracle database resources, but do not imply it can discover or orchestrate non-OCI application containers and resources.
 
 Primary sources:
 
@@ -145,7 +146,7 @@ Primary sources:
 
 ### Security, Health, And Operations
 
-Use these sources for security architecture, Exadata security, health diagnostics, and operational readiness. Answer only from the public sources in this external catalog.
+Use these sources for security architecture, Exadata security, health diagnostics, and operational readiness. For vulnerability findings or support-specific diagnostics, answer only from the public sources in this external catalog.
 
 Primary sources:
 
@@ -287,7 +288,7 @@ Use Oracle MAA blog posts for current announcements, applied examples, and expla
 - ONNX on Active Data Guard: https://blogs.oracle.com/maa/onnx-on-active-data-guard
   Summary: Use for in-database AI inference on Active Data Guard and read-mostly AI workload context.
 - OCI Full Stack DR Supports Oracle AI Database, Azure, AWS, and Google Cloud: https://blogs.oracle.com/maa/oci-full-stack-dr-supports-oracle-ai-databaseazure-aws-and-google-cloud
-  Summary: Use for OCI Full Stack DR support across Oracle AI Database and multicloud targets.
+  Summary: Use for OCI Full Stack DR integration with supported Oracle AI Database resources across multicloud targets; do not treat it as broad non-OCI application-stack discovery.
 - DG 26ai Online Tablespace Encryption: https://blogs.oracle.com/maa/dg26ai-online-tablespace-encryption
   Summary: Use for Data Guard 26ai online tablespace encryption context.
 - Higher Data Guard Redo Transport Throughput: https://blogs.oracle.com/maa/higher-data-guard-redo-transport-throughput

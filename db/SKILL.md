@@ -72,6 +72,10 @@ db/
 - `db/agent/schema-discovery.md`
 - `db/containers/container-selection-matrix.md`
 - `db/maa/maa-overview.md`
+- `db/maa/maa-tiers.md`
+- `db/maa/data-guard-maa.md`
+- `db/maa/patching-update-advisor.md`
+- `db/maa/source-index.md`
 - `db/backup-recovery/autonomous-recovery-service.md`
 - `db/backup-recovery/cloud-protect.md`
 
@@ -85,4 +89,4 @@ db/
 | Build a Java JDBC service | `java-oracle-jdbc` → `java-oracle-jdbc/dependencies` → `java-oracle-jdbc/connections` → `java-oracle-jdbc/sql` → `java-oracle-jdbc/pooling-production` |
 | Perform agent-safe schema change | `schema-discovery` → `destructive-op-guards` → `idempotency-patterns` → `schema-migrations` |
 | Set up AI-driven database access via MCP | `sqlcl-basics` (save connections) → `security/privilege-management` (least-privilege user) → `sqlcl-mcp-server` (configure + start) |
-| Answer an MAA architecture or availability question | `maa-overview` → `maa-knowledge-sources` → relevant product documentation |
+| Answer an MAA architecture or availability question | `maa-overview` → focused MAA topic file → `source-index` when citations are needed |
