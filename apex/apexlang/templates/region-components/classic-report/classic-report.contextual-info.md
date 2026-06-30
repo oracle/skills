@@ -17,6 +17,7 @@ Document the classic-report qualifier that emits the dedicated `region-contextua
 2. Use this variant only when the classic report is intentionally rendered through `@/contextual-info`.
 3. Keep it to single-row contextual content.
 4. This is the explicit exception to the shared Classic Report default `appearance.template`; do not force `@/standard` onto this variant.
+5. Use hidden-but-accessible header chrome and remove UI decorations by default.
 
 # Variable Contract
 
@@ -46,7 +47,17 @@ region {{regionStaticId}} (
   appearance {
     template: @/contextual-info
     templateOptions: [
-      {{appearance.templateOptions}}
+      #DEFAULT#
+      t-Region--hideHeader js-addHiddenHeadingRoleDesc
+      t-Region--noUI
+    ]
+  }
+  componentAppearance {
+    template: @/standard
+    templateOptions: [
+      #DEFAULT#
+      t-Report--stretch
+      t-Report--horizontalBorders
     ]
   }
   componentAppearance {
@@ -61,6 +72,7 @@ region {{regionStaticId}} (
 
 - Use this variant only when the selected qualifier is `contextual-info`.
 - Keep the surrounding region appearance minimal while retaining the required Classic Report component template block.
+- `appearance.templateOptions` must be exactly `#DEFAULT#`, `t-Region--hideHeader js-addHiddenHeadingRoleDesc`, and `t-Region--noUI`. Keep the hidden-but-accessible header composite as one atomic value.
 - Treat this file as the documented override path when a Classic Report must not use the shared `@/standard` default template block.
 - When `appearance.templateOptions` contains more than one accepted value, emit bracketed multi-line array syntax with one accepted value per line; never use inline comma-separated arrays.
-- Omit `appearance.templateOptions` when no additional modifiers are required.
+- Do not omit `appearance.templateOptions` for contextual-info regions.

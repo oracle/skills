@@ -40,7 +40,7 @@ Standardize the variable contract, guardrails, and template skeleton for classic
 | appearance.template | yes | string | Region template reference. |
 | appearance.templateOptions | optional | array/string | Default to the canonical shared value `#DEFAULT#`. Keep `#DEFAULT#` standalone, emit only exact accepted values, and when more than one value is present serialize it as a bracketed multi-line array with one accepted value per line. |
 | componentAppearance.template | yes | string | Classic Report component template reference. Default to `@/standard`. Live 26.1 validation maps this requirement to compiler property `411`. |
-| componentAppearance.templateOptions | yes | array/string | Default to `#DEFAULT#` unless the selected scenario documents another exact accepted value. |
+| componentAppearance.templateOptions | yes | array/string | Default to the canonical report-template option array: `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`. |
 | pagination.type | optional | enum | Classic-report pagination strategy. Default `rowRangesXToYNoPagination`; allowed values are limited to the classic-report pagination catalog in this file. |
 | messages.whenNoDataFound | optional | string | Custom "no data" message. |
 | columns | conditional | list | One or more column blocks following `classic-report._columns._common.md`. |
@@ -97,7 +97,7 @@ region {{regionStaticId}} (
 # Conditional Rendering Rules
 
 - Do not omit or alter the canonical Classic Report `appearance` default unless the selected scenario template explicitly documents an override.
-- Do not omit the Classic Report `componentAppearance` block. Default it to `template: @/standard` and `templateOptions: #DEFAULT#`; otherwise live validation reports `Missing required parameter (411): componentAppearance - template (string)`.
+- Do not omit the Classic Report `componentAppearance` block. Default it to `template: @/standard` and `templateOptions: [ #DEFAULT# t-Report--stretch t-Report--horizontalBorders ]`; otherwise live validation reports `Missing required parameter (411): componentAppearance - template (string)`.
 - Remove optional blocks (`pagination`, `messages`, `serverSideCondition`) when not required.
 - Expand `{{columns}}` using `classic-report._columns._common.md`.
 - Do not finalize a Classic Report with projected SQL/table columns missing from the `column (...)` list.
@@ -109,14 +109,14 @@ region {{regionStaticId}} (
 
 - Default classic-report pagination is `rowRangesXToYNoPagination`.
 - Allowed `pagination.type` values for classic reports are:
+  - `externalPaginationButtons`
+  - `nextAndPreviousLinks`
   - `rowRangesXToYNoPagination`
   - `rowRangesXToYOfZNoPagination`
   - `rowRangesXToYOfZWithPagination`
   - `setPaginationLinks`
-  - `setPaginationSelectList`
   - `setPaginationSearchEngine`
-  - `externalPaginationButtons`
-  - `nextAndPreviousLinks`
+  - `setPaginationSelectList`
 - Omit `pagination.type` to represent no explicit value (`null`).
 - Do not use interactive-report-only values such as `rowRangesXToY` or `rowRangesXToYOfZ` on classic reports.
 
@@ -128,7 +128,8 @@ region {{regionStaticId}} (
 - For same-application drill links, keep navigation declarative on the report column whenever the DSL supports it; reserve SQL-generated URL columns for explicit URL mode only.
 - Apply format masks and alignment to support accessibility and readability.
 - Keep `templateOptions` exact: `#DEFAULT#` is standalone, report modifiers are separate tokens, documented composite values stay atomic when the catalog/runtime lists them that way, and multi-value arrays use bracketed multi-line syntax with one accepted value per line.
-- The shared default is exact, not suggestive: `appearance.template: @/standard` with `appearance.templateOptions: #DEFAULT#`, plus `componentAppearance.template: @/standard` with `componentAppearance.templateOptions: #DEFAULT#`, unless the selected scenario contract explicitly documents a wrapper override.
+- The shared default is exact, not suggestive: `appearance.template: @/standard` with `appearance.templateOptions: #DEFAULT#`, plus `componentAppearance.template: @/standard` with `componentAppearance.templateOptions` containing exactly `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`, unless the selected scenario contract explicitly documents a wrapper override.
+- Alternating rows are disabled by omission. Do not emit `t-Report--altRowsDefault` or `t-Report--staticRowColors`, and do not add `t-Report--rowHighlight` by default.
 - Use column comments to document intent when templates require it (see `references/policies/memory-bank/30-pages/apex.classic-report.md`).
 - Validate SQL with SQLcl when possible; otherwise mark "Validation Pending".
 - Keep sample/demo literals in prose notes only; output templates must remain contract-driven and variable-oriented.

@@ -276,8 +276,10 @@ Use this package as the hub for business-rule configuration within APEX pages.
 5. The import gate executes only when the explicit post-check choice is `Check and import APEXlang code`.
 
 ### Examples
+These are `illustrative_prompt` examples. Replace any `{{...}}` variables with verified identifiers before use.
+
 - “Add new Administration category in Navigation Menu and breadcrumb for Page 30.”
-- “Create shared LOV DEPT_LOV using DEPT table (value: DEPTNO, display: DNAME).”
+- “Create shared LOV {{lov.name}} using {{lookup.table}} (value: {{lookup.valueColumn}}, display: {{lookup.displayColumn}}).”
 - “Translate my app to Spanish.”
 - “Add another language to this app.”
 - “Translate one page into Japanese.”

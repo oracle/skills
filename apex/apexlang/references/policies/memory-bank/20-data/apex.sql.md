@@ -3,23 +3,25 @@
 ## Purpose
 Guidelines for generating clean, consistent, and maintainable SQL queries within Oracle APEX or any AI tooling-generated code.
 
+SQL snippets containing `{{...}}` are `metavariable_template` examples. Bind every variable from schema evidence before emitting SQL; do not copy unbound variables into generated artifacts.
+
 ## Rules
 0. **Valid SQL**
   - Always check the data dictionary when writing SQL queries and ensure that the table/view name and corresponding columns actually exist
 
 1. **Table Aliases**
    - Always assign an alias to every table.
-   - Reference all columns using their alias (`e.empno`, `d.deptno`).
+   - Reference all columns using their alias (`s.{{source.pk}}`, `l.{{lookup.valueColumn}}`).
    - Applies even when the query contains a single table.
 
 2. **Formatting**
   -  Never use SQL hints
    - Use **leading commas** in the SELECT clause:
      ```sql
-     SELECT e.empno
-          , e.ename
-          , e.sal
-     FROM emp e
+     SELECT s.{{source.pk}}
+          , s.{{source.displayColumn}}
+          , s.{{source.amountColumn}}
+     FROM {{source.table}} s
      ```
    - Place **each column on its own line** for readability.
 
@@ -40,14 +42,14 @@ Guidelines for generating clean, consistent, and maintainable SQL queries within
 
 ### Pagination Type Catalog (Authoritative)
 - Classic Report `pagination.type` values:
+  - `externalPaginationButtons` — External pagination controls.
+  - `nextAndPreviousLinks` — Next/previous controls.
   - `rowRangesXToYNoPagination` — **Default**. Shows row range (X to Y).
   - `rowRangesXToYOfZNoPagination` — Shows row range and total count (X to Y of Z).
   - `rowRangesXToYOfZWithPagination` — Row ranges with pagination controls.
   - `setPaginationLinks` — Pagination links.
-  - `setPaginationSelectList` — Pagination select list.
   - `setPaginationSearchEngine` — Search-engine style pagination.
-  - `externalPaginationButtons` — External pagination controls.
-  - `nextAndPreviousLinks` — Next/previous controls.
+  - `setPaginationSelectList` — Pagination select list.
   - Omit `pagination.type` to represent no explicit value (`null`).
 - Classic/IR `pagination.displayPosition` values (only when `pagination.type` is present):
   - `bottomLeft`
@@ -174,7 +176,7 @@ Guidelines for generating clean, consistent, and maintainable SQL queries within
   WITH seed AS (
     SELECT LEVEL AS id
          , TRUNC(DBMS_RANDOM.VALUE(1000, 9999)) AS amount
-         , TO_CHAR(TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 365)), 'YYYY-MM-DD') AS created_on
+         , TO_CHAR(TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 365)), 'YYYY-MM-DD') AS {{source.createdOnColumn}}
          , SUBSTR(DBMS_RANDOM.STRING('U', 8), 1, 8) AS name
          , CASE WHEN DBMS_RANDOM.VALUE < 0.5 THEN 'ACTIVE' ELSE 'INACTIVE' END AS status
     FROM dual
@@ -184,9 +186,9 @@ Guidelines for generating clean, consistent, and maintainable SQL queries within
        , s.name
        , s.status
        , s.amount
-       , TO_DATE(s.created_on, 'YYYY-MM-DD') AS created_on
+       , TO_DATE(s.{{source.createdOnColumn}}, 'YYYY-MM-DD') AS {{source.createdOnColumn}}
   FROM seed s
-  ORDER BY created_on DESC, id
+  ORDER BY {{source.createdOnColumn}} DESC, id
   ```
 
 - LOV (display/return)

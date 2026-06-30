@@ -25,6 +25,7 @@
     "assets/rules-mapping.json",
     "assets/component-policies.json",
     "assets/component-attributes.json",
+    "assets/validator-fix-recipes.json",
     "references/policies/compiler-prop-map.md",
     "references/workflows/apex-generation.md",
     "references/workflows/apexlang/apexlang-execution-model.md",
@@ -227,6 +228,10 @@
     {
       "path": "assets/rules-mapping.json",
       "source": "ai-context/memory-bank/rules-mapping.json"
+    },
+    {
+      "path": "assets/validator-fix-recipes.json",
+      "source": "skills/apexlang/assets/validator-fix-recipes.json"
     },
     {
       "path": "assets/workspace-intelligence.json",
@@ -685,8 +690,16 @@
       "source": "skills/apexlang/references/apexlang-execution-model.md"
     },
     {
+      "path": "references/workflows/apexlang/application-spec.template.md",
+      "source": "skills/apexlang/references/application-spec.template.md"
+    },
+    {
       "path": "references/workflows/apexlang/prompt-contracts.md",
       "source": "skills/apexlang/references/prompt-contracts.md"
+    },
+    {
+      "path": "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md",
+      "source": "skills/apexlang/references/workflow-create-app-from-fr-and-model.md"
     },
     {
       "path": "runtime/internal/python/validate_apexlang.py",

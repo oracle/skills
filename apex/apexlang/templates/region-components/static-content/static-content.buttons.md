@@ -19,6 +19,7 @@ Host static-content region for rendering configurable action buttons.
 1. Load `static-content._common.md` and `static-content._button._common.md` before use.
 2. Keep button identifiers, labels, and actions variable-driven.
 3. Remove optional button blocks that are not required by the scenario.
+4. The host region does not own icon placement; apply left/right icon-position defaults on each generated button through `static-content._button._common.md`.
 
 ---
 
@@ -46,3 +47,4 @@ region {{container.staticId}} (
 # Conditional Rendering Rules
 
 - Render `{{buttons}}` using `static-content._button._common.md`.
+- Do not add icon-position classes or template options to the container region itself.

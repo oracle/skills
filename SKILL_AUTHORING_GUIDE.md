@@ -27,6 +27,8 @@ Each domain should own:
 - A `SKILL.md` file that explains the domain and how to navigate it.
 - Topic folders or markdown files that stay coherent within that domain.
 
+Domains can contain nested skills when a large OCI, APEX, Database, or Fusion capability needs its own router. For example, OCI Enterprise AI lives under `oci/enterprise-ai/` because it is a subset of OCI guidance.
+
 Each installable domain `SKILL.md` must start with YAML front matter containing
 `name` and `description` fields. Skill installers use these fields to discover
 and validate skills.

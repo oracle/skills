@@ -9,7 +9,9 @@ migrationNote: preserved from previous standalone template example
 
 ## Purpose
 
-Markdown-preserved APEXlang example. Use this file for syntax and structure only after loading the family `_index.md` and `_common.md` contract.
+Snippet class: `metavariable_template`.
+
+Markdown-preserved APEXlang example. Use this file for syntax and structure only after loading the family `_index.md` and `_common.md` contract. Bind every `{{...}}` variable from schema evidence, user input, or compiler-backed truth before emitting APEXlang.
 
 ## Example
 
@@ -23,7 +25,7 @@ page 80 (
         dialogTemplate: @/drawer
         templateOptions: [
             #DEFAULT#
-            end
+            js-dialog-class-t-Drawer--pullOutEnd
         ]
     }
     dialog {
@@ -136,20 +138,20 @@ page 80 (
         }
     )
 
-    pageItem P80_DEPARTMENT_ID (
+    pageItem {{items.lookupItemName}} (
         type: selectList
         label {
-            label: Department
+            label: Lookup Value
             alignment: left
         }
         lov {
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select dname,
-                       deptno
-                  from dept
-                 order by dname
+                select {{lookup.displayColumn}},
+                       {{lookup.valueColumn}}
+                  from {{lookup.table}}
+                 order by {{lookup.displayColumn}}
                 ```
             displayNullValue: false
         }
@@ -164,14 +166,14 @@ page 80 (
             templateOptions: #DEFAULT#
         }
         help {
-            helpText: Choose the department used to derive the matching employee selections.
+            helpText: Choose the lookup value used to derive the matching related selections.
         }
     )
 
-    pageItem P80_DEPARTMENT_EMPLOYEES (
+    pageItem {{items.relatedRecordsItemName}} (
         type: checkboxGroup
         label {
-            label: Department Employees
+            label: Related Records
             alignment: left
         }
         settings {
@@ -181,10 +183,10 @@ page 80 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select ename,
-                       empno
-                  from emp
-                 order by ename
+                select {{related.displayColumn}},
+                       {{related.pk}}
+                  from {{related.table}}
+                 order by {{related.displayColumn}}
                 ```
             displayExtraValues: false
         }
@@ -199,12 +201,12 @@ page 80 (
             templateOptions: #DEFAULT#
         }
         help {
-            helpText: Select one or more employees. This item can be populated by a multi-value computation that returns one EMPNO row per checked employee.
+            helpText: Select one or more related records. This item can be populated by a multi-value computation that returns one bound related-row key per checked record.
         }
     )
 
-    computation p80-select-department-employees (
-        itemName: P80_DEPARTMENT_EMPLOYEES
+    computation {{computations.relatedRecordsStaticId}} (
+        itemName: {{items.relatedRecordsItemName}}
         execution {
             sequence: 20
             point: afterSubmit
@@ -213,9 +215,9 @@ page 80 (
             type: sqlQueryMultipleValues
             sqlQuery:
                 ```sql
-                select empno
-                  from emp
-                 where deptno = :P80_DEPARTMENT_ID
+                select {{related.pk}}
+                  from {{related.table}}
+                 where {{lookup.valueColumn}} = :{{items.lookupItemName}}
                 ```
         }
     )

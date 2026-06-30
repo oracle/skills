@@ -9,7 +9,9 @@ migrationNote: preserved from previous standalone template example
 
 ## Purpose
 
-Markdown-preserved APEXlang example. Use this file for syntax and structure only after loading the family `_index.md` and `_common.md` contract.
+Snippet class: `metavariable_template`.
+
+Markdown-preserved APEXlang example. Use this file for syntax and structure only after loading the family `_index.md` and `_common.md` contract. Bind every `{{...}}` variable from schema evidence, user input, or compiler-backed truth before emitting APEXlang.
 
 ## Example
 
@@ -43,10 +45,7 @@ page 90 (
         }
         appearance {
             template: @/title-bar
-            templateOptions: [
-                #DEFAULT#
-                t-BreadcrumbRegion--useBreadcrumbTitle
-            ]
+            templateOptions: #DEFAULT#
         }
         componentAppearance {
             breadcrumbTemplate: @/breadcrumb
@@ -90,21 +89,21 @@ page 90 (
             messagesPosition: below
         }
 
-        layer customers (
-            name: Customers
+        layer {{map.layerStaticId}} (
+            name: {{map.layerName}}
             layout {
                 sequence: 10
             }
             source {
-                tableName: CUSTOMER_GEOLOCATION
+                tableName: {{map.table}}
             }
             columnMapping {
                 geometryColumnDataType: longitudeLatitude
-                longitudeColumn: LONGITUDE
-                latitudeColumn: LATITUDE
+                longitudeColumn: {{map.longitudeColumn}}
+                latitudeColumn: {{map.latitudeColumn}}
             }
             tooltip {
-                column: SOURCE_ADDRESS
+                column: {{map.tooltipColumn}}
             }
         )
 

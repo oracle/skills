@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
+  "name": "oracle-skills",
+  "owner": {
+    "name": "Oracle",
+    "url": "https://github.com/oracle/skills"
+  },
+  "metadata": {
+    "description": "Oracle Skills marketplace — installable, source-backed skills for Oracle technologies. Each top-level domain folder is published as its own plugin.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "apex",
+      "source": "./apex",
+      "description": "Oracle APEX skills for Oracle APEX application development, including the APEXlang router with deterministic local-context discovery and compact machine-readable contracts.",
+      "category": "oracle",
+      "keywords": ["oracle", "apex", "apexlang", "low-code", "application-development"]
+    },
+    {
+      "name": "db",
+      "source": "./db",
+      "description": "Oracle Database guidance for SQL, PL/SQL, SQLcl, ORDS, administration, app development, performance, security, migrations, and agent-safe database workflows. Use when the user asks to write, edit, rewrite, review, format, debug, tune, or explain SQL; create or refactor PL/SQL; use SQLcl, Liquibase, ORDS, JDBC, node-oracledb, Python, Java, .NET, or database frameworks; troubleshoot queries, sessions, locks, waits, indexes, optimizer plans, AWR, ASH, migrations, schemas, users, roles, privileges, backup, recovery, Data Guard, RAC, multitenant, containers, monitoring, auditing, encryption, VPD, or safe agent database operations.",
+      "category": "oracle",
+      "keywords": ["oracle", "database", "sql", "plsql", "sqlcl", "ords", "performance", "security", "migrations"]
+    },
+    {
+      "name": "fusion",
+      "source": "./fusion",
+      "description": "Oracle Fusion domain. Placeholder for future Oracle Fusion skills.",
+      "category": "oracle",
+      "keywords": ["oracle", "fusion"]
+    },
+    {
+      "name": "graal",
+      "source": "./graal",
+      "description": "Build, configure, and troubleshoot GraalVM Native Image applications. Use this skill for native-image CLI builds, Maven or Gradle Native Build Tools, reachability metadata, and build or run time issue diagnosis.",
+      "category": "oracle",
+      "keywords": ["oracle", "graalvm", "native-image", "maven", "gradle"]
+    },
+    {
+      "name": "oci",
+      "source": "./oci",
+      "description": "Oracle Cloud Infrastructure guidance for OKE, OCI IoT Platform digital twins and publish flows, Enterprise AI models, agents, RAG, governance, and Oracle platform integrations.",
+      "category": "oracle",
+      "keywords": ["oracle", "oci", "cloud-infrastructure", "oke", "iot", "digital-twins", "generative-ai"]
+    }
+  ]
+}

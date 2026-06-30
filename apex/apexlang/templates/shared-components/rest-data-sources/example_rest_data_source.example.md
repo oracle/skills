@@ -9,7 +9,9 @@ migrationNote: preserved from previous standalone template example
 
 ## Purpose
 
-Markdown-preserved APEXlang example. Use this file for syntax and structure only after loading the family `_index.md` and `_common.md` contract.
+Snippet class: `metavariable_template`.
+
+Markdown-preserved APEXlang example. Use this file for syntax and structure only after loading the family `_index.md` and `_common.md` contract. Bind every `{{...}}` variable from discovered REST data-profile metadata, schema evidence, user input, or compiler-backed truth before emitting APEXlang.
 
 ## Example
 
@@ -17,7 +19,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
 /*Acceptance and usage notes 
     - the below mentioned dataprofile is only for reference and a REST Data source can have more columns in the data profile. Hence sure to discover the entire data profile with child level hierarchy by making a call to the REST API configured under rest-data-sources */
 /*Use the below for GET operation*/
-    restDataSource http_paginated_employees_example (
+    restDataSource http_paginated_records_example (
     name: Objects
     source {
         type: http
@@ -28,7 +30,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
     restSynchronization {
         jobIsActive: true
         localTableOwner: SAN
-        localTableName: emp
+        localTableName: {{source.table}}
         schedule: FREQ=DAILY;INTERVAL=1;BYHOUR=1;BYMINUTE=5;BYSECOND=10
         httpRequestLimit: 1000
     }
@@ -36,7 +38,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
       restSynchronization {
         jobIsActive: true
         localTableOwner: SAN
-        localTableName: emp
+        localTableName: {{source.table}}
         type: merge
         schedule: FREQ=HOURLY;INTERVAL=3;BYMINUTE=20;BYSECOND=10
         httpRequestLimit: 1000
@@ -45,7 +47,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
      restSynchronization {
         jobIsActive: true
         localTableOwner: SAN
-        localTableName: emp
+        localTableName: {{source.table}}
         type: fullRefreshDelete
         schedule: FREQ=DAILY;INTERVAL=2;BYHOUR=10;BYMINUTE=05;BYSECOND=20
         httpRequestLimit: 1000
@@ -80,7 +82,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
     )
     
     dataProfile {
-        name: HTTP_PAGINATED_EMPLOYEES_EXAMPLE
+        name: HTTP_PAGINATED_RECORDS_EXAMPLE
         rowSelector: items
     }
 
@@ -171,14 +173,14 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol HIREDATE (
-        colName: HIREDATE
+    dataProfileCol {{source.dateColumn}} (
+        colName: {{source.dateColumn}}
         source {
             sequence: 7
             dataType: timestampWithTimeZone
         }
         parsing {
-            pathExpression: hiredate
+            pathExpression: {{source.dateJsonPath}}
             formatMask: YYYY"-"MM"-"DD"T"HH24":"MI:SS.FF9TZR
         }
         
@@ -187,14 +189,14 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol SAL (
-        colName: SAL
+    dataProfileCol {{source.amountColumn}} (
+        colName: {{source.amountColumn}}
         source {
             sequence: 8
             dataType: number
         }
         parsing {
-            pathExpression: sal
+            pathExpression: {{source.amountJsonPath}}
         }
        
         advanced {

@@ -13,7 +13,7 @@ Apply the shared drawer contract to the Theme 42 `Drawer` page template. Use thi
 |------|----------|------|-------------|
 | base drawer vars | inherited | `page.drawer.common` | Load [`../_shared/page.drawer.common.md`](../_shared/page.drawer.common.md) first. |
 | appearance.dialogTemplate | yes | string | Must be `@/drawer`. |
-| appearance.templateOptions | optional | string or array | Drawer size and position `static_id` values such as `end`, `start`, `top`, `bottom`, `small`, `medium`, `large`, `extra-large`, and `remove-body-padding`; see the inventory in [`../README.md`](../README.md). |
+| appearance.templateOptions | optional | string or array | Live-valid drawer option values. For APEX 26.1 position, use values such as `js-dialog-class-t-Drawer--pullOutEnd`; do not emit stale short IDs such as `end`, `start`, `top`, or `bottom`. |
 | layout slots | derived | slot set | `BODY` (`contentBody`), `REGION_POSITION_01` (`dialogHeader`), `REGION_POSITION_03` (`dialogFooter`). |
 
 ## Template
@@ -54,7 +54,7 @@ page [pageNumber] (
 
 ## Conditional Rules
 - Keep create and edit action sets conditional when the drawer is reused across multiple flows.
-- Use end or start drawers for side-sheet patterns, and top or bottom drawers for sheet-style patterns.
+- Use live-valid pull-out drawer option values for side-sheet or sheet-style patterns.
 
 ## Guardrails
 - Do not mix custom page CSS classes with Theme 42 drawer position classes unless the underlying template option already defines them.

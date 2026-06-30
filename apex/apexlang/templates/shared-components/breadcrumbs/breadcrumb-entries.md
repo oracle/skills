@@ -6,7 +6,7 @@ version: 1.0
 
 # Purpose
 
-The breadcrumb entries component is embedded inside a breadcrumb component.  It contains and entry per page that is referenced.  It is possible that an entry has a parent entry, but not required.
+The breadcrumb entries component is embedded inside a breadcrumb component. It contains one entry per referenced page. Parent entries are optional only for true root pages; hub-launched, management, contextual, detail, and parent-child pages must declare their parent entry.
 
 ---
 
@@ -14,6 +14,8 @@ The breadcrumb entries component is embedded inside a breadcrumb component.  It 
 
 1. Create the name and displayName
 2. All updates should be made to the breadcrumbs.apx file found under an application's /shared-components directory
+3. For full-app generation, do not emit a flat breadcrumb list. Match the hierarchy declared in the application spec and `.apexlang/app-ux-contract.json`.
+4. Put `parentEntry` only inside `appearance {}`. Never put it in `execution {}`.
 
 ---
 

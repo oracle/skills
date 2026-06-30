@@ -1,0 +1,15 @@
+{
+  "@context": "dtmi:dtdl:context;3",
+  "@id": "dtmi:com:example:iot:temperature_sensor;1",
+  "@type": "Interface",
+  "displayName": "Temperature Sensor",
+  "description": "Simple public sample model for a publishing temperature sensor.",
+  "contents": [
+    {
+      "@type": "Telemetry",
+      "name": "temperature",
+      "schema": "double",
+      "displayName": "Temperature"
+    }
+  ]
+}

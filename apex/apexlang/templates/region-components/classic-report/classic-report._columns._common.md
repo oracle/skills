@@ -27,7 +27,7 @@ Standardize `column` variable contracts, output shape, and guardrails for all cl
 | column.name | yes | string | Column static identifier. |
 | column.reportColumnQueryId | yes | number | Must map to SQL projection position. |
 | column.derivedColumn | yes | enum | Usually `N` unless derived. |
-| column.type | optional | enum | `plainText`, `plainTextBasedOnLov`, `richText`, `link`, `image`, `downloadBlob`, `hidden`, `percentGraph`. |
+| column.type | optional | enum | `plainText`, `plainTextBasedOnLov`, `richText`, `link`, `image`, `downloadBlob`, `hidden`, `percentGraph`. Required as `link` when a column-level `link {}` block is emitted. |
 | column.heading | optional | string | Heading text shown to users. Omit it entirely when `column.type: hidden`. |
 | column.headingAlignment | optional | enum | `start`, `center`, `end`. |
 | column.sequence | yes | number | Display order. |
@@ -122,6 +122,7 @@ Example report-row item mapping:
 # Conditional Rendering Rules
 
 - Omit `type` when default rendering is sufficient.
+- Do not omit `type: link` when a Classic Report column emits a column-level `link {}` block.
 - Omit `heading.alignment` and `layout.columnAlignment` when alignment is not specified.
 - Do not omit the `layout` block or `layout.sequence`; the live compiler requires explicit column ordering.
 - Omit `appearance` unless one or more of `formatMask`, `backgroundColor`, `foregroundColor` is provided.
@@ -144,6 +145,7 @@ Example report-row item mapping:
 - `column.reportColumnQueryId` must remain synchronized with SQL projection order.
 - Keep `layout.sequence` as a multiline nested block on every generated column.
 - Keep `column.type` compatible with classic-report supported types.
+- When a Classic Report column contains `link {}`, emit top-level `type: link`; a link block without the matching column type is invalid generated output.
 - Do not emit `source { databaseColumn: ... dataType: ... }` on classic-report columns in this runtime; that shape belongs to other column families such as interactive grid or template-driven columns.
 - Hidden Classic Report columns must not emit `heading {}`; keep this rule separate from Interactive Report, where hidden columns still require headings.
 - Use only existing authorization schemes and LOV aliases.

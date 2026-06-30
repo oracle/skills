@@ -71,9 +71,9 @@ These standards ensure all pages follow consistent structure and navigation beha
 Example (page root with `pageGroup`):
 ```plaintext
 page 42 (
-    name: Departments
-    alias: DEPARTMENTS
-    title: Departments
+    name: Records
+    alias: RECORDS
+    title: Records
     pageGroup: @administration
     ...
 )
@@ -84,8 +84,8 @@ Navigation and Breadcrumb DSL patterns (non-modal pages)
 ```plaintext
 list navigation-menu (
   ...
-  entry departments (
-    label: Departments
+  entry records (
+    label: Records
     layout { sequence: 20 }
     link { target: f?p=&APP_ID.:42:&APP_SESSION.::&DEBUG.::: }
   )
@@ -95,8 +95,8 @@ list navigation-menu (
 ```plaintext
 breadcrumb breadcrumb (
   ...
-  entry departments (
-    name: Departments
+  entry records (
+    name: Records
     pageNumber: 42
     appearance {
       parentEntry: @home

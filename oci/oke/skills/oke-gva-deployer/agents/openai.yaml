@@ -1,0 +1,4 @@
+interface:
+  display_name: "OKE GVA Deployer"
+  short_description: "Create OKE GVA secondary VNIC node pools."
+  default_prompt: "Use $oke-gva-deployer to guide an interactive Generic VNIC Attachment workflow, discover cluster networking, build secondary VNIC profiles, and create or review node-pool commands with explicit approval."

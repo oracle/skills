@@ -39,10 +39,7 @@ page 1 (
         }
         appearance {
             template: @/title-bar
-            templateOptions: [
-                #DEFAULT#
-                t-BreadcrumbRegion--useBreadcrumbTitle
-            ]
+            templateOptions: #DEFAULT#
         }
         componentAppearance {
             breadcrumbTemplate: @/breadcrumb

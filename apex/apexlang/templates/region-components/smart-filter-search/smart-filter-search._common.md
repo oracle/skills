@@ -13,8 +13,9 @@ Document the native smart-filters region shell and its filter child metadata bou
 
 1. Use the dedicated `region-smart-filters` template.
 2. Treat the filtered-region reference as mandatory.
-3. Keep suggestion-chip settings on the region shell and individual filters as child metadata.
+3. Do not emit region `settings` for Smart Filters unless active compiler metadata proves a valid settings group.
 4. Use the canonical search-filter source contract with `source.dbColumns` for free-text search; do not invent single-column shortcut shapes.
+5. Do not target map regions directly. For map pages, target a companion report/cards results region and refresh the sibling map explicitly.
 
 # Variable Contract
 
@@ -25,9 +26,7 @@ Document the native smart-filters region shell and its filter child metadata bou
 | smartFiltersRegionStaticId | yes | string | Smart filters region static id. |
 | source.filteredRegion | yes | ref | Results region static id. |
 | filters | optional | array | Filter definitions (radio/search/etc). |
-| settings.maxSuggestionChips | optional | number | Suggestion-chip limit. |
-| settings.showTotalRowCount | optional | boolean | Show row count indicator. |
-| settings.moreFiltersSuggestionChip | optional | boolean | Enable additional filter hints. |
+| filter.itemName | conditional | string | Canonical page item name for child search filters, e.g. `P14_F_SEARCH`. |
 
 # Output Template – Full
 
@@ -38,10 +37,24 @@ region {{regionStaticId}} (
   source {
     filteredRegion: @{{source.filteredRegion}}
   }
-  settings {
-    maxSuggestionChips: {{settings.maxSuggestionChips}}
-  }
   {{filters}}
+)
+```
+
+# Output Template – Search Filter Child
+
+```apexlang
+filter {{filter.itemName}} (
+  type: search
+  label {
+    label: {{filter.label}}
+  }
+  layout {
+    sequence: {{filter.layout.sequence}}
+  }
+  source {
+    dbColumns: {{filter.source.dbColumns}}
+  }
 )
 ```
 
@@ -49,13 +62,13 @@ region {{regionStaticId}} (
 
 - Keep filter children separate from the shell.
 - Use the advanced HTML DOM ID only when the owning scenario requires it.
-- Omit `settings` block when no settings values are required.
+- Omit `settings` blocks for APEX 26.1 Smart Filters; the live compiler metadata for `NATIVE_SMART_FILTERS` has no settings group.
 
 # Guardrails
 
 - `filteredRegion` must reference an existing results region with compatible source columns.
 - The Smart Filters region must be declared before the referenced `filteredRegion` in the page file.
-- `filteredRegion` must not reference a map region, map layer, Smart Filters region, Faceted Search region, or any other non-results alias.
-- For map + filter pages, keep Smart Filters bound to the authoritative results region and treat the map as a companion visualization.
+- `filteredRegion` must reference a report/cards-style results region. Do not target map regions, map layers, Smart Filters regions, Faceted Search regions, or other non-results aliases.
 - Filter LOV/value definitions must match result columns.
+- Search filters must use `source.dbColumns`; do not collapse free-text search into `source.databaseColumn`.
 - Metadata export lookup: search for `Smart Filters`, the filtered-region reference, and child filter metadata.

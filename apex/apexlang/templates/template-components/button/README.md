@@ -8,6 +8,7 @@ Canonical Button helper pack for the Theme 42 `button` template component, using
 - Load `button._common.md` next to align variable contracts, guardrails, and required inputs.
 - Load `button._template_options.md` when the request changes helper-button attributes.
 - Load one scenario variant matching the requested helper behavior.
+- For helper buttons with `iconClasses` plus visible label text, put `t-Button--iconLeft` in `cssClasses` by default; use `t-Button--iconRight` only by explicit request, and omit both when `isIconOnly: true`.
 
 ## Template Catalog
 - `button._common.md`

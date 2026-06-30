@@ -6,12 +6,17 @@
 ### Rules (Non-Negotiable)
 1. Use `pageTemplate: @/standard` (or other documented layout) with `templateOptions: #DEFAULT#`.
 2. Main report region must use `type: classicReport` and follow the canonical Classic Report `appearance` and `componentAppearance` blocks owned by `references/policies/memory-bank/40-components/apex.templates.md`.
+   - Classic Report `componentAppearance.templateOptions` defaults to `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`.
+   - Alternating rows are disabled by omission; do not emit `t-Report--altRowsDefault` or `t-Report--staticRowColors`.
+   - Do not emit row-highlighting by default.
+   - Contextual Info Classic Reports are the documented appearance override: use `appearance.template: @/contextual-info` and `appearance.templateOptions` exactly `#DEFAULT#`, `t-Region--hideHeader js-addHiddenHeadingRoleDesc`, and `t-Region--noUI`.
 3. Default pagination is `rowRangesXToYNoPagination` with a `whenNoDataFound` message; switch to another catalog type only when user intent demands it or performance requirements warrant.
 4. Apply navigation/breadcrumb requirements from `apex.page.md`.
 5. When report navigation is added or changed, ask every time which link mode is required: same application page, another application page, or URL redirect.
 6. For same-application navigation, prefer declarative page targets on the region or column link definition when the DSL supports it; do not default to SQL-computed `apex_page.get_url(...)` or `type: url`.
 7. Every delivered SQL or table projection must have an explicit `column (...)` definition before finals. Do not rely on implicit generated columns for delivered Classic Reports.
 8. Hidden Classic Report columns must omit the `heading` block entirely. This differs from Interactive Report, where hidden columns still require `heading { heading: ... }`.
+9. Classic Report columns with a column-level `link {}` block must also emit top-level `type: link`.
 
 ### DB-First Source Verification (Required)
 - For `source.location: localDatabase`, verify source object metadata before writing SQL:
@@ -25,12 +30,13 @@
 ### Guidance
 - Mirror `templates/page-examples/classic-report-page/classic-report-page._index.md` for structure, column ordering, and the canonical Classic Report `appearance` and `componentAppearance` blocks.
 - Keep classic report `appearance.templateOptions` to exact accepted values. `#DEFAULT#` stays standalone, documented composite values remain one atomic entry when the catalog/runtime lists them that way, and inline comma arrays remain invalid.
-- Emit `componentAppearance { template: @/standard templateOptions: #DEFAULT# }` on Classic Report regions. `appearance` controls the outer region wrapper; `componentAppearance` controls the report component template required by runtime validation. In the 26.1 compiler metadata this is property `411`, and live validation reports omissions as `Missing required parameter (411): componentAppearance - template (string)`.
+- Emit the canonical Classic Report `componentAppearance` block with `template: @/standard` and a multi-line `templateOptions` array containing `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`. `appearance` controls the outer region wrapper; `componentAppearance` controls the report component template required by runtime validation. In the 26.1 compiler metadata this is property `411`, and live validation reports omissions as `Missing required parameter (411): componentAppearance - template (string)`.
 - For interactive behaviours, add dynamic actions via the appropriate component templates rather than inline code.
 - For HTML-rendered status badges/highlights, use `columnFormatting.htmlExpression` with implicit plain-text columns.
 - Do not emit `type: richText` for `columnFormatting.htmlExpression` patterns.
 - Follow `references/policies/memory-bank/30-pages/apex.report-column-rendering.md` for all SQL-vs-column rendering behavior, formatting-block placement, and HTML literal rules.
 - For same-app drill navigation, define the target declaratively on the report column whenever the component contract supports it. Keep SQL URL columns only for explicit URL mode or components that genuinely require a URL string.
+- For Classic Report column links, keep the report projection column explicit and emit `type: link` next to `reportColumnQueryId` and `derivedColumn`; do not rely on the `link {}` block alone to imply link rendering.
 - Make the primary-key decision explicit:
   - when row navigation or row identity is part of the page behavior, keep the PK as an explicit report column and wire the target declaratively
   - when navigation is not intended, keep the PK hidden as a technical column

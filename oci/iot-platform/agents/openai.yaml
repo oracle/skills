@@ -1,0 +1,4 @@
+interface:
+  display_name: "OCI IoT Platform"
+  short_description: "Operate OCI IoT digital twins and publish workflows."
+  default_prompt: "Use $oci-iot-platform to inspect domains, manage digital twins, and build safe OCI IoT CLI workflows."

@@ -15,6 +15,7 @@ Document the generated static-content button container used with dialog forms.
 
 1. Load `form._common.md` first.
 2. Use this companion region only for dialog-form scenarios.
+3. Keep icon-placement defaults on the generated button declarations; the `@/buttons-container` region itself does not carry `t-Button--iconLeft` or `t-Button--iconRight`.
 
 # Variable Contract
 
@@ -41,3 +42,4 @@ region buttons (
 # Conditional Rendering Rules
 
 - Keep this as a support region, not a replacement for the primary form region.
+- Apply icon-position template options only on icon-plus-text buttons associated with this region.

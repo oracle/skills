@@ -17,6 +17,7 @@ Keywords: smart filter, smart filters, smart search, quick search, multi-attribu
 1. Use the Standard page template (`pageTemplate: @/standard`) unless a documented exception requires another layout. Keep `templateOptions: #DEFAULT#`.
    Keep each value exact. `#DEFAULT#` remains standalone, and documented composites such as `t-Region--hideHeader js-addHiddenHeadingRoleDesc` remain one atomic entry.
 2. Include a Breadcrumb region using the title-bar template. Position it in `slot: REGION_POSITION_01` with `sequence: 10`.
+   - Primary page-level create actions, such as Create Product or Create Customer, belong on the breadcrumb/title-bar region, not inside the filtered report region toolbar.
 3. Follow `apex.page.md` for page naming, alias, title, breadcrumb entry, and navigation list updates.
 4. Disable form autocomplete on search-driven pages unless business requirements state otherwise.
 
@@ -25,7 +26,7 @@ Keywords: smart filter, smart filters, smart search, quick search, multi-attribu
 ## Core Composition (Top → Bottom)
 1. **Breadcrumb / Header** – Optional wrapper region for breadcrumbs and page-level actions.
 2. **Smart Filters Region** – Region type `smartFilters`, parented to the breadcrumb/header region when using the PLUGIN_SEARCH slot, otherwise place in BODY with `sequence: 10`.
-3. **Results Region** – Classic Report (preferred) or approved alternative (Cards, Interactive Report/Grid) representing the canonical search results.
+3. **Results Region** – Classic Report (preferred), approved alternative (Cards, Interactive Report/Grid), or a companion report/cards region for map pages.
 4. **Optional Export / Download** – When exports are enabled, expose them via the results region (e.g., PDF download button) rather than standalone buttons.
 
 Maintain the page grid so that Smart Filters sits visually above or beside the results region while respecting UT responsive behavior.
@@ -34,10 +35,10 @@ Maintain the page grid so that Smart Filters sits visually above or beside the r
 
 ## Smart Filters Configuration (Non-Negotiable)
 1. `filteredRegion` must point to the static ID of the results region.
-   The filtered target must be the page's actual results region, not a map region, not a map layer, and not another filter region.
+   The filtered target must be the page's actual report/cards-style results region. Do not target map regions or map layers directly; on map pages, target the companion result region and refresh the sibling map explicitly.
    Declare the Smart Filters region before the referenced results region in the page file.
 2. Preserve `templateOptions: #DEFAULT#` unless a documented template-option exception exists. Do not invent classes.
-3. Set `settings.compactNosThreshold` high enough (≥ 10000) to avoid the compact fallback for moderate result counts.
+3. Emit optional Smart Filters settings only when compiler metadata for the active build proves the property is valid.
 4. Order filters: primary search first, then categorical filters (checkbox/radio), then range or other specialty filters.
 5. Use `suggestions.type: dynamic` for facet filters unless a static list is mandated.
 6. Provide semantic labels and placeholders; if the Smart Filters region is the primary search control, set `accessibility.landmarkType: search`.
@@ -65,9 +66,8 @@ Maintain the page grid so that Smart Filters sits visually above or beside the r
 - Content Row / Metric Card: allowed only when the page still has one authoritative row-based results region with compatible filterable source columns.
 
 ### Map + Filter Pages
-- Smart Filters must drive a compatible results region such as Classic Report, Interactive Report, Interactive Grid, Cards, Content Row, or Metric Card.
-- Treat a map as a companion visualization, not as the Smart Filters `filteredRegion` target.
-- If the page needs both map interaction and structured filtering, keep the map synchronized from the authoritative results region or a shared data source instead of targeting the map directly from Smart Filters.
+- Smart Filters must target an authoritative report/cards region on map pages.
+- Keep sibling maps synchronized with explicit refresh behavior after Smart Filter changes. Do not target the map directly and do not add unsupported map-layer `source.pageItemsToSubmit` to force the filter state into the layer.
 
 ---
 
@@ -80,14 +80,14 @@ Maintain the page grid so that Smart Filters sits visually above or beside the r
 
 ## Data, Performance & Sample Data
 - Keep Smart Filter results backed by performant SQL (views or packaged APIs per `20-data/apex.sql.md`).
-- Avoid per-filter dynamic SQL in session state; leverage `filteredRegion` so APEX handles predicate composition.
+- For normal report/card targets, leverage `filteredRegion` so APEX handles predicate composition. For sibling maps, use an explicit refresh pattern backed by live-valid map metadata for the active compiler.
 - Demo/skeleton pages may use `sampleData` sources (e.g., `employees`); production pages must point to actual schema objects.
 
 ---
 
 ## Accessibility & UX
 - Ensure every filter has a concise label; avoid abbreviations unless registered in `apex.acronyms.md`.
-- Provide accessible text for export links and total count indicators; when surfacing total row counts, either rely on defaults or set `settings.showTotalRowCount: true` with a localized label.
+- Provide accessible text for export links and total count indicators through the filtered results region. Do not emit Smart Filters `settings.showTotalRowCount` for APEX 26.1 unless compiler metadata for the active build proves that property exists.
 - Maintain consistent sequencing so keyboard navigation progresses from filters into results.
 
 ---

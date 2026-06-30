@@ -1,0 +1,8 @@
+{
+  "displayName": "Replace Twin Name",
+  "description": "Publishing twin instance for a physical sensor device.",
+  "externalKey": "<device-identity>",
+  "authId": "<vault-secret-or-certificate-auth-id>",
+  "digitalTwinModelId": "<digital-twin-model-id>",
+  "digitalTwinAdapterId": "<digital-twin-adapter-id>"
+}

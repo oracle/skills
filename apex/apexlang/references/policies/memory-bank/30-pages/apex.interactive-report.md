@@ -2,6 +2,7 @@
 
 ### Purpose
 - Define deterministic layout and configuration for Interactive Report pages.
+- SQL snippets containing `{{...}}` are `metavariable_template` examples. Bind every variable from schema evidence before emitting SQL or APEXlang.
 
 ### Rules (Non-Negotiable)
 1. Use `pageTemplate: @/standard` with `templateOptions: #DEFAULT#`.
@@ -13,6 +14,7 @@
 7. Every Interactive Report `column (...)` must define `heading { heading: ... }`, including hidden technical ID columns. Hiding a column does not waive the required structural heading metadata.
 8. Every projected SQL column must have a matching Interactive Report `column (...)` definition before finals. Do not rely on implicit generated columns for delivered artifacts.
 9. If the report SQL references same-page page-item binds, emit `source.pageItemsToSubmit` with those exact item names so refreshes use current context.
+10. Interactive Report column links must use the column-level `link {}` block with normal Interactive Report column `type` values such as `plainText`; do not copy Classic Report `type: link`, `reportColumnQueryId`, or `derivedColumn` into Interactive Report columns.
 
 ### Guidance
 - Follow `templates/page-examples/interactive-report-page/interactive-report-page._index.md` for canonical column definitions, filter options, and toolbar settings.
@@ -24,7 +26,8 @@
 - Do not emit `reportColumnQueryId` or `derivedColumn` for interactive report columns; those attributes belong to classic report columns only in this repository contract.
 - Use friendly display names for headings and apply format masks via the `appearance` block.
 - Follow `references/policies/memory-bank/30-pages/apex.report-column-rendering.md` for SQL data-only behavior and column formatting markup placement.
-- When linking to a page in the same application, use declarative page-target syntax at the region or column level when supported, and refresh via `templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md` if a modal dialog is used.
+- When linking to a page in the same application, use declarative page-target syntax at the region or column level when supported. If the target page is modal, the parent page must include an `apexafterclosedialog` dynamic action that refreshes the originating report region via `templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md`.
+- For column-level links, use `#COLUMN_ALIAS#` in `target.items` for current report-row values and reserve `&ITEM.` for page/app/session substitutions.
 - Interactive reports should include a default guidance layer. Provide concise user-facing guidance for business-significant columns and all derived, status, and action columns using the supported guidance hook in the selected template family; when the runtime shape has no dedicated column-help hook, surface that guidance in page or region help.
 - Parent-child child reports must bind to the hidden parent context item and list that item in `source.pageItemsToSubmit`; parent-context create/edit buttons should be placed in the report toolbar slot such as `rightOfInteractiveReportSearchBar`.
 
@@ -33,31 +36,29 @@
 - Canonical examples:
   ```sql
   where (:P3_SEARCH is null
-     or lower(e.ename) like '%' || lower(:P3_SEARCH) || '%')
+     or lower(s.{{source.displayColumn}}) like '%' || lower(:P3_SEARCH) || '%')
   ```
   ```sql
-  where lower(e.job) = lower(:P3_JOB)
+  where lower(s.{{source.statusColumn}}) = lower(:P3_STATUS)
   ```
 - Non-compliant examples:
   ```sql
-  where e.ename like '%' || :P3_SEARCH || '%'
+  where s.{{source.displayColumn}} like '%' || :P3_SEARCH || '%'
   ```
   ```sql
-  where upper(e.ename) like '%' || upper(:P3_SEARCH) || '%'
+  where upper(s.{{source.displayColumn}}) like '%' || upper(:P3_SEARCH) || '%'
   ```
 
 
 ### Example Query
 ```sql
-select empno,
-       ename,
-       job,
-       mgr,
-       hiredate,
-       sal,
-       comm,
-       deptno
-  from emp
+select {{source.pk}},
+       {{source.displayColumn}},
+       {{source.statusColumn}},
+       {{source.createdOnColumn}},
+       {{source.amountColumn}},
+       {{lookup.valueColumn}}
+  from {{source.table}}
 ```
 
 - Include `comments { comments: ... }` by default on key IR columns as descriptive metadata describing SQL projection, display behavior, reuse intent, and whether the wording is provisional or sourced. Require the attributes `Display Label`, `Display in Report`, `Display in Form`, `Format Mask`, `Value Required`, `Read Only`, `Primary Display Column`, and `Authorization Scheme`; include `Summary` only when a short leading business-intent sentence materially helps maintenance. When `Summary` is present, keep the field order `Summary`, `Display Label`, `Display in Report`, `Display in Form`, `Format Mask`, `Value Required`, `Read Only`, `Primary Display Column`, `Authorization Scheme`. Mirror executable settings such as `appearance.formatMask` and `security.authorizationScheme` when those blocks are emitted.

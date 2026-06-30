@@ -24,6 +24,7 @@ Defines reusable APEXlang BLOB, file/image, storage companion, and visual-token 
 ## Icons and Visual Tokens
 - When the prompt specifies an icon allowlist file, use only `fa-*` tokens from that file for menu/list icons, metric icons, report link icons, and button icons.
 - If no allowlist is available, choose conservative Font APEX-style `fa-*` tokens and avoid custom CSS classes as semantic icons.
+- Generated icon-bearing properties must use Font APEX `fa-*` classes only. Do not emit image icons, Material/Oracle JET icon aliases, custom CSS icon aliases, or framework-specific icon classes in `icon`, `imageIconCssClasses`, `iconCssClasses`, `linkIcon`, or `noDataFoundIcon`.
 - Do not invent icon aliases or translate icon tokens; keep icon strings literal and template-compatible.
 - Use icons to reinforce navigation/action meaning, not as the only accessible label.
 

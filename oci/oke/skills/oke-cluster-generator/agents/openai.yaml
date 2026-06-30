@@ -1,0 +1,4 @@
+interface:
+  display_name: "OKE Cluster Generator"
+  short_description: "Design OKE Terraform and Resource Manager stacks."
+  default_prompt: "Use $oke-cluster-generator to design an OKE cluster, validate network and node-pool choices, and generate Terraform plus OCI Resource Manager schema artifacts."

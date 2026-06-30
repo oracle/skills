@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Map validator rule IDs to compact repair guidance so APEXlang validation findings can be fed back into the LLM revision loop without guessing.",
+  "usage": {
+    "match": "Use the exact issue code from validator output, problems.json, or validation-report.json. If a code is absent, use the nearest owning family only as context and keep the run blocked until the concrete issue is understood.",
+    "requiredResponse": "For each issue, report rule_id, cause, deterministic_fix, owning_guidance, and verification_result.",
+    "repairPolicy": "Apply only the smallest artifact change needed to satisfy the reported issue, then rerun the same validator/check that produced it."
+  },
+  "defaults": {
+    "verification": [
+      "Rerun the local APEXlang validator or runtime validate command that produced the issue.",
+      "If the issue came from live/compiler validation, preserve the updated problems.json or validation report as evidence."
+    ],
+    "fallback": "If no deterministic fix can be selected from this catalog and the owning guidance, stop with Required Revisions or Missing Inputs instead of inventing syntax."
+  },
+  "recipes": {
+    "ACL_ROLE_DECLARATION_REQUIRED_001": {
+      "cause": "Role-based authorization is referenced but shared ACL role declarations are missing.",
+      "deterministicFix": "Create or update shared-components/acl-roles.apx with the referenced roles and align authorization scheme references to those role static IDs.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "references/workflows/apex-generation/agents/40-agent-revision.md"]
+    },
+    "APEXLANG_LF_LINE_ENDINGS_REQUIRED_001": {
+      "cause": ".apx artifact contains CRLF line endings.",
+      "deterministicFix": "Rewrite only the affected .apx files with LF line endings; keep content unchanged.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", ".gitattributes"]
+    },
+    "APP_TEMPLATE_ARTIFACT_LEAK_001": {
+      "cause": "Generated app root contains template-only files or unexpected top-level entries.",
+      "deterministicFix": "Remove leaked scaffold/template docs and keep only .apex, application.apx, deployments, page-groups.apx, pages, shared-components, and supporting-objects.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "templates/base-app-structure/base-app-runtime-seed.manifest.json"]
+    },
+    "APP_UX_ACCESSIBILITY_GUIDANCE_REQUIRED_001": {
+      "cause": "The full-app UX contract lacks accessibility or guidance planning.",
+      "deterministicFix": "Update .apexlang/app-ux-contract.json and the application spec with page help, item help, report column comments, and accessibility expectations tied to requirements.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/10-global/apex.global.md"]
+    },
+    "APP_UX_BREADCRUMB_HIERARCHY_REQUIRED_001": {
+      "cause": "Full-app composition did not define parent/root breadcrumb hierarchy.",
+      "deterministicFix": "Add compositionPlan.breadcrumbs entries for every non-modal page with root, parentEntry, or parentPage, then update shared-components/breadcrumbs.apx accordingly.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "templates/shared-components/breadcrumbs/breadcrumb-entries.md"]
+    },
+    "APP_UX_CONTRACT_REQUIRED_001": {
+      "cause": "A non-trivial generated app is missing the app UX contract.",
+      "deterministicFix": "Create project-root .apexlang/app-ux-contract.json with sourceEvidence, pageInventory, compositionPlan, richUiPatternPlan, lovPlan, behaviorPlan, and testPlan before drafting pages.",
+      "owningGuidance": ["references/workflows/apexlang/workflow-create-app-from-fr-and-model.md", "references/workflows/apexlang/application-spec.template.md"]
+    },
+    "APP_UX_DISPLAY_MAPPING_REQUIRED_001": {
+      "cause": "The UX contract lacks display-column or display-mapping decisions.",
+      "deterministicFix": "Add explicit display mappings for reports, forms, cards, content rows, LOVs, and map markers using schema evidence or explicit requirements.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "APP_UX_FORM_CONTEXT_REQUIRED_001": {
+      "cause": "A form item that requirements define as context-owned is rendered as an editable input.",
+      "deterministicFix": "Change the context-owned parent/key item to a hidden item or hidden-template display state, keep it populated from the launcher mapping, and do not expose it for user editing.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/30-pages/apex.form.md"]
+    },
+    "APP_UX_FORM_DEFAULT_REQUIRED_001": {
+      "cause": "A required form defaulting behavior from the UX contract is not implemented in the form artifact.",
+      "deterministicFix": "Add a deterministic default or dynamic-action set-value behavior that submits the source item, looks up the declared source column, and populates the target item while preserving user override when required.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/20-data/apex.logic.md"]
+    },
+    "APP_UX_FORM_VALIDATION_REQUIRED_001": {
+      "cause": "A functional requirement declares a required form validation but the generated page does not implement it.",
+      "deterministicFix": "Add a page-level validation using the canonical validation template, associate it with the target item, and include the controlling item/value condition when the requirement is conditional.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "templates/business-logic/validations"]
+    },
+    "APP_UX_HUB_ICON_REQUIRED_001": {
+      "cause": "Management hub launcher entries are text-only or lack descriptions.",
+      "deterministicFix": "Add conservative fa-* icon CSS classes and userDefinedAttributes description text to each hub shared-list entry.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md", "references/workflows/apex-generation/agents/40-agent-revision.md"]
+    },
+    "APP_UX_LAYOUT_RECIPE_REQUIRED_001": {
+      "cause": "The app UX contract or page draft omitted an explicit layout recipe.",
+      "deterministicFix": "Record a supported recipe such as dashboard rows, master-detail-content-row, faceted-search shell, or standard body grid, then make emitted layout match it.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.layout.md", "references/workflows/apexlang/application-spec.template.md"]
+    },
+    "APP_UX_LOV_MAPPING_REQUIRED_001": {
+      "cause": "LOV requirements are present but no LOV plan or mapping exists.",
+      "deterministicFix": "Add lovPlan entries with source object/columns, display value, return value, and consuming page items before emitting LOV-backed items.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "templates/shared-components/lovs"]
+    },
+    "APP_UX_PAGE_MISSING_001": {
+      "cause": "A required page from functional requirements or the app plan was not emitted.",
+      "deterministicFix": "Add the missing page artifact, navigation entry, breadcrumb entry, and any required modal/report targets described by the UX contract.",
+      "owningGuidance": ["references/workflows/apexlang/workflow-create-app-from-fr-and-model.md", "references/workflows/apexlang/application-spec.template.md"]
+    },
+    "APP_UX_PATTERN_REQUIRED_001": {
+      "cause": "The app plan lacks a rich UI pattern for a required workflow.",
+      "deterministicFix": "Select a supported native APEX pattern from requirements and templates, record it in richUiPatternPlan, and regenerate the affected page from that pattern.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/30-pages/apex.layout.md"]
+    },
+    "APP_UX_TRACEABILITY_REQUIRED_001": {
+      "cause": "Generated UX decisions are not traceable to requirements, schema metadata, or explicit user assertions.",
+      "deterministicFix": "Populate sourceEvidence and link every page/action/layout/LOV decision to evidence; stop with Missing Inputs for unsupported decisions.",
+      "owningGuidance": ["references/workflows/apexlang/workflow-create-app-from-fr-and-model.md", "references/workflows/apexlang/application-spec.template.md"]
+    },
+    "BREADCRUMB_COVERAGE_ENTRY_REQUIRED_001": {
+      "cause": "A non-modal page is missing a shared breadcrumb entry.",
+      "deterministicFix": "Add a shared-components/breadcrumbs.apx entry for the page with correct pageNumber and parent/root relationship.",
+      "owningGuidance": ["templates/shared-components/breadcrumbs/breadcrumb-entries.md", "references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "BREADCRUMB_COVERAGE_REGION_REQUIRED_001": {
+      "cause": "A page that should show breadcrumbs lacks the page breadcrumb/title-bar region.",
+      "deterministicFix": "Add a breadcrumb region using source.breadcrumb: @breadcrumb in breadcrumbBar slot with the title-bar template.",
+      "owningGuidance": ["templates/shared-components/breadcrumbs/breadcrumb-entries.md", "references/policies/memory-bank/30-pages/apex.layout.md"]
+    },
+    "BREADCRUMB_REGION_TITLE_VISIBLE_GENERIC_001": {
+      "cause": "A page breadcrumb/title-bar region exposes a generic component-purpose title such as Breadcrumb instead of using the page/current breadcrumb entry title.",
+      "deterministicFix": "Rename the breadcrumb/title-bar region away from generic chrome text, use the current page title/current breadcrumb entry as the title source, and keep live-valid title-bar templateOptions such as standalone #DEFAULT#.",
+      "owningGuidance": ["templates/region-components/breadcrumb/breadcrumb._common.md", "references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "BREADCRUMB_RULE_PARENT_SCOPE_001": {
+      "cause": "Breadcrumb parentEntry is emitted in the wrong block.",
+      "deterministicFix": "Move parentEntry inside the breadcrumb entry appearance block; do not leave it as a top-level entry property.",
+      "owningGuidance": ["templates/shared-components/breadcrumbs/breadcrumb-entries.md"]
+    },
+    "CLASSIC_REPORT_COMPONENT_APPEARANCE_REQUIRED_001": {
+      "cause": "Classic Report omits the required report component template block.",
+      "deterministicFix": "Add componentAppearance with template: @/standard and the canonical component templateOptions array.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.classic-report.md", "templates/region-components/classic-report/classic-report._common.md"]
+    },
+    "CLASSIC_REPORT_DEFAULT_TEMPLATE_REQUIRED_001": {
+      "cause": "Classic Report wrapper or report template options drift from the canonical default.",
+      "deterministicFix": "Set appearance.template to @/standard unless a documented variant applies, and set componentAppearance.templateOptions to #DEFAULT#, t-Report--stretch, and t-Report--horizontalBorders only.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.templates.md", "templates/region-components/classic-report/classic-report._common.md"]
+    },
+    "CLASSIC_REPORT_CONTEXTUAL_INFO_TEMPLATE_OPTIONS_REQUIRED_001": {
+      "cause": "A Contextual Info Classic Report does not use the required hidden-but-accessible header and remove-UI-decoration template options.",
+      "deterministicFix": "For appearance.template @/contextual-info, set appearance.templateOptions to exactly #DEFAULT#, t-Region--hideHeader js-addHiddenHeadingRoleDesc, and t-Region--noUI.",
+      "owningGuidance": ["templates/region-components/classic-report/classic-report.contextual-info.md", "references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "CLASSIC_REPORT_HIDDEN_COLUMN_HEADING_FORBIDDEN_001": {
+      "cause": "A hidden Classic Report column includes a heading block.",
+      "deterministicFix": "Remove heading from hidden Classic Report columns while keeping comments/source metadata as needed.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.classic-report.md"]
+    },
+    "INTERACTIVE_REPORT_LINK_COLUMN_TYPE_FORBIDDEN_001": {
+      "cause": "Interactive Report column used Classic Report-only type: link.",
+      "deterministicFix": "Replace with type: plainText and keep/add column-level link {}.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.interactive-report.md", "templates/region-components/interactive-report/interactive-report._columns._common.md"]
+    },
+    "CONTENT_ROW_ACTION_MENU_REQUIRED_001": {
+      "cause": "Content Row actions are missing the expected action-menu structure.",
+      "deterministicFix": "Add the documented Content Row action/menu child structure from the selected template, preserving row identity and target mappings.",
+      "owningGuidance": ["templates/template-components/content-row/content-row._common.md"]
+    },
+    "CONTENT_ROW_SELECTION_ITEMS_REQUIRED_001": {
+      "cause": "Content Row rowSelection mode lacks required same-page support items or uses incompatible properties.",
+      "deterministicFix": "For focusOnly, emit only type. For singleSelection, add currentSelectionPageItem and matching hidden item. For multipleSelection, add currentSelectionPageItem, selectAllPageItem, hidden item, and checkbox item.",
+      "owningGuidance": ["templates/template-components/content-row/content-row.report-grouping-selection.md"]
+    },
+    "CONTENT_ROW_SETTINGS_SUBSTITUTION_REQUIRED_001": {
+      "cause": "Content Row display settings reference query columns as bare aliases.",
+      "deterministicFix": "Rewrite column-backed overline/title/description/miscellaneous settings as &COLUMN_NAME. substitutions; leave true literals unchanged.",
+      "owningGuidance": ["templates/template-components/content-row/content-row._common.md"]
+    },
+    "DASHBOARD_LAYOUT_ROW_PLAN_REQUIRED_001": {
+      "cause": "Dashboard regions were emitted without a row plan or the emitted rows do not match the plan.",
+      "deterministicFix": "Create one layout_row_plan entry per physical row, split stacked full-width detail/context/cards sections into separate one-region entries, replace generic dashboard-chart-flow with explicit two-up-equal/three-up-equal chart rows, then set startNewRow false only for second-and-later regions in each planned row.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.dashboard.md", "references/policies/memory-bank/30-pages/apex.layout.md"]
+    },
+    "DASHBOARD_KPI_METRIC_CARD_REQUIRED_001": {
+      "cause": "A dashboard KPI was emitted as a Classic Report instead of a Metric Card component.",
+      "deterministicFix": "Replace single-value KPI Classic Reports with one normalized themeTemplateComponent/metricCard region using one source row per KPI, preserving required labels, values, icons, and metadata.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.dashboard.md", "templates/template-components/metric-card/metric-card._common.md"]
+    },
+    "DEFAULT_GUIDANCE_LAYER_REQUIRED_001": {
+      "cause": "Generated pages/items/report columns lack concise user guidance or developer comments.",
+      "deterministicFix": "Add page help, item help for editable/filter/control items, and comments for important report columns using behavior-aware wording.",
+      "owningGuidance": ["references/policies/memory-bank/10-global/apex.global.md", "references/workflows/apex-generation/agents/40-agent-revision.md"]
+    },
+    "COMPILER_TRUTH_COMPONENT_ATTRIBUTES_STALE": {
+      "cause": "The curated component-attributes provenance does not match the active compiler metadata.",
+      "deterministicFix": "Refresh assets/component-attributes.json provenance from the active compiler metadata while preserving curated_subset scope, then rerun compiler-truth audit with --verify-component-attributes.",
+      "owningGuidance": ["references/policies/compiler-prop-map.md", "assets/component-attributes.json"]
+    },
+    "DISPLAY_ONLY_SOURCE_TYPE_INVALID_001": {
+      "cause": "Display-only item source settings are not in the supported shape.",
+      "deterministicFix": "Use the supported displayOnly source/settings contract and ensure settings.sendOnPageSubmit: false is present.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.items.md", "references/workflows/apex-generation/agents/40-agent-revision.md"]
+    },
+    "DRAWER_POSITION_DEFAULT_END_REQUIRED_001": {
+      "cause": "Drawer modal/dialog position does not use the default end/right placement.",
+      "deterministicFix": "Set drawer appearance.templateOptions to the live-valid end/right value js-dialog-class-t-Drawer--pullOutEnd unless explicit requirements and compiler truth prove another position.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.form.md", "references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "DSL_MULTILINE_STRUCTURE_REQUIRED_001": {
+      "cause": "APEXlang structural blocks or sibling properties were compressed onto one line.",
+      "deterministicFix": "Expand object-valued properties and sibling assignments so each structural property is on its own line with normal nested indentation.",
+      "owningGuidance": ["SKILL.md", "references/workflows/apex-generation/agents/20-agent-draft.md"]
+    },
+    "FACET_DATE_DATA_TYPE_REQUIRED_001": {
+      "cause": "A date/time facet uses non-date runtime metadata.",
+      "deterministicFix": "Set source.dataType: date for date/time facet columns such as DATE, DATETIME, TIMESTAMP, CREATED_AT, or UPDATED_AT.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FACET_ENTITY_ID_DISPLAY_REQUIRED_001": {
+      "cause": "A facet exposes technical IDs instead of business display labels.",
+      "deterministicFix": "Join or map the facet to a display column/LOV and show the entity name while returning/filtering by the key where needed.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md"]
+    },
+    "FACET_LIST_ENTRIES_LIMIT_REQUIRED_001": {
+      "cause": "Checkbox/radio facets have unbounded value lists or unsuitable max displayed entries.",
+      "deterministicFix": "Add listEntries.maxDisplayedEntries using 10 by default, constrained to the documented 5-15 range.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FACET_RANGE_DATA_TYPE_REQUIRED_001": {
+      "cause": "A range facet does not use a runtime-safe numeric or date type.",
+      "deterministicFix": "Set source.dataType to number for numeric ranges or date for date/time ranges; do not use varchar2/string tokens.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md"]
+    },
+    "FACET_SOURCE_DATA_TYPE_REQUIRED_001": {
+      "cause": "Facet source.dataType is missing where required or uses an unsupported token such as varchar2.",
+      "deterministicFix": "Use only source.dataType: date or source.dataType: number where required; omit source.dataType for string/discrete facets.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FACET_VALUE_FILTER_INITIAL_REQUIRED_001": {
+      "cause": "Likely high-cardinality facet does not show the value filter initially.",
+      "deterministicFix": "Add listEntries.displayFilterInitially: true for Product, Customer, Store, Employee, Supplier, Email, SKU, name/title, and similar high-cardinality facets.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md"]
+    },
+    "FA_ICON_REQUIRED_001": {
+      "cause": "An icon-bearing property uses a non-Font APEX icon token, custom CSS icon alias, image icon, or framework-specific icon class.",
+      "deterministicFix": "Replace the value with a conservative Font APEX fa-* class such as fa-table, fa-users, fa-map-marker, fa-package, fa-image, fa-filter, fa-edit, or fa-plus.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-media.md", "references/policies/memory-bank/40-components/apex.buttons.md"]
+    },
+    "FACETED_SEARCH_DEFAULT_SETTINGS_REQUIRED_001": {
+      "cause": "A faceted-search region is missing the standard default settings block or has a non-default value for a required default setting.",
+      "deterministicFix": "Normalize the faceted-search settings block to compactNosThreshold: 10000, showCurrentFacets: true, and showTotalRowCount: true unless the user explicitly requested selector mode.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FACETED_SEARCH_SELECTOR_MODE_REQUIRED_001": {
+      "cause": "A faceted-search region defines currentFacetsSelector without enabling selector mode.",
+      "deterministicFix": "Either remove currentFacetsSelector and use showCurrentFacets: true, or switch to explicit selector mode by pairing showCurrentFacets: selector with currentFacetsSelector.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FACETED_SEARCH_CURRENT_FACETS_SELECTOR_REQUIRED_001": {
+      "cause": "A faceted-search region enables selector mode without a concrete current-facets selector target.",
+      "deterministicFix": "Add currentFacetsSelector with the concrete external current-facets target selector, or revert to the default showCurrentFacets: true setting.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FACETED_SEARCH_DISPLAY_CHART_TOP_N_INVALID_001": {
+      "cause": "A faceted-search region uses a missing, zero, negative, or non-integer top-N chart value.",
+      "deterministicFix": "Remove displayChartForTopNValues unless the user explicitly requested facet charts; for explicit chart requests, set displayChartForTopNValues: 10 or another positive integer.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md", "templates/region-components/faceted-search/faceted-search._common.md"]
+    },
+    "FORM_EDIT_ALLOWED_OPERATIONS_LEGACY_001": {
+      "cause": "Form edit behavior uses a legacy allowedOperations shape.",
+      "deterministicFix": "Replace legacy allowedOperations with the current operation flags/settings accepted by the form template and compiler metadata.",
+      "owningGuidance": ["templates/region-components/form/form._common.md"]
+    },
+    "FORM_EDIT_OPERATION_FLAG_INVALID_001": {
+      "cause": "Form edit operation flags are inconsistent or invalid.",
+      "deterministicFix": "Set insert/update/delete operation flags to match the page purpose and remove unsupported legacy flags.",
+      "owningGuidance": ["templates/region-components/form/form._common.md"]
+    },
+    "FORM_PRIMARY_KEY_REQUIRED_001": {
+      "cause": "A form source lacks an explicit primary key item/column mapping.",
+      "deterministicFix": "Add the primary key page item and mark the corresponding form/source metadata as the primary key.",
+      "owningGuidance": ["templates/region-components/form/form._items._common.md"]
+    },
+    "GENERIC_HELP_TEXT_FORBIDDEN_001": {
+      "cause": "Help text is placeholder, generic, or just repeats the label.",
+      "deterministicFix": "Replace with concise behavior-aware guidance using format, purpose, LOV semantics, or validation requirements.",
+      "owningGuidance": ["references/policies/memory-bank/10-global/apex.global.md"]
+    },
+    "HIDDEN_ITEM_SSP_REQUIRED_001": {
+      "cause": "Hidden item session state protection does not match ownership.",
+      "deterministicFix": "Use checksumRequiredSessionLevel for protected server-owned hidden data; use unrestricted plus the canonical comments rationale for same-page client-owned dynamic-action state.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md"]
+    },
+    "IMAGE_UPLOAD_LEGACY_PROPERTY_FORBIDDEN_001": {
+      "cause": "Image upload item uses legacy or unsupported properties.",
+      "deterministicFix": "Remove legacy image upload properties and emit only the current compiler-supported image upload blocks/properties.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.items.md"]
+    },
+    "INTERACTIVE_REPORT_LINK_COLUMN_INVALID_001": {
+      "cause": "Interactive Report link column uses invalid URL-style or alias wiring.",
+      "deterministicFix": "Use declarative same-app page target syntax when navigating inside the app, with explicit target page and item mappings.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.interactive-report.md", "references/domains/page-components/regions/interactive-report/workflow-interactive-report.md"]
+    },
+    "IR_CONTEXT_BIND_SUBMIT_REQUIRED_001": {
+      "cause": "Interactive Report SQL references page item binds without submitting them.",
+      "deterministicFix": "Add every referenced same-page bind item to source.pageItemsToSubmit.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.interactive-report.md"]
+    },
+    "IR_PROJECTED_COLUMNS_REQUIRED_001": {
+      "cause": "Interactive Report source projects columns without matching column metadata.",
+      "deterministicFix": "Emit explicit column definitions for every SQL/table projection, including hidden technical columns with headings.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.interactive-report.md"]
+    },
+    "IR_TEXT_SEARCH_CASE_NORMALIZATION_REQUIRED_001": {
+      "cause": "Interactive Report text search/filter SQL is not case-normalized.",
+      "deterministicFix": "Normalize both searched expression and bind/filter value consistently, typically with upper(...) or lower(...), while preserving bind usage.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.interactive-report.md", "references/policies/memory-bank/20-data/apex.sql.md"]
+    },
+    "MAP_INITIAL_VIEWPORT_BOUNDS_REQUIRED_001": {
+      "cause": "Map initial viewport uses average latitude/longitude with a fixed zoom for multi-marker data.",
+      "deterministicFix": "Replace average-center/fixed-zoom SQL with a boundingBox query using min/max longitude and latitude over the same filtered dataset, or omit fixed zoom for fit-to-data behavior.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.map-page.md", "templates/region-components/map/map.region.bbox-sql.md"]
+    },
+    "MAP_LAYER_CONTEXT_BIND_REQUIRED_001": {
+      "cause": "Map layer SQL reads selected context through v()/nv() or string-built session-state names.",
+      "deterministicFix": "Replace v()/nv() session-state reads with normal bind syntax such as :P7_STATUS and add explicit refresh behavior for the dependent map.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.map-page.md", "templates/region-components/map/map.layer.points.sql-query.md"]
+    },
+    "MAP_LAYER_CONTEXT_BIND_SUBMIT_REQUIRED_001": {
+      "cause": "Map layer SQL references page item binds but does not submit them.",
+      "deterministicFix": "Query compiler truth for the active build before adding map-layer source.pageItemsToSubmit; if unavailable for the selected layer shape, use explicit refresh/session-state-safe behavior instead.",
+      "owningGuidance": ["templates/region-components/map/map.layer._common.md"]
+    },
+    "MASTER_DETAIL_CHILD_BIND_SUBMIT_REQUIRED_001": {
+      "cause": "Child report SQL depends on the master context item without submitting that item.",
+      "deterministicFix": "Add the hidden master context item to the child report source.pageItemsToSubmit.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "MASTER_DETAIL_CONTENT_ROW_ACTION_REQUIRED_001": {
+      "cause": "Master Content Row does not set the same-page context item through a full-row action.",
+      "deterministicFix": "Add a fullRowLink action that sets the hidden context item from the parent primary key substitution; do not rely on rowSelection alone.",
+      "owningGuidance": ["templates/template-components/content-row/content-row.report-master-detail-full-row-link.md"]
+    },
+    "MASTER_DETAIL_CONTENT_ROW_TEMPLATE_REQUIRED_001": {
+      "cause": "A visible master-detail Content Row parent uses a blank/structural region shell instead of standard visible region chrome.",
+      "deterministicFix": "Set the master Content Row appearance block to template @/standard with templateOptions #DEFAULT#; keep @/blank-with-attributes only for structural containers or dashboard KPI strips.",
+      "owningGuidance": ["templates/template-components/content-row/content-row.report-master-detail-full-row-link.md", "references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "MASTER_DETAIL_DYNAMIC_ACTION_REQUIRED_001": {
+      "cause": "Master-detail selection is implemented through URL reloads or child regions are not refreshed after context change.",
+      "deterministicFix": "Use dynamic-action/declarative behavior to set the hidden context item and refresh every dependent child region after selection.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md", "references/workflows/apex-generation/agents/40-agent-revision.md"]
+    },
+    "MASTER_DETAIL_LAYOUT_REQUIRED_001": {
+      "cause": "Master-detail page uses an inappropriate shell or layout, such as leftColumn for a Content Row master.",
+      "deterministicFix": "Use standard page template with an asymmetric BODY row: parent Content Row first with columnSpan 3/4 and child region second with startNewRow: false.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.layout.md"]
+    },
+    "MASTER_DETAIL_TOOLBAR_ACTIONS_REQUIRED_001": {
+      "cause": "Required child create/edit/detail actions are missing or placed on the wrong toolbar.",
+      "deterministicFix": "Add parent edit, child create, and child edit/detail actions according to the UX contract; page-level create goes in breadcrumb/title bar, child actions go in child report toolbar.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "MASTER_DETAIL_VISIBLE_SELECTOR_REGRESSION_001": {
+      "cause": "Master-detail context is represented as a visible selector even though a parent row list exists.",
+      "deterministicFix": "Replace the visible selector with a protected hidden context item driven by the parent Content Row selection.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "METRIC_CARD_REGION_NORMALIZATION_REQUIRED_001": {
+      "cause": "Dashboard metrics were emitted as multiple fake/static card regions instead of a normalized Metric Card region.",
+      "deterministicFix": "Use one Metric Card region with a normalized multi-row source, usually UNION ALL with one row per metric.",
+      "owningGuidance": ["templates/template-components/metric-card/metric-card._common.md", "references/policies/memory-bank/30-pages/apex.dashboard.md"]
+    },
+    "METRIC_CARD_STANDARD_TEMPLATE_FORBIDDEN_001": {
+      "cause": "Dashboard KPI Metric Card uses standard chrome where blank/attribute chrome is expected.",
+      "deterministicFix": "Use the documented blank-with-attributes/region appearance for KPI strips unless requirements explicitly need a titled wrapper.",
+      "owningGuidance": ["templates/template-components/metric-card/metric-card._common.md"]
+    },
+    "MODAL_REPORT_LAUNCH_REQUIRED_001": {
+      "cause": "A modal report/form target exists but no launcher action links to it.",
+      "deterministicFix": "Add a report row action, map layer link, button, or menu action that opens the declared modal target with required item mappings.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "MODAL_REPORT_REFRESH_REQUIRED_001": {
+      "cause": "A report that launches a modal form is not refreshed when the dialog closes.",
+      "deterministicFix": "Add dialog-closed dynamic-action/declarative refresh behavior for the launching report/grid/map region.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "PAGE_ACTION_BREADCRUMB_REQUIRED_001": {
+      "cause": "Primary page-level create button is anchored to a report/result region instead of the breadcrumb/title-bar region.",
+      "deterministicFix": "Move page-level Create/Add buttons to the breadcrumb region, usually layout.region: @breadcrumb and an appropriate title-bar action slot.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.region-interactions.md", "references/policies/memory-bank/30-pages/apex.smart-filter-search.md"]
+    },
+    "PARENT_CHILD_ACTION_COVERAGE_REQUIRED_001": {
+      "cause": "A parent-child UX contract records context wiring but omits required edit/create/detail action coverage.",
+      "deterministicFix": "Add behaviorPlan.parentChildContext.actionCoverage entries for parent edit, child create, child edit/detail, and page-level create behaviors, then materialize the corresponding Content Row actions, report links/buttons, and breadcrumb page actions.",
+      "owningGuidance": ["references/workflows/apexlang/application-spec.template.md", "references/policies/memory-bank/40-components/apex.region-interactions.md"]
+    },
+    "PAGE_ITEM_LAYOUT_LABEL_COL_SPAN_LEGACY_001": {
+      "cause": "Page item layout uses legacy labelColSpan naming.",
+      "deterministicFix": "Replace legacy labelColSpan with the current supported item layout property or omit it when the template default is sufficient.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.items.md"]
+    },
+    "PAGE_ITEM_REGION_SLOT_REQUIRED_001": {
+      "cause": "Page item layout does not target the correct parent region slot.",
+      "deterministicFix": "Set layout.region and layout.slot according to the parent region contract, typically regionBody for form/static item containers.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.items.md", "references/policies/memory-bank/30-pages/apex.layout.md"]
+    },
+    "PAGE0_GLOBAL_PAGE_MINIMAL_001": {
+      "cause": "Page 0 contains security/page-level properties or non-minimal components not requested for every page.",
+      "deterministicFix": "Restore the canonical minimal global page skeleton and remove security/authentication/pageAccessProtection from Page 0.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "templates/base-app-structure/scaffold-example/pages"]
+    },
+    "PLSQL_INLINE_BLOCK_001": {
+      "cause": "Inline PL/SQL body exceeds the APEX artifact size gate.",
+      "deterministicFix": "Extract reusable/oversized logic to a package API, then call it through invokeApi for page processes or executeCode for appProcess only where required.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "references/policies/memory-bank/20-data/apex.logic.md"]
+    },
+    "PUBLIC_PAGE_REVIEW_REQUIRED_001": {
+      "cause": "A non-login page is public without explicit security rationale.",
+      "deterministicFix": "Apply mustNotBePublicUser or a stricter authorization scheme, or add explicit security-review rationale when the page must remain public.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md"]
+    },
+    "REPORT_ESCAPE_REQUIRED_001": {
+      "cause": "Report/grid column escaping is disabled without an approved formatting pattern.",
+      "deterministicFix": "Restore escaping by default; move reviewed markup to declarative columnFormatting.htmlExpression using escaped substitutions if needed.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "references/policies/memory-bank/30-pages/apex.report-column-rendering.md"]
+    },
+    "REPORT_SQL_HTML_LITERAL_FORBIDDEN_001": {
+      "cause": "Report SQL/PLSQL source emits HTML tags or inline presentation markup.",
+      "deterministicFix": "Keep SQL data-only and move presentation to declarative column formatting with escaped substitutions.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.report-column-rendering.md", "references/policies/memory-bank/20-data/apex.sql.md"]
+    },
+    "SAVED_REPORT_VISIBILITY_LEGACY_001": {
+      "cause": "Interactive Grid/Report saved report visibility uses an unsupported value.",
+      "deterministicFix": "Replace saved-report visibility with the compiler-backed values for the parent report variant. Interactive Grid uses primary, alternative, public, or private and defaults to primary; Interactive Report uses primaryDefault, alternativeDefault, public, or private.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.interactive-grid-page.md", "references/policies/memory-bank/30-pages/apex.interactive-report.md"]
+    },
+    "SECURITY_BASELINE_REQUIRED_001": {
+      "cause": "Generated business app or page misses the required security baseline.",
+      "deterministicFix": "Add sessionStateProtection checksumSalt at app root, pageAccessProtection on non-Page 0 pages, mustNotBePublicUser by default, and session timeout defaults.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md"]
+    },
+    "PAGE_ALIAS_FILENAME_MISMATCH_001": {
+      "cause": "The canonical page filename slug does not match the page alias.",
+      "deterministicFix": "Update the page alias to the uppercase filename slug, for example p00001-home.apx must declare alias: HOME, or rename the file to match the intended alias.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.page.md"]
+    },
+    "PAGE_FILENAME_NUMBER_MISMATCH_001": {
+      "cause": "The canonical page filename number does not match the page declaration.",
+      "deterministicFix": "Update the page declaration number or rename the file so pNNNNN-*.apx and page N agree.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.page.md"]
+    },
+    "SMART_FILTER_MAP_TARGET_COLUMNS_REQUIRED_001": {
+      "cause": "Smart Filters target a map region whose layer source does not project/filter the required columns.",
+      "deterministicFix": "Retarget Smart Filters to a companion report/cards results region and refresh the sibling map explicitly.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.smart-filter-search.md", "references/policies/memory-bank/30-pages/apex.map-page.md"]
+    },
+    "SMART_FILTER_MAP_TARGET_UNSUPPORTED_001": {
+      "cause": "Smart Filters target a map region directly, which is not valid for the current generation contract.",
+      "deterministicFix": "Create or use a companion report/cards results region as filteredRegion, keep the map as a sibling visualization, and refresh the map explicitly after Smart Filter changes.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.smart-filter-search.md", "references/policies/memory-bank/30-pages/apex.map-page.md"]
+    },
+    "SMART_FILTER_RESULTS_REGION_ORDER_REQUIRED_001": {
+      "cause": "Smart Filters are not ordered before their result region.",
+      "deterministicFix": "Set layout/sequence so Smart Filters render before the results region they control.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.smart-filter-search.md"]
+    },
+    "SMART_FILTER_RESULTS_REGION_REQUIRED_001": {
+      "cause": "Smart Filters do not have a valid results region target.",
+      "deterministicFix": "Add or reference a supported report/cards-style results region such as Classic Report, Interactive Report/Grid, Cards, or Content Row; do not target maps or filter components.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.smart-filter-search.md"]
+    },
+    "SMART_FILTER_SETTINGS_UNSUPPORTED_001": {
+      "cause": "A Smart Filters region emits settings unsupported by APEX 26.1 compiler metadata.",
+      "deterministicFix": "Remove the Smart Filters settings block and express counts, exports, and UX affordances through the filtered results region unless compiler truth for the active build proves a valid settings group.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.smart-filter-search.md", "templates/region-components/smart-filter-search/smart-filter-search._common.md"]
+    },
+    "SMART_FILTER_SEARCH_SOURCE_REQUIRED_001": {
+      "cause": "Smart Filters search source or filtered columns are missing.",
+      "deterministicFix": "Define the source database columns/search configuration and align them with the target results region source.",
+      "owningGuidance": ["references/policies/memory-bank/30-pages/apex.smart-filter-search.md"]
+    },
+    "SQL_INLINE_BLOCK_001": {
+      "cause": "Inline SQL body exceeds the APEX artifact size gate.",
+      "deterministicFix": "Extract the query to a secure view or shorter API-backed source, then point the APEX artifact at that view/source.",
+      "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "references/policies/memory-bank/20-data/apex.sql.md"]
+    },
+    "SQL_PLSQL_LOB_COMPARISON_KEY_FORBIDDEN_001": {
+      "cause": "SQL/PLSQL compares or sorts raw LOB values as keys.",
+      "deterministicFix": "Use scalar keys, filename/MIME metadata, timestamps, checksum/hash, or dbms_lob.getlength for file size instead of raw LOB comparison.",
+      "owningGuidance": ["references/policies/memory-bank/20-data/apex.sql.md"]
+    },
+    "STATIC_ID_WHERE_LOWER_REQUIRED_001": {
+      "cause": "Static IDs or where-like identifiers use uppercase/mixed-case patterns that violate the local convention.",
+      "deterministicFix": "Normalize generated static IDs/selectors to lowercase kebab/snake style and update references consistently.",
+      "owningGuidance": ["references/policies/memory-bank/10-global/apex.global.md"]
+    },
+    "STATIC_REGION_METRIC_CARD_FAKE_FORBIDDEN_001": {
+      "cause": "A dashboard metric is faked with static regions instead of a Metric Card component.",
+      "deterministicFix": "Replace fake static metric cards with a real Metric Card region using the documented normalized source pattern.",
+      "owningGuidance": ["templates/template-components/metric-card/metric-card._common.md"]
+    },
+    "TEMPLATE_OPTIONS_DEFAULT_ATOMIC_001": {
+      "cause": "#DEFAULT# is concatenated with another template option or not emitted as its own value.",
+      "deterministicFix": "Keep #DEFAULT# as a standalone templateOptions entry and keep documented composite option strings atomic.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "TEMPLATE_OPTIONS_MULTILINE_REQUIRED_001": {
+      "cause": "Multi-value templateOptions are inline or comma-compressed.",
+      "deterministicFix": "Emit bracketed multi-line templateOptions arrays with one accepted value per line.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "TEMPLATE_OPTIONS_STALE_VALUE_001": {
+      "cause": "A templateOptions entry uses a stale static ID or CSS token rejected by the live compiler/theme contract.",
+      "deterministicFix": "Replace the stale value with the live-valid emitted value, such as js-dialog-class-t-Drawer--pullOutEnd for drawer end/right, or standalone #DEFAULT# for title-bar breadcrumbs.",
+      "owningGuidance": ["references/policies/memory-bank/40-components/apex.templates.md"]
+    },
+    "THEME_BASE_THEME_REQUIRED_001": {
+      "cause": "Universal Theme definition omits baseTheme.",
+      "deterministicFix": "Add the required baseTheme value from the scaffold/theme template and keep theme vocabulary canonical for the supported APEXlang build.",
+      "owningGuidance": ["templates/base-app-structure/scaffold-example/shared-components/themes", "references/policies/memory-bank/00-guard/ai.guard.md"]
+    }
+  }
+}

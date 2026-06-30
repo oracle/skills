@@ -16,6 +16,7 @@
 ## Canonical Ownership
 - Template family choice for pages, regions, buttons, and visible items.
 - Template-option defaults that affect framing, layout, density, disclosure, heading presence, body behavior, or label presentation.
+- Button icon placement as a template-option composition concern; keep the concrete button default, override, and icon-only exception in `references/policies/memory-bank/40-components/apex.buttons.md`.
 - Region button position semantics and allowed placements by template.
 - Shared interpretation rules for whitespace-joined template-option tokens and other template serialization requirements.
 - The composition-first boundary so shared UI defaults remain in one canonical place.
@@ -24,6 +25,7 @@
 - Use `appearance.pageTemplate: @/standard` for normal non-modal pages unless a page-specific rule or template family requires another shell.
 - Use `appearance.pageMode: modalDialog` for modal form/detail workflows that are explicitly modal by contract.
 - Place breadcrumbs/title-bar content in the title-bar template region and keep application navigation updates aligned with the page template example being used.
+- Breadcrumb/title-bar regions must not expose generic chrome labels such as `Breadcrumb`, `Breadcrumbs`, `Title Bar`, or `Page Header` as visible titles. Use the current breadcrumb entry/page title as the region name, keep `appearance.template: @/title-bar`, and use live-valid template options such as standalone `#DEFAULT#`. Do not emit stale `use-current-breadcrumb-entry` or `t-BreadcrumbRegion--useBreadcrumbTitle`.
 - Keep page-level composition decisions consistent with the chosen page example and region templates; do not mix unrelated shells on the same page without an explicit page-pattern rule.
 
 ## Default Item Template Choices
@@ -44,10 +46,15 @@
 
   componentAppearance {
       template: @/standard
-      templateOptions: #DEFAULT#
+      templateOptions: [
+          #DEFAULT#
+          t-Report--stretch
+          t-Report--horizontalBorders
+      ]
   }
   ```
-  `appearance` owns the outer region wrapper. `componentAppearance` owns the Classic Report component template required by runtime validation; the 26.1 compiler reports the missing template as property `411`.
+  `appearance` owns the outer region wrapper. `componentAppearance` owns the Classic Report component template required by runtime validation; the 26.1 compiler reports the missing template as property `411`. The default component options stretch the report, use horizontal borders only, and intentionally omit alternating-row tokens such as `t-Report--altRowsDefault` and `t-Report--staticRowColors`.
+- Contextual Info Classic Reports are the Classic Report wrapper exception: use `appearance.template: @/contextual-info` with `templateOptions` exactly `#DEFAULT#`, `t-Region--hideHeader js-addHiddenHeadingRoleDesc`, and `t-Region--noUI`, while keeping the same Classic Report `componentAppearance` defaults.
 - Keep these families on their own canonical region templates by default:
   - Interactive Report -> `@/interactive-report`
   - Interactive Grid -> family-specific Interactive Grid template
@@ -67,7 +74,8 @@
 - Never add child item spans to parent region spans. Grid scope resets inside each parent region or lane.
 - For equal-width sibling rows across standard regions, template-component regions, visible page items, and buttons, prefer sequence ordering plus `startNewRow: false` on second-and-later siblings. Omit `column` and `columnSpan`.
 - Use explicit `column` and `columnSpan` only when the layout is intentionally asymmetric or when the template/example requires precise coordinates.
-- For true shell patterns such as sidebar + main content, prefer page-template semantic slots such as `leftColumn` + `body` before using body-grid coordinates to simulate the shell.
+- For true filter/sidebar shell patterns such as faceted search, prefer page-template semantic slots such as `leftColumn` + `body` before using body-grid coordinates to simulate the shell.
+- Do not use `@/left-side-column` or `leftColumn` for master-detail Content Row workbenches; use `@/standard` with a body-grid split instead.
 - Use body-grid coordinates for sidebar/main only when the required width ratio or stacking behavior cannot be matched cleanly by the page template shell.
 - Treat a first sibling with `columnSpan` only plus later siblings with `column` as a valid anchored asymmetric row pattern; do not classify that recipe as invalid mixed layout.
 - Keep recurring outer lanes stable with minimal structural placeholder regions when that preserves layout more cleanly than repeating explicit coordinates row by row.
@@ -131,6 +139,7 @@ Accepted-value contract:
 - For true Theme 42 template-option catalogs, pass the exact accepted emitted value documented by the owning family. Some families document a caller-facing `static_id`, while others document the emitted CSS/composite value for this build. Do not substitute a different form, label text, or group name.
 - For presets and documented composite UT values, pass the full documented composite string as one `templateOptions` entry when that exact combined value is the accepted emitted value.
 - Do not compose new values by joining `#DEFAULT#` with another token or by converting catalog metadata into inferred output.
+- For button template options, pass emitted values such as `t-Button--iconLeft` rather than caller-facing aliases/static_ids such as `left`; keep component-specific defaults in `references/policies/memory-bank/40-components/apex.buttons.md`.
 
 Anti-Patterns:
 - Invalid: `templateOptions: [#DEFAULT#t-Report--stretch]`

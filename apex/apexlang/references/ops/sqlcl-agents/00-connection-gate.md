@@ -42,7 +42,7 @@ Rules
   - PATH SQLcl runtime via `sql`
 - Record SQLcl version for reporting, but do not treat version alone as runtime readiness.
 - Run capability probing before live runtime work and treat build-root runtime plus PATH SQLcl runtime as candidate paths for the real enable/disable gate.
-- Prefer the resolved build-root runtime when it is available and runtime-capable; otherwise use the authenticated PATH SQLcl session that tries `sql <db_connection_name>` first and falls back to `sql /nolog` plus `connect <db_connection_name>` if needed.
+- Prefer the resolved build-root runtime when it is available and runtime-capable; otherwise use the authenticated PATH SQLcl session that tries `sql -name <db_connection_name>` first, then legacy `sql <db_connection_name>`, and falls back to `sql /nolog` plus `connect <db_connection_name>` if needed.
 - Use local APEX build-root resolution as part of the normal runtime selection flow, not diagnostics only.
 - Do not preemptively add workspace-id overrides to runtime commands once the alias, workspace name, and session are resolved. Workspace-id overrides are exception-only and require SQLcl to explicitly report multiple-workspace ambiguity first; once that happens, resolve the workspace id automatically for the active `db_connection_name` and rerun immediately.
 

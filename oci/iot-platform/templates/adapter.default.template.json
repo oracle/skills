@@ -1,0 +1,33 @@
+{
+  "displayName": "Replace Adapter Name",
+  "description": "Public sample adapter for a temperature sensor model.",
+  "inboundEnvelope": {
+    "referenceEndpoint": "/sampletopic",
+    "envelopeMapping": {
+      "timeObserved": "$.time"
+    },
+    "referencePayload": {
+      "dataFormat": "JSON",
+      "data": {
+        "time": "2026-04-22T12:00:00.123456Z",
+        "temperature": 23.5
+      }
+    }
+  },
+  "inboundRoutes": [
+    {
+      "description": "Default route",
+      "condition": "*",
+      "payloadMapping": {
+        "$.temperature": "$.temperature"
+      },
+      "referencePayload": {
+        "dataFormat": "JSON",
+        "data": {
+          "time": "2026-04-22T12:00:00.123456Z",
+          "temperature": 23.5
+        }
+      }
+    }
+  ]
+}

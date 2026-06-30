@@ -27,6 +27,7 @@ Standardize variable contracts and guardrails for interactive grid regions.
 12. Use the active machine-readable schema as the source of truth for Interactive Grid column blocks. Do not emit unsupported column blocks such as `comments` or `appearance` when the current compiler contract rejects them.
 13. If the grid adds navigation, ask which mode is required every time: same application page, another application page, or URL redirect.
 14. When the chosen mode is same application page and the DSL supports it, emit a declarative page target instead of a URL string.
+15. Do not copy Classic Report or Interactive Report column-link syntax into Interactive Grid columns. Treat grid navigation as compiler-gated until the active machine-readable schema identifies a supported hook.
 
 ---
 

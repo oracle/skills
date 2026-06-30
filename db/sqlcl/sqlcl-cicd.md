@@ -16,47 +16,76 @@ This guide covers:
 
 ## Running SQLcl Non-Interactively
 
+> **Do not pass passwords on the SQLcl command line in CI/CD.** Connect from a SEPS wallet (`sql -S /@alias`) or from stdin via `/nolog` + `CONNECT`. See [Keep Credentials Out of the Command Line](#keep-credentials-out-of-the-command-line) for the rationale and the full Good/Bad comparison.
+
 ### Basic Headless Execution
 
-The `-S` (silent) flag suppresses the SQLcl banner and all interactive prompts:
+The `-S` (silent) flag suppresses the SQLcl banner and all interactive prompts.
+
+The recommended pattern for CI is to start SQLcl with `/nolog` and issue `CONNECT` from stdin so credentials are not exposed as command arguments. The CI runtime injects `DB_USER`, `DB_PASS`, and `DB_SERVICE` from masked secret variables.
 
 ```shell
-sql -S username/password@service @deploy.sql
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+@deploy.sql
+EXIT 0
+EOF
 ```
 
-The `@deploy.sql` script is executed and SQLcl exits when the script completes or when an `EXIT` command is reached.
+If the runner has access to a SEPS (Secure External Password Store) wallet, prefer the password-less form — the wallet stores the credential keyed to the TNS alias:
+
+```shell
+export TNS_ADMIN=/path/to/seps-wallet
+sql -S /@DB_ALIAS @deploy.sql
+```
+
+The script (`@deploy.sql` or anything inside the heredoc) is executed and SQLcl exits when the script completes or when an `EXIT` command is reached.
 
 ### Passing Commands via stdin
 
-```shell
-echo "SELECT COUNT(*) FROM employees; EXIT;" | sql -S username/password@service
-```
-
-Or using a heredoc (preferred for multi-line scripts):
+Combine `/nolog` connect with the inline commands:
 
 ```shell
-sql -S username/password@service <<'EOF'
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
 SET FEEDBACK ON
 SELECT COUNT(*) FROM employees;
 EXIT
 EOF
 ```
 
+Or with SEPS (no credentials in the script at all):
+
+```shell
+sql -S /@DB_ALIAS <<'EOF'
+SET FEEDBACK ON
+SELECT COUNT(*) FROM employees;
+EXIT
+EOF
+```
+
+Note: use `<<EOF` (unquoted) when the heredoc must expand shell variables such as `${DB_USER}`; use `<<'EOF'` (quoted) when the body should be passed to SQLcl literally, for example to keep `&substitution` variables intact.
+
 ### Running a Script File
 
 ```shell
-sql -S username/password@service @/path/to/script.sql
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+@/path/to/script.sql
+EXIT 0
+EOF
+```
+
+Or with SEPS:
+
+```shell
+sql -S /@DB_ALIAS @/path/to/script.sql
 ```
 
 ### Command-line -c Flag (Inline Command)
 
-The official SQLcl startup flags documentation does not include a `-c` option for inline SQL commands. Use stdin or a script file instead.
-
-```shell
-# Preferred: use stdin or a script file
-echo "SELECT SYSDATE FROM DUAL; EXIT;" | sql -S username/password@service
-sql -S username/password@service @script.sql
-```
+The official SQLcl startup flags documentation does not include a `-c` option for inline SQL commands. Use stdin or a script file with the patterns above.
 
 ---
 
@@ -93,7 +122,10 @@ EXIT 0
 ### Checking Exit Code in Shell
 
 ```shell
-sql -S user/pass@service @deploy.sql
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+@deploy.sql
+EOF
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then
@@ -166,17 +198,29 @@ SSL_SERVER_DN_MATCH=yes
 ### Connecting
 
 ```shell
-# Use the TNS alias defined in the wallet's tnsnames.ora
-sql -S "${DB_USER}/${DB_PASSWORD}@${DB_SERVICE_NAME}" @deploy.sql
+# Use the TNS alias defined in the wallet's tnsnames.ora; password comes from CI secret
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE_NAME}
+@deploy.sql
+EOF
 ```
 
 Where `DB_SERVICE_NAME` is one of the aliases defined in the wallet's `tnsnames.ora` (e.g., `myatp_high`, `myatp_medium`, `myatp_low`).
 
-### Full Cloud Connection Example
+For fully password-less automation, configure a Secure External Password Store (SEPS) and connect with `/@alias`:
 
 ```shell
 export TNS_ADMIN=/tmp/wallet
-sql -S admin/MyPassword123@myatp_high <<'EOF'
+sql -S /@${DB_SERVICE_NAME} @deploy.sql
+```
+
+### Full Cloud Connection Example
+
+With SEPS the heredoc can stay quoted, no shell-side escapes needed:
+
+```shell
+export TNS_ADMIN=/tmp/wallet
+sql -S /@myatp_high <<'EOF'
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 SELECT instance_name, status FROM v$instance;
 EXIT 0
@@ -200,21 +244,25 @@ PROMPT Deploying version &APP_VER to environment &ENV
 SELECT 'Deploying to: ' || '&ENV' AS info FROM DUAL;
 ```
 
-Pass arguments from the command line:
+Pass arguments from the command line (credentials still go through `/nolog` + `CONNECT`, not argv):
 
 ```shell
-sql -S user/pass@service @deploy_env.sql PROD v2.5.1
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+@deploy_env.sql PROD v2.5.1
+EOF
 ```
 
 ### Using Shell Variable Expansion
 
-For environment variables from the shell, use the shell's own variable substitution in the heredoc:
+For environment variables from the shell, use the shell's own variable substitution in the heredoc. Keep credentials out of the `sql` command line by issuing `CONNECT` from inside the heredoc:
 
 ```shell
 export APP_VERSION="2.5.1"
 export DEPLOY_ENV="production"
 
-sql -S "${DB_USER}/${DB_PASSWORD}@${DB_SERVICE}" <<EOF
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 
 INSERT INTO deployment_log (version, environment, deployed_at)
@@ -297,9 +345,14 @@ jobs:
           echo "${{ secrets.WALLET_ZIP_B64 }}" | base64 -d | unzip -q -d /tmp/wallet -
 
       - name: Validate changelog status
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_SERVICE: ${{ secrets.DB_SERVICE }}
         run: |
           cd db
-          sql -S "${{ secrets.DB_USER }}/${{ secrets.DB_PASS }}@${{ secrets.DB_SERVICE }}" <<'EOF'
+          sql -S /nolog <<EOF
+          CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
           WHENEVER SQLERROR EXIT SQL.SQLCODE
           lb status -changelog-file controller.xml
           EXIT 0
@@ -333,19 +386,29 @@ jobs:
           echo "${{ secrets.WALLET_ZIP_B64 }}" | base64 -d | unzip -q -d /tmp/wallet -
 
       - name: Tag pre-deployment state
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_SERVICE: ${{ secrets.DB_SERVICE }}
         run: |
           cd db
           VERSION="${{ github.sha }}"
-          sql -S "${{ secrets.DB_USER }}/${{ secrets.DB_PASS }}@${{ secrets.DB_SERVICE }}" <<EOF
+          sql -S /nolog <<EOF
+          CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
           WHENEVER SQLERROR EXIT SQL.SQLCODE
           lb tag -tag pre-${VERSION}
           EXIT 0
           EOF
 
       - name: Apply Liquibase changes
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_SERVICE: ${{ secrets.DB_SERVICE }}
         run: |
           cd db
-          sql -S "${{ secrets.DB_USER }}/${{ secrets.DB_PASS }}@${{ secrets.DB_SERVICE }}" <<'EOF'
+          sql -S /nolog <<EOF
+          CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
           WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
           SET ECHO ON
           lb update -changelog-file controller.xml
@@ -353,9 +416,16 @@ jobs:
           EOF
 
       - name: Run post-deployment validation
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_SERVICE: ${{ secrets.DB_SERVICE }}
         run: |
           cd db
-          sql -S "${{ secrets.DB_USER }}/${{ secrets.DB_PASS }}@${{ secrets.DB_SERVICE }}" @validate_schema.sql
+          sql -S /nolog <<EOF
+          CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+          @validate_schema.sql
+          EOF
 
       - name: Upload deployment log on failure
         if: failure()
@@ -405,8 +475,15 @@ jobs:
           echo "${{ secrets.WALLET_ZIP_B64 }}" | base64 -d | unzip -q -d /tmp/wallet -
           echo "TNS_ADMIN=/tmp/wallet" >> $GITHUB_ENV
       - name: Execute SQLcl script
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_SERVICE: ${{ secrets.DB_SERVICE }}
         run: |
-          sql -S "${{ secrets.DB_USER }}/${{ secrets.DB_PASS }}@${{ secrets.DB_SERVICE }}" @${{ inputs.script }}
+          sql -S /nolog <<EOF
+          CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+          @${{ inputs.script }}
+          EOF
 ```
 
 ---
@@ -439,7 +516,8 @@ validate_changes:
   script:
     - cd db
     - |
-      sql -S "${DB_USER}/${DB_PASS}@${DB_SERVICE}" <<'SQLEOF'
+      sql -S /nolog <<SQLEOF
+      CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
       WHENEVER SQLERROR EXIT SQL.SQLCODE
       lb status -changelog-file controller.xml
       EXIT 0
@@ -454,7 +532,8 @@ deploy_db:
   script:
     - cd db
     - |
-      sql -S "${DB_USER}/${DB_PASS}@${DB_SERVICE}" <<'SQLEOF'
+      sql -S /nolog <<SQLEOF
+      CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
       WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
       SET ECHO ON
       lb tag -tag pre-${CI_COMMIT_SHORT_SHA}
@@ -472,10 +551,16 @@ verify_deployment:
   <<: *sqlcl_setup
   script:
     - cd db
-    - sql -S "${DB_USER}/${DB_PASS}@${DB_SERVICE}" @validate_schema.sql
+    - |
+      sql -S /nolog <<SQLEOF
+      CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+      @validate_schema.sql
+      SQLEOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 ```
+
+`DB_USER`, `DB_PASS`, and `DB_SERVICE` should be defined as masked, protected CI/CD variables in GitLab so they are injected into the runner environment but never echoed to the job log. Avoid `set -x` or `set -v` in pipeline steps that handle credentials, even via stdin.
 
 ---
 
@@ -484,8 +569,13 @@ verify_deployment:
 ### Capturing All SQLcl Output
 
 ```shell
-# Redirect both stdout and stderr to a log file
-sql -S user/pass@service @deploy.sql 2>&1 | tee /tmp/deploy.log
+# Redirect both stdout and stderr to a log file. Credentials come from masked
+# CI variables (${DB_USER}, ${DB_PASS}, ${DB_SERVICE}) and are passed via stdin
+# so they never appear in the process list.
+sql -S /nolog <<EOF 2>&1 | tee /tmp/deploy.log
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+@deploy.sql
+EOF
 
 # Check exit code (tee preserves the pipeline, PIPESTATUS captures it)
 EXIT_CODE=${PIPESTATUS[0]}
@@ -573,10 +663,14 @@ EXIT 0
 If validation fails, the `WHENEVER SQLERROR EXIT ... ROLLBACK` triggers DML rollback. To roll back Liquibase schema changes, add a shell-level rollback step:
 
 ```shell
-sql -S user/pass@service @deploy_with_rollback.sql "$CI_COMMIT_SHORT_SHA"
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+@deploy_with_rollback.sql "$CI_COMMIT_SHORT_SHA"
+EOF
 if [ $? -ne 0 ]; then
     echo "Deployment failed, rolling back Liquibase changes..."
-    sql -S user/pass@service <<EOF
+    sql -S /nolog <<EOF
+    CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
     lb rollback -tag pre-deploy-${CI_COMMIT_SHORT_SHA} -changelog-file controller.xml
     EXIT
 EOF
@@ -588,17 +682,26 @@ fi
 
 ## Security Best Practices in CI/CD
 
-### Never Hardcode Credentials
+### Keep Credentials Out of the Command Line
 
-Always use CI/CD secret variables for credentials:
+Pass credentials through `/nolog` + stdin or a SEPS wallet so they never appear as process arguments. With SEPS the password is not present at all; with `/nolog` it travels on fd 0 instead of argv.
 
 ```shell
-# Good: credentials from environment variables
-sql -S "${DB_USER}/${DB_PASS}@${DB_SERVICE}" @deploy.sql
+# SEPS wallet — no password on the command line or in stdin
+export TNS_ADMIN=/path/to/seps-wallet
+sql -S /@DB_ALIAS @deploy.sql
 
-# Bad: hardcoded credentials
-sql -S admin/MyPassword123@myatp_high @deploy.sql
+# /nolog + stdin — password from a masked CI variable, not visible in `ps`
+sql -S /nolog <<EOF
+CONNECT ${DB_USER}/"${DB_PASS}"@${DB_SERVICE}
+@deploy.sql
+EOF
+
+# Avoid: credentials interpolated as process arguments
+sql -S "${DB_USER}/${DB_PASS}@${DB_SERVICE}" @deploy.sql
 ```
+
+Do not enable shell tracing (`set -x`, `set -v`, `bash -x`) in steps that handle the stdin connect — tracing prints the expanded `CONNECT` line to the job log.
 
 ### Wallet as Base64 Secret
 
@@ -649,6 +752,7 @@ COMMIT;
 
 ## Best Practices
 
+- Never put credentials on the SQLcl command line. Use SEPS (`/@alias`) or `/nolog` + a `CONNECT` on stdin. See [Keep Credentials Out of the Command Line](#keep-credentials-out-of-the-command-line).
 - Always use `WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK` at the top of every CI/CD SQL script. Without it, SQLcl will continue executing after a SQL error and exit with code 0 even if statements failed.
 - Use the `-S` (silent) flag for all CI/CD invocations. Without it, the SQLcl banner and connection messages will appear in your pipeline log and may confuse log parsers.
 - Keep the wallet directory out of your repository. Store it as a base64-encoded CI/CD secret and decode it at pipeline runtime. Never commit wallet files (`.sso`, `.jks`, `.p12`, `ewallet.p12`) to version control.
@@ -686,3 +790,6 @@ Using a DBA or ADMIN account for routine deployments is a security risk and make
 - [Oracle SQLcl 25.2 User's Guide](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/oracle-sqlcl-users-guide.pdf)
 - [SQLcl Release Notes 25.2](https://www.oracle.com/tools/sqlcl/sqlcl-relnotes-25.2.html)
 - [Oracle SQLcl Releases index](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/index.html)
+- [Oracle Database Security Guide 19c — Configuring Authentication (Secure External Password Store)](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/configuring-authentication.html)
+- [GitHub Docs — Using secrets in GitHub Actions](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+- [GitLab Docs — CI/CD variables, masking, and protected variables](https://docs.gitlab.com/ee/ci/variables/)

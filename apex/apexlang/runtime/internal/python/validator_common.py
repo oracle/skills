@@ -16,14 +16,17 @@ from pathlib import Path
 from typing import Any
 
 def _has_source_repo_markers(target: Path) -> bool:
+    """Return true when a directory looks like the source repository root."""
     return (target / "package.json").exists() and (target / "skills" / "apexlang" / "assets" / "public-package.manifest.json").exists()
 
 
 def _has_packaged_skill_markers(target: Path) -> bool:
+    """Return true when a directory looks like an installed public skill package."""
     return (target / "SKILL.md").exists() and (target / "manifest.json").exists() and (target / "tools").exists()
 
 
 def _resolve_root(start: Path) -> Path:
+    """Resolve the active source or packaged root from a starting directory."""
     override = os.environ.get("APEXLANG_PACKAGE_ROOT", "").strip()
     if override:
         return Path(override).resolve()
@@ -39,6 +42,7 @@ def _resolve_root(start: Path) -> Path:
 
 
 def _resolve_output_root(root: Path, packaged_skill: bool) -> Path:
+    """Resolve where validator reports and logs should be written."""
     if packaged_skill:
         override = os.environ.get("APEXLANG_OUTPUT_ROOT", "").strip()
         if not override:

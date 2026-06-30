@@ -24,6 +24,8 @@ Layout defaults
 - Create a required `layout_row_plan` before emitting KPI strips, chart rows, report/detail rows, or side-by-side component rows.
 - `layout_row_plan` entries must include `slot`, `row`, `recipe`, and ordered `regions` static IDs.
 - KPI strips use one normalized Metric Card region with `recipe: metric-card-strip`.
+- Each `layout_row_plan` entry represents one physical row. Stacked full-width detail, contextual summary, and cards sections must be separate one-region entries; do not list multiple stacked sections in the same `regions` array.
+- Do not emit a generic `dashboard-chart-flow` recipe; split charts into explicit `two-up-equal` and `three-up-equal` entries.
 - Dashboard KPI Metric Card strips default to `appearance.template: @/blank-with-attributes`; use `@/standard` only when explicitly titled or landmarked visible region chrome is required.
 - Default chart rows:
   - 2 charts: one `two-up-equal` row.

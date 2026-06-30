@@ -3,6 +3,10 @@ import os from "node:os";
 import path from "node:path";
 import zlib from "node:zlib";
 
+/**
+ * Runtime discovery and JAR-reading helpers for compiler-backed property metadata.
+ */
+
 export const ORACLE_HOME_ENV_VARS = ["APEXLANG_ORACLE_HOME", "DBTOOLS_HOME", "SQLCL_HOME", "ORACLE_HOME"];
 export const MAX_METADATA_OUTPUT_BYTES = 64 * 1024 * 1024;
 const ZIP_EOCD_SIGNATURE = 0x06054b50;
@@ -16,6 +20,9 @@ function isExecutableFile(candidate) {
   return fs.existsSync(candidate) && fs.statSync(candidate).isFile();
 }
 
+/**
+ * Find the SQLcl sql executable on PATH across Unix and Windows shells.
+ */
 export function findSqlOnPath({
   pathValue = process.env.PATH || "",
   platform = process.platform,
@@ -45,6 +52,9 @@ export function findSqlOnPath({
   return null;
 }
 
+/**
+ * Build ordered Oracle runtime candidates from flags, environment variables, VS Code extensions, and PATH SQLcl.
+ */
 export function collectOracleHomeCandidates(explicitOracleHome) {
   const candidates = [];
   const seen = new Set();
@@ -91,6 +101,9 @@ export function collectOracleHomeCandidates(explicitOracleHome) {
   return candidates;
 }
 
+/**
+ * Return the newest APEXlang compiler JAR in a directory, when present.
+ */
 export function findCompilerJarInDirectory(directory) {
   if (!fs.existsSync(directory) || !fs.statSync(directory).isDirectory()) {
     return null;
@@ -104,6 +117,9 @@ export function findCompilerJarInDirectory(directory) {
   return path.join(directory, matches[0]);
 }
 
+/**
+ * Resolve one candidate path into the compiler JAR and runtime home used by metadata queries.
+ */
 export function resolveOracleRuntimeCandidate(candidate) {
   const directPath = candidate.path;
   const checks = [];
@@ -153,6 +169,9 @@ export function resolveOracleRuntimeCandidate(candidate) {
   return null;
 }
 
+/**
+ * Resolve the first usable Oracle runtime or throw a clear setup error.
+ */
 export function resolveOracleRuntime(explicitOracleHome) {
   const candidates = collectOracleHomeCandidates(explicitOracleHome);
   for (const candidate of candidates) {
@@ -212,6 +231,9 @@ function inflateEntryData(compressedData, entryName, jarPath) {
   }
 }
 
+/**
+ * Locate and read one entry from a JAR/ZIP file without shelling out to unzip.
+ */
 export function readJarEntry(jarPath, entryName) {
   const archive = fs.readFileSync(jarPath);
   const eocdOffset = findEndOfCentralDirectory(archive);

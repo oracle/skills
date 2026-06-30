@@ -17,12 +17,24 @@ const SUPPORTED_COMPONENTS = new Set([
   "app",
   "page",
   "region",
+  "column",
+  "axis",
+  "series",
+  "layer",
+  "filter",
+  "facet",
   "pageItem",
   "button",
   "dynamicAction",
   "process",
   "computation",
-  "validation"
+  "validation",
+  "list",
+  "entry",
+  "breadcrumb",
+]);
+const COMPILER_METADATA_PROPERTY_ALIASES = new Map([
+  ["app.authentication.scheme", "authenticationScheme"]
 ]);
 
 function defaultCommand() {
@@ -31,7 +43,10 @@ function defaultCommand() {
     : `node ${["ai-context", "apexlang", "compiler-prop-map", "compiler-truth-audit.mjs"].join("/")}`;
 }
 
-function nextValue(argv, index, flag) {
+/**
+ * Return the value after a flag, or fail with a clear command-line error.
+ */
+function readRequiredOptionValue(argv, index, flag) {
   const value = argv[index + 1];
   if (!value || value.startsWith("--")) {
     throw new Error(`Missing value for ${flag}`);
@@ -39,12 +54,15 @@ function nextValue(argv, index, flag) {
   return value;
 }
 
+/**
+ * Parse compiler-truth audit flags while preserving legacy option aliases.
+ */
 function parseArgs(argv) {
   const args = {
     appPath: "",
     reportPath: "",
     componentAttributes: "",
-    oracleHome: "",
+    compilerOracleHome: "",
     verifyComponentAttributes: false,
     help: false
   };
@@ -53,19 +71,20 @@ function parseArgs(argv) {
     const arg = argv[index];
     switch (arg) {
       case "--app-path":
-        args.appPath = nextValue(argv, index, arg);
+        args.appPath = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--report-path":
-        args.reportPath = nextValue(argv, index, arg);
+        args.reportPath = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--component-attributes":
-        args.componentAttributes = nextValue(argv, index, arg);
+        args.componentAttributes = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
+      case "--compiler-oracle-home":
       case "--oracle-home":
-        args.oracleHome = nextValue(argv, index, arg);
+        args.compilerOracleHome = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--verify-component-attributes":
@@ -93,7 +112,8 @@ Options:
   --app-path <path>                 Application root or directory containing .apx files to audit
   --report-path <path>              Write the compiler-truth audit report as JSON
   --component-attributes <path>     Override component-attributes.json path
-  --oracle-home <path>              Oracle VS Code extension, dbtools, SQLcl home, or compiler jar override
+  --compiler-oracle-home <path>     Oracle VS Code extension, dbtools, SQLcl home, or compiler jar override for compiler metadata
+  --oracle-home <path>              Backward-compatible alias for --compiler-oracle-home
   --verify-component-attributes     Verify component-attributes.json provenance against compiler metadata
   --help                            Show this help
 `);
@@ -235,13 +255,26 @@ function addIssue(issues, filePath, lineNumber, code, message, details = {}) {
   });
 }
 
+function compilerMetadataPropertyNames(componentName, groupName, propertyName) {
+  const names = [propertyName];
+  const scopedKey = groupName
+    ? `${componentName}.${groupName}.${propertyName}`
+    : `${componentName}.${propertyName}`;
+  const alias = COMPILER_METADATA_PROPERTY_ALIASES.get(scopedKey);
+  if (alias && !names.includes(alias)) {
+    names.push(alias);
+  }
+  return names;
+}
+
 function validateProperty({ issues, filePath, lineNumber, componentFrame, groupFrame, propertyName }) {
   if (!componentFrame?.record || !propertyName) {
     return;
   }
+  const compilerPropertyNames = compilerMetadataPropertyNames(componentFrame.name, groupFrame?.name || "", propertyName);
   if (groupFrame) {
     const props = componentFrame.record.groups[groupFrame.name] || [];
-    const match = props.find((prop) => prop.propertyName === propertyName);
+    const match = props.find((prop) => compilerPropertyNames.includes(prop.propertyName));
     if (!match) {
       addIssue(
         issues,
@@ -260,7 +293,7 @@ function validateProperty({ issues, filePath, lineNumber, componentFrame, groupF
     return;
   }
 
-  const anyMatch = componentFrame.record.properties.some((prop) => prop.propertyName === propertyName);
+  const anyMatch = componentFrame.record.properties.some((prop) => compilerPropertyNames.includes(prop.propertyName));
   if (!anyMatch) {
     addIssue(
       issues,
@@ -277,7 +310,7 @@ function validateProperty({ issues, filePath, lineNumber, componentFrame, groupF
   }
 }
 
-function auditApxText(filePath, text, map) {
+export function auditApxText(filePath, text, map) {
   const issues = [];
   const observations = [];
   const stack = [];
@@ -410,7 +443,7 @@ async function writeReport(reportPath, payload) {
 }
 
 export async function runCompilerTruthAudit(options = {}) {
-  const { map, provenance } = buildCompilerContext(options.oracleHome || "");
+  const { map, provenance } = buildCompilerContext(options.compilerOracleHome || options.oracleHome || "");
   const issues = [];
   const observations = [];
   const targets = [];
@@ -463,7 +496,11 @@ async function main() {
   return result.code;
 }
 
-if (import.meta.url === pathToFileURL(SCRIPT_PATH).href) {
+const INVOKED_AS_MAIN = process.argv[1]
+  ? import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
+  : false;
+
+if (INVOKED_AS_MAIN) {
   try {
     process.exitCode = await main();
   } catch (error) {

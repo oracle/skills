@@ -29,7 +29,7 @@ This file is a reference contract. It is not a scenario output template.
 - For numeric/currency values, set both `heading.alignment` and `layout.columnAlignment` to `end`.
 - For date/timestamp values, use a deterministic format mask and keep heading concise.
 - For percent graph columns, provide both `appearance.backgroundColor` and `appearance.foregroundColor` together.
-- For link columns, keep `linkText` user-readable and avoid hardcoded static IDs in targets.
+- For link columns, emit `type: link`, keep `linkText` user-readable, and avoid hardcoded static IDs in targets.
 - For Classic Report link targets, use `#COLUMN_ALIAS#` for current report-row values and `&ITEM.` only for page/app/session substitutions.
 - Keep format choices consistent within the same report.
 - Keep SQL data-only for report sources; use `columnFormatting.htmlExpression` when visual markup is required.

@@ -13,7 +13,10 @@ function defaultCommand() {
     : `node ${["ai-context", "apexlang", "compiler-prop-map", "query-valid-props.mjs"].join("/")}`;
 }
 
-function nextValue(argv, index, flag) {
+/**
+ * Return the value after a flag, or fail with a clear command-line error.
+ */
+function readRequiredOptionValue(argv, index, flag) {
   const value = argv[index + 1];
   if (!value || value.startsWith("--")) {
     throw new Error(`Missing value for ${flag}`);
@@ -21,10 +24,13 @@ function nextValue(argv, index, flag) {
   return value;
 }
 
+/**
+ * Parse the query helper flags without normalizing the requested component yet.
+ */
 function parseArgs(argv) {
   const args = {
     javaHome: null,
-    oracleHome: null,
+    compilerOracleHome: null,
     component: null,
     componentTypeId: null,
     parent: null,
@@ -41,35 +47,36 @@ function parseArgs(argv) {
     const arg = argv[index];
     switch (arg) {
       case "--java-home":
-        args.javaHome = nextValue(argv, index, arg);
+        args.javaHome = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
+      case "--compiler-oracle-home":
       case "--oracle-home":
-        args.oracleHome = nextValue(argv, index, arg);
+        args.compilerOracleHome = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--component":
-        args.component = nextValue(argv, index, arg);
+        args.component = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--component-type-id":
-        args.componentTypeId = nextValue(argv, index, arg);
+        args.componentTypeId = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--parent":
-        args.parent = nextValue(argv, index, arg);
+        args.parent = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--group":
-        args.group = nextValue(argv, index, arg);
+        args.group = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--template-component":
-        args.templateComponent = nextValue(argv, index, arg);
+        args.templateComponent = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
       case "--when":
-        args.assumes.push(nextValue(argv, index, arg));
+        args.assumes.push(readRequiredOptionValue(argv, index, arg));
         index += 1;
         break;
       case "--list":
@@ -128,6 +135,9 @@ const DOTTED_COMPONENT_ALIASES = new Map([
   ["displayOnly.source", { component: "pageItem", group: "source", assumes: ["381=DISPLAY_ONLY"] }]
 ]);
 
+/**
+ * Expand friendly dotted aliases such as chart.series.tooltip into compiler metadata filters.
+ */
 function resolveDottedComponentAlias(args) {
   if (!args.component || !args.component.includes(".")) {
     return;
@@ -155,6 +165,9 @@ function resolveDottedComponentAlias(args) {
   }
 }
 
+/**
+ * Convert --when entries into lookup maps used by dependency evaluation.
+ */
 function parseAssumptions(entries) {
   const byRawKey = new Map();
   const byScopedName = new Map();
@@ -182,6 +195,9 @@ function parseAssumptions(entries) {
   return { byRawKey, byScopedName, byPropertyName };
 }
 
+/**
+ * Render a compiler metadata dependency condition in readable text.
+ */
 function conditionToText(node) {
   if (!node) {
     return "";
@@ -272,6 +288,9 @@ function combineResults(operator, results) {
   return { state: "unknown" };
 }
 
+/**
+ * Evaluate one metadata condition against caller-provided --when assumptions.
+ */
 function evaluateCondition(node, assumptionIndex) {
   if (!node) {
     return { state: "true" };
@@ -285,6 +304,9 @@ function evaluateCondition(node, assumptionIndex) {
   return evaluateLeaf(node, assumptionIndex);
 }
 
+/**
+ * Return compiler components that match the requested component, parent, and type filters.
+ */
 function selectComponents(map, args) {
   let matches = map.componentTypes;
 
@@ -339,6 +361,9 @@ function renderLovValues(prop) {
   });
 }
 
+/**
+ * Print a human-readable component property summary.
+ */
 function renderComponent(record, args, assumptionIndex) {
   console.log(`${record.singular} [componentTypeId=${record.componentTypeId}]`);
   console.log(`parent: ${record.parentComponentType || "none"}`);
@@ -373,6 +398,9 @@ function renderComponent(record, args, assumptionIndex) {
   }
 }
 
+/**
+ * Build the JSON payload for one component after applying dependency assumptions.
+ */
 function componentPayload(record, args, assumptionIndex) {
   const groups = {};
   for (const [groupName, props] of Object.entries(record.groups)) {
@@ -405,7 +433,8 @@ function printHelp() {
 
 Options:
   --java-home <path>           Compatibility flag; ignored by the current Node implementation
-  --oracle-home <path>         Oracle VS Code extension, dbtools, or SQLcl home override
+  --compiler-oracle-home <path> Oracle VS Code extension, dbtools, SQLcl home, or compiler jar override for compiler metadata
+  --oracle-home <path>         Backward-compatible alias for --compiler-oracle-home
   --component <name>           Semantic component name or dotted alias, for example region, map.layer.link, or chart.series
   --component-type-id <id>     Exact compiler component type id, for example 5110
   --parent <name>              Filter by parent semantic name, for example page or region
@@ -424,7 +453,7 @@ Examples:
   ${command} --component chart.series.marker
   ${command} --template-component metricCard
   ${command} --json > /tmp/apexlang-runtime-map.json
-  ${command} --oracle-home /path/to/oracle.sql-developer-26.1.2 --component-type-id 7320
+  ${command} --compiler-oracle-home /path/to/oracle.sql-developer-26.1.2 --component-type-id 7320
 `);
 }
 
@@ -465,7 +494,7 @@ function renderTemplateComponentProfile(profile) {
 }
 
 function resolveOracleBackedMap(args) {
-  const oracleRuntime = resolveOracleRuntime(args.oracleHome);
+  const oracleRuntime = resolveOracleRuntime(args.compilerOracleHome);
   const { metadata, buildId, metadataHash } = readOracleRuntimeMetadata(oracleRuntime.compilerJarPath);
   const map = buildOracleNormalizedMap({
     metadata,

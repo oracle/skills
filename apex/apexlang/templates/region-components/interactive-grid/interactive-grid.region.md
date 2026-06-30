@@ -141,7 +141,7 @@ region {{regionStaticId}} (
   }
 
   savedReport PRIMARY (
-    visibility: primaryDefault
+    visibility: primary
     view {
       default: grid
     }
@@ -226,7 +226,7 @@ region {{regionStaticId}} (
   }
 
   savedReport PRIMARY (
-    visibility: primaryDefault
+    visibility: primary
     view {
       default: grid
     }

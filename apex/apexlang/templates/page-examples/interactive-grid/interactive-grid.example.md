@@ -143,7 +143,7 @@ region Interactive Grid Example (
 
   /* Optional saved report (Primary) & single row view defaults */
   savedReport PRIMARY (
-    visibility: primaryDefault
+    visibility: primary
     view {
       default: grid
     }

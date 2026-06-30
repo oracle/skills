@@ -53,7 +53,4 @@ theme universal-theme (
         filePrefix: #APEX_FILES#themes/theme_42/26.1/
         identifier: UNIVERSAL_THEME
     }
-    subscription {
-        master: @/8842.261/universal-theme
-    }
 )

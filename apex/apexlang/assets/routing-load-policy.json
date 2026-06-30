@@ -30,6 +30,21 @@
       "max_documents": 3
     },
     {
+      "intent": "create app from FR and model",
+      "open_order": [
+        "SKILL.md",
+        "assets/workspace-intelligence.json",
+        "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md",
+        "references/workflows/apexlang/application-spec.template.md"
+      ],
+      "required_decisions": [
+        "authoritative_requirements",
+        "authoritative_model_or_schema",
+        "application_spec"
+      ],
+      "max_documents": 4
+    },
+    {
       "intent": "apexlang generation",
       "open_order": [
         "SKILL.md",

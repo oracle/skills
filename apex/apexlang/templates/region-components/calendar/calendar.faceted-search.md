@@ -134,7 +134,8 @@ region {{facetRegionId}} (
   }
   settings {
     compactNosThreshold: 10000
-    displayChartForTopNValues: 10
+    showCurrentFacets: true
+    showTotalRowCount: true
   }
 
   facet {{projectFacetStaticId}} (

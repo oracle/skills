@@ -27,7 +27,7 @@ Routing behavior
 - Never re‑route to another router or to the constitutional master unless you are the master router.
 
 Prompt-normalization contract
-- Treat sparse input as valid by default. Examples: noun lists, shorthand like `emp ir dept filter`, broken grammar, partial identifiers, or mixed imperative fragments.
+- Treat sparse input as valid by default. Examples: noun lists, shorthand like `source report lookup filter`, broken grammar, partial identifiers, or mixed imperative fragments.
 - Normalize whatever is explicit in the prompt before asking anything else.
 - Ask follow-up questions only for critical blockers that materially change the workflow, target, or safety gates.
 - Follow-ups must be short, plain-English prompts. Prefer concrete options or one missing identifier request over broad re-interviewing.
@@ -72,8 +72,9 @@ Keyword design (Match)
   - PL/SQL Maintenance: [plsql maintenance, package consolidation, consolidate plsql, check plsql, …]
 
 Examples (single message)
+- Snippet class: `illustrative_prompt`. Replace any `{{...}}` variables before use; do not treat them as schema evidence.
 - APEX generation (constitutional master):
-  build a page with an interactive report on EMP and a form to edit; refresh report after submit
+  build a page with an interactive report on {{source.table}} and a form to edit; refresh report after submit
 - PL/SQL maintenance (standalone):
   check entire app for all plsql code and see what can be packaged and consolidated
 - PL/SQL maintenance with overrides:

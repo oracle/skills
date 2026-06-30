@@ -1,0 +1,4 @@
+interface:
+  display_name: "OKE Troubleshooter"
+  short_description: "Troubleshoot OKE workloads and clusters."
+  default_prompt: "Use $oke-troubleshooter to collect read-only OKE evidence, correlate Kubernetes objects to OCI resources, rank likely causes, and recommend approval-gated remediation steps."

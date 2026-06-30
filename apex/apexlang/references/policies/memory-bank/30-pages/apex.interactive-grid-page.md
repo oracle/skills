@@ -8,7 +8,7 @@
 2. Main region must be `type: interactiveGrid` with `appearance.template: @/standard` and all grid options sourced from `page-examples/interactive-grid/interactive-grid._index.md`.
 3. Every Interactive Grid region must include at least one `savedReport` child block. The default emitted shape is `savedReport PRIMARY`.
 4. Every Interactive Grid `savedReport` must use `singleRowView.displayedColumns` and explicit `displayColumn` children. Cover every declared Interactive Grid column except `APEX$ROW_SELECTOR`, and include `APEX$ROW_ACTION` whenever the region declares it.
-5. Default pagination is `rowRangesXToY`; override with another catalog entry when inline editing or user requirements call for explicit pagination controls.
+5. Default pagination is `scroll`; use `page` only when inline editing or user requirements call for explicit page-style pagination controls.
 6. Enable automatic row processing (`process type: interactiveGridAutomaticRowProcessing`) with named notation and matching primary key items.
 7. Define column metadata (dataType, heading alignment, editable properties) consistent with the active machine-readable schema in `assets/component-attributes.json`; do not invent unsupported Interactive Grid column blocks even when older prose examples still mention them.
 8. When `source.orderByClause` is used, reference only declared Interactive Grid columns in the same region. Hidden columns are allowed; raw SQL expressions and undeclared columns are not.
@@ -16,12 +16,14 @@
 10. For same-application navigation, prefer declarative page targets when the component DSL supports them; do not default to URL-style targets when they are unnecessary.
 11. When row-level update protection is required, use `edit.allowedRowOperationsColumn` only if the request/spec explicitly identifies a control column from the region source; declare that column in the grid, usually as hidden.
 12. Apply navigation/breadcrumb standards from `apex.page.md` and ensure the grid has a static ID when referenced by dynamic actions.
+13. Interactive Grid columns use grid item `type` values and saved-report `displayColumn` metadata. Do not copy Classic Report `type: link`, Classic query-position metadata, or Interactive Report column-link syntax into Interactive Grid columns unless compiler-backed metadata for the active build proves a supported grid navigation hook.
 
 ### Guidance
 - Follow `templates/page-examples/interactive-grid/interactive-grid._index.md` for column sequencing, toolbar options, and editable settings.
 - Use `savedReport PRIMARY` as the baseline emitted contract unless a different named saved report is explicitly required.
 - Keep the canonical single-row property name as `displayedColumns`; do not emit legacy `displayedCols`.
 - Treat the active compiler/validator behavior as the source of truth for Interactive Grid column blocks. If the machine-readable schema does not allow a column block such as `comments` or `appearance`, surface guidance at the page or region level instead of inventing unsupported DSL.
+- Keep grid navigation separate from report-column rendering until compiler-backed metadata identifies the supported grid navigation contract. Saved-report `displayColumn` coverage is display metadata, not link/navigation metadata.
 - For table-backed grids, use `source.orderByClause` only with declared Interactive Grid columns. For query-backed grids, keep ordering in `source.sqlQuery` unless the sorted value is projected and declared as a grid column.
 - In the v1 row-operations contract, `edit.allowedRowOperationsColumn` gates updates only: `U` means the row is editable for update, and any other value means the row is not updatable.
 - Complement with Interactive Report or Form rules when combining grids with additional regions on the same page.

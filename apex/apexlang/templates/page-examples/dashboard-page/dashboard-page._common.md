@@ -29,6 +29,8 @@ Shared contract for the dashboard-page page example.
 - Allowed dashboard widget chart types are `area`, `bar`, `line`, and `pie`.
 - Dashboard generation must create a `layout_row_plan` before emitting KPI strips, chart rows, report/detail rows, or side-by-side component rows. For five charts, the default chart portion is one `two-up-equal` row followed by one `three-up-equal` row.
 - The layout row plan must list slot, row key, recipe, and ordered region static IDs, for example `layout_row_plan: [{ slot: body, row: kpi-strip, recipe: metric-card-strip, regions: [dashboard-kpis] }, { slot: body, row: analytics-1, recipe: two-up-equal, regions: [orders-by-status, sales-share-by-store] }]`.
+- Each layout row plan entry is one physical row. Stacked full-width detail, contextual summary, and cards sections must be emitted as separate one-region entries; do not group them under one `stacked-content` entry.
+- Do not emit `dashboard-chart-flow`; split charts into explicit `two-up-equal` and `three-up-equal` entries.
 - Do not literally stack multiple dashboard charts unless the user explicitly requests vertical stacking or a chart is intentionally a detail/full-width section.
 - Equal-width BODY sibling rows use implicit flow with `startNewRow: false` on second-and-later regions and omit explicit `column` / `columnSpan`.
 - Keep the fenced APEXlang example compiler-truthful and comment-free.

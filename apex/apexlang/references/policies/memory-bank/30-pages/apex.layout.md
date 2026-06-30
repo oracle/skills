@@ -24,7 +24,7 @@ Parent and child spans never add together across scopes. A parent region may con
 
 ## Page-Template-First Shell Rule
 - When the requirement is a true shell composition such as sidebar + main content, side rail + body, or left rail + stacked detail, evaluate the page template family before reaching for explicit body-grid coordinates.
-- Prefer a page template with semantic slots such as `leftColumn` + `body` when that shell matches the requested layout closely enough.
+- Prefer a page template with semantic slots such as `leftColumn` + `body` only for documented filter/sidebar shells such as faceted search. Master-detail Content Row workbenches use the standard page template plus a BODY grid split.
 - For Theme 42 side-column page templates, treat the rail width as a fixed build-pinned shell detail of about `15rem`; if that width is not suitable, prefer explicit body-grid coordinates instead of trying to stretch the page-template rail.
 - Side-column page templates are especially appropriate when the rail content is meant to select, filter, or switch the content shown in the main body, such as contextual sub-navigation, parent selectors, or section choosers.
 - When a side rail provides contextual sub-navigation across a local page group, repeat that sub-navigation on each linked page in the group instead of showing it only on the landing page.
@@ -58,7 +58,7 @@ Use `layout.column` and `layout.columnSpan` only for intentionally asymmetric la
 Allowed asymmetric examples:
 - `sidebar-main`: 3/9 or 4/8
 - `parent-child-split`: 4/8
-- `master-detail-content-row`: parent Content Row at `columnSpan: 3` or `4`, followed by the child region in the same body row with `startNewRow: false`
+- `master-detail-content-row`: standard page template; parent Content Row in `BODY` at `columnSpan: 3` or `4`, followed by the child region in the same body row with `startNewRow: false`
 - `three-zone`: 3/6/3
 
 ## Mixed-Layout Interpretation
@@ -83,6 +83,7 @@ Allowed asymmetric examples:
 - KPI strips: equal-width flow by sequence.
 - Dashboards must create a `layout_row_plan` before emitting KPI strips, chart rows, report/detail rows, or side-by-side component rows.
 - `layout_row_plan` entries must include `slot`, `row`, `recipe`, and ordered `regions` static IDs.
+- Each `layout_row_plan` entry is exactly one physical row. Stacked full-width detail, contextual summary, and cards sections each get their own one-region entry; do not put multiple stacked sections in the same `regions` array.
 - Two charts: one `two-up-equal` row.
 - Three charts: one `three-up-equal` row.
 - Four charts: two `two-up-equal` rows.
@@ -98,6 +99,20 @@ Allowed asymmetric examples:
 - Emit the child report second with `layout.startNewRow: false`; do not add redundant `column` / `columnSpan` unless a runtime or template-specific contract requires explicit coordinates.
 - Place parent-context page items as hidden technical items, not as visible body controls, unless the prompt explicitly requests a manual selector.
 - Place create/edit/detail buttons for the child context inside the child report toolbar slot instead of laying them out in body-grid columns.
+- Place primary page-level create actions in the breadcrumb/title-bar region when the page has a breadcrumb region; do not anchor them to an unrelated child report.
+
+## Asymmetric Layout Recipes
+- `sidebar-main-stacked-detail`
+  - Choose the page-template shell version first when a page template can express the requested left rail + main body composition closely enough.
+  - Template-shell version:
+    - sidebar or parent context region: `layout.slot: leftColumn`
+    - main detail/report regions: `layout.slot: body`
+  - Explicit body-grid version:
+    - left region first: `layout.columnSpan: 4`
+    - right top region: `layout.column: 5`, `layout.startNewRow: false`
+    - right stacked sibling below: `layout.column: 5`
+  - Do not force `layout.column: 1` onto the left region for this recipe.
+  - Do not treat `columnSpan` on the left region plus `column` on the right siblings as invalid mixed layout.
 
 ## Asymmetric Layout Recipes
 - `sidebar-main-stacked-detail`

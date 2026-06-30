@@ -8,6 +8,8 @@ Canonical guidance for the `faceted-search` region family, including shared cont
 - Choose a scenario variant matching the requested interaction pattern, data source type, and page composition context.
 - For emitted child metadata, use `facet (...)` blocks in this family. Do not guess between `facet` and `filter`; follow the canonical example and shared contract here.
 - Prefer the canonical emitted facet type values shown in this family and the page example: `search`, `checkboxGroup`, `radioGroup`, `selectList`, and `range`.
+- Keep facet source data types runtime-safe: date/time facets use `dataType: date`, numeric facets use `dataType: number`, and string facets omit `source.dataType` instead of emitting SQL/report tokens such as `varchar2` or `VARCHAR2`.
+- For checkbox/radio facets, cap visible values with `listEntries.maxDisplayedEntries: 10`; for likely high-cardinality value lists, also set `listEntries.displayFilterInitially: true`.
 - Preserve canonical path references and markdown-first conventions when updating workflow or registry links.
 
 ## Template Catalog

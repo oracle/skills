@@ -28,6 +28,7 @@ This file is a reference contract. It is not a scenario output template.
 - Use `column.formatMask` only when value presentation needs explicit control.
 - For numeric/currency values, set both `heading.alignment` and `layout.columnAlignment` to `end`.
 - For date/timestamp values, use deterministic format masks.
+- For column links, keep the Interactive Report column type as `plainText` and add the column-level `link {}` block; do not emit Classic Report-only `reportColumnQueryId`, `derivedColumn`, or `type: link`.
 - When column comments are requested, keep `comments { comments: ... }` concise but structured: require `Display Label`, `Display in Report`, `Display in Form`, `Format Mask`, `Value Required`, `Read Only`, `Primary Display Column`, and `Authorization Scheme`; include `Summary` only when a short leading business-intent sentence materially helps maintenance.
 - Keep format choices consistent within a report.
 - dataType should always be UPPER CASE
@@ -104,6 +105,34 @@ column {{column.name}} (
   }
   genAI {
     columnContext: {{column.genAI.columnContext}}
+  }
+)
+```
+
+## Column Link
+
+```apexlang
+column {{column.name}} (
+  type: plainText
+  heading {
+    heading: {{column.heading}}
+  }
+  layout {
+    sequence: {{column.sequence}}
+  }
+  source {
+    dataType: {{column.source.dataType}}
+  }
+  link {
+    target: {
+      page: {{column.link.target.page}}
+      items: {
+        {{column.link.target.items}}
+      }
+      clearCache: {{column.link.target.clearCache}}
+    }
+    linkText: {{column.link.linkText}}
+    linkAttributes: {{column.link.linkAttributes}}
   }
 )
 ```

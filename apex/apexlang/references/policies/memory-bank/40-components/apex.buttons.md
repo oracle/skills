@@ -86,7 +86,8 @@ button STATIC_ID_OR_NAME (
 - Primary button requests in user prompts map to `hot: true` in the emitted DSL.
 - templateOptions: optional. Array with #DEFAULT# and optional documented template-option tokens; do not invent classes.
 - Keep `#DEFAULT#` as its own entry. Do not concatenate it with another token and do not substitute emitted CSS class strings for the documented accepted value.
-- For buttonTemplate = @/text-with-icon, must include t-Button--iconLeft in templateOptions to force left-side icon placement and prevent duplicate icons.
+- For `buttonTemplate: @/text-with-icon` with `icon` present, `templateOptions` must include exactly one icon-position option: default to `t-Button--iconLeft`, or use `t-Button--iconRight` only when explicitly requested.
+- For `buttonTemplate: @/icon`, do not add `t-Button--iconLeft` or `t-Button--iconRight`; icon-only buttons have no text side to position against.
 - icon: optional. Only valid when buttonTemplate is @/text-with-icon or @/icon. Value must be a valid icon class (e.g., fa-...).
 
 4) behavior block
@@ -135,6 +136,9 @@ button STATIC_ID_OR_NAME (
 ### Icon usage
 - If buttonTemplate ∈ {@/text-with-icon, @/icon} then icon may be set.
 - If buttonTemplate = @/text then icon must be omitted.
+- If buttonTemplate = @/text-with-icon and `icon` is present, templateOptions must include exactly one of `t-Button--iconLeft` or `t-Button--iconRight`; use `t-Button--iconLeft` unless the prompt explicitly asks for right-side icon placement.
+- If buttonTemplate = @/icon, omit icon-position template options.
+- Button icons must be Font APEX `fa-*` classes only; do not use Material, JET, image, custom CSS, or alias icon values.
 
 ### Server-side condition
 - Validate against the canonical catalog (references/policies/memory-bank/20-data/apex.logic.md).
@@ -143,6 +147,7 @@ button STATIC_ID_OR_NAME (
 ### Template Options
 - templateOptions array must include #DEFAULT# if you are appending options.
 - Do not invent CSS classes. Keep button presentation within shared template and template-option defaults.
+- Icon-plus-text buttons must use canonical emitted icon-position values: `t-Button--iconLeft` by default, or `t-Button--iconRight` by explicit request. Do not emit aliases/static_ids such as `left` or `right`.
 
 ### Placement and Block Ordering
 - Place button at page scope, not inside region declarations, but reference its containing region via layout.region.
@@ -317,9 +322,8 @@ button CANCEL_MODAL (
 - buttonTemplate dictates icon usage: only set icon for @/text-with-icon or @/icon.
 - Slot must match a valid Button Position for the chosen region template; cross-check apex.templates.md.
 - templateOptions: include #DEFAULT#; use only documented UT classes when styling is requested.
-- For buttonTemplate = @/text-with-icon → templateOptions must include t-Button--iconLeft to avoid duplicate icons.
-
-- For buttonTemplate = @/text-with-icon → templateOptions must include t-Button--iconLeft to avoid duplicate icons.
+- For buttonTemplate = @/text-with-icon with icon present → templateOptions must include exactly one of `t-Button--iconLeft` or `t-Button--iconRight`; default to `t-Button--iconLeft`.
+- For buttonTemplate = @/icon → do not emit `t-Button--iconLeft` or `t-Button--iconRight`.
 
 - serverSideCondition:
   - type ∈ {itemIsNotNull, itemIsNull} → item required

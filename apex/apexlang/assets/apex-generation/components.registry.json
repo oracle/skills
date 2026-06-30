@@ -1557,7 +1557,7 @@
     {
       "name": "lov-shared",
       "synonyms": [
-        "departments lov",
+        "lookup lov",
         "dropdown values",
         "dynamic lov",
         "list of values",
@@ -2017,7 +2017,7 @@
     "rules": "If multiple components appear in the one-liner, set target_type = page and union-load all referenced 20-data, 30-pages, and 40-components rules.",
     "examples": [
       {
-        "input": "page with an interactive report and a form on EMP; use Departments LOV for DEPTNO; refresh the report after the dialog closes",
+        "input": "page with an interactive report and a form on {{source.table}}; use Lookup LOV for {{lookup.valueColumn}}; refresh the report after the dialog closes",
         "components": [
           "interactive-report",
           "form",
@@ -2032,12 +2032,12 @@
           "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md"
         ],
         "requires": {
-          "emp": [
+          "source table": [
             "table",
             "pk",
             "columns"
           ],
-          "dept lov": [
+          "lookup lov": [
             "value column",
             "display column"
           ],
@@ -2048,7 +2048,7 @@
         }
       },
       {
-        "input": "dashboard with cards summarizing headcount by department",
+        "input": "dashboard with cards summarizing record count by category",
         "components": [
           "dashboard"
         ],
@@ -2058,7 +2058,7 @@
         ]
       },
       {
-        "input": "add a calendar of EMP hires",
+        "input": "add a calendar of {{source.table}} events",
         "components": [
           "calendar"
         ],
@@ -2067,8 +2067,8 @@
           "templates/page-examples/calendar-page/calendar-page._index.md"
         ],
         "requires": {
-          "emp": [
-            "date column (e.g., HIREDATE)"
+          "source table": [
+            "date column (e.g., {{source.dateColumn}})"
           ]
         }
       },

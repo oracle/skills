@@ -16,12 +16,14 @@ Define the shared variable contract, guardrails, and base skeleton used by all b
 1. Load `references/policies/memory-bank/40-components/apex.buttons.md` before drafting buttons.
 2. Validate action-specific requirements before rendering (`target`, `databaseAction`, `confirmation`, nested structures).
 3. Use only server-side condition types from `references/policies/memory-bank/20-data/apex.logic.md`.
-4. Resolve button template-option IDs from the inventory in this file whenever `appearance.templateOptions` is present.
+4. Resolve button template-option emitted values from the inventory in this file whenever `appearance.templateOptions` is present.
 5. Do not invent CSS classes; keep button presentation within documented templates and template options.
 6. Keep `layout.slot` valid for the referenced region template.
    For breadcrumb/header-region Create buttons, use the region's `CREATE` slot rather than the login/wizard `next` slot.
 7. When `layout.column` or `layout.columnSpan` is used, validate them only within the button's local `layout.region + layout.slot` scope.
 8. For `behavior.action: redirectThisApp`, render `behavior.target` as a declarative `target: { ... }` property object; do not emit scalar `f?p=...` URL strings.
+9. When `appearance.buttonTemplate: @/text-with-icon` includes `appearance.icon`, include exactly one icon-position template option: default to `t-Button--iconLeft`, or use `t-Button--iconRight` only when explicitly requested.
+10. Do not add `t-Button--iconLeft` or `t-Button--iconRight` to `appearance.buttonTemplate: @/icon`; icon-only buttons have no text side to position against.
 
 ---
 
@@ -39,7 +41,7 @@ Define the shared variable contract, guardrails, and base skeleton used by all b
 | layout.column                 | optional    | number       | Local column position within the parent region + slot scope.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | layout.columnSpan             | optional    | number       | Local span within the parent region + slot scope; row total must stay within 12.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | appearance.buttonTemplate     | yes         | enum         | `@/text`, `@/text-with-icon`, `@/icon`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| appearance.templateOptions    | optional    | array/string | Include `#DEFAULT#` when present as its own entry and use only the variant-specific accepted values documented in the inventory below. Do not concatenate tokens or substitute CSS class strings.                                                                                                                                                                                                                                                                                                                                                                                               |
+| appearance.templateOptions    | optional    | array/string | Include `#DEFAULT#` when present as its own entry and use only the variant-specific accepted emitted values documented in the inventory below. For `@/text-with-icon` with `appearance.icon`, include exactly one of `t-Button--iconLeft` or `t-Button--iconRight`, defaulting to left. Do not concatenate tokens or use aliases/static_ids.                                                                                                                                                                                                                                              |
 | appearance.icon               | conditional | string       | Allowed only for `@/text-with-icon` or `@/icon`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | appearance.hot                | optional    | boolean      | Primary visual treatment; this is the DSL property used when the prompt asks for a primary button.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | appearance.showAsDisabled     | optional    | boolean      | Render disabled state while keeping behavior explicit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -118,6 +120,8 @@ button {{buttonStaticId}} (
 - If `requiresConfirmation=true`, include `confirmation` with both `message` and `style`; otherwise omit it.
 - Omit `warnOnUnsavedChanges` when action is `definedByDynamicAction`.
 - Include `icon` only when template is icon-capable.
+- If the template is `@/text-with-icon` and `icon` is present, include exactly one of `t-Button--iconLeft` or `t-Button--iconRight`; default to `t-Button--iconLeft`.
+- If the template is `@/icon`, do not include left/right icon-position options.
 - Render `serverSideCondition` and `security` only when explicitly required.
 - If `behavior.action` = `redirectThisApp`, render a declarative `target: { ... }` object. Never render `target: f?p=...` for same-application redirects.
 
@@ -125,13 +129,21 @@ button {{buttonStaticId}} (
 
 # Theme 42 Button Template Options
 
-Use the listed `static_id` as the exact value to pass in the button's `templateOptions`.
-Example: `templateOptions: [push, right]`
+Use the listed emitted value as the exact value to pass in the button's `templateOptions`.
+Do not pass caller-facing aliases/static_ids such as `push`, `left`, or `right`.
+Example:
+```apexlang
+templateOptions: [
+  #DEFAULT#
+  t-Button--hoverIconPush
+  t-Button--iconLeft
+]
+```
 
 ## Icon (`icon`)
 
-- Push | `static_id=push` | `css=t-Button--hoverIconPush` | `group=Icon Hover Animation`
-- Spin | `static_id=spin` | `css=t-Button--hoverIconSpin` | `group=Icon Hover Animation`
+- Push | emitted=`t-Button--hoverIconPush` | source id=`push` | group=Icon Hover Animation
+- Spin | emitted=`t-Button--hoverIconSpin` | source id=`spin` | group=Icon Hover Animation
 
 ## Text (`text`)
 
@@ -139,9 +151,9 @@ Example: `templateOptions: [push, right]`
 
 ## Text with Icon (`text-with-icon`)
 
-- Hide Icon on Desktop | `static_id=hide-icon-on-desktop` | `css=t-Button--desktopHideIcon` | `group=--`
-- Hide Label on Mobile | `static_id=hide-label-on-mobile` | `css=t-Button--mobileHideLabel` | `group=--`
-- Push | `static_id=push` | `css=t-Button--hoverIconPush` | `group=Icon Hover Animation`
-- Spin | `static_id=spin` | `css=t-Button--hoverIconSpin` | `group=Icon Hover Animation`
-- Left | `static_id=left` | `css=t-Button--iconLeft` | `group=Icon Position`
-- Right | `static_id=right` | `css=t-Button--iconRight` | `group=Icon Position`
+- Hide Icon on Desktop | emitted=`t-Button--desktopHideIcon` | source id=`hide-icon-on-desktop` | group=--
+- Hide Label on Mobile | emitted=`t-Button--mobileHideLabel` | source id=`hide-label-on-mobile` | group=--
+- Push | emitted=`t-Button--hoverIconPush` | source id=`push` | group=Icon Hover Animation
+- Spin | emitted=`t-Button--hoverIconSpin` | source id=`spin` | group=Icon Hover Animation
+- Left | emitted=`t-Button--iconLeft` | source id=`left` | group=Icon Position | default when `icon` is present
+- Right | emitted=`t-Button--iconRight` | source id=`right` | group=Icon Position | explicit override only

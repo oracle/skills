@@ -92,6 +92,16 @@ export async function readJson(filePath) {
 }
 
 /**
+ * Read JSON when a file exists; return null only when it is absent.
+ */
+export async function readJsonIfPresent(filePath) {
+  if (!(await exists(filePath))) {
+    return null;
+  }
+  return readJson(filePath);
+}
+
+/**
  * Write stable pretty JSON and ensure the destination directory exists.
  */
 export async function writeJson(filePath, payload) {

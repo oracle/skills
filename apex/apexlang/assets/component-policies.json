@@ -340,19 +340,16 @@
       "when": {
         "regionType": "Cards"
       },
-      "allowValues": {
-        "slot": [
-          "CREATE"
-        ],
-        "actionType": [
-          "navigate"
-        ]
-      },
+      "require": [
+        "label",
+        "behavior.target"
+      ],
       "forbid": [
+        "position",
         "process"
       ],
       "severity": "error",
-      "message": "Cards actions are limited to CREATE navigation and must not attach processes directly."
+      "message": "Native Cards actions are row navigation actions using label plus declarative behavior.target; they must not emit position or attach processes directly."
     },
     {
       "id": "REGION_RULE_010",

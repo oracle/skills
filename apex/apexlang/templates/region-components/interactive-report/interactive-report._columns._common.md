@@ -37,6 +37,9 @@ Standardize `column` variable contracts, output shape, and guardrails for all in
 | column.lov.type | optional | enum | LOV type for mapped display text. |
 | column.lov.sharedComponent | optional | string | Existing shared LOV alias. |
 | column.security.authorizationScheme | optional | string | Existing authorization alias. |
+| column.link.target | optional | object | Declarative target object for column-level navigation. Use `#COLUMN_ALIAS#` for current report-row values and `&ITEM.` only for page/app/session substitutions. |
+| column.link.linkText | optional | string | Link label/substitution text. |
+| column.link.linkAttributes | optional | string | HTML attributes for the rendered link. |
 | column.comments | required by default | string | Descriptive metadata string for `comments { comments: ... }` on business-significant, derived, status, and action columns; include the required attributes `Display Label`, `Display in Report`, `Display in Form`, `Format Mask`, `Value Required`, `Read Only`, `Primary Display Column`, and `Authorization Scheme`, with optional leading `Summary`. |
 | column.genAI.columnContext | optional | string | NL2IR column context from column annotation `column_context`, else `ai_context`, else `description`, else column comment. |
 | column.advanced.columnAlias | optional | string | APEX alias for REST/NL2IR scenarios. |
@@ -73,6 +76,17 @@ column {{column.name}} (
   security {
     authorizationScheme: @{{column.security.authorizationScheme}}
   }
+  link {
+    target: {
+      page: {{column.link.target.page}}
+      items: {
+        {{column.link.target.items}}
+      }
+      clearCache: {{column.link.target.clearCache}}
+    }
+    linkText: {{column.link.linkText}}
+    linkAttributes: {{column.link.linkAttributes}}
+  }
   comments {
     comments: {{column.comments}}
   }
@@ -98,6 +112,7 @@ column {{column.name}} (
 - Omit `source` unless `column.dataType` is provided.
 - Omit `lov` unless using LOV-backed rendering.
 - Omit `security` when column-level authorization is not required.
+- Omit `link` unless column-level navigation is explicitly requested and target page/item mappings are known.
 - Omit `comments` only for hidden technical columns or when a documented exemption applies.
 - Omit `genAI` unless NL2IR context is required.
 - Omit `advanced` unless `column.advanced.colAlias` is provided.
@@ -110,6 +125,8 @@ column {{column.name}} (
 - Keep `layout.sequence` as a multiline nested block on every generated column.
 - Every Interactive Report column must emit `heading { heading: ... }`; `type: hidden` does not waive that requirement.
 - Interactive report columns must not use classic-report query-position metadata such as `reportColumnQueryId` or `derivedColumn`.
+- Interactive Report column links use the column-level `link {}` block while keeping the column `type: plainText`. Never copy Classic Report `type: link` into Interactive Report columns.
+- For Interactive Report column-link `target.items`, use `#COLUMN_ALIAS#` for current report-row values and reserve `&ITEM.` for page/app/session substitutions.
 - Use only existing LOV and authorization shared component aliases.
 - When `comments` is emitted, keep it as a single string literal inside `comments { comments: ... }`.
 - Emit `comments { comments: ... }` by default for business-significant, derived, status, and action columns instead of treating the block as opt-in metadata.

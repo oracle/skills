@@ -133,16 +133,18 @@
 
 ## Runtime policy
 - Direct SQLcl roundtrips are the canonical live runtime path.
-- For agent-facing generated-app validation, use `node tools/apexctl.mjs runtime validate --app-path <absolute_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root>` as the single public validate-only gate. It may call preflight/roundtrip internally, but generation agents must consume its structured outputs.
+- For agent-facing generated-app validation, use `node tools/apexctl.mjs runtime validate --app-path <absolute_app_path> --db-connection-name <db_connection_name> --apex-root <resolved_build_root> [--compiler-oracle-home <compiler_metadata_home>]` as the single public validate-only gate. It may call preflight/roundtrip internally, but generation agents must consume its structured outputs.
+- Treat `--apex-root` as the APEX/SQLcl runtime selector only. Use `--compiler-oracle-home` only when overriding compiler-truth metadata discovery; otherwise let compiler truth auto-discover the VS Code SQLcl/APEXlang runtime.
 - Runtime validation must emit and preserve `validation-report.json`, `validation-transcript.log`, `problems.json`, and `component-contracts/<build>.json` for the selected target build.
-- The validation stage has two required evidence sources: live/compiler-driven truth from the target APEX build and VSCode Problems diagnostics for generated or revised `.apx` files. Missing, unavailable, or failing evidence records `VALIDATION_DUAL_SOURCE_REQUIRED_001` and blocks completion.
-- `problems.json` is the compact review interface. Patch only reported validation problems, then rerun `runtime validate` until `live_check_status = pass`; warnings are treated as errors when the runtime does.
-- Local lint remains syntax hygiene only unless it is generated directly from the same target build metadata. Broad memory-bank, policy, and template prose must not override live validation or the build contract pack.
+- Live APEX validation from the selected target build is required and authoritative. Missing required runtime inputs or missing live runtime evidence records `LIVE_RUNTIME_VALIDATION_REQUIRED_001` and blocks completion.
+- `problems.json` is the compact live-validation repair interface derived from `validation-report.json`. Patch only reported live validation problems, then rerun `runtime validate` until `live_check_status = pass`; warnings are treated as errors when the runtime does.
+- Local lint, compiler-truth, and VS Code Problems snapshots remain diagnostics unless live validation cannot run. Broad memory-bank, policy, and template prose must not override live validation or the build contract pack.
 - For every APEX artifact workflow, default to checking APEXlang code and run the live APEXlang check through `apex validate -input` when live runtime prerequisites are resolved.
 - After the live APEXlang check passes, offer GUI/clickable choices with a short purpose summary using plain language: `Check APEXlang code` (recommended) or `Check and import APEXlang code`; if GUI choices are unavailable, stop after checking the code and report import as a follow-up.
 - `apex validate -input` is mandatory for live check completion.
 - Existing-app `validate-and-import` runs must resolve and preserve one canonical live numeric application id before import.
 - Import-authorized runtime resolution must stay bounded to one intended workspace and produce one terminal outcome: `resolved_existing_app`, `not_found_in_workspace`, `ambiguous_candidates`, or `identity_uncertain`.
+- Target-resolution timeout or failure is terminal for import. Do not use live validate success as permission to run direct SQLcl import or bypass the wrapper.
 - `update-existing` remains the default import-authorized mode. If the outcome is `not_found_in_workspace`, stop the update path and require an explicit `create-new` confirmation before any import that could create a live app.
 - Once that canonical application id is known, use it as the session authority for workspace and import targeting; do not fall back to alias-only targeting.
 - If staged deployment metadata does not match the canonical live application id, reconcile the staged deployment app id before import-authorized runtime steps.

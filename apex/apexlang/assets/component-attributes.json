@@ -5,7 +5,7 @@
     "metadataHash": "6a1eb24a95ae",
     "normalizerVersion": "node-json-v1",
     "coverage": "curated_subset",
-    "verifiedAt": "2026-05-14",
+    "verifiedAt": "2026-06-02T10:36:38Z",
     "notes": "Curated repo-safe subset verified against the active compiler metadata provenance. This file may intentionally narrow compiler-valid behavior, but it is not the compiler source of truth."
   },
   "notes": "Canonical machine-readable safe subset for covered APEXlang component attributes. For covered shapes, templates and agent prose must not contradict this file. Packaged compiler metadata and direct compiler validation remain authoritative when they disagree with this file. For calendar settings.createLink and settings.viewEditLink, the preferred emitted contract is a structured object with required page and optional items. Existing form/report page reuse vs new page creation must be confirmed explicitly with the user, report type must be chosen explicitly for new view-link report pages, and target pages or item names must not be inferred.",
@@ -296,6 +296,32 @@
             "template"
           ]
         },
+        "pagination": {
+          "allowedProperties": [
+            "type",
+            "displayPosition"
+          ],
+          "propertyEnums": {
+            "type": [
+              "externalPaginationButtons",
+              "nextAndPreviousLinks",
+              "rowRangesXToYNoPagination",
+              "rowRangesXToYOfZNoPagination",
+              "rowRangesXToYOfZWithPagination",
+              "setPaginationLinks",
+              "setPaginationSearchEngine",
+              "setPaginationSelectList"
+            ],
+            "displayPosition": [
+              "bottomLeft",
+              "bottomRight",
+              "topLeft",
+              "topRight",
+              "topAndBottomLeft",
+              "topAndBottomRight"
+            ]
+          }
+        },
         "column": {
           "allowedProperties": [
             "reportColumnQueryId",
@@ -388,6 +414,7 @@
           "media",
           "blobAttributes",
           "iconAndBadge",
+          "action",
           "messages",
           "componentAppearance"
         ],
@@ -529,6 +556,42 @@
             "noDataFoundIcon"
           ]
         },
+        "action": {
+          "allowedProperties": [
+            "label"
+          ],
+          "requiredProperties": [
+            "label"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "requiredBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "behavior": {
+            "allowedProperties": [
+              "target",
+              "targetUrl",
+              "type",
+              "linkAttributes"
+            ],
+            "propertyNotes": {
+              "target": "Preferred native Cards action navigation contract. Use declarative target: { page, items, clearCache } and map row values with &SOURCE_COLUMN. substitutions.",
+              "targetUrl": "Compiler-supported fallback only; generation should prefer declarative target."
+            }
+          }
+        },
         "componentAppearance": {
           "allowedProperties": [
             "gridColumns"
@@ -656,6 +719,7 @@
             "settings",
             "columnFormatting",
             "source",
+            "link",
             "lov",
             "security",
             "comments",
@@ -695,6 +759,13 @@
           "columnFormatting": {
             "allowedProperties": [
               "htmlExpression"
+            ]
+          },
+          "link": {
+            "allowedProperties": [
+              "target",
+              "linkText",
+              "linkAttributes"
             ]
           }
         }

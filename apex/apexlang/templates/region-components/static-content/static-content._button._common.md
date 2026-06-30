@@ -28,6 +28,12 @@ Provide a reusable button block for static-content scenarios that include toolba
 - `button.behavior.*`
 - `button.serverSideCondition.*`
 
+## Appearance Defaults
+
+- When `button.appearance.buttonTemplate` is `@/text-with-icon` and `button.appearance.icon` is present, `button.appearance.templateOptions` must include exactly one icon-position option.
+- Default to `t-Button--iconLeft`; use `t-Button--iconRight` only when explicitly requested.
+- When `button.appearance.buttonTemplate` is `@/icon`, do not add left/right icon-position options.
+
 ---
 
 # Output Template – Button Block
@@ -59,3 +65,4 @@ button {{button.staticId}} (
 # Conditional Rendering Rules
 
 - Omit optional appearance and behavior fields when not provided.
+- Apply icon-placement defaults to the generated button block, not to the static-content or buttons-container region.

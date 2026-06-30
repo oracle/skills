@@ -6,13 +6,15 @@ Purpose
   - Agent 2 — Critique (rule‑based review checklist with citations and confidence scoring)
   - Agent 3 — Revision (apply accepted fixes and publish after gates pass)
 - Master workflow: references/workflows/apex-generation.md
+- Snippet class: `metavariable_template` for structured payload blocks and `illustrative_prompt` for one-line routing examples.
+- Every `{{...}}` value is a metavariable. Replace it with verified schema, page, item, LOV, region, API, or navigation evidence before use; never copy it into generated APEXlang.
 
 How to use
 1) Trigger the master (Message 1):
    references/workflows/apex-generation.md
 2) Choose one of two paths:
-   - **Natural prompt (recommended):** Type a conversational request (e.g., “When the employee dialog closes, refresh the interactive report”). The NLU router will map it to components, ask for specifics only when needed, and build the structured payload automatically.
-   - **Structured payload:** Copy one of the skeleton Message 2 blocks below and fill in the placeholders when you already know every detail.
+   - **Natural prompt (recommended):** Type a conversational request (e.g., “When the source record dialog closes, refresh the interactive report”). The NLU router will map it to components, ask for specifics only when needed, and build the structured payload automatically.
+   - **Structured payload:** Copy one of the skeleton Message 2 blocks below only when you can replace every `{{...}}` variable with verified project-specific values.
 
 General template (copy/paste and fill)
 - Message 1:
@@ -24,19 +26,19 @@ General template (copy/paste and fill)
   data_contract:
     # Describe required tables/views, primary keys, columns; and lov mapping when needed
     # Example:
-    # emp:
-    #   table: EMP
-    #   pk: EMPNO
-    #   cols: [EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO]
-    # dept:
-    #   table: DEPT
-    #   pk: DEPTNO
-    #   cols: [DEPTNO, DNAME, LOC]
-    #   lov: value=DEPTNO, display=DNAME
+    # source:
+    #   table: {{source.table}}
+    #   pk: {{source.pk}}
+    #   cols: [{{source.pk}}, {{source.displayColumn}}, {{source.statusColumn}}, {{source.createdOnColumn}}, {{lookup.valueColumn}}]
+    # lookup:
+    #   table: {{lookup.table}}
+    #   pk: {{lookup.valueColumn}}
+    #   cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}, {{lookup.descriptionColumn}}]
+    #   lov: value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   output_path: applications/app_###/
 
 One‑liner usage (optional — NLU Router)
-- A single natural sentence is enough (e.g., “Add a dynamic action that disables Commission unless Job = SALESMAN”). The router will:
+- A single natural sentence is enough (e.g., “Add a dynamic action that disables discount amount unless status = APPROVED”). The router will:
   - Detect components via assets/apex-generation/components.registry.json
   - Compute target_type (single component → that type; multiple → page)
   - Co‑load the correct rules via assets/rules-mapping.json
@@ -76,96 +78,96 @@ A) Page — Blank page with Static Region (smoke test)
   output_path: applications/app_###/
 - Template refs: templates/page-examples/blank-page/blank-page._index.md, templates/region-components/static-content/static-content._common.md
 
-B) Interactive Report — EMP with Department filter (Select List LOV)
+B) Interactive Report — {{source.table}} with Lookup filter (Select List LOV)
 - Message 1:
   references/workflows/apex-generation.md
 - Message 2:
   target_type: interactive-report
-  intent: Build an IR on EMP with a Select List filter on DEPTNO populated from Departments LOV
+  intent: Build an IR on {{source.table}} with a Select List filter on {{lookup.valueColumn}} populated from Lookup LOV
   data_contract:
-    emp:
-      table: EMP
-      pk: EMPNO
-      cols: [EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO]
-    dept:
-      table: DEPT
-      pk: DEPTNO
-      cols: [DEPTNO, DNAME, LOC]
-      lov: value=DEPTNO, display=DNAME
+    source:
+      table: {{source.table}}
+      pk: {{source.pk}}
+      cols: [{{source.pk}}, {{source.displayColumn}}, {{source.statusColumn}}, {{source.createdOnColumn}}, {{lookup.valueColumn}}]
+    lookup:
+      table: {{lookup.table}}
+      pk: {{lookup.valueColumn}}
+      cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}, {{lookup.descriptionColumn}}]
+      lov: value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/page-examples/interactive-report-page/interactive-report-page._index.md, templates/items/select-list/select-list._index.md, templates/shared-components/lovs/lovs.dynamic.query.md
 
-C) Modal CRUD Form — EMP (invoked from IR row)
+C) Modal CRUD Form — {{source.table}} (invoked from IR row)
 - Message 1:
   references/workflows/apex-generation.md
 - Message 2:
   target_type: form
-  intent: Modal CRUD form on EMP (create/edit/delete), invoked from IR row; use Departments LOV for DEPTNO
+  intent: Modal CRUD form on {{source.table}} (create/edit/delete), invoked from IR row; use Lookup LOV for {{lookup.valueColumn}}
   data_contract:
-    emp:
-      table: EMP
-      pk: EMPNO
-      cols: [EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO]
-    dept:
-      table: DEPT
-      pk: DEPTNO
-      cols: [DEPTNO, DNAME, LOC]
-      lov: value=DEPTNO, display=DNAME
+    source:
+      table: {{source.table}}
+      pk: {{source.pk}}
+      cols: [{{source.pk}}, {{source.displayColumn}}, {{source.statusColumn}}, {{source.createdOnColumn}}, {{lookup.valueColumn}}]
+    lookup:
+      table: {{lookup.table}}
+      pk: {{lookup.valueColumn}}
+      cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}, {{lookup.descriptionColumn}}]
+      lov: value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/page-examples/form-page/form-page._index.md, templates/items/select-list/select-list._index.md
 
-D) Dashboard — Two tiles or charts (Headcount and Salary by Department)
+D) Dashboard — Two tiles or charts (Record count and Amount by Category)
 - Message 1:
   references/workflows/apex-generation.md
 - Message 2:
   target_type: dashboard
-  intent: Dashboard with two visuals — Headcount by Department and Salary by Department
+  intent: Dashboard with two visuals — Record Count by Category and Amount by Category
   data_contract:
-    emp:
-      table: EMP
-      pk: EMPNO
-      cols: [EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO]
-    dept:
-      table: DEPT
-      pk: DEPTNO
-      cols: [DEPTNO, DNAME, LOC]
+    source:
+      table: {{source.table}}
+      pk: {{source.pk}}
+      cols: [{{source.pk}}, {{source.displayColumn}}, {{source.amountColumn}}, {{lookup.valueColumn}}]
+    lookup:
+      table: {{lookup.table}}
+      pk: {{lookup.valueColumn}}
+      cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}]
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/page-examples/dashboard-page/dashboard-page._index.md, templates/page-examples/classic-report-page/classic-report-page._index.md (or charts via apex.charts page rules)
 
-E) Chart — Single chart (Salary by Department)
+E) Chart — Single chart (Amount by Category)
 - Message 1:
   references/workflows/apex-generation.md
 - Message 2:
   target_type: chart
-  intent: Build a chart showing Salary by Department
+  intent: Build a chart showing Amount by Category
   data_contract:
-    emp:
-      table: EMP
-      pk: EMPNO
-      cols: [EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO]
-    dept:
-      table: DEPT
-      pk: DEPTNO
-      cols: [DEPTNO, DNAME, LOC]
+    source:
+      table: {{source.table}}
+      pk: {{source.pk}}
+      cols: [{{source.pk}}, {{source.amountColumn}}, {{lookup.valueColumn}}]
+    lookup:
+      table: {{lookup.table}}
+      pk: {{lookup.valueColumn}}
+      cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}]
   styling: none
   output_path: applications/app_###/
 - Page rules: references/policies/memory-bank/30-pages/apex.chart-page.md
 
-F) Items — Departments LOV (shared component)
+F) Items — Lookup LOV (shared component)
 - Message 1:
   references/workflows/apex-generation.md
 - Message 2:
   target_type: items
-  intent: Create a shared LOV “Departments” mapping DEPTNO → DNAME
+  intent: Create a shared LOV “Lookup Values” mapping {{lookup.valueColumn}} → {{lookup.displayColumn}}
   data_contract:
-    dept:
-      table: DEPT
-      pk: DEPTNO
-      cols: [DEPTNO, DNAME, LOC]
-      lov: value=DEPTNO, display=DNAME
+    lookup:
+      table: {{lookup.table}}
+      pk: {{lookup.valueColumn}}
+      cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}, {{lookup.descriptionColumn}}]
+      lov: value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/shared-components/lovs/lovs.dynamic.query.md, templates/shared-components/lovs/lovs.dynamic.query.md
@@ -175,11 +177,11 @@ G) Dynamic Action — Refresh region after modal closes
   references/workflows/apex-generation.md
 - Message 2:
   target_type: dynamic-action
-  intent: Refresh the EMP_IR region after the EMP_FORM dialog closes
+  intent: Refresh the {{region.reportStaticId}} region after the {{region.formStaticId}} dialog closes
   data_contract:
-    page: Departments overview (page 10)
-    modal_region: EMP_FORM_DIALOG
-    report_region: EMP_IR
+    page: Source records overview (page 10)
+    modal_region: {{region.formDialogStaticId}}
+    report_region: {{region.reportStaticId}}
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md
@@ -207,13 +209,13 @@ I) Dynamic Action — Delete row via invokeApi
   references/workflows/apex-generation.md
 - Message 2:
   target_type: dynamic-action
-  intent: Delete an employee row from report EMP_IR when clicking delete icon and show success notification
+  intent: Delete a source row from report {{region.reportStaticId}} when clicking delete icon and show success notification
   data_contract:
-    page: Delete employees (page 18)
+    page: Delete source records (page 18)
     jquerySelector: a.delete-row
     delete_item: P18_DELETE_PK
-    api: app_process_api.delete_emp
-    target_region: EMP_IR
+    api: app_process_api.delete_record
+    target_region: {{region.reportStaticId}}
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/business-logic/dynamic-actions/dynamic-actions.delete-with-notification.md
@@ -237,38 +239,38 @@ L) Page — Interactive Report + Form (same page)
   references/workflows/apex-generation.md
 - Message 2:
   target_type: page
-  intent: Build a single page containing two regions — an Interactive Report (list) and a Form (detail). The Interactive Report lists EMP records; the Form edits the selected EMP record on the same page. Guard DML by button, and add a dynamic action to refresh the IR after form submit.
+  intent: Build a single page containing two regions — an Interactive Report (list) and a Form (detail). The Interactive Report lists {{source.table}} records; the Form edits the selected {{source.table}} record on the same page. Guard DML by button, and add a dynamic action to refresh the IR after form submit.
   data_contract:
-    emp:
-      table: EMP
-      pk: EMPNO
-      cols: [EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO]
-    dept:
-      table: DEPT
-      pk: DEPTNO
-      cols: [DEPTNO, DNAME, LOC]
-      lov: value=DEPTNO, display=DNAME
+    source:
+      table: {{source.table}}
+      pk: {{source.pk}}
+      cols: [{{source.pk}}, {{source.displayColumn}}, {{source.statusColumn}}, {{source.createdOnColumn}}, {{lookup.valueColumn}}]
+    lookup:
+      table: {{lookup.table}}
+      pk: {{lookup.valueColumn}}
+      cols: [{{lookup.valueColumn}}, {{lookup.displayColumn}}, {{lookup.descriptionColumn}}]
+      lov: value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   styling: none
   output_path: applications/app_###/
 - Template refs: templates/page-examples/interactive-report-page/interactive-report-page._index.md, templates/page-examples/form-page/form-page._index.md, templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md, templates/shared-components/lovs/lovs.dynamic.query.md
 
 Test matrix (examples → expected routing)
-- “Page with an interactive report and a form on EMP; use Departments LOV for DEPTNO; refresh report after submit”
+- “Page with an interactive report and a form on {{source.table}}; use Lookup LOV for {{lookup.valueColumn}}; refresh report after submit”
   - Components: [interactive report, form, lov, dynamic action refresh]
   - target_type: page
   - Rules: page + interactive-report + form + logic + items/sql
 - Templates: region-components/interactive-report/interactive-report._common.md, region-components/form/form._common.md, shared-components/lovs/lovs.dynamic.query.md, business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md
-- “Dashboard with cards summarizing headcount by department”
+- “Dashboard with cards summarizing record count by category”
   - Components: [dashboard/cards]
   - target_type: page (or dashboard)
   - Rules: page + dashboard
   - Templates: dashboard.apx (optionally classic-report.apx)
-- “Add a calendar of EMP hires”
+- “Add a calendar of {{source.table}} events”
   - Components: [calendar]
   - target_type: page
   - Rules: page
   - Templates: calendar.apx
-  - Ask: date column (e.g., HIREDATE)
+  - Ask: date column (e.g., {{source.dateColumn}})
 - “Create a map for office locations”
   - Components: [map]
   - target_type: page

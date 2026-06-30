@@ -56,10 +56,10 @@ Preset: `js-dialog-class-t-Drawer--pullOutEnd`
 - Large | `static_id=large` | `css=js-dialog-class-t-Drawer--lg` | `group=Size`
 - Medium | `static_id=medium` | `css=js-dialog-class-t-Drawer--md` | `group=Size`
 - Small | `static_id=small` | `css=js-dialog-class-t-Drawer--sm` | `group=Size`
-- Bottom | `static_id=bottom` | `css=js-dialog-class-t-Drawer--pullOutBottom` | `group=Position`
-- End | `static_id=end` | `css=js-dialog-class-t-Drawer--pullOutEnd` | `group=Position`
-- Start | `static_id=start` | `css=js-dialog-class-t-Drawer--pullOutStart` | `group=Position`
-- Top | `static_id=top` | `css=js-dialog-class-t-Drawer--pullOutTop` | `group=Position`
+- Bottom | `value=js-dialog-class-t-Drawer--pullOutBottom` | `css=js-dialog-class-t-Drawer--pullOutBottom` | `group=Position`
+- End | `value=js-dialog-class-t-Drawer--pullOutEnd` | `css=js-dialog-class-t-Drawer--pullOutEnd` | `group=Position`
+- Start | `value=js-dialog-class-t-Drawer--pullOutStart` | `css=js-dialog-class-t-Drawer--pullOutStart` | `group=Position`
+- Top | `value=js-dialog-class-t-Drawer--pullOutTop` | `css=js-dialog-class-t-Drawer--pullOutTop` | `group=Position`
 
 ### Left and Right Side Columns (`left-and-right-side-columns`)
 Preset: none

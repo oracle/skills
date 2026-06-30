@@ -26,7 +26,7 @@ Standardize saved report blocks for interactive-grid variants.
 | Name | Required | Type | Notes |
 |------|----------|------|-------|
 | savedReport.name | yes | string | Saved report static identifier. Use `PRIMARY` for the baseline emitted Interactive Grid saved report unless a different identifier is required. |
-| savedReport.visibility | yes | enum | Saved report visibility. Use compiler-backed values such as `primaryDefault`, `alternativeDefault`, `private`, or `public`; do not emit legacy `primary`. |
+| savedReport.visibility | yes | enum | Saved report visibility. Valid values are `alternative`, `primary`, `private`, and `public`; emit `primary` by default. |
 | savedReport.displayName | optional | string | User-facing name. |
 | savedReport.viewDefault | optional | enum | Default view mode. |
 | savedReport.singleRowDisplayedColumns | optional | boolean | Single-row displayed columns toggle. |

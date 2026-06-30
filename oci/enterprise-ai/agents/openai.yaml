@@ -1,0 +1,4 @@
+interface:
+  display_name: "Enterprise AI"
+  short_description: "Oracle Enterprise AI journey router"
+  default_prompt: "Use $enterprise-ai as the front door for Oracle Enterprise AI workflows, routing model, custom/imported model, agent, RAG, cost-estimation, governance, deployment, and integration requests to the smallest relevant topic file."

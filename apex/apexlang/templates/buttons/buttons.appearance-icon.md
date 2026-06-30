@@ -24,5 +24,6 @@ appearance {
 ## Notes
 - Primary button wording in prompts maps to `hot: true` in emitted DSL.
 - Use icon only with `@/text-with-icon` or `@/icon`.
-- For `@/text-with-icon`, include `t-Button--iconLeft` in template options.
-- Use canonical emitted button templateOptions values such as `t-Button--iconLeft` and `t-Button--hoverIconPush`, not aliases such as `left` or `push`.
+- For `@/text-with-icon` with `icon`, include exactly one icon-position option: default to `t-Button--iconLeft`, or use `t-Button--iconRight` only when explicitly requested.
+- For `@/icon`, do not include `t-Button--iconLeft` or `t-Button--iconRight`.
+- Use canonical emitted button templateOptions values such as `t-Button--iconLeft` and `t-Button--hoverIconPush`, not aliases/static_ids such as `left` or `push`.

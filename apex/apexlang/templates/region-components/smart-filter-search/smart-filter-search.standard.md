@@ -24,9 +24,6 @@ region {{smartFiltersRegionStaticId}} (
     template: {{appearance.template}}
     templateOptions: #DEFAULT#
   }
-  settings {
-    moreFiltersSuggestionChip: {{settings.moreFiltersSuggestionChip}}
-    showTotalRowCount: {{settings.showTotalRowCount}}
-  }
+  {{filters}}
 )
 ```

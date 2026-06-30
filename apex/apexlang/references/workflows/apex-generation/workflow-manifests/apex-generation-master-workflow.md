@@ -31,7 +31,7 @@
   - Confidence score ≥ 0.95 (two-pass cap)
   - InvokeAPI-first policy, named notation in PL/SQL
   - `runtime validate` pass for generated apps before publish/import eligibility
-  - Required validation sources: live/compiler-driven target-build truth and VSCode Problems diagnostics
+  - Required validation source: live APEX validation evidence from the selected target build
   - Repair loop: up to 2 additional live retries after the first failure (3 total live rounds), each patching only `problems.json` findings before rerun
 - **Codex Notes:**
   - Manifest provides minimal metadata for skill integration.

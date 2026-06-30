@@ -77,7 +77,7 @@ serverSideCondition {
 
 ## Guardrails
 - Keep `appearance.pageMode: modalDialog` and `appearance.dialogTemplate: @/drawer` together.
-- Align drawer position and size values with the inventory in [`../README.md`](../README.md); pass `static_id` values such as `end`, `large`, or `remove-body-padding` instead of the emitted CSS class string.
+- Align drawer position and size values with the live compiler/theme inventory in [`../README.md`](../README.md). For APEX 26.1 drawer position, emit values such as `js-dialog-class-t-Drawer--pullOutEnd`; do not emit stale short IDs such as `end`.
 - Never concatenate `#DEFAULT#` with another template-option value.
 - When the footer needs button-slot semantics, route them through a footer region pattern rather than treating them as page display points.
 - Do not emit public drawer pages by default.

@@ -70,6 +70,28 @@ Required response order for non-trivial structural generation:
 2. `Generation Plan`
 3. generated APEXlang
 
+### Trivial Work Boundary
+
+Trivial APEXlang work is limited to same-property edits on existing artifacts, such as wording-only updates, labels, titles, help text, comments, or replacing an existing documented property value with another value of the same kind.
+
+Work is non-trivial when it adds, removes, or reshapes page, region, item, button, SQL, LOV, validation, process, dynamic-action, navigation, template-option, source-mode, target-mapping, component-family, or behavior structure. New report, form, chart, map, dashboard, shared-component, navigation, or behavior generation is non-trivial even when the prompt calls it simple, basic, starter, lightweight, or quick.
+
+Trivial work may skip a full `Generation Plan` only when it stays on an existing documented property, does not introduce new structure or compiler-truth decisions, and does not alter runtime behavior. If there is doubt, classify the work as non-trivial.
+
+### Application Spec
+
+Required before complete application generation from functional requirements plus model/schema metadata.
+
+The spec must use `references/workflows/apexlang/application-spec.template.md` and include:
+
+- source evidence and conflict status
+- full page inventory
+- application composition plan
+- rich UI pattern plan using native APEX components
+- LOVs, validation behavior, modal/report-to-form behavior, and test plan
+- missing inputs and generation/runtime blockers
+- project-root `.apexlang/app-ux-contract.json` with non-empty `sourceEvidence`, `pageInventory`, `compositionPlan`, `richUiPatternPlan`, `lovPlan`, `behaviorPlan`, and `testPlan`
+
 ## Workflow Precedence
 
 Use this precedence order for every generation and revision task:
@@ -86,6 +108,45 @@ Do not:
 - skip to “best judgment” because a template seems close enough
 - invent target pages, target item names, enum values, slots, or block shapes when the workflow cannot prove them
 - treat local validator success as permission to infer missing structure
+
+## Generation Boundary
+
+For non-trivial APEXlang output, the `Generation Plan` is a boundary contract, not only a summary. It must identify the supported template family or documented page/design pattern that authorizes each emitted page, region family, item family, button/navigation mode, dynamic-action shape, and non-default template option.
+
+Generated `.apx` artifacts must stay inside the current authoritative sources: guardrails, governance, loaded memory-bank rules, current template documentation, compiler-backed truth, and machine-readable contracts. Requirements may select, combine, or parameterize supported native APEX/APEXlang patterns, but they do not authorize new DSL surface or undocumented component behavior.
+
+Do not invent properties, enum values, block names, target shapes, item mappings, template options, region capabilities, dynamic-action selectors, page patterns, component families, or navigation modes outside the loaded authoritative sources. Unsupported design intent must be recorded as blocked/deferred, simplified to a documented native APEX pattern, or represented by a supported placeholder only when the active workflow explicitly allows placeholders.
+
+## Snippet Classification Contract
+
+All prompt, template, and memory-bank snippets are one of these classes:
+
+- `normative_rule`: guidance that may be followed literally.
+- `metavariable_template`: structure-only template content that may be emitted only after every `{{...}}` variable is bound from schema evidence, user input, a template contract, or compiler-backed truth.
+- `illustrative_prompt`: natural-language routing example only; never schema evidence and never a source of table, column, page, item, API, or region identifiers.
+- `counterexample`: known-bad content that must never be emitted.
+
+Rules:
+
+- Treat unclassified examples and snippets as `illustrative_prompt` unless they are under an `Output Template` heading or an explicit variable contract.
+- Do not copy sample or placeholder identifiers from `illustrative_prompt` text into APEXlang, SQL, JSON contracts, or generated `.apx` files.
+- Do not emit a `metavariable_template` while any `{{...}}` variable remains unbound.
+- Stop with `Missing Inputs` when a required schema, page, item, region, LOV, API, or navigation binding cannot be proven.
+- Generated `.apx` artifacts must not contain unresolved `{{...}}` variables or prompt-only pseudo-identifiers such as `SOURCE_TABLE`, `LOOKUP_TABLE`, `RELATED_TABLE`, `SOURCE_ID`, `LOOKUP_ID`, or `LOOKUP_NAME`.
+
+## Validator Feedback Contract
+
+When local validation, live validation, VSCode Problems, `problems.json`, or `validation-report.json` emits rule IDs, feed those findings back into critique and revision using `assets/validator-fix-recipes.json`.
+
+For each reported issue, the critique/revision loop must preserve:
+
+- `rule_id`
+- cause
+- deterministic fix
+- owning guidance or template
+- verification result after rerun
+
+If a rule ID has no deterministic recipe and the owning guidance does not prove a fix, keep the run blocked with Required Revisions or Missing Inputs instead of guessing.
 
 ## Rule IDs
 
@@ -217,6 +278,30 @@ Invalid:
 
 ```text
 I could not prove the target item names, so I invented `P4_ID` to keep moving.
+```
+
+Ownership:
+- Draft prompt
+- Critique prompt
+
+### APPLICATION_SPEC_REQUIRED_001
+
+Statement:
+- Complete app generation from FR/model sources must produce an implementation-ready application spec from `application-spec.template.md` before drafting non-trivial `.apx` artifacts.
+
+Why:
+- Rich application generation needs page inventory, composition, shared components, UI pattern choices, data evidence, and tests locked before page-by-page APEXlang drafting starts.
+
+Valid:
+
+```text
+I completed the application spec, including the Application Composition Plan and Rich UI Pattern Plan, then generated page artifacts from that spec.
+```
+
+Invalid:
+
+```text
+I skipped the spec and started drafting pages directly from the requirements.
 ```
 
 Ownership:
@@ -399,6 +484,7 @@ Ownership:
 
 Statement:
 - Classic Report regions must use the canonical shared `appearance` block and the canonical report-template `componentAppearance` block.
+- Canonical Classic Report component options are `#DEFAULT#`, `t-Report--stretch`, and `t-Report--horizontalBorders`; do not emit alternating-row or row-highlight options by default.
 
 Why:
 - This is a high-drift area where template and import behavior must stay aligned. Live APEXlang validation on 26.1 maps the Classic Report report template to property `411` and reports missing values as `componentAppearance - template (string)`.
@@ -412,7 +498,11 @@ appearance {
 }
 componentAppearance {
   template: @/standard
-  templateOptions: #DEFAULT#
+  templateOptions: [
+    #DEFAULT#
+    t-Report--stretch
+    t-Report--horizontalBorders
+  ]
 }
 ```
 
@@ -441,7 +531,11 @@ Valid:
 ```apx
 componentAppearance {
   template: @/standard
-  templateOptions: #DEFAULT#
+  templateOptions: [
+    #DEFAULT#
+    t-Report--stretch
+    t-Report--horizontalBorders
+  ]
 }
 ```
 

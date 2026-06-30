@@ -84,8 +84,9 @@ This skill executes the page-patterns playbook defined in this repository. It en
 - When `add_navigation: true` and the navigation entry emits `isCurrent { type: pages }`, set `pages` to the new entry's own page id only.
 - If a related page also needs navigation, create a separate list entry for that page instead of appending its page id to another entry's `isCurrent.pages` value.
 - When `add_breadcrumb: true`: append breadcrumb entry to `shared-components/breadcrumbs.apx`.
+- When `add_breadcrumb: true`: add a visible page breadcrumb region with `type: breadcrumb` and `source.breadcrumb: @breadcrumb`.
 - When `page_group` provided: set `pageGroup` at the page root (not inside appearance/nav/css/security).
-- Fail if non-modal page lacks required nav or breadcrumb entries when flags are true.
+- Fail if a non-modal user page lacks required nav, a matching breadcrumb entry, or a visible breadcrumb region when flags are true.
 - Fail if a requested server-side condition is missing catalog type or required attributes.
 
 ---

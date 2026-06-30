@@ -2,6 +2,7 @@
 
 ## Purpose
 - Define deterministic, template-driven guidance for adding items to pages while honoring governance:
+- Snippets containing `{{...}}` are `metavariable_template` examples. Bind every variable from schema evidence before emitting SQL or APEXlang.
 - When generating items, load the matching template under `templates/items/` or `template-components/` first.
   - Follow references/policies/memory-bank/00-guard/ai.guard.md and 10-global/apex.global.md.
   - Never invent attributes or UT classes; use only what exists in templates/items/*.
@@ -98,9 +99,9 @@ Example (conceptual, align strictly with template properties)
 -- Dynamic LOV SQL (triple backticks required)
 ```
 ```
-select deptno as value, dname as display
-from dept
-order by dname
+select {{lookup.valueColumn}} as value, {{lookup.displayColumn}} as display
+from {{lookup.table}}
+order by {{lookup.displayColumn}}
 ```
 ```
 - Reference the template for how to attach this SQL to the item; do not add new properties.

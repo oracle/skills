@@ -7,6 +7,7 @@
 ## Conventions
 - Message 1: references/workflows/apex-generation.md
 - Message 2: Auto-computed by the NLU Router or supplied manually.
+- Inputs containing `{{...}}` are `illustrative_prompt` grammar examples. Substitute verified identifiers for the variables during a real run; do not treat the variables as schema evidence.
 - Outputs:
   - Working copy: transient temp workspace outside the repo
   - Durable runtime evidence: compact report + transcript under `the temp-runtime logs directory under `APEXLANG_OUTPUT_ROOT/logs/`` when needed
@@ -17,7 +18,7 @@
 - Only templates present under templates/* may be used.
 
 1) Page with Interactive Report + Form (same page) + LOV + Refresh
-- Input: “Build a page with an interactive report and a form on EMP; use Departments LOV for DEPTNO; refresh report after submit”
+- Input: “Build a page with an interactive report and a form on {{source.table}}; use Lookup LOV for {{lookup.valueColumn}}; refresh report after submit”
 - target_type: page
 - Components: [interactive-report, form, lov-shared, dynamic-action-refresh-report]
 - Rules:
@@ -35,13 +36,13 @@
   - templates/shared-components/lovs/lovs.dynamic.query.md
   - templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md
 - Required inputs to ask/validate:
-  - EMP: table, pk, columns
-  - LOV: source table/view=DEPT, value=DEPTNO, display=DNAME
+  - {{source.table}}: table, pk, columns
+  - LOV: source table/view={{lookup.table}}, value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   - DA: target region identifier (IR region), trigger (after form submit)
 - Outputs: internal generate/review/fix loop, then final written under pages/
 
-2) Interactive Report only (EMP with DEPTNO filter LOV)
-- Input: “Interactive report on EMP with a DEPTNO select list filter using Departments LOV”
+2) Interactive Report only ({{source.table}} with {{lookup.valueColumn}} filter LOV)
+- Input: “Interactive report on {{source.table}} with a {{lookup.valueColumn}} select list filter using Lookup LOV”
 - target_type: interactive-report (or page if the user prefers a composed page)
 - Components: [interactive-report, lov-shared]
 - Rules:
@@ -53,7 +54,7 @@
 - Templates:
   - templates/page-examples/interactive-report-page/interactive-report-page._index.md
   - templates/shared-components/lovs/lovs.dynamic.query.md
-- Required inputs: EMP table, optional columns; LOV mapping (DEPTNO→DNAME)
+- Required inputs: {{source.table}}, optional columns; LOV mapping ({{lookup.valueColumn}}->{{lookup.displayColumn}})
 - Outputs: internal generate/review/fix loop, then final page
 
 2b) Classic Report region (explicit phrase precedence)
@@ -74,8 +75,8 @@
   - Must not fall back to generic `interactive-report` mapping
 - Outputs: internal generate/review/fix loop, then final page
 
-3) Form only (Modal CRUD on EMP)
-- Input: “Modal CRUD form on EMP; use Departments LOV for DEPTNO”
+3) Form only (Modal CRUD on {{source.table}})
+- Input: “Modal CRUD form on {{source.table}}; use Lookup LOV for {{lookup.valueColumn}}”
 - target_type: form
 - Components: [form, lov-shared]
 - Rules:
@@ -88,11 +89,11 @@
   - templates/page-examples/form-page/form-page._index.md
   - templates/items/select-list/select-list._index.md (if item-level LOV is desired)
   - templates/shared-components/lovs/lovs.dynamic.query.md (if page-level LOV is desired)
-- Required inputs: EMP table, pk, columns; LOV mapping
+- Required inputs: {{source.table}}, pk, columns; LOV mapping
 - Outputs: internal generate/review/fix loop, then final page
 
-4) Dashboard with cards (headcount by department)
-- Input: “Create a dashboard with cards summarizing headcount by department”
+4) Dashboard with cards (record count by category)
+- Input: “Create a dashboard with cards summarizing record count by category”
 - target_type: page (or dashboard)
 - Components: [dashboard]
 - Rules:
@@ -105,8 +106,8 @@
 - Required inputs: SQL or table/view for aggregation
 - Outputs: internal generate/review/fix loop, then final page
 
-5) Single Chart (salary by department)
-- Input: “Chart showing salary by department”
+5) Single Chart (amount by category)
+- Input: “Chart showing amount by category”
 - target_type: chart
 - Components: [chart]
 - Rules:
@@ -116,8 +117,8 @@
 - Required inputs: SQL defining series/category, or table + columns
 - Outputs: internal generate/review/fix loop, then final page
 
-6) Calendar (EMP hires)
-- Input: “Add a calendar of EMP hires”
+6) Calendar ({{source.table}} events)
+- Input: “Add a calendar of {{source.table}} events”
 - target_type: page
 - Components: [calendar]
 - Rules:
@@ -125,7 +126,7 @@
   - 30-pages/apex.page.md
 - Templates:
   - templates/page-examples/calendar-page/calendar-page._index.md
-- Required inputs: date column (e.g., HIREDATE), SQL or table mapping
+- Required inputs: date column (e.g., {{source.dateColumn}}), SQL or table mapping
 - Outputs: internal generate/review/fix loop, then final page
 
 7) Map (office locations)
@@ -140,8 +141,8 @@
 - Required inputs: lat column, lng column (or geocode source)
 - Artifacts: Draft → Critique → Final page
 
-8) Shared LOV (Departments)
-- Input: “Create a shared LOV that maps DEPTNO to DNAME”
+8) Shared LOV (Lookup values)
+- Input: “Create a shared LOV that maps {{lookup.valueColumn}} to {{lookup.displayColumn}}”
 - target_type: items
 - Components: [lov-shared]
 - Rules:
@@ -151,7 +152,7 @@
 - Templates:
   - templates/shared-components/lovs/lovs.dynamic.query.md
   - templates/shared-components/lovs/lovs.dynamic.query.md (if also added to a page)
-- Required inputs: table/view=DEPT, value=DEPTNO, display=DNAME
+- Required inputs: table/view={{lookup.table}}, value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
 - Outputs: internal generate/review/fix loop, then final under shared-components/
 
 9) Dynamic Action — Refresh IR after submit

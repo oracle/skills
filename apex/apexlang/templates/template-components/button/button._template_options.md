@@ -17,3 +17,10 @@ Supported: `child-helper`
 - `linkAttribute` | prompt=`Link Attribute` | type=`TEXT` | scope=`COMPONENT` | required=`false` | default=`--` | group=`--` | depends=`--`
 - `linkUrl` | prompt=`Link URL` | type=`LINK` | scope=`COMPONENT` | required=`false` | default=`--` | group=`--` | depends=`--`
 - `menuId` | prompt=`Menu ID` | type=`TEXT` | scope=`COMPONENT` | required=`false` | default=`--` | group=`--` | depends=`--`
+
+## Icon Placement
+
+- For icon-plus-text helpers, put exactly one emitted Universal Theme icon-position class in `cssClasses`.
+- Default: `t-Button--iconLeft`.
+- Explicit right-side override: `t-Button--iconRight`.
+- Do not add either class when `isIconOnly: true`.

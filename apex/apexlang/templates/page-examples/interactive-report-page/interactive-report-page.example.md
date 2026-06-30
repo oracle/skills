@@ -136,7 +136,7 @@ page 1 (
                 }
                 clearCache: 10
             }
-            linkIcon: <img src="#IMAGE_PREFIX#app_ui/img/icons/apex-edit-pencil.png" class="apex-edit-pencil" alt="Edit">
+            linkIcon: <span role="img" aria-label="Edit" class="fa fa-edit" title="Edit"></span>
         }
         componentAppearance {
             showNullValuesAs: -
@@ -488,10 +488,7 @@ page 1 (
         }
         appearance {
             template: @/title-bar
-            templateOptions: [
-                #DEFAULT#
-                t-BreadcrumbRegion--useBreadcrumbTitle
-            ]
+            templateOptions: #DEFAULT#
         }
         componentAppearance {
             breadcrumbTemplate: @/breadcrumb

@@ -105,6 +105,7 @@ Use the component registry (`assets/apex-generation/components.registry.json`) t
 - Validate SQL via `20-data/apex.sql.md`; no inline `select` inside `plsqlExpression`.
 - Enforce invokeApi-default for page processes tied to regions, allow the thin-wrapper exception only for page-coupled loaders or branch-gated flows, and enforce executeCode-only for appProcess.
 - Dynamic actions should use declarative templates (e.g., `dynamic-action-refresh-report.apx`); avoid inline JS beyond approved locations.
+- Report regions that launch modal pages must include an `apexafterclosedialog` dynamic action that refreshes the originating report region.
 - Map regions should follow the attached canonical structure from the map family: `layout.slot: body` where the page pattern requires it, `initialPositionAndZoom`, layer `source { ... }`, and `columnMapping.geometryColumnDataType`.
 - For standard non-login pages, region `layout.slot` should default to `body`. Use `contentBody` only when the active login or modal page-template contract explicitly requires it.
 - Map-layer source modes are:
@@ -152,7 +153,9 @@ Use the component registry (`assets/apex-generation/components.registry.json`) t
 ---
 
 ## Examples
-- “Create an interactive report on EMP with modal form for edits and dynamic action to refresh after submit.”
+These are `illustrative_prompt` examples. Replace any `{{...}}` variables with verified identifiers before use.
+
+- “Create an interactive report on {{source.table}} with modal form for edits and dynamic action to refresh after submit.”
 - “Add dashboard cards for Sales KPIs using existing page 10.”
 - “Apply dynamic action batch to refresh regions on pages 12, 14, 20 when timer fires.”
 

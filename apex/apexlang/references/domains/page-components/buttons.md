@@ -46,6 +46,7 @@ description: Configure Oracle APEX buttons, confirmation dialogs, and apply/remo
 ## Guardrails
 - Validate action_type requirements (targets for redirects, databaseAction for submit DML, nested menus for children).
 - Require canonical emitted button templateOptions values such as `t-Button--iconLeft` and reject aliases/static_ids such as `left`.
+- For `@/text-with-icon` buttons with icons, default to `t-Button--iconLeft`; use `t-Button--iconRight` only when explicitly requested and omit both for `@/icon`.
 - For remove operations, perform hard-delete dependency checks before applying changes; block on dangling references (DA aliases, whenButtonPressed, request guards).
 - Confirmation messages must follow governance: no hard-coded PII, inline help < 60 chars.
 - Ensure layout slots exist for the target region template.
