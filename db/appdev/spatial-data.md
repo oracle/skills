@@ -41,26 +41,26 @@ SDO_ORDINATES       MDSYS.SDO_ORDINATE_ARRAY()  Array of numbers that stores the
 
 ##### List of most common geometry types
 
-| SDO_GTYPE | Dimension | Constant | Description |
-|---|---|---|---|
-| 2001 | 2D | SDO_POINT2D | A single point |
-| 3001 | 3D | SDO_POINT3D | A single point |
-| 2002 | 2D | SDO_LINESTRING2D | A line string |
-| 3002 | 3D | SDO_LINESTRING3D | A line string |
-| 2002 | 2D | SDO_CURVE2D | A curve |
-| 3002 | 3D | SDO_CURVE3D | A curve |
-| 2003 | 2D | SDO_POLYGON2D | A polygon |
-| 3003 | 3D | SDO_POLYGON3D | A polygon |
-| 2004 | 2D | SDO_COLLECTION2D | A polygon |
-| 3004 | 3D | SDO_COLLECTION3D | A polygon |
-| 2005 | 2D | SDO_POINT2D | A multi-point |
-| 3005 | 3D | SDO_POINT3D | A multi-point |
-| 2006 | 2D | SDO_LINESTRING2D | A multi-line string |
-| 3002 | 3D | SDO_LINESTRING3D | A multi-line string |
-| 2006 | 2D | SDO_CURVE2D | A multi-curve |
-| 3006 | 3D | SDO_CURVE3D | A multi-curve |
-| 2007 | 2D | SDO_POLYGON2D | A multi-polygon |
-| 3007 | 3D | SDO_POLYGON3D | A multi-polygon |
+| Constant | SDO_GTYPE | Description |
+|---|---|---|
+| SDO_POINT2D | 2001 | A geometry that contains a 2D point |
+| SDO_POINT3D | 3001 | A geometry that contains a 3D point |
+| SDO_CURVE2D | 2002 | A geometry that contains a 2D circular arc segment |
+| SDO_CURVE3D | 3002 | A geometry that contains a 3D circular arc segment |
+| SDO_LINESTRING2D | 2002 | A geometry that contains a 2D straight line string |
+| SDO_LINESTRING3D | 3002 | A geometry that contains a 3D straight line string |
+| SDO_POLYGON2D | 2003 | A geometry that contains a 2D polygon |
+| SDO_POLYGON3D | 3003 | A geometry that contains a 3D polygon |
+| SDO_COLLECTION2D | 2004 | A hetergenous collection of 2D geometries |
+| SDO_COLLECTION3D | 3004 | A hetergenous collection of 3D geometries |
+| SDO_MULTIPOINT2D | 2005 | A geometry with one or more 2D points |
+| SDO_MULTIPOINT3D | 3005 | A geometry with one or more 3D points |
+| SDO_MULTICURVE2D | 2006 | A geometry that contains one or more 2D circular arc segments |
+| SDO_MULTICURVE3D | 3006 | A geometry that contains one or more 3D circular arc segments |
+| SDO_MULTILINESTRING2D | 2006 | A geometry that contains one or more 2D straight line strings |
+| SDO_MULTILINESTRING3D | 3006 | A geometry that contains one or more 3D straight line strings |
+| SDO_MULTIPOLYGON2D | 2007 | A geometry that can have multiple disjoint 2D polygons or surfaces |
+| SDO_MULTIPOLYGON3D | 3007 | A geometry that can have multiple disjoint 3D polygons or surfaces |
 
 Further geometry types include solids and multi-solids.
 
