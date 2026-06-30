@@ -496,8 +496,8 @@ VALUES (
   'points3d',
   'geom',
   SDO_DIM_ARRAY(
-    SDO_DIM_ELEMENT('Longitude', -180, 180, 1)
-    SDO_DIM_ELEMENT('Latitude', -90, 90, 1)
+    SDO_DIM_ELEMENT('Longitude', -180, 180, 1),
+    SDO_DIM_ELEMENT('Latitude', -90, 90, 1),
     SDO_DIM_ELEMENT('Height', -10, 9000, 1)
   ),
   4979                                          -- WGS 84 (3D)
@@ -648,19 +648,19 @@ CREATE INDEX polygons3d_geom_sidx ON polygons3d (geom)
 INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2 PARAMETERS ('sdo_indx_dims=3');
 -- Note: `sdo_indx_dims=2` is the default and does not need to be specified explicitly.
 
+-- Delete a spatial index
+DROP INDEX polygons3d_geom_sidx;
+
 -- Create a Local Partitioned Spatial Index specifying the UNUSABLE keyword followed by ALTER INDEX REBUILD statements that are called in parallel
 CREATE INDEX geometry_data_geom_sidx ON geometry_data (geom)
 INDEXTYPE IS mdsys.spatial_index_v2
 PARAMETERS ('tablespace=tbs1 work_tablespace=work_tbs')
 LOCAL UNUSABLE;
 
-ALTER INDEX sp_idx REBUILD PARTITION ip1;
-ALTER INDEX sp_idx REBUILD PARTITION ip2;
+ALTER INDEX geometry_data_geom_sidx REBUILD PARTITION ip1;
+ALTER INDEX geometry_data_geom_sidx REBUILD PARTITION ip2;
 ...
-ALTER INDEX sp_idx REBUILD PARTITION ip10;
-
--- Delete a spatial index
-DROP INDEX polygons3d_geom_sidx;
+ALTER INDEX geometry_data_geom_sidx REBUILD PARTITION ip10;
 
 -- Clean up a spatial index after a failure using FORCE. It also forces the deletion to be performed even if the index is marked in-process.
 DROP INDEX geometry_data_geom_sidx FORCE;
@@ -1441,7 +1441,7 @@ WHERE
       4326,
       SDO_POINT_TYPE(
         10.256,
-        53,653,
+        53.653,
         NULL
       ),
       NULL,
@@ -1477,7 +1477,7 @@ WHERE
     'sdo_num_res=10',
     1
   ) = 'TRUE'
-  AND´s.is_open = 'Y'
+  AND is_open = 'Y'
 ORDER BY
   distance
 FETCH FIRST 3 ROWS ONLY;
@@ -1780,9 +1780,9 @@ SELECT
   )
 FROM
   us_parks p,
-  us_states,
+  us_states s,
   user_sdo_geom_metadata m1,
-  user_sdo_geom_metadata m1
+  user_sdo_geom_metadata m2
 WHERE
   m1.table_name = 'US_PARKS'
   AND m.column_name = 'GEOM'
