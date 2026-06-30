@@ -7,7 +7,7 @@ Use this file for the public, CLI-first operator path. For large fleets, gateway
 - `IOT_DOMAIN_ID`
 - `OCI_CLI_PROFILE`
 - `OCI_CLI_AUTH` when the profile requires a non-default auth mode, such as `security_token`
-- `OCI_REGION` when not derivable from the domain
+- `OCI_REGION` when the selected profile does not already target the domain's region
 - resource identifiers already known by the user:
   - digital twin model ID
   - digital twin adapter ID
@@ -21,10 +21,11 @@ If only `IOT_DOMAIN_ID` is known, derive the rest first:
 bash scripts/derive_domain_context.sh \
   --profile <oci_profile> \
   --auth <oci_cli_auth> \
+  --region <oci_region> \
   --iot-domain-id <iot_domain_ocid>
 ```
 
-Omit `--auth` only when the selected profile uses the CLI default auth mode. For security-token profiles, use `--auth security_token` and add the same global option to later OCI CLI commands.
+Omit `--auth` only when the selected profile uses the CLI default auth mode. Omit `--region` only when the profile already selects the IoT domain's region. The helper needs a valid regional endpoint for its first domain read before it can derive the region from the returned device host. For security-token profiles, use `--auth security_token` and add the same global option to later OCI CLI commands.
 
 ## Command Capability Check
 
@@ -38,6 +39,12 @@ oci iot digital-twin-instance invoke-raw-json-command --help
 ```
 
 If a documented CLI flag is missing locally, use the Python SDK or a narrower CLI fallback and call out the drift.
+
+## Domain-Group Type Selection
+
+For a new domain group, `DEVELOPMENT` is the default and is intended for development and testing with fewer resources and a higher recovery time objective (RTO). `PRODUCTION` is recommended for production workloads.
+
+`LIGHTWEIGHT` and `STANDARD` are deprecated aliases for `DEVELOPMENT` and `PRODUCTION`. Oracle's announced removal date is `2027-04-14`; do not use the aliases in new automation. Domain-group type is a creation-time topology decision and cannot be changed in place. Read the existing type before planning a migration, then create and validate a replacement group when a type change is required.
 
 ## Read-First Discovery
 
@@ -308,6 +315,8 @@ For vault-secret-backed basic auth, start from:
 bash templates/publish-curl.template.sh
 ```
 
+The template passes the Basic authorization header to curl over standard input so the device secret is not included in process arguments. It also uses `--fail-with-body`, so HTTP authentication and endpoint errors return a nonzero status while preserving the response body for diagnosis.
+
 For certificate-based publishing, switch to an mTLS client flow instead of `curl -u`.
 
 After publishing, verify the twin content again. For basic validation, `digital-twin-instance get-content` with metadata is enough to prove the publish updated the twin:
@@ -340,11 +349,20 @@ Verify final state through command response records, device-side evidence, or a 
 
 ## Cleanup Ordering
 
-For teardown, read dependencies first, then delete in this order:
+For teardown, read dependencies first and use this conservative runbook order. It minimizes dependency conflicts; it is not a claim that Oracle documents every step below as a service-mandated dependency chain.
 
-1. relationships
-2. digital twin instances
-3. adapters with no active dependent instances
-4. models with no active dependent adapters or instances
+1. Delete relationships associated with the target twins.
+2. Delete instances.
+3. Delete adapters only after no active instances depend on them.
+4. Delete models only after no active adapters or instances depend on them.
+5. Run a fresh active-resource inventory across relationships, instances, adapters, and models.
+6. After explicit approval, delete the IoT domain and verify that it disappears or reaches its documented terminal state.
+7. Confirm the domain group has no remaining domains; after separate explicit approval, delete the empty domain group and verify final state.
 
-Ask for explicit approval before destructive operations, and verify each resource reaches `DELETED` or disappears from active listings.
+The service rejects domain deletion while active digital twin resources remain. Oracle explicitly calls out deleting associated digital twin instances first; the fresh inventory above also prevents overlooked relationships, adapters, or models from being mistaken for a complete teardown. Ask for explicit approval before every destructive stage, and verify each resource reaches `DELETED` or disappears from active listings.
+
+## Sources
+
+- Domain-group types and migration: `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/create-domain-group.htm`
+- Deprecated type aliases and removal date: `https://docs.oracle.com/en-us/iaas/releasenotes/internet-of-things/update-04142026.htm`
+- Active-resource domain deletion rule: `https://docs.oracle.com/en-us/iaas/releasenotes/internet-of-things/update-06092026.htm`

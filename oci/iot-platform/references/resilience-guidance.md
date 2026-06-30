@@ -156,6 +156,18 @@ oci iot --profile <oci_profile> --region <oci_region> work-request list-logs \
 
 Do not treat a queued or accepted work request as a completed operation. Verify the target resource state afterward.
 
+## OCI Monitoring Before Advanced Data Escalation
+
+For service-health diagnosis, start with read-only OCI Monitoring metrics in namespace `oci_iot` before escalating to the Data API or database. The operator needs Monitoring read IAM permission (`read metrics`) for the target compartment.
+
+Route the question to the narrowest signal family:
+
+- connection signals such as `HttpConnectionCount` and `MqttConnectionCount`
+- authentication signals such as `AuthFailureCount`
+- ingestion and normalization signals such as `ReceivedCount`, `NormalizedCount`, and `RejectedCount`
+
+Bound every query to a relevant time window and documented dimensions, then correlate it with the publish attempt or incident timestamp. These are service metrics, not digital twin content or business telemetry. Use a fresh instance-content read, bounded Data API query, or separately approved database access when the question is about actual twin values.
+
 ## Publish Failure Triage
 
 After a publish attempt, verify the latest content first. If content did not update:
@@ -205,3 +217,8 @@ For teardown or rollback:
 5. Verify each resource reaches `DELETED` or no longer appears in active listings.
 
 Never recommend broad deletion from a name match alone. Read the resource by OCID, confirm dependencies, and ask for explicit approval before destructive operations.
+
+## Sources
+
+- OCI IoT metrics reference: `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/metrics-reference.htm`
+- Viewing OCI IoT metrics and IAM policy: `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/view-metrics.htm`

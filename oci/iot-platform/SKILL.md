@@ -12,7 +12,7 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
    - `IOT_DOMAIN_ID` when available
    - `OCI_CLI_PROFILE`
    - `OCI_CLI_AUTH` when the selected profile needs it, such as `security_token`
-   - `OCI_REGION` if it cannot be derived from the domain
+   - `OCI_REGION` when the selected profile does not already target the domain's region
    - intended operation: inspect, create, update, delete, or publish test telemetry
 3. Prefer this execution order:
    - discover the domain and current state
@@ -21,10 +21,16 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
    - make the smallest required change
    - verify the result with a fresh read
 
+## Prerequisites
+
+For the local operator workflows in this skill, install the OCI CLI, Bash, curl, jq, and Python 3. These are workflow prerequisites, not universal OCI IoT service requirements. When diagnosing CLI drift, capture `oci --version` and confirm the local IoT command surface with `oci iot --help`; do not hard-pin every operator to one OCI CLI patch release.
+
+Contributors running repository validation also need ripgrep (`rg`). Ripgrep is contributor-only and is not required merely to use the OCI IoT service.
+
 ## Default Workflow
 
 1. Start with read-only OCI CLI discovery.
-2. Use `scripts/derive_domain_context.sh` when the user only has `IOT_DOMAIN_ID`.
+2. Use `scripts/derive_domain_context.sh` when the user has `IOT_DOMAIN_ID` and a profile or explicit region that can reach the domain.
 3. Use [references/platform-surface.md](references/platform-surface.md) when the task needs orientation on OCI IoT resource families, data flow, connectivity types, or which surface to use.
 4. Use [references/cli-workflows.md](references/cli-workflows.md) for control-plane actions:
    - domains and domain groups
@@ -44,8 +50,9 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
    - publish rejection triage
    - raw-command final-state validation
    - cleanup or rollback planning
-7. Use [references/modeling-guidance.md](references/modeling-guidance.md) when the request involves DTDL authoring or adapter payload design.
-8. Use [references/data-access.md](references/data-access.md) only when the user explicitly needs Data API, ORDS, direct database access, or APEX-oriented workflows.
+   - OCI Monitoring service-health diagnosis
+7. Use [references/modeling-guidance.md](references/modeling-guidance.md) when the request involves DTDL authoring, adapter payload design, or compatible model-version migration.
+8. Use [references/data-access.md](references/data-access.md) only when the user explicitly needs Data API, ORDS, direct database access, APEX, Database Tools, Select AI, Data Pump, archive, or database-queue workflows.
 9. Use [references/release-validation.md](references/release-validation.md) before calling the skill package ready to share publicly.
 
 ## Bundled Resources
@@ -82,15 +89,6 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
 - Do not imply OCI IoT is a general-purpose MQTT broker.
 - Keep examples redacted and tenant-neutral.
 
-## Authoritative References
-
-- Oracle IoT service docs:
-  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/home.htm`
-- OCI CLI IoT command reference:
-  - `https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/iot.html`
-- Oracle sample repository:
-  - `https://github.com/oracle-samples/oci-iot-samples`
-
 ## Output Style
 
 For each task, return:
@@ -98,3 +96,20 @@ For each task, return:
 1. The exact command sequence with placeholders filled or called out.
 2. The key IDs, state, or timestamps that matter.
 3. The next verification step.
+
+## Sources
+
+- Oracle IoT service docs:
+  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/home.htm`
+- OCI CLI IoT command reference:
+  - `https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/iot.html`
+- Oracle sample repository:
+  - `https://github.com/oracle-samples/oci-iot-samples`
+- Official open-source OCI IoT MCP server:
+  - `https://github.com/oracle/mcp/tree/main/src/oci-iot-mcp-server`
+- Domain-group lifecycle and model-version guidance:
+  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/create-domain-group.htm`
+  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/create-new-model-version.htm`
+- OCI IoT Monitoring and advanced data access:
+  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/metrics-reference.htm`
+  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/connecting-to-data.htm`

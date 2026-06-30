@@ -2,6 +2,10 @@
 
 Use this reference only when the user's environment already exposes an OCI IoT MCP server. The public skill must stay useful without MCP; do not make MCP installation, private server bootstrap, or private credentials part of the default workflow.
 
+## Official Implementation
+
+Oracle publishes the open-source OCI IoT MCP server at `https://github.com/oracle/mcp/tree/main/src/oci-iot-mcp-server`. Use its documented tool surface when that server is already installed and configured. It remains optional: retain direct OCI CLI or SDK fallbacks, and do not make MCP installation a prerequisite for this skill.
+
 ## When MCP Helps
 
 Prefer the OCI CLI for public, repeatable command sequences. Use MCP as an optional accelerator when the task needs joined context or operator-friendly wrappers, such as:
@@ -93,3 +97,8 @@ When using MCP, tell the user:
 2. Why MCP was useful compared with direct CLI.
 3. What final-state evidence was verified.
 4. Which direct CLI or SDK command would be the fallback if MCP is unavailable.
+
+## Sources
+
+- Official OCI IoT MCP server: `https://github.com/oracle/mcp/tree/main/src/oci-iot-mcp-server`
+- Oracle IoT data-access guidance: `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/connecting-to-data.htm`

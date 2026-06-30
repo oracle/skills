@@ -30,7 +30,7 @@ device, gateway, or external application publish
 
 Raw commands are a control-plane request that must be verified through a data-plane or device-side final-state signal.
 
-Device connectivity is broader than the HTTPS template bundled with this skill. Oracle documents sending unstructured data over HTTPS, structured data over HTTPS, structured data over MQTTs, custom-format structured data over HTTPS, and receiving unstructured commands with MQTTs responses. Do not describe OCI IoT as a general-purpose MQTT broker; treat MQTTs as a documented device-connect path with its own auth, topic, and response semantics.
+Device connectivity is broader than the HTTPS template bundled with this skill. Oracle documents sending unstructured data over HTTPS, structured data over HTTPS, structured data over MQTTs, secure MQTT-over-WebSocket (WSS), custom-format structured data over HTTPS, and receiving unstructured commands with MQTTs responses. This skill bundles no WSS template. Use the official WebSocket sample for topic and authentication semantics rather than adapting the HTTPS template or guessing broker behavior. Do not describe OCI IoT as a general-purpose MQTT broker; treat MQTTs and WSS as documented device-connect paths with their own auth, topic, and response semantics.
 
 ## Function Families
 
@@ -88,3 +88,9 @@ For every function family:
 - Use Python SDK for programmatic pagination, typed fields, or structured reports.
 - Use optional MCP only when it is already available and helps join context, resolve selectors, poll state, or summarize Data API evidence.
 - Use direct Data API, ORDS, database, or APEX paths only when the user explicitly needs advanced data access.
+
+## Sources
+
+- OCI IoT overview: `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/overview.htm`
+- Official device-connect samples: `https://github.com/oracle-samples/oci-iot-samples`
+- Secure WebSocket sample: `https://github.com/oracle-samples/oci-iot-samples/tree/main/samples/python/publish-websockets`
