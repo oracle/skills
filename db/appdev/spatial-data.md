@@ -479,8 +479,8 @@ VALUES (
   'points2d',
   'geom_4326',
   SDO_DIM_ARRAY(
-    SDO_DIM_ELEMENT('Longitude', -180, 180, 1), -- 1 meter tolerance
-    SDO_DIM_ELEMENT('Latitude', -90, 90, 1)     -- 1 meter tolerance
+    SDO_DIM_ELEMENT('Longitude', -180, 180, 1),
+    SDO_DIM_ELEMENT('Latitude', -90, 90, 1)
   ),
   4326                                          -- WGS 84
 )
