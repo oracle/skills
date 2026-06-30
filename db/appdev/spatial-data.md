@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Oracle Database has comprehensive data types, models, services, and tools for advanced spatial data management, analytics, and visualization. The spatial features (also known as Oracle Spatial) benefit from Oracle Database enterprise scalability, security, and performance. They are available for every Oracle Database edition starting with version 12c regardless of where the database is installed and running. Oracle Spatial is fully integrated with SQL and PL/SQL, enabling spatial queries to participate in joins, aggregations, and query optimizations.
+The Oracle Database has comprehensive data types, models, services, and tools for advanced spatial data management, analytics, and visualization. The spatial features (also known as Oracle Spatial) benefit from Oracle Database enterprise scalability, security, and performance. Oracle Spatial does not require an extra
+cost license. Its features can be used for development and deployment purposes with all on-prem Oracle Database editions and Oracle Cloud Database Services. Oracle Spatial is fully integrated with SQL and PL/SQL, enabling spatial queries to participate in joins, aggregations, and query optimizations.
 
 All Database objects related to Oracle Spatial are located  inside the `MDSYS` schema.  
 Additional features and tools meant to work with spatial data are available, such as
