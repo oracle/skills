@@ -4,14 +4,14 @@ Use this checklist before calling the `oci-iot-platform` skill ready to share.
 
 ## Automated Checks
 
-Run:
+From the `oci/iot-platform` skill directory, run:
 
 ```bash
-bash oci-iot-platform/tests/smoke.sh
+bash tests/smoke.sh
 ```
 
 ```bash
-bash oci-iot-platform/tests/redaction_scan.sh
+bash tests/redaction_scan.sh
 ```
 
 ## Content Review
@@ -28,7 +28,7 @@ Check for:
 
 Validate at least one clean or minimally configured operator environment with public OCI CLI authentication. A separate tenancy is useful but not required when one is not available; the validation must prove the workflow can run without internal profiles, private setup, or MCP dependencies. Prefer a `security_token` auth profile or another documented public OCI CLI auth mode for this pass.
 
-1. `IOT_DOMAIN_ID` bootstrap, including `--auth security_token` when using a security-token profile
+1. `IOT_DOMAIN_ID` bootstrap, including `--auth security_token` when using a security-token profile and explicit `--region` when the profile does not already select the domain's region
 2. read-only discovery of domains and twins
 3. model creation and readback
 4. adapter creation and readback

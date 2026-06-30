@@ -3,6 +3,7 @@ set -euo pipefail
 
 PROFILE=""
 AUTH_MODE=""
+REQUEST_REGION=""
 IOT_DOMAIN_ID=""
 
 while [[ $# -gt 0 ]]; do
@@ -13,6 +14,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --auth)
       AUTH_MODE="$2"
+      shift 2
+      ;;
+    --region)
+      REQUEST_REGION="$2"
       shift 2
       ;;
     --iot-domain-id)
@@ -37,6 +42,9 @@ if [[ -n "$PROFILE" ]]; then
 fi
 if [[ -n "$AUTH_MODE" ]]; then
   OCI_BASE+=(--auth "$AUTH_MODE")
+fi
+if [[ -n "$REQUEST_REGION" ]]; then
+  OCI_BASE+=(--region "$REQUEST_REGION")
 fi
 
 DOMAIN_JSON="$("${OCI_BASE[@]}" domain get --iot-domain-id "$IOT_DOMAIN_ID" --output json)"

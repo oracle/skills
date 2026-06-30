@@ -7,7 +7,7 @@ Use this file for the public, CLI-first operator path. For large fleets, gateway
 - `IOT_DOMAIN_ID`
 - `OCI_CLI_PROFILE`
 - `OCI_CLI_AUTH` when the profile requires a non-default auth mode, such as `security_token`
-- `OCI_REGION` when not derivable from the domain
+- `OCI_REGION` when the selected profile does not already target the domain's region
 - resource identifiers already known by the user:
   - digital twin model ID
   - digital twin adapter ID
@@ -21,10 +21,11 @@ If only `IOT_DOMAIN_ID` is known, derive the rest first:
 bash scripts/derive_domain_context.sh \
   --profile <oci_profile> \
   --auth <oci_cli_auth> \
+  --region <oci_region> \
   --iot-domain-id <iot_domain_ocid>
 ```
 
-Omit `--auth` only when the selected profile uses the CLI default auth mode. For security-token profiles, use `--auth security_token` and add the same global option to later OCI CLI commands.
+Omit `--auth` only when the selected profile uses the CLI default auth mode. Omit `--region` only when the profile already selects the IoT domain's region. The helper needs a valid regional endpoint for its first domain read before it can derive the region from the returned device host. For security-token profiles, use `--auth security_token` and add the same global option to later OCI CLI commands.
 
 ## Command Capability Check
 
@@ -307,6 +308,8 @@ For vault-secret-backed basic auth, start from:
 ```bash
 bash templates/publish-curl.template.sh
 ```
+
+The template passes the Basic authorization header to curl over standard input so the device secret is not included in process arguments. It also uses `--fail-with-body`, so HTTP authentication and endpoint errors return a nonzero status while preserving the response body for diagnosis.
 
 For certificate-based publishing, switch to an mTLS client flow instead of `curl -u`.
 

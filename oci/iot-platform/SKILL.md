@@ -12,7 +12,7 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
    - `IOT_DOMAIN_ID` when available
    - `OCI_CLI_PROFILE`
    - `OCI_CLI_AUTH` when the selected profile needs it, such as `security_token`
-   - `OCI_REGION` if it cannot be derived from the domain
+   - `OCI_REGION` when the selected profile does not already target the domain's region
    - intended operation: inspect, create, update, delete, or publish test telemetry
 3. Prefer this execution order:
    - discover the domain and current state
@@ -24,7 +24,7 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
 ## Default Workflow
 
 1. Start with read-only OCI CLI discovery.
-2. Use `scripts/derive_domain_context.sh` when the user only has `IOT_DOMAIN_ID`.
+2. Use `scripts/derive_domain_context.sh` when the user has `IOT_DOMAIN_ID` and a profile or explicit region that can reach the domain.
 3. Use [references/platform-surface.md](references/platform-surface.md) when the task needs orientation on OCI IoT resource families, data flow, connectivity types, or which surface to use.
 4. Use [references/cli-workflows.md](references/cli-workflows.md) for control-plane actions:
    - domains and domain groups
@@ -82,15 +82,6 @@ description: Explore, create, and troubleshoot Oracle Cloud Infrastructure Inter
 - Do not imply OCI IoT is a general-purpose MQTT broker.
 - Keep examples redacted and tenant-neutral.
 
-## Authoritative References
-
-- Oracle IoT service docs:
-  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/home.htm`
-- OCI CLI IoT command reference:
-  - `https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/iot.html`
-- Oracle sample repository:
-  - `https://github.com/oracle-samples/oci-iot-samples`
-
 ## Output Style
 
 For each task, return:
@@ -98,3 +89,12 @@ For each task, return:
 1. The exact command sequence with placeholders filled or called out.
 2. The key IDs, state, or timestamps that matter.
 3. The next verification step.
+
+## Sources
+
+- Oracle IoT service docs:
+  - `https://docs.oracle.com/en-us/iaas/Content/internet-of-things/home.htm`
+- OCI CLI IoT command reference:
+  - `https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/iot.html`
+- Oracle sample repository:
+  - `https://github.com/oracle-samples/oci-iot-samples`

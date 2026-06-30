@@ -27,7 +27,10 @@ PAYLOAD="$(cat <<JSON
 JSON
 )"
 
-curl -sS -u "${DEVICE_USER}:${DEVICE_SECRET}" \
+AUTHORIZATION="$(printf '%s:%s' "$DEVICE_USER" "$DEVICE_SECRET" | base64 | tr -d '\r\n')"
+
+printf 'Authorization: Basic %s\n' "$AUTHORIZATION" | curl --fail-with-body -sS \
+  --header @- \
   -H "Content-Type: application/json" \
   -d "${PAYLOAD}" \
   "${URL}"

@@ -51,8 +51,10 @@ If these prerequisites are missing, say so clearly before giving commands.
 Typical Data API base URL shape:
 
 ```text
-https://<domain_group_short_id>.data.iot.<region>.oci.oraclecloud.com/ords/<domain_short_id>
+https://<domain_group_short_id>.data.iot.<region>.oci.oraclecloud.com/ords/<domain_short_id>/20250531
 ```
+
+`20250531` is the current public IoT Data API version segment. Keep it between the domain short ID and the collection path.
 
 Common collection paths:
 

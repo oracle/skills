@@ -81,13 +81,30 @@ def iter_records(payload: Any) -> Iterable[Dict[str, Any]]:
                 yield item
         return
     if isinstance(payload, dict):
-        yield payload
-        for key in ("data", "items", "records"):
+        data = payload.get("data")
+        if isinstance(data, dict):
+            for key in ("items", "records"):
+                value = data.get(key)
+                if isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, dict):
+                            yield item
+                    return
+            yield data
+            return
+        if isinstance(data, list):
+            for item in data:
+                if isinstance(item, dict):
+                    yield item
+            return
+        for key in ("items", "records"):
             value = payload.get(key)
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
                         yield item
+                return
+        yield payload
 
 
 def get_key_path(data: Dict[str, Any], path: Optional[str]) -> Any:
