@@ -464,6 +464,130 @@ FROM GRAPH_TABLE (students_graph
 
 ---
 
+## Graph Algorithms
+
+In-database graph algorithms are provided by the `DBMS_OGA`PL/SQL package available since version 26.2.
+
+Implemented algorithms are:
+
+- **PageRank**, including the variants **Personalized PageRank** and **Personalized PageRank Set**
+- **Bellmann-Ford**
+- **Weakly Connected Components** (WCC)
+
+### PageRank example
+
+```sql
+SELECT *
+FROM GRAPH_TABLE(
+  DBMS_OGA.pagerank(
+    students_graph,
+    PROPERTY(VERTEX OUTPUT rank),
+    10, 1.0, 0.85d, FALSE
+  )
+  MATCH (a IS person)
+  COLUMNS (a.name, a.rank)
+)
+ORDER BY rank DESC
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### Personalized PageRank example
+
+```sql
+SELECT *
+FROM GRAPH_TABLE (
+  DBMS_OGA.PERSONALIZED_PAGERANK(
+    students_graph,
+    PROPERTY(VERTEX OUTPUT rank),
+    JSON('{
+      "GRAPH_OWNER": "GRAPHUSER",
+      "GRAPH_NAME": "STUDENTS_GRAPH",
+      "ELEM_TABLE": "PERSONS",
+      "KEY_VALUE": { "PERSON_ID":1 }
+    }'),
+    50, 0.5, 0.85d, FALSE
+  )
+  MATCH (a IS person)
+  COLUMNS (a.person_id, a.name, a.rank)
+)
+ORDER BY rank DESC
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### Personalized PageRank Set example
+
+```sql
+-- Step 1: Construct a set of vertices and return it as JSON
+SELECT JSON_ARRAYAGG (s_json)
+FROM GRAPH_TABLE(
+  students_graph
+  MATCH (a IS person)
+  WHERE a.person_id IN (1, 2, 3)
+  COLUMNS(VERTEX_ID(a) AS s_json)
+);
+
+-- Step 2: Run the algorithm using the returned JSON
+SELECT *
+FROM GRAPH_TABLE (
+  DBMS_OGA.PERSONALIZED_PAGERANK_SET(
+    students_graph,
+    PROPERTY(VERTEX OUTPUT rank),
+    JSON('[
+      {"GRAPH_OWNER":"GRAPHUSER","GRAPH_NAME":"STUDENTS_GRAPH","ELEM_TABLE":"PERSONS","KEY_VALUE":{"PERSON_ID":1}},
+      {"GRAPH_OWNER":"GRAPHUSER","GRAPH_NAME":"STUDENTS_GRAPH","ELEM_TABLE":"PERSONS","KEY_VALUE":{"PERSON_ID":2}},
+      {"GRAPH_OWNER":"GRAPHUSER","GRAPH_NAME":"STUDENTS_GRAPH","ELEM_TABLE":"PERSONS","KEY_VALUE":{"PERSON_ID":3}}
+    ]'),
+    50, 0.5, 0.85d, FALSE
+  )
+  MATCH (a IS person)
+  COLUMNS (a.person_id, a.name, a.rank)
+)
+ORDER BY rank DESC 
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### Bellmann-Ford example
+
+```sql
+-- Assumes incoming edges with a property `class` to be used as weight
+SELECT *
+FROM GRAPH_TABLE(
+  DBMS_OGA.BELLMAN_FORD(
+    students_graph,
+    JSON(
+      '{
+        "GRAPH_OWNER": "GRAPHUSER",
+        "GRAPH_NAME": "STUDENTS_GRAPH",
+        "ELEM_TABLE": "PERSONS",
+        "KEY_VALUE" : {"PERSON_ID" : 1}
+       }'
+    ),
+    PROPERTY(EDGE INPUT amount DEFAULT ON NULL 0),
+    PROPERTY(VERTEX OUTPUT class)
+  )
+  MATCH (a IS person)
+  COLUMNS (a.person_id, a.name, a.class)
+)
+ORDER BY class ASC
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### WCC example
+
+```sql
+SELECT *
+FROM GRAPH_TABLE (
+  DBMS_OGA.WCC (
+    students_graph,
+    PROPERTY(VERTEX OUTPUT comp_id))
+  MATCH (a IS persons)
+  COLUMNS (a.person_id, a.name, a.comp_id)
+)
+FETCH FIRST 5 ROWS ONLY;
+```
+
+---
+
 ## DDL Management
 
 ### Drop and Rename
