@@ -5,6 +5,7 @@
 Oracle SQL Property Graph lets you model and query graph data — vertices (nodes) and edges (relationships) — directly on top of existing relational tables, views, materialized views, or external tables. No data is copied; the graph definition stores only metadata, and queries operate against current table data.
 
 The core components are:
+
 - **`CREATE PROPERTY GRAPH`** — defines which tables are vertices and edges, their keys, labels, and properties
 - **`GRAPH_TABLE` operator** — queries the graph using a pattern-matching syntax (`MATCH`) inside regular SQL `SELECT` statements
 
@@ -661,9 +662,10 @@ SQL graph query support has evolved across 23ai and 26ai release updates. Check 
 
 ## Sources
 
-- [Oracle Property Graph Developer's Guide, Release 26.1 — SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/sql-property-graph.html#SPGDG-GUID-B813BA1B-AEA0-4C70-8094-739FFC0E805B)
-- [Oracle Property Graph Developer's Guide, Release 26.1 — Creating a SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/creating-sql-property-graph.html)
-- [Oracle Property Graph Developer's Guide, Release 26.1 — SQL Graph Queries](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/sql-graph-queries.html)
-- [Oracle Property Graph Developer's Guide, Release 26.1 — Key Property Graph Features in Oracle AI Database 26ai](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/key-property-graph-features-oracle-ai-database-26ai.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/sql-property-graph.html#SPGDG-GUID-B813BA1B-AEA0-4C70-8094-739FFC0E805B)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — Creating a SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/creating-sql-property-graph.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — SQL Graph Queries](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/sql-graph-queries.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — Running Graph Algorithm Functions in SQL Graph Queries](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/running-graph-algorithm-functions-sql-graph-queries.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — Key Property Graph Features in Oracle AI Database 26ai](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/key-property-graph-features-oracle-ai-database-26ai.html)
 - [Oracle Database SQL Language Reference 23ai — CREATE PROPERTY GRAPH](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/create-property-graph.html)
 - [Oracle Database SQL Language Reference 23ai — ALTER PROPERTY GRAPH](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/alter-property-graph.html)
