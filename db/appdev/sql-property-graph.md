@@ -549,7 +549,7 @@ FETCH FIRST 5 ROWS ONLY;
 ### Bellmann-Ford example
 
 ```sql
--- Assumes incoming edges with a property `class` to be used as weight
+-- Assumes an edges property named `class` to be used as weight
 SELECT *
 FROM GRAPH_TABLE(
   DBMS_OGA.BELLMAN_FORD(
