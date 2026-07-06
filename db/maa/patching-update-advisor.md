@@ -29,6 +29,19 @@ Use Oracle Update Advisor when the user needs current patch/maintenance recommen
 - For automation: point to the public REST API and recommend building clients that retrieve recommendations, surface required actions, and integrate with runbooks or agents.
 - For agents: keep the agent in an advisory/planning lane unless the user explicitly authorizes changes. Agents should collect environment metadata, call the API, summarize recommendations, and ask before taking operational action.
 
+## Typical Client Workflow
+
+Use this sequence when designing a CLI, web application, CI/CD integration, or agent:
+
+1. Register the client with Oracle Update Advisor.
+2. Submit a software health request and review the returned health status.
+3. Request recommendations when the health status or policy indicates action is needed.
+4. Poll asynchronous requests until the result is available.
+5. Present the result in a useful form for DBAs and platform teams, preserving the original payload.
+6. Feed approved actions into the patch-planning workflow.
+
+For an ongoing agent, schedule health checks, identify systems that fall behind policy, watch for credential-lifecycle messages, and prepare reviewable reports or tickets. Keep infrastructure changes and availability-affecting actions behind human review and approval.
+
 ## Agent/CLI Client Considerations
 
 - Authenticate using the approved mechanism for the target environment.
