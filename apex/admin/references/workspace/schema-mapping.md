@@ -4,6 +4,8 @@ Use this topic for parsing schema mappings, additional schemas, workspace export
 
 MCP-backed APEX schema-mapping reads and `APEX_INSTANCE_ADMIN.ADD_SCHEMA` calls must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. If schema privilege inspection, grants, quotas, user creation, or tablespace changes require broader database privileges, stop and route that portion to the DB skill with that skill's required connection/user.
 
+For documented `APEX_INSTANCE_ADMIN` API ownership, signature checks, and sensitive API classification, use `instance-admin-api.md` before generating executable package calls.
+
 ## Parsing Schema Guardrails
 
 Only suggest application-owned schemas as APEX parsing schemas. Do not suggest platform, runtime, DBA, or service accounts, even if they technically exist and have `CREATE SESSION`.

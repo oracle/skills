@@ -1,6 +1,6 @@
 # APEX Error Handling And Logging
 
-Use this reference for collecting, categorizing, and prioritizing APEX errors from `APEX_DEBUG_MESSAGES`, `APEX_ERROR_LOG`, and APEX activity logs.
+Use this reference for collecting, categorizing, and prioritizing APEX errors from `APEX_DEBUG_MESSAGES`, `APEX_ERROR_LOG`, and APEX activity logs. For documented instance-admin debug procedures such as `APEX_INSTANCE_DEBUG.LIST_PAGE_VIEWS` or `APEX_INSTANCE_DEBUG.LIST_MESSAGES`, use `instance-debug-api.md`.
 
 Version check: use `ALL_OBJECTS` and `ALL_TAB_COLUMNS` before assuming APEX debug, activity, or error-log view availability.
 

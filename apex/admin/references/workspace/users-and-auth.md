@@ -4,6 +4,8 @@ Use this topic for initial workspace administrators, developers, end users, and 
 
 If the user asks for an APEX Instance Administrator, APEX Administration Services administrator, or an admin user for the `INTERNAL` workspace, stop using this topic and route to `references/deployment/instance-admin-bootstrap.md`. That bootstrap path uses `apxchpwd.sql`; it is not a normal workspace-scoped `APEX_UTIL.CREATE_USER` operation.
 
+For documented `APEX_INSTANCE_ADMIN.CREATE_OR_UPDATE_ADMIN_USER` or `APEX_INSTANCE_ADMIN.UNLOCK_USER` requests, load `instance-admin-api.md` first. Do not use those APIs for initial `INTERNAL` Instance Administrator bootstrap unless the Oracle-supported environment path explicitly calls for them.
+
 Use `APEX_WORKSPACE_APEX_USERS` when you need supported workspace-user metadata for administrators, developers, and end users. Check column availability first on older or managed APEX environments.
 
 MCP-backed workspace-user reads or changes must use the confirmed APEX admin identity from `apex/admin/SKILL.md`. Do not create, unlock, reset, or inspect APEX workspace users under `SYS`, `SYSDBA`, parsing schemas, workspace users, ORDS/APEX runtime accounts, generic deployment users, or unknown accounts. `SYSTEM` is allowed only after the exact uppercase `YES` confirmation required by the APEX Admin Identity Gate.

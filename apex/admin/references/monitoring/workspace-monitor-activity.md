@@ -49,7 +49,7 @@ FROM dual;
 
 Continue only when the user confirms the connection is the intended APEX admin identity. If the connection is `SYS`, `ISDBA = TRUE`, an app parsing schema, a workspace developer/end user, an ORDS/APEX runtime account, a generic deployment user, or unknown, stop and ask for the confirmed APEX admin connection. If the connection is `SYSTEM`, continue only after the exact uppercase `YES` confirmation required by `apex/admin/SKILL.md`. This applies to read-only APEX monitoring queries as well as changes.
 
-If the user asks to enable Debug, Trace Mode, purge activity, change retention, or change APEX schema mappings or users, keep the APEX steps under the confirmed APEX admin identity and load the relevant APEX admin reference before proceeding. If the request moves to grants, database users, quotas, tablespaces, AWR, ASH, `V$`, `DBA_HIST`, or ORDS runtime diagnostics, stop and route that portion to the DB skill with that skill's required connection/user.
+If the user asks to enable Debug, Trace Mode, purge activity, change retention, or change APEX schema mappings or users, keep the APEX steps under the confirmed APEX admin identity and load the relevant APEX admin reference before proceeding. For documented instance-level debug API work, use `instance-debug-api.md`. If the request moves to grants, database users, quotas, tablespaces, AWR, ASH, `V$`, `DBA_HIST`, or ORDS runtime diagnostics, stop and route that portion to the DB skill with that skill's required connection/user.
 
 ## Supported View Discovery
 
@@ -89,7 +89,7 @@ ORDER BY table_name,
 ## Report-To-Reference Routing
 
 - Page Views, Active Sessions, Page View Analysis, Archived Activity: `activity-log.md`
-- Application Errors, Debug, Trace Mode: `error-handling.md`
+- Application Errors, Debug, Trace Mode: `error-handling.md`, `instance-debug-api.md`
 - Web Service Activity Log: `rest-data-sources.md`
 - Generative AI service utilization, service history, and AI token monitoring: `ai-token-monitoring.md`
 - Page or component latency: `page-performance.md`, `ir-ig-tuning.md`

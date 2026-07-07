@@ -16,9 +16,18 @@ Before starting a file-only export review, tell the user that the review is stat
 - Substitution strings do not include real secrets or production-only endpoints unless intentionally deployed.
 - Static files and supporting objects do not embed tokens, passwords, private URLs, or customer data.
 - Authentication and authorization schemes are correct for the target environment.
+- External links are intentional and use safe browser attributes where the export exposes link markup or attributes. For links opening a new browsing context, check for `rel="noopener noreferrer"` or an equivalent safe pattern unless the target platform contract requires different behavior.
 - Web Credentials are referenced safely; secret values are not printed, committed, or copied into examples.
 - REST Data Sources and remote server URLs are environment-aware.
 - No real passwords, tokens, OAuth secrets, SMTP credentials, wallet passwords, web credential values, or secret-bearing URLs appear in exports, scripts, examples, logs, or chat output.
+
+## Output Summary
+
+For security-sensitive export reviews, include a compact checked/not-checked summary:
+
+- Checked: the APEX export surfaces actually inspected, such as substitution strings, static files, authentication, authorization, credentials, REST Data Sources, external links, and supporting objects.
+- Not checked: unavailable evidence or intentionally skipped live validation, such as runtime logs, browser behavior, DB/ORDS diagnostics, or target-environment connectivity.
+- Handoff: any generic DB, ORDS, SQLcl, or APEXlang responsibility routed out of this skill.
 
 ## DB Skill Usage
 

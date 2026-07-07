@@ -22,7 +22,9 @@ After a DB-skill handoff, use that DB security skill's required connection/user.
 
 ## Supported Interfaces
 
-Do not write directly to internal APEX repository tables. Use supported APEX APIs and views.
+Do not query or write directly to internal APEX repository tables. Use supported public `APEX_*` views and documented APEX APIs as the APEX administration contract.
+
+Keep APEX admin evidence scoped to the relevant workspace, application, page, session, user, and time window whenever that context is known. If a supported public APEX view is not specific enough for the question, first inspect available supported views and package APIs; do not fall back to internal repository tables.
 
 Before querying APEX views or package signatures, inspect version-specific availability through `ALL_TAB_COLUMNS`, `ALL_ARGUMENTS`, `APEX_DICTIONARY`, or `APEX_RELEASE`.
 
@@ -33,6 +35,8 @@ APEX session state, hidden items, read-only items, and client-side checks are no
 For tenant isolation or sensitive row access, describe the APEX authorization context, then use database-enforced isolation.
 
 DB skill in use: `db/security/row-level-security.md` for VPD/RLS implementation details. The APEX security skill is being used for APEX authorization and UI context.
+
+When reviewing APEX metadata, call out whether the evidence came from supported public `APEX_*` views, documented APEX APIs, exported application files, or browser/UI evidence. Do not present internal repository state as customer-facing proof.
 
 ## Secrets, Logs, And Exports
 
@@ -47,7 +51,8 @@ DB skill in use: `db/security/encryption.md`, `db/security/network-security.md`,
 ## Common Mistakes
 
 - Treating APEX session state, hidden items, read-only items, or client-side checks as a security boundary.
-- Querying or updating internal APEX repository tables when supported APEX APIs or views should be used.
+- Querying or updating internal APEX repository tables when supported public `APEX_*` views or documented APEX APIs should be used.
+- Leaving live APEX log or metadata queries unscoped when the workspace, application, page, user, session, or time window is known.
 - Duplicating generic database security guidance in an APEX skill instead of using `db/security/*`.
 - Selecting unnecessary debug, request, Team Development, BLOB, CLOB, or export payloads during operational triage.
 - Creating schemas or workspace users with broad privileges because the script runs as an administrator.

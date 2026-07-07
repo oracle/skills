@@ -2,6 +2,8 @@
 
 Use this topic for workspace inventory, pre-flight checks, create workspace, and verification.
 
+For documented `APEX_INSTANCE_ADMIN` API ownership, signature checks, and sensitive API classification, use `instance-admin-api.md` before generating executable package calls.
+
 ## Pre-Flight Questions
 
 - APEX version, because package signatures differ across APEX releases.

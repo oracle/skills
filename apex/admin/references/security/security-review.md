@@ -10,6 +10,9 @@ Use this checklist after substantial APEX workspace or application-support chang
 - Secrets: no real passwords, web credentials, OAuth secrets, SMTP credentials, wallet passwords, or API tokens appear in scripts, exports, logs, examples, or chat output.
 - Data exposure: activity logs, debug logs, request values, Team Development files, static files, exports, and audit columns do not expose unnecessary sensitive data.
 - Auditability: workspace creation/removal, user creation, schema mapping changes, imports/exports, grants, role changes, and credential changes are traceable.
+- Supported interfaces: evidence and automation used supported public `APEX_*` views and documented APEX APIs; no internal APEX repository tables were queried or updated as shortcuts.
+- Scope: live queries and evidence collection were limited to the known workspace, application, page, session, user, and time window where available.
 - Version and cloud limits: APEX package signatures, APEX view columns, Autonomous Database limits, and managed-service restrictions are checked before use.
 - Destructive actions: affected objects are listed, protected accounts are blocked, and explicit confirmations are required.
 - DB skill usage: generic security, performance, ORDS, SQLcl, masking, encryption, VPD/RLS, or auditing work is routed to the relevant `db/...` skill and announced with a visible `DB skill in use:` message.
+- Output: final security-sensitive answers include a compact summary of checks performed, checks not performed because evidence or permissions were unavailable, and handoffs made to DB/ORDS/APEXlang.
