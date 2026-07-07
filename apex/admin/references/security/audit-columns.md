@@ -1,53 +1,43 @@
-# APEX Application Table Audit Columns
+# APEX Application Table Audit Metadata Review
 
-Use this pattern for APEX-owned application tables when the application needs simple change metadata. This is application-level audit metadata, not a replacement for tamper-resistant database auditing.
+Use this reference to review whether APEX application tables appear to have simple change metadata. This is application-level audit metadata, not a replacement for tamper-resistant database auditing.
 
 DB skill in use: `db/security/auditing.md` for generic database auditing, Unified Auditing, FGA, compliance audit policies, or tamper-resistant audit design. The APEX security skill is being used for APEX-owned application-table audit-column context.
 
 After this handoff, use the DB auditing skill's required connection/user for audit policies, FGA, Unified Auditing, history tables, Flashback Data Archive, or tamper-resistant audit design. Do not reuse the APEX admin connection unless the DB skill explicitly accepts it.
 
-## Columns
+## Admin Skill Boundary
 
-For new APEX application tables, prefer consistent audit columns:
+The APEX admin skill must not create, alter, or drop application tables, audit tables, history tables, triggers, packages, constraints, or APEX internal/runtime tables.
 
-```sql
-created_at  TIMESTAMP WITH LOCAL TIME ZONE,
-created_by  VARCHAR2(255),
-updated_at  TIMESTAMP WITH LOCAL TIME ZONE,
-updated_by  VARCHAR2(255)
-```
+Use this reference only to:
 
-## Trigger Pattern
+- inventory whether application-owned tables already expose created/updated metadata;
+- check whether existing metadata uses an APEX runtime user context instead of only the parsing schema;
+- identify gaps that should be handed off to the owning application, APEXlang, or DB skill;
+- record the finding in the local protocol or user-confirmed report.
 
-Use the APEX session user when available, with a database-user fallback. In APEX runtime, `USER` and `SESSION_USER` commonly identify the parsing schema, not the end user.
+Do not generate DDL from this skill. If the user wants audit columns, triggers, history tables, or application instrumentation added, stop and route the implementation to the owning application/APEXlang or DB skill. Any write to an existing customer-owned table is state-changing and requires explicit user confirmation in the owning skill.
 
-```sql
-CREATE OR REPLACE TRIGGER sales_orders_biu_audit
-    BEFORE INSERT OR UPDATE ON sales_orders
-    FOR EACH ROW
-DECLARE
-    l_actor VARCHAR2(255);
-BEGIN
-    l_actor := COALESCE(
-        NULLIF(SYS_CONTEXT('APEX$SESSION', 'APP_USER'), ''),
-        SYS_CONTEXT('USERENV', 'SESSION_USER'));
+## Review Shape
 
-    IF INSERTING THEN
-        :NEW.created_at := COALESCE(:NEW.created_at, SYSTIMESTAMP);
-        :NEW.created_by := COALESCE(:NEW.created_by, l_actor);
-    END IF;
+When reviewing existing customer-owned application tables, look for consistent metadata such as:
 
-    :NEW.updated_at := SYSTIMESTAMP;
-    :NEW.updated_by := l_actor;
-END;
-/
-```
+- created timestamp;
+- created user;
+- updated timestamp;
+- updated user.
 
-For tables where callers must not override creation metadata, assign `created_at` and `created_by` unconditionally on insert instead of using `COALESCE`.
+The exact column names and data types are customer/application design choices. Do not impose APEX internal table conventions, `WWV_FLOW_%` conventions, `$` runtime/log table naming, or a specific timestamp datatype from this skill.
+
+When assessing existing triggers or application logic, prefer APEX runtime context for end-user attribution when available, with a database-user fallback. In APEX runtime, `USER` and `SESSION_USER` commonly identify the parsing schema, not the end user.
 
 ## Guardrails
 
-- Do not use audit-column triggers to copy passwords, tokens, large payloads, BLOBs, CLOBs, or sensitive free text into audit tables by default.
+- Do not add audit-column triggers, log tables, history tables, or package wrappers from the APEX admin skill.
+- Do not create logging tables for skill protocols in an APEX schema, parsing schema, workspace schema, or customer application schema.
+- Do not alter existing customer-owned tables from this skill. Writing to existing tables is also state-changing and must be explicitly requested and routed to the owning skill.
+- Do not recommend copying passwords, tokens, large payloads, BLOBs, CLOBs, request bodies, item values, or sensitive free text into audit tables by default.
 - On hot tables, bulk-load paths, or ETL-heavy workloads, call out row-level trigger cost.
 - Consider database-generic alternatives such as compound triggers, history tables, Unified Auditing, or Flashback Data Archive through the relevant DB skill.
-- The trigger records application change metadata only; it is not a replacement for tamper-resistant database auditing.
+- Application change metadata is not a replacement for tamper-resistant database auditing.

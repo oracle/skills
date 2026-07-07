@@ -2,7 +2,7 @@
 
 Use this reference for reproducing critical APEX paths with Session Replay and `APEX_ACTIVITY_LOG`.
 
-Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming Session Replay, activity-log, debug, or page-view detail availability.
+Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming Session Replay, activity-log, debug, or page-view metadata availability.
 
 ## Replay Pre-Check
 
@@ -28,8 +28,7 @@ FROM all_tab_columns
 WHERE table_name IN (
           'APEX_ACTIVITY_LOG',
           'APEX_WORKSPACE_ACTIVITY_LOG',
-          'APEX_DEBUG_MESSAGES',
-          'APEX_WORKSPACE_PAGE_VIEW_DETAIL')
+          'APEX_DEBUG_MESSAGES')
 ORDER BY table_name,
          column_id;
 ```

@@ -1,6 +1,6 @@
 # APEX Activity Log Triage
 
-Use this reference for `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_ACTIVITY_LOG`, usage/load trends, session drilldown, and Team Development file context.
+Use this reference for `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_ACTIVITY_LOG`, usage/load trends, and session drilldown.
 
 For broad APEX application performance analysis, load `apex-performance-evidence.md` first to ask for available APEX, browser, AWR/ASH, SQL Monitor, and ORDS evidence and the output path for customer-specific results.
 
@@ -26,8 +26,7 @@ SELECT table_name,
 FROM all_tab_columns
 WHERE table_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
-          'APEX_ACTIVITY_LOG',
-          'APEX_TEAM_DEV_FILES')
+          'APEX_ACTIVITY_LOG')
 ORDER BY table_name,
          column_id;
 ```
@@ -39,8 +38,7 @@ SELECT owner,
 FROM all_objects
 WHERE object_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
-          'APEX_ACTIVITY_LOG',
-          'APEX_TEAM_DEV_FILES')
+          'APEX_ACTIVITY_LOG')
 ORDER BY object_name,
          owner;
 ```
@@ -94,10 +92,6 @@ ORDER BY view_date,
 ```
 
 Look for latency jumps, AJAX storms, repeated authentication callbacks, missing expected page steps, and component errors.
-
-## Team Development File Context
-
-Use `APEX_TEAM_DEV_FILES` only as optional developer-artifact context. Inspect columns before selecting from it. Do not select file BLOB/CLOB payloads during triage.
 
 ## DB Skill Usage
 

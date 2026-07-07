@@ -40,21 +40,17 @@ Use `APEX_WEBSERVICE_LOG` when available. Inspect installed columns before selec
 
 ```sql
 SELECT application_id,
-       module_id,
-       module_name,
-       operation_id,
+       rest_source_id,
        status_code,
        COUNT(*) AS calls,
-       ROUND(AVG(elapsed_time), 3) AS avg_elapsed_seconds,
-       MAX(elapsed_time) AS max_elapsed_seconds,
+       ROUND(AVG(elapsed_sec), 3) AS avg_elapsed_seconds,
+       MAX(elapsed_sec) AS max_elapsed_seconds,
        MIN(request_date) AS first_seen,
        MAX(request_date) AS last_seen
 FROM apex_webservice_log
 WHERE request_date >= SYSTIMESTAMP - INTERVAL '1' DAY
 GROUP BY application_id,
-         module_id,
-         module_name,
-         operation_id,
+         rest_source_id,
          status_code
 ORDER BY max_elapsed_seconds DESC;
 ```

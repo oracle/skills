@@ -63,9 +63,9 @@ WHERE view_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
           'APEX_ACTIVITY_LOG',
           'APEX_DEBUG_MESSAGES',
-          'APEX_ERROR_LOG',
           'APEX_WEBSERVICE_LOG',
-          'APEX_TEAM_DEV_FILES')
+          'APEX_AUTOMATION_LOG',
+          'APEX_AUTOMATION_MSG_LOG')
 ORDER BY view_name;
 ```
 
@@ -79,9 +79,9 @@ WHERE table_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
           'APEX_ACTIVITY_LOG',
           'APEX_DEBUG_MESSAGES',
-          'APEX_ERROR_LOG',
           'APEX_WEBSERVICE_LOG',
-          'APEX_TEAM_DEV_FILES')
+          'APEX_AUTOMATION_LOG',
+          'APEX_AUTOMATION_MSG_LOG')
 ORDER BY table_name,
          column_id;
 ```

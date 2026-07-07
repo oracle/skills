@@ -8,21 +8,20 @@ After a DB-skill handoff, use the selected DB skill's required connection/user, 
 
 ## Quota Source Pre-Check
 
-`APEX_WORKSPACE_QUOTAS` may not exist in every APEX release or managed environment. Check available views and columns first.
+Workspace quota and resource metadata varies by APEX release and managed environment. Check available public APEX views and columns first; do not assume a dedicated quota view exists.
 
 Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming workspace quota, schema, or Resource Manager metadata columns.
 
 ```sql
-SELECT owner,
-       object_name,
-       object_type
-FROM all_objects
-WHERE object_name IN (
-          'APEX_WORKSPACE_QUOTAS',
+SELECT view_name,
+       comments
+FROM apex_dictionary
+WHERE view_name IN (
           'APEX_WORKSPACES',
           'APEX_WORKSPACE_SCHEMAS')
-ORDER BY object_name,
-         owner;
+   OR view_name LIKE '%QUOTA%'
+   OR view_name LIKE '%RESOURCE%'
+ORDER BY view_name;
 ```
 
 ```sql
@@ -32,7 +31,6 @@ SELECT table_name,
        data_type
 FROM all_tab_columns
 WHERE table_name IN (
-          'APEX_WORKSPACE_QUOTAS',
           'APEX_WORKSPACES',
           'APEX_WORKSPACE_SCHEMAS')
 ORDER BY table_name,
@@ -41,7 +39,7 @@ ORDER BY table_name,
 
 ## APEX Governance Checks
 
-Use `APEX_WORKSPACES` and supported quota views to review file storage, session/request ceilings, application counts, and Resource Manager mapping. Columns such as `FILE_STORAGE_MAX` and `RM_CONSUMER_GROUP` are version-dependent; inspect columns first.
+Use `APEX_WORKSPACES`, `APEX_WORKSPACE_SCHEMAS`, and any discovered supported quota or resource views to review file storage, session/request ceilings, application counts, and Resource Manager mapping. Columns such as `FILE_STORAGE_MAX` and `RM_CONSUMER_GROUP` are version-dependent; inspect columns first.
 
 Generative AI token limits are separate governance signals. Use `../monitoring/ai-token-monitoring.md` for AI service, workspace, provider, and app-level token questions instead of treating AI tokens as storage, session, or Resource Manager quota.
 

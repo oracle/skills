@@ -14,6 +14,8 @@ Debugging includes:
 
 Create or update a local protocol file outside the skill tree before the workflow starts.
 
+The protocol is a local Markdown artifact, not a database logging table. Do not create or alter database tables, APEX internal/runtime tables, application tables, triggers, packages, or other schema objects for protocol storage.
+
 Do not write protocol files into:
 
 - `apex/admin`;

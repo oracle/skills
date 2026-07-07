@@ -36,6 +36,17 @@ https://docs.oracle.com/en/database/oracle/apex/24.1/
 
 Do not use APEX documentation older than 24.1 unless the user explicitly asks for legacy-version migration or compatibility analysis. If the target version is unknown, use APEX 26.1 as the default reference and keep SQL version-tolerant.
 
+## No Database Access
+
+When no live database connection is available, ask the user for the installed or target APEX version before making version-sensitive recommendations.
+
+If the user does not know the version, continue only with version-tolerant static guidance:
+
+- use APEX 26.1 documentation as the default reference;
+- do not claim a specific view, column, package argument, or behavior exists in the target instance;
+- mark final SQL/API calls as pending verification against `APEX_RELEASE`, `APEX_DICTIONARY`, `ALL_TAB_COLUMNS`, and `ALL_ARGUMENTS`;
+- do not generate state-changing SQL or PL/SQL until the supported-version gate can be verified.
+
 ## Supported Version Gate
 
 Run this gate before any MCP-backed APEX admin workflow. Continue only when the

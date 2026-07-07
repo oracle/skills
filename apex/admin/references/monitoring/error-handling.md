@@ -1,23 +1,21 @@
 # APEX Error Handling And Logging
 
-Use this reference for collecting, categorizing, and prioritizing APEX errors from `APEX_DEBUG_MESSAGES`, `APEX_ERROR_LOG`, and APEX activity logs. For documented instance-admin debug procedures such as `APEX_INSTANCE_DEBUG.LIST_PAGE_VIEWS` or `APEX_INSTANCE_DEBUG.LIST_MESSAGES`, use `instance-debug-api.md`.
+Use this reference for collecting, categorizing, and prioritizing APEX errors from `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_DEBUG_MESSAGES`, App Builder error reports, and APEX activity logs. For documented instance-admin debug procedures such as `APEX_INSTANCE_DEBUG.LIST_PAGE_VIEWS` or `APEX_INSTANCE_DEBUG.LIST_MESSAGES`, use `instance-debug-api.md`.
 
-Version check: use `ALL_OBJECTS` and `ALL_TAB_COLUMNS` before assuming APEX debug, activity, or error-log view availability.
+Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming APEX debug, activity, or error-report view availability.
 
 ## Error Log Pre-Check
 
 ```sql
-SELECT owner,
-       object_name,
-       object_type
-FROM all_objects
-WHERE object_name IN (
+SELECT view_name,
+       comments
+FROM apex_dictionary
+WHERE view_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
           'APEX_ACTIVITY_LOG',
-          'APEX_DEBUG_MESSAGES',
-          'APEX_ERROR_LOG')
-ORDER BY object_name,
-         owner;
+          'APEX_DEBUG_MESSAGES')
+   OR view_name LIKE '%ERROR%'
+ORDER BY view_name;
 ```
 
 ```sql
@@ -29,13 +27,12 @@ FROM all_tab_columns
 WHERE table_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
           'APEX_ACTIVITY_LOG',
-          'APEX_DEBUG_MESSAGES',
-          'APEX_ERROR_LOG')
+          'APEX_DEBUG_MESSAGES')
 ORDER BY table_name,
          column_id;
 ```
 
-If `APEX_ERROR_LOG` is missing, use `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_DEBUG_MESSAGES`, App Builder error reports, ORDS/web-server logs, and application-specific error tables. Do not query internal APEX repository tables as a workaround.
+Use `APEX_WORKSPACE_ACTIVITY_LOG`, `APEX_DEBUG_MESSAGES`, App Builder error reports, ORDS/web-server logs, and application-specific error tables. Do not query internal APEX repository tables as a workaround.
 
 ## Collection And Priority
 
@@ -77,21 +74,19 @@ SELECT message_timestamp,
        application_id,
        page_id,
        session_id,
-       debug_page_view_id,
+       page_view_id,
+       apex_user,
        message_level,
-       message_type,
-       component_type,
-       component_name,
        SUBSTR(message, 1, 300) AS message_sample
 FROM apex_debug_messages
 WHERE message_timestamp >= :apex_start_time
   AND message_timestamp <  :apex_end_time
   AND (:application_id IS NULL OR application_id = :application_id)
-  AND (:debug_page_view_id IS NULL OR debug_page_view_id = :debug_page_view_id)
+  AND (:page_view_id IS NULL OR page_view_id = :page_view_id)
 ORDER BY message_timestamp;
 ```
 
-Prefer `DEBUG_PAGE_VIEW_ID`, `APEX_SESSION_ID`, ECID, application/page/component, and timestamp window. Avoid verbose production debug unless scoped and temporary.
+Use `APEX_WORKSPACE_ACTIVITY_LOG.DEBUG_PAGE_VIEW_ID` to find the corresponding `APEX_DEBUG_MESSAGES.PAGE_VIEW_ID`. Prefer page view ID, `APEX_SESSION_ID`, ECID, application/page, APEX user, and timestamp window. Avoid verbose production debug unless scoped and temporary.
 
 ## Quick Fix Patterns
 

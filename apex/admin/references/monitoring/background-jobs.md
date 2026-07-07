@@ -1,6 +1,6 @@
 # APEX Background Job Monitoring
 
-Use this reference for APEX background processing, automations, scheduled work, and `APEX_APPL_JOB_LOG`.
+Use this reference for APEX background processing, automations, scheduled work, `APEX_AUTOMATION_LOG`, `APEX_AUTOMATION_MSG_LOG`, and any installed public APEX scheduler/job views discovered in the target environment.
 
 Version check: use `ALL_OBJECTS` and `ALL_TAB_COLUMNS` before assuming APEX job-log or automation view availability.
 
@@ -22,9 +22,11 @@ SELECT owner,
        object_type
 FROM all_objects
 WHERE object_name IN (
-          'APEX_APPL_JOB_LOG',
+          'APEX_AUTOMATION_LOG',
+          'APEX_AUTOMATION_MSG_LOG',
           'APEX_APPL_AUTOMATIONS',
           'APEX_APPLICATIONS')
+   OR object_name LIKE 'APEX%SCHEDULER%JOB%'
 ORDER BY object_name,
          owner;
 ```
@@ -36,14 +38,16 @@ SELECT table_name,
        data_type
 FROM all_tab_columns
 WHERE table_name IN (
-          'APEX_APPL_JOB_LOG',
+          'APEX_AUTOMATION_LOG',
+          'APEX_AUTOMATION_MSG_LOG',
           'APEX_APPL_AUTOMATIONS',
           'APEX_APPLICATIONS')
+   OR table_name LIKE 'APEX%SCHEDULER%JOB%'
 ORDER BY table_name,
          column_id;
 ```
 
-If `APEX_APPL_JOB_LOG` is missing, use APEX Builder automation/task reports, application debug logs, application-specific job tables, and database scheduler views. Do not query internal APEX repository tables as a workaround.
+If automation log views are missing, use APEX Builder automation/task reports, application debug logs, application-specific job tables, and database scheduler views. Do not query internal APEX repository tables as a workaround.
 
 ## Recent APEX Job Failures
 
@@ -52,20 +56,24 @@ Adapt column names to the installed view.
 ```sql
 SELECT workspace,
        application_id,
-       application_name,
-       job_name,
+       automation_id,
+       automation_static_id,
+       automation_name,
+       is_job,
        status,
-       started_on,
-       finished_on,
-       run_duration,
-       error_code,
-       SUBSTR(error_message, 1, 300) AS sample_error
-FROM apex_appl_job_log
-WHERE started_on >= SYSTIMESTAMP - INTERVAL '1' DAY
-  AND status <> 'SUCCESS'
-ORDER BY started_on DESC
+       status_code,
+       start_timestamp,
+       end_timestamp,
+       successful_row_count,
+       error_row_count
+FROM apex_automation_log
+WHERE start_timestamp >= SYSTIMESTAMP - INTERVAL '1' DAY
+  AND status_code <> 'SUCCESS'
+ORDER BY start_timestamp DESC
 FETCH FIRST 50 ROWS ONLY;
 ```
+
+For a specific automation log entry, inspect `APEX_AUTOMATION_MSG_LOG` columns first, then collect only narrow message excerpts for the affected `AUTOMATION_LOG_ID`.
 
 ## Scheduler Mapping
 

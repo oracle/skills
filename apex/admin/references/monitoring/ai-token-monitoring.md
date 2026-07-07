@@ -154,9 +154,11 @@ Do not present service-level totals as per-app totals when multiple applications
 
 ## Application-Side Instrumentation
 
-If APEX admin metadata cannot prove per-app consumption, use APEX application instrumentation as the reliable path. `APEX_AI` response data types expose token fields such as input, output, and total tokens when the provider returns them.
+If APEX admin metadata cannot prove per-app consumption, application-owned instrumentation is the reliable path. `APEX_AI` response data types expose token fields such as input, output, and total tokens when the provider returns them.
 
-Recommend a small application-owned log table or package wrapper around AI calls that records:
+The APEX admin skill may recommend application-side instrumentation, but it must not create or alter the instrumentation objects. Route implementation to the owning APEXlang or DB skill after explicit user confirmation.
+
+An application-owned implementation may record:
 
 - Application ID and page ID.
 - AI service static ID.
@@ -164,7 +166,7 @@ Recommend a small application-owned log table or package wrapper around AI calls
 - Input, output, and total token counts returned by `APEX_AI`.
 - Provider/model and timestamp.
 
-Keep implementation details in the APEX application or DB skill as appropriate; this monitoring reference may recommend the pattern but should not own broad application-code changes.
+Keep implementation details in the APEX application or DB skill as appropriate; this monitoring reference may recommend the pattern but must not own application-code changes, DDL, triggers, packages, or writes to customer-owned tables.
 
 ## Interpretation
 

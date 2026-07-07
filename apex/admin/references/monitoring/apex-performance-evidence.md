@@ -18,7 +18,7 @@ Useful APEX-side evidence:
 
 - APEX application export for static component review.
 - APEX Activity Log or Page Views export for the affected time window, with workspace, application, page, request type, elapsed time, rows queried, session, user, and error metadata. Avoid item values and payload columns unless explicitly needed.
-- Page Performance report or `APEX_WORKSPACE_PAGE_VIEW_DETAIL` extract for slow pages, regions, processes, Dynamic Actions, and `DEBUG_PAGE_VIEW_ID`.
+- APEX Builder Page Performance report or supported activity/debug extract for slow pages, regions, processes, Dynamic Actions, and `DEBUG_PAGE_VIEW_ID`.
 - APEX Debug export for one narrow user journey, page, session, and time window.
 - Browser Network HAR or summarized request list for page load/AJAX count, timings, status codes, and response sizes. Redact cookies, authorization headers, tokens, and request bodies.
 - Web Service Activity Log for REST Data Sources or outbound service calls.

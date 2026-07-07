@@ -1,10 +1,10 @@
 # APEX Page Performance Profiler
 
-Use this reference for the slowest APEX pages, regions, Page Performance reports, `APEX_WORKSPACE_PAGE_VIEW_DETAIL`, and `DBA_HIST_SQLSTAT` correlation.
+Use this reference for the slowest APEX pages, regions, APEX Builder Page Performance reports, supported APEX activity/debug views, and `DBA_HIST_SQLSTAT` correlation.
 
 For broad APEX application performance analysis, load `apex-performance-evidence.md` first to ask for available APEX, browser, AWR/ASH, SQL Monitor, and ORDS evidence and the output path for customer-specific results.
 
-Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming page-view detail or activity-log view availability.
+Version check: use `APEX_DICTIONARY` and `ALL_TAB_COLUMNS` before assuming activity-log, page-view, page-performance, or debug view availability. Do not hard-code internal or undocumented APEX repository view names.
 
 Use APEX Diff as a convenience helper to compare page-view, activity-log,
 debug-message, and related monitoring views across APEX releases before
@@ -18,21 +18,19 @@ https://apexadb.oracle.com/ords/r/apexdiff/apex_diff/home
 
 ## Logging Pre-Check
 
-Page-view detail logging can increase log volume and may capture sensitive context. Enable or increase it only for the affected application, workspace, or test window when possible.
+Page performance and debug logging can increase log volume and may capture sensitive context. Enable or increase it only for the affected application, workspace, or test window when possible.
 
 ```sql
-SELECT owner,
-       object_name,
-       object_type
-FROM all_objects
-WHERE object_name IN (
+SELECT view_name,
+       comments
+FROM apex_dictionary
+WHERE view_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
           'APEX_ACTIVITY_LOG',
-          'APEX_WORKSPACE_PAGE_VIEWS',
-          'APEX_WORKSPACE_PAGE_VIEW_DETAIL',
           'APEX_DEBUG_MESSAGES')
-ORDER BY object_name,
-         owner;
+   OR view_name LIKE '%PAGE%VIEW%'
+   OR view_name LIKE '%PAGE%PERFORMANCE%'
+ORDER BY view_name;
 ```
 
 ```sql
@@ -44,8 +42,6 @@ FROM all_tab_columns
 WHERE table_name IN (
           'APEX_WORKSPACE_ACTIVITY_LOG',
           'APEX_ACTIVITY_LOG',
-          'APEX_WORKSPACE_PAGE_VIEWS',
-          'APEX_WORKSPACE_PAGE_VIEW_DETAIL',
           'APEX_DEBUG_MESSAGES')
 ORDER BY table_name,
          column_id;

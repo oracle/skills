@@ -19,6 +19,10 @@ On Autonomous Database or APEX Service, the service `ADMIN` account may be the a
 
 When the user intentionally chooses `SYSTEM`, it may run APEX-admin-scoped work only when `SESSION_USER = SYSTEM`, `CURRENT_USER = SYSTEM`, and `ISDBA = FALSE`. Show the exact target objects, exact SQL or SQLcl action class, password-handling path when relevant, and risk summary, then require the user to reply with exactly `YES` in uppercase. Do not put passwords in chat, scripts, SQL text, or logged MCP tool calls. This permits APEX admin account creation/grants, workspace lifecycle work, imports, monitoring queries, debug-log queries, and supported APEX API automation. It does not permit generic DB/ORDS/performance work.
 
+If a dedicated APEX instance admin identity is missing or `APEX_ADMINISTRATOR_ROLE` cannot be verified, do not fall through to a generic DBA path silently. Ask whether the user wants to use `SYSTEM` without `SYSDBA` once to create or repair the dedicated APEX admin account setup, or continue the APEX-admin-scoped workflow as `SYSTEM`. Either choice needs the exact uppercase `YES` confirmation from the APEX Admin Identity Gate. Do not create a look-alike `APEX_ADMINISTRATOR_ROLE` or grant broad DBA privileges as a shortcut.
+
+For password-based account creation or reset, use only a non-logged password path: an interactive local SQLcl prompt, a placeholder-backed local secret, or a user-run local password-generator command. Do not ask the user to paste passwords into chat, and do not generate or print passwords through MCP/tool output.
+
 For APEX application import metadata and `APEX_APPLICATION_INSTALL` calls handled by this skill, use the confirmed APEX admin identity. Confirm the target application, workspace, parsing schema, and whether the import updates an existing app or creates a new one.
 
 For new APEX application generation, route artifact creation to `apex/apexlang/SKILL.md` after announcing the skill handoff. Use this deployment identity topic only to decide whether the connected database user is appropriate for validation, materialization, import, or post-deploy checks.

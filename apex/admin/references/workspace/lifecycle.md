@@ -22,7 +22,7 @@ For documented `APEX_INSTANCE_ADMIN` API ownership, signature checks, and sensit
 - Confirm parsing-schema candidates with `references/workspace/schema-mapping.md`; do not suggest ORDS schemas, `PDB_ADMIN`, Oracle-maintained accounts, APEX platform schemas, or DBA/runtime service accounts as parsing schemas.
 - If the user wants to reuse an existing parsing schema, verify required privileges first. If privileges are missing or excessive, ask whether the user wants the DB privilege changes handled through `db/security/privilege-management.md`; continue only when the privileges are correct or the user approves adjustment.
 - Whether this is Oracle Cloud or Autonomous Database, where some instance administration options may be restricted.
-- If a dedicated APEX admin database account is unavailable or the user intentionally chooses `SYSTEM`, apply the `SYSTEM` privileged exception from `apex/admin/SKILL.md`: require `SESSION_USER = SYSTEM`, `CURRENT_USER = SYSTEM`, `ISDBA = FALSE`, a visible scope/risk summary, and a fresh exact uppercase `YES` before workspace creation or other APEX-admin-scoped work.
+- If a dedicated APEX admin database account with `APEX_ADMINISTRATOR_ROLE` is unavailable, cannot be verified, or the role setup appears incomplete, stop before workspace creation. Ask whether the user wants to use `SYSTEM` without `SYSDBA` once to create/repair the dedicated APEX admin account setup, or continue the APEX-admin-scoped workflow as `SYSTEM`. Either path requires `SESSION_USER = SYSTEM`, `CURRENT_USER = SYSTEM`, `ISDBA = FALSE`, a visible scope/risk/password-handling summary, and a fresh exact uppercase `YES`.
 
 ## Administration Services Operation Coverage
 
@@ -107,6 +107,20 @@ Run instance-level workspace APIs with a dedicated non-SYS/SYSTEM database accou
 Use `SYS` only for explicit APEX installation, upgrade, emergency DBA, or grant-management work. Treat those as privileged database administration tasks and route them to the appropriate database/admin skill. Do not grant broad DBA privileges just to automate workspace creation.
 
 `SYSTEM` may be used inside this skill for APEX-admin-scoped work, including workspace creation, workspace-user administration, supported APEX API automation, and creating or granting a dedicated APEX admin account. It is allowed only when `SESSION_USER = SYSTEM`, `CURRENT_USER = SYSTEM`, `ISDBA = FALSE`, the exact target objects, action, password-handling path when relevant, and risk summary are shown, and the user replies with exactly `YES` in uppercase. Do not put passwords in chat, scripts, SQL text, or logged MCP tool calls.
+
+If the workspace run needs a dedicated APEX admin database account first, ask the user which path they choose:
+
+```text
+No verified APEX admin account with APEX_ADMINISTRATOR_ROLE is available.
+
+Choose one:
+1. Use SYSTEM without SYSDBA once to create or repair the APEX admin account.
+2. Continue this APEX-admin-scoped task as SYSTEM.
+
+I will verify SESSION_USER, CURRENT_USER, and ISDBA first. Passwords will not be logged. Continue only after the scope is shown and you reply exactly YES.
+```
+
+For password handling, do not ask the user to paste a password into chat. Prefer an interactive local SQLcl prompt or a placeholder-backed local secret. If the user wants a generated strong password, provide a local generator command for the user to run themselves and tell them to enter the result only at the password prompt; do not print generated secrets through chat or MCP/tool output.
 
 Before creating a workspace through MCP-backed automation, run the identity guard:
 

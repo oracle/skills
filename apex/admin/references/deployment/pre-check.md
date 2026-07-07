@@ -123,9 +123,9 @@ WHERE table_name IN (
           'APEX_APPLICATIONS',
           'APEX_APPLICATION_BUILD_OPTIONS',
           'APEX_APPLICATION_SUBSTITUTIONS',
-          'APEX_APPLICATION_AUTH',
-          'APEX_APPL_WEB_CREDENTIALS',
+          'APEX_WORKSPACE_CREDENTIALS',
           'APEX_APPLICATION_STATIC_FILES')
+   OR table_name LIKE 'APEX_APPLICATION%AUTH%'
 ORDER BY table_name,
          column_id;
 ```
