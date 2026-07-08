@@ -476,6 +476,8 @@ Use this package alongside page-patterns, page-items, buttons, and business-logi
 - `references/domains/debugging/owning-surfaces.md`
 - `references/domains/debugging/fix-patterns.md`
 - `references/domains/debugging/example-scenarios.md`
+- `references/domains/debugging/runtime-error-catalog.md`
+- `references/domains/debugging/runtime-verification-methodology.md`
 
 ### Trigger Coverage
 - `.apx validation failure`
@@ -500,6 +502,12 @@ Use this package alongside page-patterns, page-items, buttons, and business-logi
 - `session id`
 - `APEX runtime error`
 - `ORA error in running app`
+- `ITEM_POSTING_VIOLATION`
+- `ORA-20987 on submit`
+- `ORA-22816 on editable grid`
+- `HTTP 400 Reload on Submit`
+- `green success message on failure`
+- `runtime data-write verification`
 - `keyboard focus is wrong`
 - `responsive layout regression`
 
@@ -523,6 +531,11 @@ Use this package alongside page-patterns, page-items, buttons, and business-logi
 - `runtime session/wrapper artifact`
 - `runtime APEX execution-log failure`
 - `runtime UI/UX verification failure`
+- `runtime page-protection/submit violation`
+- `runtime session-state-protection rejection`
+- `runtime unsupported-RETURNING failure`
+- `runtime page-attribute misconfiguration`
+- `runtime error-display violation`
 
 ### Escalation Rules
 - Escalate to Builder JavaScript only when the failure is fetch, auth, ORDS, JWT, or other UI transport behavior.
