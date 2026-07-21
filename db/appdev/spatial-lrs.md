@@ -92,10 +92,10 @@ INSERT INTO user_sdo_geom_metadata (table_name, column_name, diminfo, srid)
   VALUES (
     'LRS_ROUTES',
     'GEOMETRY',
-    sdo_dim_array(
-      sdo_dim_element('X', 0, 20, 0.005),
-      sdo_dim_element('Y', 0, 20, 0.005),
-      sdo_dim_element('M', 0, 100, 0.005)),   -- measure dimension, must be last
+    SDO_DIM_ARRAY(
+      SDO_DIM_ELEMENT('X', 0, 20, 0.005),
+      SDO_DIM_ELEMENT('Y', 0, 20, 0.005),
+      SDO_DIM_ELEMENT('M', 0, 100, 0.005)),   -- measure dimension, must be last
     NULL
   );
 ```
@@ -238,7 +238,7 @@ COMMIT;
 
 -- Recreate the spatial index after conversion.
 CREATE INDEX us_interstates_lrs_sx ON us_interstates_lrs (geom)
-  INDEXTYPE IS mdsys.spatial_index_v2;
+  INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2;
 ```
 
 Conversion is available for:
@@ -301,21 +301,21 @@ INSERT INTO user_sdo_geom_metadata (table_name, column_name, diminfo, srid)
   VALUES (
     'lrs_routes',
     'route_geometry',
-    sdo_dim_array(
-      sdo_dim_element('X', 0, 20, 0.005),
-      sdo_dim_element('Y', 0, 20, 0.005),
-      sdo_dim_element('M', 0, 20, 0.005)),
+    SDO_DIM_ARRAY(
+      SDO_DIM_ELEMENT('X', 0, 20, 0.005),
+      SDO_DIM_ELEMENT('Y', 0, 20, 0.005),
+      SDO_DIM_ELEMENT('M', 0, 20, 0.005)),
     NULL
   );
 
 -- Create the spatial index.
 CREATE INDEX lrs_routes_idx ON lrs_routes(route_geometry)
-  INDEXTYPE IS mdsys.spatial_index_v2;
+  INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2;
 
 DECLARE
   geom_segment  sdo_geometry;
   line_string   sdo_geometry;
-  dim_array     sdo_dim_array;
+  dim_array     SDO_DIM_ARRAY;
   result_geom_1 sdo_geometry;
   result_geom_2 sdo_geometry;
   result_geom_3 sdo_geometry;
@@ -406,7 +406,7 @@ WHERE m.table_name = 'LRS_ROUTES'
 -- Redefine the segment's measure range to "convert" miles to kilometers (27 mi = 43.443 km)
 DECLARE
   geom_segment sdo_geometry;
-  dim_array    sdo_dim_array;
+  dim_array    SDO_DIM_ARRAY;
 BEGIN
   SELECT a.route_geometry INTO geom_segment
   FROM lrs_routes a
@@ -594,9 +594,9 @@ INSERT INTO us_interstates_lrs
 INSERT INTO user_sdo_geom_metadata VALUES (
   'US_INTERSTATES_LRS',
   'GEOM',
-  sdo_dim_array(
-    sdo_dim_element('long', -180, 180, 0.5),
-    sdo_dim_element('lat', -90, 90, 0.5)
+  SDO_DIM_ARRAY(
+    SDO_DIM_ELEMENT('long', -180, 180, 0.5),
+    SDO_DIM_ELEMENT('lat', -90, 90, 0.5)
   ),
   4326
 );
