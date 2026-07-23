@@ -84,7 +84,36 @@ When an LRS function must resolve a duplicate measure, it uses the **first point
 
 Measure information is integrated directly into the Oracle Spatial model by adding an extra **measure dimension** to the spatial metadata. This affects both the metadata (`USER_SDO_GEOM_METADATA`) and the geometry data itself.
 
-The measure dimension **must be the last element** of the `SDO_DIM_ARRAY` in the spatial object's metadata definition:
+### SDO_GTYPE Values Used with LRS
+
+| SDO_GTYPE | Meaning |
+|---|---|
+| `3301` | 2D LRS point (X, Y, M) — required GTYPE for any point geometry used with an LRS function |
+| `3302` | 2D LRS line string (X, Y, M) |
+| `3401` | 3D LRS point (X, Y, Z, M), as required by `_3D`-format LRS functions such as `SDO_LRS.PROJECT_PT_3D` |
+
+Whenever a geometric segment is defined, its start and end measures must be defined (or derived from an existing geometric segment); unassigned measures of intermediate shape points are populated automatically.
+
+```sql
+-- Sample LRS geometry - highway route with six exits
+SDO_GEOMETRY(
+  3302,  -- 2D LRS line string (X, Y, M)
+  NULL,
+  NULL,
+  SDO_ELEM_INFO_ARRAY(1,2,1), -- one line string, straight segments
+  SDO_ORDINATE_ARRAY(
+    2,2,0,       -- Start point - Exit1; 0 is measure from start.
+    2,4,2,       -- Exit2; 2 is measure from start.
+    8,4,8,       -- Exit3; 8 is measure from start.
+    12,4,12,     -- Exit4; 12 is measure from start.
+    12,10,NULL,  -- Not an exit; measure automatically calculated and filled.
+    8,10,22,     -- Exit5; 22 is measure from start.
+    5,14,27      -- End point (Exit6); 27 is measure from start.
+  )
+)
+```
+
+The measure dimension **must be the last element** of the `SDO_DIM_ARRAY` in the spatial object's metadata definition.
 
 ```sql
 -- Adding an M (measure) dimension to metadata for an LRS geometry column
@@ -95,36 +124,11 @@ INSERT INTO user_sdo_geom_metadata (table_name, column_name, diminfo, srid)
     SDO_DIM_ARRAY(
       SDO_DIM_ELEMENT('X', 0, 20, 0.005),
       SDO_DIM_ELEMENT('Y', 0, 20, 0.005),
-      SDO_DIM_ELEMENT('M', 0, 100, 0.005)),   -- measure dimension, must be last
+      SDO_DIM_ELEMENT('M', 0, 100, 0.005)
+    ),   -- measure dimension, must be last
     NULL
   );
 ```
-
-A geometric segment with measure values (underlined in the source figure) looks like:
-
-```sql
-SDO_GEOMETRY(
-  3302,
-  NULL,
-  NULL,
-  SDO_ELEM_INFO_ARRAY(1,2,1),
-  SDO_ORDINATE_ARRAY(
-    5,10,0,
-    20,5,NULL,
-    35,10,NULL,
-    55,10,100)
-  )
-```
-
-Whenever a geometric segment is defined, its start and end measures must be defined (or derived from an existing geometric segment); unassigned measures of intermediate shape points are populated automatically.
-
-### SDO_GTYPE Values Used with LRS
-
-| SDO_GTYPE | Meaning (as used in the LRS examples) |
-|---|---|
-| `3301` | 2D LRS point (X, Y, M) — required GTYPE for any point geometry used with an LRS function |
-| `3302` | 2D LRS line string (X, Y, M) |
-| `3401` | 3D LRS point (X, Y, Z, M), as required by `_3D`-format LRS functions such as `SDO_LRS.PROJECT_PT_3D` |
 
 ---
 
@@ -226,12 +230,18 @@ Geometries can be converted from standard (non-measure) line string format to LR
 
 ```sql
 -- Convert every geometry in US_INTERSTATES_LRS.GEOM to LRS format.
--- Measures run from 0 (start_measure) to 100000000 (end_measure, an upper bound),
--- with tolerance 0.5. Drop any spatial index on the column first.
+-- Measures run from 0 (start_measure) to 100000000 (end_measure, an upper bound), with tolerance 0.5. 
+-- Make sure to  drop any existing spatial index on the column first.
 DECLARE
   status VARCHAR2(32);
 BEGIN
   status := sdo_lrs.convert_to_lrs_layer('US_INTERSTATES_LRS', 'GEOM', 0, 100000000, 0.5);
+  IF status = 'TRUE'
+  THEN
+    dbms_output.put_line('Conversion from standard geometry to LRS layer succeeded.');
+  ELSE
+    dbms_output.put_line('Conversion from standard geometry to LRS layer failed.');
+  END IF;
 END;
 /
 COMMIT;
@@ -264,35 +274,36 @@ If LRS results seem imprecise or incorrect, consider specifying a smaller tolera
 
 ---
 
-## Complete Worked Example
+## Synthetic LRS Routes Example
 
-This condensed version of the guide's highway example creates a route with six exits, defines it as an LRS segment, and exercises the core `SDO_LRS` operations.
+This example creates a route with six exits, defines it as an LRS segment, and exercises the core `SDO_LRS` operations.
 
 ```sql
 -- Create a table for routes (highways).
 CREATE TABLE lrs_routes (
   route_id        NUMBER PRIMARY KEY,
   route_name      VARCHAR2(32),
-  route_geometry  sdo_geometry
+  route_geometry  SDO_GEOMETRY
 );
 
 -- Populate table with one route.
 INSERT INTO lrs_routes VALUES (
   1,
   'Route1',
-  sdo_geometry(
-    3302,  -- line string, 3 dimensions: X,Y,M
+  SDO_GEOMETRY(
+    3302,
     NULL,
     NULL,
-    sdo_elem_info_array(1,2,1), -- one line string, straight segments
-    sdo_ordinate_array(
-      2,2,0,       -- Start point - Exit1; 0 is measure from start.
-      2,4,2,       -- Exit2; 2 is measure from start.
-      8,4,8,       -- Exit3; 8 is measure from start.
-      12,4,12,     -- Exit4; 12 is measure from start.
-      12,10,NULL,  -- Not an exit; measure automatically calculated and filled.
-      8,10,22,     -- Exit5; 22 is measure from start.
-      5,14,27)     -- End point (Exit6); 27 is measure from start.
+    SDO_ELEM_INFO_ARRAY(1,2,1),
+    SDO_ORDINATE_ARRAY(
+      2,2,0, 
+      2,4,2,
+      8,4,8,
+      12,4,12,
+      12,10,NULL,
+      8,10,22,
+      5,14,27
+    )
   )
 );
 
@@ -304,7 +315,8 @@ INSERT INTO user_sdo_geom_metadata (table_name, column_name, diminfo, srid)
     SDO_DIM_ARRAY(
       SDO_DIM_ELEMENT('X', 0, 20, 0.005),
       SDO_DIM_ELEMENT('Y', 0, 20, 0.005),
-      SDO_DIM_ELEMENT('M', 0, 20, 0.005)),
+      SDO_DIM_ELEMENT('M', 0, 20, 0.005)
+    ),
     NULL
   );
 
@@ -313,12 +325,12 @@ CREATE INDEX lrs_routes_idx ON lrs_routes(route_geometry)
   INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2;
 
 DECLARE
-  geom_segment  sdo_geometry;
-  line_string   sdo_geometry;
+  geom_segment  SDO_GEOMETRY;
+  line_string   SDO_GEOMETRY;
   dim_array     SDO_DIM_ARRAY;
-  result_geom_1 sdo_geometry;
-  result_geom_2 sdo_geometry;
-  result_geom_3 sdo_geometry;
+  result_geom_1 SDO_GEOMETRY;
+  result_geom_2 SDO_GEOMETRY;
+  result_geom_3 SDO_GEOMETRY;
 BEGIN
   SELECT a.route_geometry INTO geom_segment
   FROM lrs_routes a
@@ -382,11 +394,11 @@ WHERE route_id = 1;         -- 27
 
 SELECT sdo_lrs.geom_segment_start_measure(route_geometry)
 FROM lrs_routes
-WHERE route_id = 1;  -- 0
+WHERE route_id = 1;         -- 0
 
 SELECT sdo_lrs.geom_segment_end_measure(route_geometry)
 FROM lrs_routes
-WHERE route_id = 1;    -- 27
+WHERE route_id = 1;         -- 27
 
 -- What percentage of Route1's measure range (0-27) does measure 5 represent?
 -- Measure range is 27, so 5 is ~18.5185185% of it -> 18.5185185
@@ -405,7 +417,7 @@ WHERE m.table_name = 'LRS_ROUTES'
 
 -- Redefine the segment's measure range to "convert" miles to kilometers (27 mi = 43.443 km)
 DECLARE
-  geom_segment sdo_geometry;
+  geom_segment SDO_GEOMETRY;
   dim_array    SDO_DIM_ARRAY;
 BEGIN
   SELECT a.route_geometry INTO geom_segment
@@ -422,7 +434,6 @@ BEGIN
     dim_array,
     0,       -- new start measure
     43.443   -- new end measure
-
   );
 
   UPDATE lrs_routes a
@@ -448,8 +459,8 @@ SELECT sdo_lrs.project_pt(route_geometry,
     3301,
     NULL,
     NULL,
-    sdo_elem_info_array(1, 1, 1),
-    sdo_ordinate_array(9, 3, NULL)
+    SDO_ELEM_INFO_ARRAY(1, 1, 1),
+    SDO_ORDINATE_ARRAY(9, 3, NULL)
   )
 )
 FROM lrs_routes
@@ -566,44 +577,93 @@ As documented, with only `Route0` and `Route1` in the table, the unordered aggre
 
 ## Practical Example: Road Network with Dynamic Segmentation
 
-This end-to-end example builds a real road-condition reporting workflow for interstates in Colorado, going beyond the textbook example above. It derives an LRS layer from existing (non-LRS) road geometries, models pavement condition as measure ranges, and uses dynamic segmentation to clip, report on, and visualize the results.
+This end-to-end example builds a real road-condition reporting workflow for interstates in Colorado, going beyond the [synthetic LRS Routes example](#synthetic-lrs-routes-example) above. It derives an LRS layer from existing (non-LRS) interstate highway geometries, models pavement condition as measure ranges, and uses dynamic segmentation to clip, report on, and visualize the results.
 
 ### 1. Building an LRS Table from Existing Geometries
+
+The `US_STATES` dataset used in this chapter was downloaded from the [U.S. Census Cartographic Boundary Files](https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html). The `US_INTERSTATES`and `US_COUNTIES` datasets were derived from past U.S. Census data and can be downloaded from [this GitHub repo folder](https://github.com/karinpatenge/asktom-spatial/tree/main/2026/07_LRS/data).
+
+All datasets were loaded into the Oracle AI Database, then validated, and rectified (if needed) using [Oracle Spatial Studio](https://www.oracle.com/database/technologies/spatial-studio/get-started.html). `US_COUNTIES` and `US_INTERSTATES` were also converted to 2D geometries using `SDO_CS.MAKE_2D` to match the dimensionality of `US_INTERSTATES`.
 
 Start from ordinary (non-LRS) interstate geometries and an ordinary state-boundary layer. Clip the interstates to the state border with `SDO_GEOM.SDO_INTERSECTION`, keeping only interstates that interact with the state:
 
 ```sql
 CREATE TABLE us_interstates_lrs (
-  id          NUMBER,
-  interstate  VARCHAR2(35) PRIMARY KEY,
-  geom        sdo_geometry
+  id          NUMBER PRIMARY KEY,
+  interstate  VARCHAR2(35),
+  geom        SDO_GEOMETRY
 );
 
 -- Clip interstates at the Colorado border, and insert the clipped
 -- geometries into US_INTERSTATES_LRS.
 INSERT INTO us_interstates_lrs
-  SELECT i.id,
+  SELECT
+    i.id,
     i.interstate,
-    sdo_geom.sdo_intersection(i.geom, s.geom, 0.5) geom
-  FROM us_states s,
+    sdo_geom.sdo_intersection(
+      sdo_cs.make_2d(i.geom, 4326),    -- interstates geometry converted to 2D
+      sdo_cs.transform(s.geom, 4326),  -- states geometry converted to the same SRID
+      0.0005                           -- tolerance
+    ) geom
+  FROM
+    us_states s,
     us_interstates i
-  WHERE s.state_abrv = 'CO'
-  AND sdo_anyinteract(i.geom, s.geom) = 'TRUE';
+  WHERE
+    s.stusps = 'CO'
+    AND sdo_anyinteract(i.geom, s.geom) = 'TRUE';
 
--- Standard (non-LRS) metadata first — no M dimension yet.
 INSERT INTO user_sdo_geom_metadata VALUES (
   'US_INTERSTATES_LRS',
   'GEOM',
   SDO_DIM_ARRAY(
-    SDO_DIM_ELEMENT('long', -180, 180, 0.5),
-    SDO_DIM_ELEMENT('lat', -90, 90, 0.5)
+    SDO_DIM_ELEMENT('X', -180, 180, 0.0005),
+    SDO_DIM_ELEMENT('Y', -90, 90, 0.0005)
   ),
   4326
 );
+
 COMMIT;
 ```
 
 Then convert the whole layer to LRS format with `SDO_LRS.CONVERT_TO_LRS_LAYER` (as shown in [Converting LRS Geometries](#converting-lrs-geometries)), and build the spatial index only **after** conversion — an index must not exist while the geometries are being converted.
+
+```sql
+-- Convert every geometry in US_INTERSTATES_LRS.GEOM to LRS format.
+-- Make sure to  drop any existing spatial index on the column first.
+-- The metadata in USER_SDO_GEOM_METADATA is automatically updated upon conversion
+-- having M as third dimension.
+DECLARE
+  status VARCHAR2(32);
+BEGIN
+  status := sdo_lrs.convert_to_lrs_layer('US_INTERSTATES_LRS', 'GEOM', 0, 100000000, 0.5);
+  IF status = 'TRUE'
+  THEN
+    dbms_output.put_line('Conversion from standard geometry to LRS layer succeeded.');
+  ELSE
+    dbms_output.put_line('Conversion from standard geometry to LRS layer failed.');
+  END IF;
+END;
+/
+COMMIT;
+
+-- Verify the output
+SELECT
+  i.interstate,
+  v.id AS vertex_no,
+  v.x,
+  v.y,
+  v.z AS m
+FROM
+  us_interstates_lrs i,
+  TABLE(SDO_UTIL.GETVERTICES(i.geom)) v
+ORDER BY
+  i.interstate,
+  v.id;
+
+-- Recreate the spatial index after conversion.
+CREATE INDEX us_interstates_lrs_sx ON us_interstates_lrs (geom)
+  INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2;
+```
 
 ### 2. Modeling Road Conditions with Measure Ranges
 
@@ -618,11 +678,12 @@ CREATE TABLE us_road_conditions (
   condition     VARCHAR2(6)
 );
 
+-- Insert sample data
 INSERT INTO us_road_conditions VALUES (1, 'I25',      0, 150000, 'good');
 INSERT INTO us_road_conditions VALUES (2, 'I25', 150000, 170000, 'poor');
 INSERT INTO us_road_conditions VALUES (3, 'I25', 170000, 340000, 'fair');
 INSERT INTO us_road_conditions VALUES (4, 'I25', 340000, 481426, 'good');
--- ... additional interstates (I70, I76, I225) follow the same pattern
+COMMIT;
 
 CREATE INDEX us_road_conditions_idx ON us_road_conditions (interstate);
 ```
@@ -668,10 +729,10 @@ WHERE
   i.interstate = p.interstate;
 
 -- The view needs its own USER_SDO_GEOM_METADATA row, copied from the base table.
-DELETE FROM user_sdo_geom_metadata WHERE table_name = 'US_INTERSTATES_LRS_CONDITION';
 INSERT INTO user_sdo_geom_metadata
   SELECT 'US_INTERSTATES_LRS_CONDITION', column_name, diminfo, srid
-  FROM user_sdo_geom_metadata WHERE table_name = 'US_INTERSTATES_LRS';
+  FROM user_sdo_geom_metadata
+  WHERE table_name = 'US_INTERSTATES_LRS';
 COMMIT;
 ```
 
@@ -712,8 +773,10 @@ SELECT sdo_lrs.project_pt(
     NULL
   )
 )
-FROM us_interstates_lrs
-WHERE interstate = 'I25';
+FROM
+  us_interstates_lrs
+WHERE
+  interstate = 'I25';
 
 -- Measure and offset of the same point on I25.
 -- Positive offset = left side, negative offset = right side,
@@ -721,10 +784,10 @@ WHERE interstate = 'I25';
 SELECT
   sdo_lrs.find_measure(
     geom,
-    sdo_geometry(
+    SDO_GEOMETRY(
       2001,
       4326,
-      SDO_POINT_TYPE(-104.606633449958, 37.390651395137, NULL),
+      SDO_POINT_TYPE(-104.60663, 37.3906514, NULL),
       NULL,
       NULL
     )
@@ -734,13 +797,15 @@ SELECT
     SDO_GEOMETRY(
       2001,
       4326,
-      SDO_POINT_TYPE(-104.606633449958, 37.390651395137, NULL),
+      SDO_POINT_TYPE(-104.60663, 37.3906514, NULL),
       NULL,
       NULL
     )
   ) accident_offset
-FROM us_interstates_lrs
-WHERE interstate = 'I25';
+FROM
+  us_interstates_lrs
+WHERE
+  interstate = 'I25';
 ```
 
 ### 7. Reporting Length by Condition
@@ -757,7 +822,8 @@ SELECT
         i.geom,
         p.from_measure,
         p.to_measure),
-      0.05)
+      0.05,
+      'unit=km')
   ) len
 FROM
   us_interstates_lrs i,
@@ -778,9 +844,13 @@ ORDER BY
 
 ```sql
 -- The section of I25 that traverses El Paso county.
-SELECT sdo_lrs.lrs_intersection(i.geom, c.geom, 0.5)
-FROM us_interstates_lrs i, us_counties c
-WHERE i.interstate = 'I25'
+SELECT
+  sdo_lrs.lrs_intersection(i.geom, c.geom, 0.5)
+FROM
+  us_interstates_lrs i,
+  us_counties c
+WHERE
+  i.interstate = 'I25'
   AND c.county = 'El Paso'
   AND c.state_abrv = 'CO';
 
@@ -792,18 +862,28 @@ SELECT
   sdo_lrs.geom_segment_start_measure(geom) start_measure,
   sdo_lrs.geom_segment_end_measure(geom) end_measure
 FROM (
-  SELECT sdo_lrs.lrs_intersection(i.geom, c.geom, 0.5) geom
-  FROM us_interstates_lrs i, us_counties c
-  WHERE i.interstate = 'I25'
+  SELECT
+    sdo_lrs.lrs_intersection(i.geom, c.geom, 0.5) geom
+  FROM
+    us_interstates_lrs i,
+    us_counties c
+  WHERE
+    i.interstate = 'I25'
     AND c.county = 'El Paso'
-    AND c.state_abrv = 'CO');
+    AND c.state_abrv = 'CO'
+  );
 
 -- I225 crosses several counties; where it does not cleanly split by
 -- county the result can be a multiline string (e.g., Denver, Arapahoe).
-SELECT c.county, sdo_lrs.lrs_intersection(i.geom, c.geom, 0.5)
-FROM us_interstates_lrs i, us_counties c
-WHERE i.interstate = 'I225'
-AND sdo_anyinteract(c.geom, i.geom) = 'TRUE';
+SELECT
+  c.county,
+  sdo_lrs.lrs_intersection(i.geom, c.geom, 0.5)
+FROM
+  us_interstates_lrs i,
+  us_counties c
+WHERE
+  i.interstate = 'I225'
+  AND sdo_anyinteract(c.geom, i.geom) = 'TRUE';
 ```
 
 ### 9. Extracting and Rebuilding LRS Geometries from Vertices
@@ -824,9 +904,12 @@ The points can be reassembled into an LRS line string per road using `CAST(MULTI
 
 ```sql
 CREATE TABLE lrs_lines AS
-SELECT r.road_id, r.geom
+SELECT
+  r.road_id,
+  r.geom
 FROM (
-  SELECT c.road_id,
+  SELECT
+    c.road_id,
     SDO_GEOMETRY(
       3302,
       4326,
@@ -834,25 +917,33 @@ FROM (
       SDO_ELEM_INFO_ARRAY(1,2,1),
       CAST(
         MULTISET(
-          SELECT b.COLUMN_VALUE
+          SELECT
+            b.COLUMN_VALUE
           FROM
             lrs_points p,
             TABLE(SDO_ORDINATE_ARRAY(p.x, p.y, p.m)) b
-          WHERE p.road_id = c.road_id
-          ORDER BY p.point_id
+          WHERE
+            p.road_id = c.road_id
+          ORDER BY
+            p.point_id
         )
         AS SDO_ORDINATE_ARRAY
       )
     ) AS geom
-  FROM lrs_points c
-  GROUP BY c.road_id
+  FROM
+    lrs_points c
+  GROUP BY
+    c.road_id
 ) r;
 
 -- Equivalent, using UNPIVOT instead of an explicit ordinate-array subquery.
-CREATE TABLE lrs_lines AS
-SELECT r.road_id, r.geom
+CREATE TABLE lrs_lines_up AS
+SELECT
+  r.road_id,
+  r.geom
 FROM (
-  SELECT c.road_id,
+  SELECT
+    c.road_id,
     SDO_GEOMETRY(
       3302,
       4326,
@@ -860,18 +951,23 @@ FROM (
       SDO_ELEM_INFO_ARRAY(1,2,1),
       CAST(
         MULTISET(
-          SELECT v
+          SELECT
+            v
           FROM
             lrs_points
             UNPIVOT (v FOR (col) IN (x,y,m))
-          WHERE road_id = c.road_id
-          ORDER BY point_id
+          WHERE
+            road_id = c.road_id
+          ORDER BY
+            point_id
         )
         AS SDO_ORDINATE_ARRAY
       )
     ) AS geom
-  FROM lrs_points c
-  GROUP BY c.road_id
+  FROM
+    lrs_points c
+  GROUP BY
+    c.road_id
 ) r;
 ```
 
@@ -881,8 +977,8 @@ A small PL/SQL function can combine `CONVERT_TO_LRS_GEOM`, `LOCATE_PT`, and `CON
 
 ```sql
 CREATE OR REPLACE FUNCTION get_mid_point (
-  geom sdo_geometry
-) RETURN sdo_geometry
+  geom SDO_GEOMETRY
+) RETURN SDO_GEOMETRY
 AS
 BEGIN
   RETURN sdo_lrs.convert_to_std_geom(
