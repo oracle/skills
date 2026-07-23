@@ -1,11 +1,11 @@
 ---
 name: oci
-description: Oracle Cloud Infrastructure guidance for designing, operating, and troubleshooting OCI services, including OCI Kubernetes Engine (OKE), OCI Internet of Things Platform, OCI Functions deployment and troubleshooting, and Enterprise AI workflows for OCI Generative AI models, Responses API agents, RAG, cost estimation, governance, private endpoints, hosted agentic applications, and Oracle platform integrations. Use when the user asks about OKE cluster design, Terraform or Resource Manager planning, OKE incident troubleshooting, Generic VNIC Attachment, Multus, pod networking, node pools, add-ons, ingress, load balancers, OCIR image pulls, Workload Identity, Kubernetes workloads on OCI, OCI IoT domains or digital twins, device publish flows, OCI Functions setup, deployment, invocation, or troubleshooting, OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, or OCI Generative AI pricing.
+description: Oracle Cloud Infrastructure guidance for designing, operating, and troubleshooting OCI services, including OCI Kubernetes Engine (OKE), OCI Internet of Things Platform, OCI Functions, OCI Logging Search exports, and Enterprise AI workflows for OCI Generative AI models, Responses API agents, RAG, cost estimation, governance, private endpoints, hosted agentic applications, and Oracle platform integrations. Use when the user asks about OKE cluster design, Terraform or Resource Manager planning, OKE incident troubleshooting, Generic VNIC Attachment, Multus, pod networking, node pools, add-ons, ingress, load balancers, OCIR image pulls, Workload Identity, Kubernetes workloads on OCI, OCI IoT domains or digital twins, device publish flows, OCI Functions setup, deployment, invocation, or troubleshooting, complete or paginated OCI log exports, OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, or OCI Generative AI pricing.
 ---
 
 # Oracle Cloud Infrastructure Skills
 
-Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
+Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment, diagnosis-first troubleshooting, and complete paginated OCI Logging Search exports. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
 
 ## How to Use This Domain
 
@@ -46,6 +46,12 @@ oci/
 │   ├── scripts/
 │   ├── templates/
 │   └── tests/
+├── logging/
+│   └── oci-export-large-logs/
+│       ├── SKILL.md
+│       ├── agents/
+│       ├── scripts/
+│       └── tests/
 └── oke/
     ├── cluster-design.md
     ├── troubleshooting.md
@@ -69,6 +75,7 @@ oci/
 | Deploy or validate Multus NetworkAttachmentDefinitions and multi-interface pods on OKE | Start with `oci/oke/multus-multihome.md`, then load `oci/oke/skills/oke-multihome-deployer/SKILL.md` |
 | Deploy an OCI Function from a local macOS or Linux workstation | `oci/functions/oci-functions-deploy/SKILL.md` |
 | Troubleshoot OCI Functions setup, deployment, invocation, or observability | `oci/functions/oci-functions-troubleshoot/SKILL.md` |
+| Export complete OCI Logging Search results across capped pages or high-volume time ranges | `oci/logging/oci-export-large-logs/SKILL.md` |
 | OCI IoT domains, domain groups, digital twin models, adapters, instances, relationships, raw commands, Data API access, or HTTPS publish flows | `oci/iot-platform/SKILL.md` |
 | OCI Generative AI models, custom/imported models, endpoints, or private endpoints | `oci/enterprise-ai/SKILL.md` |
 | OCI Responses API agents, tools, memory, File Search, Code Interpreter, MCP, or SQL Search | `oci/enterprise-ai/SKILL.md` |
@@ -85,6 +92,7 @@ oci/
 - `oci/functions/oci-functions-troubleshoot/SKILL.md`
 - `oci/functions/oci-functions-deploy/references/oci-functions-quickstart.md`
 - `oci/functions/oci-functions-troubleshoot/references/error-patterns.md`
+- `oci/logging/oci-export-large-logs/SKILL.md`
 - `oci/iot-platform/SKILL.md`
 - `oci/iot-platform/references/cli-workflows.md`
 - `oci/iot-platform/references/mcp-optional-use.md`
@@ -96,7 +104,7 @@ oci/
 
 ## Operational Tools
 
-The OKE operational skills include deterministic helper tools under `oci/oke/scripts/` and skill-specific helper scripts under `oci/oke/skills/*/scripts/`.
+The OKE operational skills include deterministic helper tools under `oci/oke/scripts/` and skill-specific helper scripts under `oci/oke/skills/*/scripts/`. The Logging export skill includes a read-only paginated exporter under `oci/logging/oci-export-large-logs/scripts/`.
 
 - Read-only discovery and evidence tools may be used to collect context.
 - Generate-only tools may produce manifests, commands, Terraform snippets, or reports.
@@ -116,6 +124,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 | Deploy a local function | `functions/oci-functions-deploy/SKILL.md` -> preflight -> Fn context validation -> OCIR auth check -> app selection -> scaffold -> deploy |
 | Troubleshoot a failed function deploy | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/error-patterns.md` -> `functions/oci-functions-troubleshoot/references/deploy.md` |
 | Troubleshoot function invocation failures | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/invoke.md` -> logs, traces, metrics, and limits |
+| Export a complete high-volume OCI Logging Search | `logging/oci-export-large-logs/SKILL.md` -> confirm scope and UTC bounds -> run exporter -> verify complete summary |
 | Explore or update OCI IoT digital twin resources | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/references/resilience-guidance.md` |
 | Publish test telemetry to an OCI IoT twin | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/templates/publish-curl.template.sh` |
 | Build a governed enterprise assistant | `enterprise-ai/SKILL.md` -> `enterprise-ai/agent-workflows/agent-tools.md` -> `enterprise-ai/data/rag-and-search.md` -> `enterprise-ai/governance/private-endpoints-and-governance.md` |
@@ -124,6 +133,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 
 - Keep OCI service, networking, IAM, agent hosting, and cost-estimation guidance in this domain.
 - Route OCI IoT domain, digital twin, adapter, device publish, raw command, and Data API workflows to `oci/iot-platform/`.
+- Route complete OCI Logging Search and Console-export workflows to `oci/logging/oci-export-large-logs/`.
 - Route Oracle Database-owned implementation details to `db/features/`.
 - Route APEX artifact generation to `apex/apexlang/`.
 - Prefer official Oracle documentation for OCI service limits, IAM verbs, endpoint formats, regions, and pricing inputs because these change frequently.
@@ -142,3 +152,5 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartlocalhost.htm
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingapps.htm
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionstroubleshooting.htm
+- https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/searchinglogs.htm
+- https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/logging-search/search-logs.html

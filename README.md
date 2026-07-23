@@ -48,7 +48,7 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 ## Domains
 
 - `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
-- `oci/` contains Oracle Cloud Infrastructure skills, including OCI Functions deployment and troubleshooting, OCI Kubernetes Engine cluster design and troubleshooting, OCI IoT Platform digital twin workflows, plus Enterprise AI guidance for OCI Generative AI, agents, RAG, governance, model endpoints, Autonomous Database, APEX, and integrations.
+- `oci/` contains Oracle Cloud Infrastructure skills, including OCI Functions deployment and troubleshooting, complete OCI Logging Search exports, OCI Kubernetes Engine cluster design and troubleshooting, OCI IoT Platform digital twin workflows, plus Enterprise AI guidance for OCI Generative AI, agents, RAG, governance, model endpoints, Autonomous Database, APEX, and integrations.
 - `fusion/` is the root for future Oracle Fusion skills.
 - `apex/` is the root for future Oracle APEX skills.
 - `graal/` contains GraalVM skills, starting with Native Image.
@@ -113,6 +113,12 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
     │   ├── scripts/
     │   ├── templates/
     │   └── tests/
+    ├── logging/
+    │   └── oci-export-large-logs/
+    │       ├── SKILL.md
+    │       ├── agents/
+    │       ├── scripts/
+    │       └── tests/
     └── oke/
         ├── cluster-design.md
         ├── troubleshooting.md
@@ -148,5 +154,6 @@ For stub domains, keep `SKILL.md` minimal and point users back to this `README.m
 
 - https://docs.oracle.com/en-us/iaas/Content/ContEng/home.htm
 - https://docs.oracle.com/en-us/iaas/Content/internet-of-things/home.htm
+- https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/searchinglogs.htm
 - https://github.com/oracle-samples/oci-iot-samples
 - https://www.graalvm.org/latest/reference-manual/native-image/
