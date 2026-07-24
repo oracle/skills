@@ -1,11 +1,11 @@
 ---
 name: oci
-description: Oracle Cloud Infrastructure guidance for designing, operating, and troubleshooting OCI services, including OCI Kubernetes Engine (OKE), OCI Internet of Things Platform, OCI Functions deployment and troubleshooting, and Enterprise AI workflows for OCI Generative AI models, Responses API agents, RAG, cost estimation, governance, private endpoints, hosted agentic applications, and Oracle platform integrations. Use when the user asks about OKE cluster design, Terraform or Resource Manager planning, OKE incident troubleshooting, Generic VNIC Attachment, Multus, pod networking, node pools, add-ons, ingress, load balancers, OCIR image pulls, Workload Identity, Kubernetes workloads on OCI, OCI IoT domains or digital twins, device publish flows, OCI Functions setup, deployment, invocation, or troubleshooting, OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, or OCI Generative AI pricing.
+description: Oracle Cloud Infrastructure guidance for designing, operating, and troubleshooting OCI services, including OCI Kubernetes Engine (OKE), OCI Internet of Things Platform, OCI Functions deployment and troubleshooting, OCI Database Cloud Services, and Enterprise AI workflows for OCI Generative AI models, Responses API agents, RAG, cost estimation, governance, private endpoints, hosted agentic applications, and Oracle platform integrations. Use when the user asks about OKE cluster design, Terraform or Resource Manager planning, OKE incident troubleshooting, Generic VNIC Attachment, Multus, pod networking, node pools, add-ons, ingress, load balancers, OCIR image pulls, Workload Identity, Kubernetes workloads on OCI, OCI IoT domains or digital twins, device publish flows, OCI Functions setup, deployment, invocation, or troubleshooting, OCI Database Cloud Services such as ExaDB-D/ExaCS, OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, or OCI Generative AI pricing.
 ---
 
 # Oracle Cloud Infrastructure Skills
 
-Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
+Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It covers OCI Database Cloud Services through service-specific nested skills. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
 
 ## How to Use This Domain
 
@@ -14,6 +14,19 @@ Use this domain for practical Oracle Cloud Infrastructure guidance. Current cont
 3. Prefer official Oracle documentation and live read-only discovery commands before making design or remediation recommendations.
 4. Ask before running commands that create, update, delete, restart, scale, drain, or otherwise mutate OCI or Kubernetes resources.
 5. Keep OCI-owned design decisions here, and route database-owned SQL, vector, and Select AI implementation details to `db/features/`.
+
+## Database Cloud Services Routing
+
+For an OCI Database Cloud Services request, first identify the database service. If the user did not explicitly name one, list the available service directories under `oci/database-cloud-services/` and ask which service they want to use. Do not assume a default service at this parent-routing level.
+
+After the user selects a service:
+
+- read only that selected service's directory; do not read files from sibling service directories
+- load its `SKILL.md` and follow its service-specific routing, terminology, and safety rules
+- treat generic requests such as `create database`, `create VM cluster`, `list databases`, or `create PDB` as requests for the selected service, unless the user explicitly changes services
+- if the user explicitly names a different database service, return to service selection before reading that service's directory
+
+This routing is intentionally directory-based so new database services can be added under `oci/database-cloud-services/` without changing the workflow.
 
 ## Directory Structure
 
@@ -28,6 +41,11 @@ oci/
 │   ├── data/
 │   ├── cost/
 │   └── integrations/
+├── database-cloud-services/
+│   └── exadb-d/
+│       ├── SKILL.md
+│       ├── agents/
+│       └── references/
 ├── functions/
 │   ├── oci-functions-deploy/
 │   │   ├── SKILL.md
@@ -70,6 +88,8 @@ oci/
 | Deploy an OCI Function from a local macOS or Linux workstation | `oci/functions/oci-functions-deploy/SKILL.md` |
 | Troubleshoot OCI Functions setup, deployment, invocation, or observability | `oci/functions/oci-functions-troubleshoot/SKILL.md` |
 | OCI IoT domains, domain groups, digital twin models, adapters, instances, relationships, raw commands, Data API access, or HTTPS publish flows | `oci/iot-platform/SKILL.md` |
+| OCI Database Cloud Services request | Identify the service under `oci/database-cloud-services/`; if it is not explicit, ask the user to choose. Then read only that service directory's `SKILL.md`. |
+| ExaDB-D / ExaCS after it has been selected as the database service | `oci/database-cloud-services/exadb-d/SKILL.md` |
 | OCI Generative AI models, custom/imported models, endpoints, or private endpoints | `oci/enterprise-ai/SKILL.md` |
 | OCI Responses API agents, tools, memory, File Search, Code Interpreter, MCP, or SQL Search | `oci/enterprise-ai/SKILL.md` |
 | OCI Generative AI and OCI Generative AI Agents cost estimation | `oci/enterprise-ai/cost/cost-estimation.md` |
@@ -88,6 +108,7 @@ oci/
 - `oci/iot-platform/SKILL.md`
 - `oci/iot-platform/references/cli-workflows.md`
 - `oci/iot-platform/references/mcp-optional-use.md`
+- `oci/database-cloud-services/exadb-d/SKILL.md`
 - `oci/enterprise-ai/SKILL.md`
 - `oci/enterprise-ai/models/enterprise-ai-models.md`
 - `oci/enterprise-ai/agent-workflows/responses-api-agents.md`
@@ -118,12 +139,14 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 | Troubleshoot function invocation failures | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/invoke.md` -> logs, traces, metrics, and limits |
 | Explore or update OCI IoT digital twin resources | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/references/resilience-guidance.md` |
 | Publish test telemetry to an OCI IoT twin | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/templates/publish-curl.template.sh` |
+| Create, list, or manage an OCI database service resource | Identify the database service -> read only `database-cloud-services/<selected-service>/SKILL.md` -> follow that service's workflow |
 | Build a governed enterprise assistant | `enterprise-ai/SKILL.md` -> `enterprise-ai/agent-workflows/agent-tools.md` -> `enterprise-ai/data/rag-and-search.md` -> `enterprise-ai/governance/private-endpoints-and-governance.md` |
 
 ## Scope Boundaries
 
 - Keep OCI service, networking, IAM, agent hosting, and cost-estimation guidance in this domain.
 - Route OCI IoT domain, digital twin, adapter, device publish, raw command, and Data API workflows to `oci/iot-platform/`.
+- Route OCI Database Cloud Services workflows through `oci/database-cloud-services/`; select a service before reading any service-specific files, then keep reads scoped to that service directory.
 - Route Oracle Database-owned implementation details to `db/features/`.
 - Route APEX artifact generation to `apex/apexlang/`.
 - Prefer official Oracle documentation for OCI service limits, IAM verbs, endpoint formats, regions, and pricing inputs because these change frequently.
@@ -142,3 +165,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartlocalhost.htm
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingapps.htm
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionstroubleshooting.htm
+- https://registry.terraform.io/providers/oracle/oci/latest/docs
+- https://docs.oracle.com/en/engineered-systems/exadata-cloud-service/ecscm/exadata-cloud-infrastructure-overview.html
+- https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/cloud-vm-cluster.html
+- https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/cloud-exa-infra.html
