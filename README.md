@@ -12,6 +12,7 @@ Install a domain by appending the root-level domain directory to the repository 
 npx skills add oracle/skills/db
 npx skills add oracle/skills/oci
 npx skills add oracle/skills/graal
+npx skills add oracle/skills/database-cloud-services
 ...
 ```
 
@@ -52,6 +53,7 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 - `fusion/` is the root for future Oracle Fusion skills.
 - `apex/` is the root for future Oracle APEX skills.
 - `graal/` contains GraalVM skills, starting with Native Image.
+- `database-cloud-services/` contains Oracle Database Cloud Services skills, starting with ExaCC OCI API MCP read workflows.
 
 ## Start Here
 
@@ -93,6 +95,12 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 │       ├── native-build-tools.md
 │       ├── reachability-metadata.md
 │       └── troubleshooting.md
+├── database-cloud-services/
+│   ├── SKILL.md
+│   └── exacc/
+│       ├── SKILL.md
+│       ├── agents/
+│       └── references/
 └── oci/
     ├── SKILL.md
     ├── enterprise-ai/
