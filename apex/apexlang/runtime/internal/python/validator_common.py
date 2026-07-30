@@ -57,6 +57,7 @@ OUTPUT_ROOT = _resolve_output_root(ROOT, PACKAGED_SKILL)
 LOG_ROOT = OUTPUT_ROOT / "logs"
 COMPONENT_ATTRIBUTES_PATH = ROOT / "assets/component-attributes.json" if PACKAGED_SKILL else ROOT / "assets/component-attributes.json"
 COMPONENT_POLICIES_PATH = ROOT / "assets/component-policies.json" if PACKAGED_SKILL else ROOT / "assets/component-policies.json"
+APEXLANG_GRAMMAR_PATH = ROOT / "assets/grammar/apexlang.ebnf" if PACKAGED_SKILL else ROOT / "assets/grammar/apexlang.ebnf"
 VALIDATIONS_TEMPLATE_ROOT = ROOT / "templates/business-logic/validations" if PACKAGED_SKILL else ROOT / "templates/business-logic/validations"
 QUERY_VALID_PROPS_TOOL = ROOT / "tools/query-valid-props.mjs" if PACKAGED_SKILL else ROOT / "references/policies/apexlang/compiler-prop-map/query-valid-props.mjs"
 ISSUE_PATTERN = re.compile(r"^(?P<file>.+?):(?P<line>\d+): (?P<rule>[A-Z0-9_]+) (?P<message>.+)$")

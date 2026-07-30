@@ -15,6 +15,7 @@ import {
   apexlangToolPath,
   collectFiles,
   ensureDir,
+  normalizeApxLineEndings,
   readJson,
   removeDir,
   runCommand,
@@ -154,12 +155,12 @@ async function cleanupDraftRun(stagingRunRoot) {
 }
 
 /**
- * Public workspace probe that discovers app, metadata, requirement, and explicit DB/workspace prompt context.
+ * Public workspace probe that discovers app, metadata, requirements, and DB/runtime prompt context.
  */
 
 
 /**
- * Default discovery policy for app roots, metadata files, bounded scans, and explicit DB/workspace prompts.
+ * Default discovery policy for app roots, metadata files, bounded scans, and discovery-first DB prompts.
  */
 const DEFAULT_CONFIG = {
   app_discovery: {
@@ -190,28 +191,26 @@ const DEFAULT_CONFIG = {
     allowed_extensions: [".json", ".yaml", ".yml", ".md", ".sql", ".xml"]
   },
   db_prompt_flow: {
-    prompt_mode: "explicit_db_connection_and_workspace_flow",
+    prompt_mode: "discovery_first_connection_flow",
     interactive_only: true,
     discovery_steps: ["inspect_offline_schema_registry", "scan_saved_sqlcl_connections"],
     metadata_preference: "prefer_authoritative_offline_context",
-    required_live_inputs: ["db_connection_name", "db_context.workspace.name"],
-    auto_bind_single_saved_connection: false,
+    required_live_inputs: ["db_connection_name"],
+    auto_bind_single_saved_connection: true,
     manual_entry: {
       input_name: "db_connection_name",
-      companion_input_name: "apex_workspace_name",
-      workspace_context_field: "db_context.workspace.name",
-      prompt: "Provide db_connection_name and the corresponding APEX workspace name for this workflow."
+      prompt: "Provide db_connection_name because no usable saved SQLcl connection could be resolved."
     },
     workspace_prompt: {
       input_name: "apex_workspace_name",
       context_field: "db_context.workspace.name",
-      prompt: "Provide the APEX workspace name that corresponds to db_connection_name."
+      prompt: "Choose the workspace reported by the active runtime when it cannot resolve a unique workspace."
     },
     multiple_connection_prompt: {
       source: "saved_sqlcl_connections",
       prompt_mode: "select_from_list",
       empty_list_prompt:
-        "No saved SQLcl connections were found. Provide db_connection_name and the corresponding APEX workspace name if live DB context is still required, or continue only with authoritative offline metadata."
+        "No saved SQLcl connections were found. Provide db_connection_name if live DB context is still required, or continue only with authoritative offline metadata."
     },
     offline_override: {
       prompt_mode: "explicit_opt_in",
@@ -223,7 +222,7 @@ const DEFAULT_CONFIG = {
       disables_apex_import: true
     },
     workspace_selection: {
-      prompt_mode: "explicit_workspace_name_required",
+      prompt_mode: "runtime_ambiguity_or_new_app_only",
       persistence: "session_context_only",
       context_path: "APEXLANG_OUTPUT_ROOT/context-resolution.json",
       context_field: "db_context.workspace",
@@ -3287,6 +3286,9 @@ function buildRoundtripSummary(base) {
     runtime_verification_retry_required: false,
     capability_state: "",
     local_validation_policy: "advisory",
+    line_endings_status: "not-run",
+    line_endings_checked_files: 0,
+    line_endings_normalized_files: [],
     local_validation_execution_status: "not-run",
     local_validation_status: "not-run",
     local_validation_entrypoint_requested: LOCAL_VALIDATION_REQUESTED_ENTRYPOINT,
@@ -4583,6 +4585,7 @@ export async function runRuntimeRoundtrip(options = {}) {
     resolveRuntimeTargetApplication,
     executeSelectedRoundtrip,
     resolveWorkspaceIdForRuntime,
+    normalizeApxLineEndings,
     verifyRuntimeUi,
     writeRoundtripArtifacts,
     ...options._deps
@@ -4747,6 +4750,27 @@ export async function runRuntimeRoundtrip(options = {}) {
     summary.recommended_next_action = "Run runtime roundtrip without --preflight-only when ready.";
     await deps.writeRoundtripArtifacts(summary, transcriptParts.join("\n"));
     return buildRoundtripResult(0, summary);
+  }
+
+  try {
+    const lineEndings = await deps.normalizeApxLineEndings(options.appPath);
+    summary.line_endings_status = lineEndings.status;
+    summary.line_endings_checked_files = lineEndings.checkedFiles;
+    summary.line_endings_normalized_files = lineEndings.normalizedFiles;
+    if (lineEndings.normalizedFiles.length > 0) {
+      summary.notes.push(
+        `Normalized ${lineEndings.normalizedFiles.length} APEXlang source file(s) from CRLF or CR to LF before live validation.`
+      );
+    }
+  } catch (error) {
+    summary.line_endings_status = "fail";
+    summary.runtime_gate_status = "fail";
+    summary.failure_class = "line_endings_normalization_failed";
+    summary.blocking_reason = "APEXLANG_LF_LINE_ENDINGS_REQUIRED_001";
+    summary.recommended_next_action = "Normalize every .apx file to LF before rerunning validation or import.";
+    summary.notes.push(error instanceof Error ? error.message : String(error));
+    await deps.writeRoundtripArtifacts(summary, transcriptParts.join("\n"));
+    return buildRoundtripResult(1, summary);
   }
 
   const localValidationStage = await runTimedStage(
