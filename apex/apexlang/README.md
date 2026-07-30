@@ -9,10 +9,10 @@ Start with SKILL.md. It is the main root entry for routing, local context discov
 - Oracle APEX with APEXlang support, using the latest available 26.1 build.
 - SQLcl for real APEXlang validation and import workflows, version 26.1.2 or newer.
 - Java 17 or Java 21 for current SQLcl.
-- A saved SQLcl connection name and the corresponding APEX workspace name for Live DB validation, import, runtime diagnostics, or new-app materialization.
+- A saved SQLcl connection or a manually supplied `db_connection_name` for Live DB validation, import, and runtime diagnostics. New-app materialization also requires the exact destination APEX workspace name.
 - A local Oracle APEX app directory or enough authoritative context for the skill to help create one.
 
-You can read the guidance and draft APEXlang artifacts without SQLcl. Any workflow that validates against Oracle APEX or imports into a workspace requires SQLcl, a usable `db_connection_name`, and the matching APEX workspace name.
+You can read the guidance and draft APEXlang artifacts without SQLcl. Any workflow that validates against Oracle APEX or imports into a workspace requires SQLcl and a resolved `db_connection_name`. The active runtime resolves workspace identity; only ambiguity or new-app materialization requires an explicit workspace choice.
 
 New workspaces do not need a pre-existing `artifacts/` directory. Runtime outputs are created lazily under `APEXLANG_OUTPUT_ROOT` only when a command writes logs, reports, or export backups. Existing `apex-exports/` folders are backup/export material and are ignored for app resolution and generation unless the user explicitly asks to inspect an export backup.
 
@@ -33,7 +33,7 @@ Generic Oracle Database, PL/SQL, SQLcl, and utPLSQL guidance is owned by Oracle 
 
 ## Prompt Examples by Task
 
-Good prompts name the app, page, component, data evidence, desired behavior, whether live validation is allowed, and for Live DB work the `db_connection_name` plus corresponding APEX workspace name.
+Good prompts name the app, page, component, data evidence, desired behavior, and whether live validation is allowed. For Live DB work, provide `db_connection_name` only when saved-connection discovery cannot resolve one.
 
 ### Whole app from beginning to end
 
@@ -74,13 +74,13 @@ Localize and translate my APEX application to Spanish using text messages, creat
 ### Validation and debugging
 
 ```text
-Check the APEXlang code for my app using db_connection_name apex_dev and APEX workspace SERVICE_OPS_DEV. If validation fails, explain the owning layer and suggest the smallest fix.
+Check the APEXlang code for my app using db_connection_name apex_dev. If validation reports workspace ambiguity, resolve the workspace from that session. If validation fails, explain the owning layer and suggest the smallest fix.
 ```
 
 ## Basic Workflow
 
 1. Load `SKILL.md`.
-2. Resolve the app path and data context; collect `db_connection_name` plus the corresponding APEX workspace name only for Live DB work.
+2. Resolve the app path and data context; discover a saved SQLcl connection before requesting `db_connection_name` for Live DB work.
 3. Generate APEXlang artifacts.
 4. Check APEXlang code.
 5. Import only after explicit approval.
@@ -101,5 +101,5 @@ Check the APEXlang code for my app using db_connection_name apex_dev and APEX wo
 - This README is for Oracle APEXlang skill consumers.
 - Do not treat this README as the router. `SKILL.md` owns routing and safety behavior.
 - The skill must not invent database objects. Provide table metadata, a data model, a live connection, or exact object details when a request depends on schema facts.
-- Live DB workflows are incomplete until the user specifies both `db_connection_name` and the corresponding APEX workspace name.
+- Live DB workflows require a resolved `db_connection_name`; explicit workspace input is needed only for new-app materialization or runtime-reported ambiguity.
 - `artifacts/` is output only, not startup context. `apex-exports/` is backup/export material, not generated source.

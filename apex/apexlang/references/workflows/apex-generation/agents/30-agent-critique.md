@@ -1,472 +1,71 @@
 > All `node tools/apexctl.mjs ...` commands are package-root relative: run them from the packaged skill root, or invoke that script by explicit path.
 
-# Agent 2 — Critique (Child Workflow)
+# Agent 2 — Critique
 
 Purpose
-- Produce an actionable critique of the Agent 1 draft with citations to loaded rules, identify Missing Inputs, enforce governance gates, and emit a Confidence Score — all with minimal token/context usage.
+- Review the draft using deterministic evidence without loading the former cross-domain checklist.
 
 Inputs
-- draft_path: path to the app file in the transient temp workspace outside the repo
-- target_type
-- data_contract
-- styling? (none by default)
-- output_path? (defaults per scope)
-- app_root? (when Whole Application scope is active; e.g., applications/app_###/)
-- server_side_condition? (structured object from master workflow)
+- original normalized intent
+- draft path and Generation Plan
+- context capsule fingerprint
+- compiler-truth report
+- local/live `problems.json` when available
 
 <authority_rules>
-- Shared prompt contract: `references/workflows/apexlang/prompt-contracts.md`
-- Enforce its hierarchy, rule IDs, intermediate artifacts, and stop conditions.
+- Follow guard, governance, `prompt-contracts.md`, compiler truth, and live validation in precedence order.
+- Validators report legality and active guardrails; templates provide exact examples only.
 </authority_rules>
 
 <task_scope>
-- Validate the draft, enforce governance gates, and classify revision work without widening scope.
+1. Run `context resolve --phase critique` for the selected page, component, or full-app implementation unit.
+2. Review one unit in a fresh context against its Generation Plan, IR pointer, symbol-table projection, and selected component routes.
+3. Run unit-local lint/property checks while pages are generated. Run one full-app local integration and compiler-truth audit only after all units are assembled.
+4. When findings exist, run `node tools/apexctl.mjs context repair --problems <problems.json> --unit-id <unit-id> --ir-pointer <ir-pointer>` and review only the projected recipes and owning guidance.
+5. Do not retain prior unit capsules or open unrelated component policies, raw grammar, complete template families, or the full repair catalog.
 </task_scope>
 
-<allowed_sources>
-- Always: references/policies/memory-bank/00-guard/ai.guard.md, 10-global/apex.global.md
-- Conditional: 20-data/30-pages/40-components rules only as needed
-- Styling (50-*) only when styling ≠ none
-</allowed_sources>
+<review_contract>
+- Fail unresolved schema objects, pseudo-identifiers, metavariables, target mappings, or compiler legality.
+- Fail plan drift, unsupported component families, invented properties/options/classes, invalid source modes, and missing required guidance/security.
+- Fail when the projected template/rule source and emitted artifact disagree.
+- For full apps, verify application spec, UX contract, IR consistency, baseline pages/shared components, navigation, breadcrumbs, and runtime-artifact boundaries.
+- Treat live APEX validation as authoritative whenever runtime completion is required.
+</review_contract>
 
-<generation_plan_contract>
-- Hard-fail `GENERATION_PLAN_REQUIRED_001` when non-trivial structural generation produced no `Generation Plan`.
-- Hard-fail `GENERATION_PLAN_MALFORMED_001` when a `Generation Plan` omits required fields from the shared contract.
-- Hard-fail `GENERATION_PLAN_DRIFT_001` when emitted artifact structure, source mode, or navigation decisions drift from the frozen `Generation Plan`.
-</generation_plan_contract>
-
-<output_contract>
-- Use named rule IDs in findings whenever the contract defines one.
-- When validator, VSCode Problems, `problems.json`, or `validation-report.json` issues are available, load `assets/validator-fix-recipes.json` and include each issue's rule ID, cause, deterministic fix, and owning guidance in the critique.
-- Treat validator success as secondary evidence only; critique must still enforce prompt contracts.
-</output_contract>
+<validator_feedback_contract>
+- Preserve each reported `rule_id`, cause, deterministic fix, owning guidance, and verification command.
+- Do not design a fix from memory when a projected repair recipe exists.
+- If no recipe or owning source proves a repair, keep the run blocked.
+</validator_feedback_contract>
 
 <stop_conditions>
-- Hard-fail `RULES_FIRST_WORKFLOW_REQUIRED_001` when the draft guesses or infers a high-impact structural decision before exhausting the posted rules, workflow, templates, or compiler-backed truth.
-- Hard-fail `HUMAN_INTERVENTION_REQUIRED_001` when the draft should have stopped with Missing Inputs or explicit human intervention instead of inventing a high-impact structural decision.
-- Hard-fail `STOP_CONDITION_BYPASSED_001` when the draft uses fallback inference in a case where the shared contract requires Missing Inputs.
+- Return Missing Inputs for missing evidence.
+- Return Required Revisions for deterministic defects.
+- Never mark PASS from local lint alone when live validation is required.
 </stop_conditions>
 
-Scope and minimal rule loading
+Required coverage remains validator/template owned
+- `GENERATION_PLAN_REQUIRED_001`, `GENERATION_PLAN_DRIFT_001`, `RULES_FIRST_WORKFLOW_REQUIRED_001`, `HUMAN_INTERVENTION_REQUIRED_001`, `COMPILER_TRUTH_EVIDENCE_MALFORMED_001`, `STOP_CONDITION_BYPASSED_001`, `APP_TEMPLATE_ARTIFACT_LEAK_001`, `CLASSIC_REPORT_HIDDEN_COLUMN_HEADING_FORBIDDEN_001`, `CLASSIC_REPORT_COMPONENT_APPEARANCE_REQUIRED_001`, `INTERACTIVE_REPORT_LINK_COLUMN_TYPE_FORBIDDEN_001`, `SMART_FILTER_RESULTS_REGION_REQUIRED_001`, `IMAGE_UPLOAD_LEGACY_PROPERTY_FORBIDDEN_001`, `DASHBOARD_LAYOUT_ROW_PLAN_REQUIRED_001`, `METRIC_CARD_STANDARD_TEMPLATE_FORBIDDEN_001`, `CONTENT_ROW_SELECTION_ITEMS_REQUIRED_001`, `MASTER_DETAIL_CONTENT_ROW_ACTION_REQUIRED_001`, and `SQL_PLSQL_LOB_COMPARISON_KEY_FORBIDDEN_001`.
+- The selected sources enforce Metric Card multi-row `UNION ALL` patterns, settings/plugin hook legality, five dashboard charts as one `two-up-equal` row followed by one `three-up-equal` row, Cards image mapping through the native cards media block, primary-key identity for row selection, grouped-column ordering, `focusOnly` without page-item references, and master-detail `fullRowLink` context setting. `ORA-22848` remains a blocking LOB comparison signal.
+- Translation capsules require `translationMethod: textMessages` and APP_TEXT consumption rewiring.
+- Repair authority is projected from `assets/validator-fix-recipes.json`; do not load that complete asset.
 
-Critique checklist (actionable, token-thin)
-- Cite: 10-global/apex.global.md; relevant 20/30/40 rules present in the current run.
-- Prerequisite metadata startup gate:
-  - Hard-fail `DB_MODE_PROMPT_REQUIRED_001` if run evidence does not show prerequisite metadata source was resolved first (`prereq_source: schema_doc`, `prereq_source: saved_connection`, or `prereq_source: user_prompt`) before generation.
-- Pre-generation DB verification gate:
-  - Hard-fail `DB_VERIFY_BEFORE_GENERATION_001` when DB-backed draft artifacts were produced before metadata verification evidence from either the selected schema dictionary or live DB metadata.
-- Compiler-truth evidence gate:
-  - Hard-fail `COMPILER_TRUTH_EVIDENCE_REQUIRED_001` when a draft introduces a non-exact-match structural edit without a `Compiler Truth Evidence` section in the Draft phase response or parallel contract payload.
-  - Hard-fail `COMPILER_TRUTH_EVIDENCE_REQUIRED_001` when the evidence does not cover the affected component family or structure class.
-  - Hard-fail `COMPILER_TRUTH_EVIDENCE_MALFORMED_001` when a `Compiler Truth Evidence` entry omits the command, checked scope, conclusion, or emitted decision.
-  - Hard-fail `COMPILER_TRUTH_EVIDENCE_MISMATCH_001` when the recorded compiler-truth conclusion does not support the emitted DSL shape.
-  - Do not treat local validator or package-validator success as a substitute for compiler-truth evidence.
-- Multiline structural syntax gate:
-  - Hard-fail `APEXLANG_LF_LINE_ENDINGS_REQUIRED_001` when any generated or revised `.apx` artifact contains CRLF line endings; `.apx` files must be LF-only before validation or handoff.
-  - Hard-fail `DSL_MULTILINE_STRUCTURE_REQUIRED_001` when a property-object is compressed onto one line, for example `foo: { bar: 1 }`.
-  - Hard-fail `DSL_MULTILINE_STRUCTURE_REQUIRED_001` when multiple sibling property assignments are emitted on the same structural line outside fenced code blocks.
-- Report DB metadata gate (Classic/Interactive with localDatabase):
-  - Hard-fail `DB_METADATA_REQUIRED_REPORT_001` when report SQL is drafted without metadata verification evidence for source object, selected columns, and `ORDER BY` columns.
-  - Hard-fail `DB_METADATA_REQUIRED_REPORT_001` when SQL references unverified columns or unverified sort columns.
-  - Require Missing Inputs halt when metadata cannot be verified from the provided `db_connection_name`.
-- NL2IR metadata precedence gate:
-  - Hard-fail when an Interactive Report with `genAI.naturalLanguageSupport: true` does not show metadata evidence for an annotation scan of the target object/column before falling back to comments.
-  - Hard-fail when `genAI.reportContext` uses a table/view comment while a non-empty `report_context` or `description` annotation exists.
-  - Hard-fail when `column.genAI.columnContext` uses a column comment while a non-empty `column_context`, `ai_context`, or `description` annotation exists.
-  - Hard-fail when omission of report or column context is justified only by probing canonical keys without scanning descriptive annotations.
-  - Hard-fail when metadata evidence relies on invalid annotation-view columns or otherwise shows the wrong dictionary shape was queried.
-  - Hard-fail when report or column context is inferred from names, headings, sample data, or other non-metadata sources.
-- Report SQL/PLSQL HTML literal gate:
-  - Hard-fail `REPORT_SQL_HTML_LITERAL_FORBIDDEN_001` when report SQL/PLSQL source blocks contain HTML-tag literals for presentation rendering (for example `<span`, `<div`, `<a`, inline style markup).
-  - Require revision to keep SQL/PLSQL data-only and move presentation markup to `columnFormatting.htmlExpression` per `references/policies/memory-bank/30-pages/apex.report-column-rendering.md`.
-  - Hard-fail when top-level report-column `htmlExpression` is emitted for `mmdVersion 26.1.053`.
-  - Hard-fail when `columnFormatting.htmlExpression` is paired with `type: richText`.
-- Server-side execution policy (scope split):
-  - Page process: flag any page process using type: executeCode whose plsqlCode appears to call a package (pattern match: <IDENT>.<IDENT>, e.g., pkg_api.proc or PKG.FUNC) unless it is a justified thin wrapper for a page-coupled loader or branch-gated flow that stays small, uses named notation, and performs direct page-item assignment only.
-  - For non-compliant page-process package calls, require conversion to type: invokeApi with invoke { package, procedureOrFunction } and explicit parameter blocks (with direction and value mapping) per 00-guard/ai.guard.md and 20-data/apex.logic.md.
-  - App process: flag any `appProcess` that uses `type: invokeApi`; require conversion to `type: executeCode`.
- - Report-region link policy:
-  - Hard-fail when Classic Report, Interactive Report, or Interactive Grid navigation is drafted without evidence that the user chose one of: same application page, another application page, URL redirect.
-  - Hard-fail when same-application report navigation uses `type: url`, `f?p=...`, or SQL-computed URL columns even though the DSL supports a declarative page target and the user did not explicitly choose URL mode.
-  - Hard-fail `redirectThisApp` buttons that use scalar `target: f?p=...` or bare `target { ... }`; require declarative `target: { page, items, clearCache, action, request }` syntax.
- - Master-detail Content Row policy:
-  - Hard-fail `CONTENT_ROW_SETTINGS_SUBSTITUTION_REQUIRED_001` when Content Row display settings such as `overline`, `title`, `description`, or `miscellaneous` reference query columns as bare aliases instead of `&COLUMN_NAME.` substitutions; allow literal values such as `overline: Employee`.
-  - Hard-fail `CONTENT_ROW_SELECTION_ITEMS_REQUIRED_001` when native Content Row row selection is incomplete: `focusOnly` must not include page-item references, `singleSelection` must include `currentSelectionPageItem` backed by a same-page hidden item, and `multipleSelection` must include both `currentSelectionPageItem` backed by a hidden item and `selectAllPageItem` backed by a same-page checkbox item.
-  - Hard-fail `MASTER_DETAIL_CONTENT_ROW_ACTION_REQUIRED_001` when a parent Content Row filters or drives a child region through a same-page context item but lacks a `fullRowLink` action that sets that hidden context item from the parent PK. Native `rowSelection.currentSelectionPageItem` does not satisfy master-detail drill-down/context setting.
-  - Hard-fail `MASTER_DETAIL_DYNAMIC_ACTION_REQUIRED_001` when master-detail parent row selection uses `redirectUrl`, `targetUrl`, or an `f?p=` same-page reload, or when child regions that bind to the parent context item are not refreshed by master-triggered dynamic-action/declarative behavior.
-  - Hard-fail map child context drift when a master-detail map layer uses `v()`/`nv()` session-state reads instead of normal `:P...` binds plus explicit refresh behavior. Do not require map-layer `source.pageItemsToSubmit` unless direct compiler truth for the active build proves it valid for the selected layer shape.
-  - Hard-fail missing map marker edit/open links when the requirements or UX contract say marker selection opens a form; the map layer must include a declarative target and pass the marker primary key.
-  - Hard-fail `MAP_INITIAL_VIEWPORT_BOUNDS_REQUIRED_001` when a multi-marker map centers on `avg(latitude)` / `avg(longitude)` with a fixed zoom. Require SQL-derived bounds or a documented one-geography exception.
-  - Hard-fail missing required parent-child actions from the application spec or UX contract: parent edit, child create, child edit/detail links, and page-level create.
-  - Hard-fail `MASTER_DETAIL_VISIBLE_SELECTOR_REGRESSION_001` when the primary parent selector is emitted as a visible select list while a parent Content Row exists or is clearly required by the page intent.
-  - Hard-fail `MASTER_DETAIL_CHILD_BIND_SUBMIT_REQUIRED_001` when a child Interactive Report SQL references a same-page parent context item but omits that item from `source.pageItemsToSubmit`.
-  - Hard-fail `MASTER_DETAIL_TOOLBAR_ACTIONS_REQUIRED_001` when create/edit/detail buttons for a child Interactive Report are emitted as free-floating body-grid buttons instead of being scoped to the child report toolbar slot, or when page-level create buttons are anchored to child reports instead of the breadcrumb/title-bar region.
-  - Hard-fail `PARENT_CHILD_ACTION_COVERAGE_REQUIRED_001` when a full-app `behaviorPlan.parentChildContext` entry lacks `actionCoverage` for required parent edit, child create, child edit/detail, and page-level create behaviors.
-  - Hard-fail `PAGE_ACTION_BREADCRUMB_REQUIRED_001` when a primary page-level create action on a non-modal management, smart-filter, search, or report page is anchored to the results region instead of the breadcrumb/title-bar region.
-  - Hard-fail `MASTER_DETAIL_LAYOUT_REQUIRED_001` when a master-detail Content Row page uses `@/left-side-column`, places the master in `leftColumn`, stacks the parent and child full-width, or over-coordinates the child report instead of using `@/standard` plus the narrow-parent/broad-child BODY same-row recipe.
-  - Hard-fail `MASTER_DETAIL_CONTENT_ROW_TEMPLATE_REQUIRED_001` when a master-detail Content Row parent uses `appearance.template: @/blank-with-attributes`, omits the appearance template, or uses any wrapper other than `@/standard`.
-- Full-app form behavior gate:
-  - Hard-fail `APP_UX_FORM_VALIDATION_REQUIRED_001` when a requirement-driven form validation in the UX contract is missing from generated page artifacts, including conditional requiredness such as `CUSTOMER_ID` required when `ORDER_CHANNEL = ONLINE`.
-  - Hard-fail `APP_UX_FORM_CONTEXT_REQUIRED_001` when a context-owned item passed from a launcher is rendered as an editable input instead of hidden or hidden-template display state.
-  - Hard-fail `APP_UX_FORM_DEFAULT_REQUIRED_001` when a required defaulting behavior from source item/lookup column to target item is missing.
-  - Treat generic Auto Row DML, item labels, or LOV presence as insufficient evidence for these behaviors.
-- PL/SQL named notation policy: In all PL/SQL text blocks (plsqlCode, plsqlFunctionBody, plsqlExpression, fenced ```plsql), flag calls with arguments that (a) lack any "=>" (positional only) or (b) mix named and positional notation. Parameterless calls "()" are allowed. Cite 00-guard/ai.guard.md, 10-global/apex.global.md, and 20-data/apex.logic.md.
-- Enforce `PLSQL_INLINE_BLOCK_001` from `00-guard/ai.guard.md`: hard-fail when any inline PL/SQL body exceeds 4000 raw characters; require package extraction (`app_process_api` default) and declarative process usage (`invokeApi` for page process, `executeCode` for appProcess).
-- Enforce `SQL_INLINE_BLOCK_001` from `00-guard/ai.guard.md` and `20-data/apex.sql.md`: hard-fail when any inline SQL body exceeds 4000 raw characters; require extraction to a secure view and page/reference rewrite.
-- Enforce `SQL_PLSQL_LOB_COMPARISON_KEY_FORBIDDEN_001` from `20-data/apex.sql.md`: hard-fail any SQL/PLSQL-owned query that places raw `BLOB`, `CLOB`, `NCLOB`, or `BFILE` expressions in `GROUP BY`, `ORDER BY`, `SELECT DISTINCT`, set operations, analytic `PARTITION BY`/`ORDER BY`, equi-joins, or `WHERE`/`HAVING` comparison predicates. Cite the ORA-22848 failure and require scalar-key remediation or scalar inner query plus outer LOB projection.
-- For `aiAgent` tools that emit `settings.sqlQuery`, hard-fail `SQL_INLINE_BLOCK_001` when the raw SQL body exceeds 4000 characters and require extraction of prompt-independent logic into secure view(s) plus a short prompt-aware wrapper query.
-- Enforce `DB_CONN_REQUIRED_001` from `00-guard/ai.guard.md`: hard-fail any DB object creation/update task when `db_connection_name` is not explicitly provided; record Missing Inputs and stop DB-object output.
-- Validate Draft basics:
-- Canonical sources: fail if the draft is justified from `applications/**` examples or exports; all seed content must come from templates and memory-bank guidance, and any target-app reads must be integration-only.
-  - Hard-fail `COMPILER_TRUTH_EVIDENCE_REQUIRED_001` when generated or revised `.apx` artifacts lack `compiler-truth-report.json` evidence from `node tools/apexctl.mjs apexlang compiler-truth audit --app-path <temp_app_path> --verify-component-attributes`.
-  - Hard-fail `COMPILER_TRUTH_AUDIT_FAILED_001` when the compiler-truth report status is not `pass`; cite the report issue codes before any publish/runtime handoff.
-  - Hard-fail `LIVE_RUNTIME_VALIDATION_REQUIRED_001` when validation handoff lacks required runtime inputs or live APEX validation evidence for generated or revised `.apx` files. Compiler truth, local lint, and VS Code Problems snapshots are diagnostic sources after live validation passes.
-  - Require `problems.json` as the compact validation review surface; do not accept terminal transcript spelunking or broad skill-doc search as a substitute.
-  - APEXlang-only; SQL in triple backticks.
-  - Uses templates/*; no invented attributes or UT classes.
-  - Declarative first; heavy logic deferred to DB packages/views.
-  - DML guarded by button/process.
-- Dynamic Actions:
-  - Confirm `dynamicAction` names follow `DA_<purpose>` and reference existing components (items, regions, buttons).
-  - Verify action sequences align with canonical templates under `business-logic/dynamic-actions/`; flag missing attributes (itemsToSubmit, selectionType details, plugin static IDs).
-  - Hard-fail any `dynamicAction.when.event` outside the approved allowlist in `templates/business-logic/dynamic-actions/dynamic-actions._common.md`; specifically reject aliases such as `dialogClosed`.
-  - For dialog refresh flows, require `apexafterclosedialog` for successful close behavior and `apexafterclosecanceldialog` only for explicit cancel-close behavior.
-  - For `executeServerSideCode`, ensure itemsToSubmit are scoped and note mandatory migration to `invokeApi`; cite 20-data/apex.logic.md.
-  - Ensure debounce/throttle execution control uses `execution.type` + `execution.time` (ms), and validate `execution.immediate` when provided.
-- Reference Tier 1 workflow `references/domains/business-logic/dynamic-actions/workflow-dynamic-actions.md` for single-page cases, `references/domains/business-logic/dynamic-actions/workflow-dynamic-actions-batch.md` for UI batches, and `references/domains/business-logic/dynamic-actions/workflow-dynamic-actions-plsql-batch.md` for invokeApi batches; confirm every page listed has required identifiers and note Missing Inputs per page when absent.
-- Validation reference gate (hard fail):
-  - For validation `error { associatedItem: ... }`, fail when the item reference is emitted without alias syntax.
-- Require `associatedItem: @P<n>_<item>` and verify the referenced page item exists on the same page.
-- For item computations, ensure `computation-plsql-batch` inputs map to the correct computation template, execution point, and sequence. Verify PL/SQL guardrails (section 9) and halt if multi-value SQL lacks deterministic ordering.
-- Multi-value item computation gate:
-  - For computations targeting known multi-value items (`checkboxGroup`, `selectMany`, `shuttle`), prefer `type: sqlQueryMultipleValues` with one returned row per selected value.
-  - Flag `listagg` as Required Revision unless item-level multiple-values storage evidence explicitly requires pre-aggregated output.
-  - Flag `assignValue` as Required Revision when the computation targets exactly one multi-value item and no additional target items are being populated.
-- Batch contract gate (all batch target types):
-  - Validate canonical `operation` + `targets` are resolved before critique decisions.
-  - When legacy keys are supplied (`target_pages`, `target_items`, `target_buttons`, `target_button`, `apply_to`), require explicit normalization evidence in draft summaries/log payloads.
-  - Fail when per-target outcomes are missing for batch runs (expected statuses such as `applied`, `blocked`, `not_found`, `ambiguous` where relevant).
-- Page processes:
-  - For invokeApi batches, ensure each generated process references the consolidated package, matches the button guard, declares parameters, and avoids `executeCode`. Missing identifiers must be recorded per page.
-- Translations:
-  - If a translation/localization prompt also contained an explicit page-control request such as `button`, `menu`, or `selector`, fail when the draft skipped the required runtime-switch versus localization clarification.
-  - Ensure placeholders and HTML tokens are preserved in every localized string.
-  - Validate language codes exist in `assets/domains/shared-components/translations/languages.json`.
-  - Reference Tier 1 translation workflows (`references/domains/shared-components/workflow-translations.md`, `references/domains/shared-components/workflow-translations-batch.md`) to confirm required inputs (message keys, languages, bundle completeness).
-  - Flag Missing Inputs per key/language when text is absent, unless auto-translate was requested.
-  - For app/page localization runs, hard-fail `missing_conversion` when user-facing literals remain in translated scope without corresponding shared text-message keys.
-  - For app/page localization runs, hard-fail `invalid_consumption` when localized component attributes use direct text instead of text-message substitution references.
-  - For app/page localization runs, hard-fail `missing_globalization_setup` when the artifact emits translation message entries but does not enable `translationMethod: textMessages` for the application when localization is intended.
-  - Hard-fail `non_apexlang_output` when the run emits unrelated helper source files without explicit user direction.
-  - Require evidence in draft summaries/logs of the localization conversion path: keys created or reused, component references rewired, and per-target outcomes where relevant.
-- Artifact boundary gate (hard fail):
-  - For APEXlang generation tasks, fail `non_apexlang_output` when the draft or final outputs include unrelated helper source files (for example `.py`) that were not explicitly requested by the user.
-  - Hard-fail when leaked template-family docs appear in the transient app root or published output.
-- Component policy gate (all component types):
-  - Deterministic policy gate: load `assets/component-policies.json` and enforce every `severity: error` rule directly from JSON (no inferred exceptions).
-  - Apply JSON-driven checks to all rule scopes (for example page, button, item, region), not buttons only.
-  - Include policy rule IDs in findings (for example `BTN_RULE_001`, `PAGE_RULE_001`) so revision can auto-fix deterministically.
-- Page item guardrails (display-only, deterministic):
-  - For `pageItem` with `type: displayOnly`, fail when `appearance.width` or `appearance.height` is emitted.
-  - For `pageItem` with `type: displayOnly`, fail when `settings.sendOnPageSubmit` is missing or not `false`.
-  - Emit findings as `DSL_RULE_PROP` / `DSL_RULE_REQUIRED` / `DSL_RULE_VALUE` and prefer compiler-truth evidence plus the owning family template. Cite `assets/component-attributes.json` only as fallback/internal validator context when stronger runtime-backed proof is unavailable.
-- DSL schema gate (hard fail when available):
-  - Treat `assets/component-attributes.json` as fallback/internal validator context, not the primary authority for cross-family authoring decisions.
-  - If draft or cited template emits an unsupported block/property, fail with `DSL_RULE_*` / `DSL_TEMPLATE_*` finding and mark the template as defective rather than trusting it.
-  - Hard-fail invalid enum values when the contract defines an allowed set (for example pagination types or axis names).
-  - Hard-fail region-type-specific block/property misuse for covered components (for example gauge/chart value formatting blocks or report-only column source metadata in unsupported contexts).
-- Shared LOV vocabulary gate (hard fail):
-  - For any item `lov {}` block that references a shared LOV alias, fail when the draft emits `type: sharedLov` or `sharedLov: @...`.
-  - Require canonical shared LOV syntax `type: sharedComponent` plus `lov: @alias`.
-  - When reusable family template prose conflicts with concrete page examples or validator-accepted DSL for shared LOVs, mark the template as defective and require revision before runtime completion.
-- Page layout gate (hard fail for page-scoped artifacts):
-  - Cite `references/policies/memory-bank/30-pages/apex.layout.md` for layout-scope rules.
-  - Apply this gate to generated `applications/**` artifacts as well as draft/template outputs; final app paths are not exempt.
-  - Evaluate layout locally per scope: page slot rows, nested `parentRegion` rows, item rows by `layout.region + layout.slot`, and button rows by `layout.region + layout.slot`.
-  - Flag equal-width sibling rows that use explicit `layout.column` / `layout.columnSpan`.
-  - Flag second-or-later equal-width siblings that omit `layout.startNewRow: false`.
-  - Flag first components in scoped rows that incorrectly set `layout.startNewRow: false`.
-  - Flag rows whose explicit `columnSpan` total exceeds 12 within their local scope.
-  - Flag rows that mix implicit-flow and explicit-grid placement without an intentional asymmetric pattern.
-  - Do not flag the anchored-sibling asymmetric recipe as invalid mixed layout when the first sibling uses only `columnSpan` and later siblings use `column`.
-  - For true filter/sidebar compositions such as faceted search, prefer page-template slot layouts such as `leftColumn` + `body` before accepting a body-grid implementation.
-  - Allow explicit coordinates only for intentionally asymmetric layouts such as sidebar-main, faceted-search, or parent-child split pages.
-  - For master-detail Content Row pages, require `appearance.pageTemplate: @/standard`, a narrow parent region in `BODY` with `columnSpan: 3` or `4`, and a child region in `BODY` in the same row with `startNewRow: false`; do not require redundant child `column` / `columnSpan` unless a validated contract needs them.
-- Interactive Report projection gate:
-  - Hard-fail `IR_PROJECTED_COLUMNS_REQUIRED_001` when an Interactive Report SQL projection lacks matching `column (...)` definitions before finals.
-  - Hard-fail `IR_CONTEXT_BIND_SUBMIT_REQUIRED_001` when Interactive Report SQL references same-page page-item binds but `source.pageItemsToSubmit` omits them.
-- Calendar region gate:
-  - For calendar regions, hard-fail missing `settings.pkColumn` and require it to map to the source table primary key alias selected by the SQL.
-  - For calendar regions, hard-fail unsupported settings such as `settings.showTime`, hard-fail legacy aliases such as `settings.displayCol`, `settings.startDateCol`, `settings.endDateCol`, and `settings.pkCol`, and hard-fail `settings.additionalCalendarViews` values outside `list` and `navigation`.
-  - For calendar regions, hard-fail legacy string `f?p=` usage in `settings.createLink` or `settings.viewEditLink`; require structured object syntax with `page` and optional `items`.
-  - For calendar regions, hard-fail `settings.createLink` or `settings.viewEditLink` objects that omit `page`.
-  - For calendar regions, hard-fail invented target pages or invented target item mappings when the accepted inputs did not explicitly provide them; require a Missing Inputs halt instead of guessing values like `4` or `P4_ID`.
-  - For calendar regions, do not fail merely because `endDateColumn` is absent when drag/drop is enabled; only fail drag/drop persistence when the emitted PL/SQL references `:APEX$NEW_END_DATE` without a matching end-date column contract.
-  - For calendar regions, hard-fail split hidden-header template options when `t-Region--hideHeader` and `js-addHiddenHeadingRoleDesc` are emitted as separate values instead of one combined token. Cite `assets/component-attributes.json` and `references/policies/memory-bank/30-pages/apex.calendar.md`.
-- Template-options value gate:
-  - Hard-fail concatenated template-option tokens such as `#DEFAULT#t-Report--stretch`.
-  - Hard-fail token-form drift when the owning catalog documents a different accepted emitted value, for example `style-a` instead of `t-CardsRegion--styleA` for cards, or a CSS class string when the owning catalog expects a caller-facing token.
-  - Allow documented full composite values only when emitted as one atomic entry.
-- Chart region structure gate (hard fail):
-  - For any `region` with `type: chart`, inspect `chart.type`.
-  - If `chart.type` is cartesian (`line`, `bar`, `area`, `scatter`, `bubble`, `stock`, `range`, `pareto`), fail if fewer than two `axis` children are present.
-  - Fail if required axis semantics are missing: one axis with `name: x` and one with `name: y`.
-  - Fail if any `axis` block omits a component identifier or omits `name`.
-  - If any series is assigned to a secondary Y axis, require an additional `axis` block with `name: y2`.
-  - Fail stale singular tick block names such as `majorTick` or `minorTick`; require `majorTicks` / `minorTicks`.
-  - Fail `axis.value.format: text`; textual axes must omit the `format` property instead.
-  - For SQL-backed chart series, fail when `columnMapping` identifiers do not match the SQL projection aliases exactly, including case.
-  - For generated SQL-backed chart series using generic aliases, prefer uppercase `LABEL` / `VALUE`; if semantic aliases are used, require exact-case mapping such as `STORE_LABEL` -> `label` mapping key and `TOTAL_VALUE` -> `value` mapping key.
-  - Cite `references/policies/memory-bank/30-pages/apex.chart-page.md`, `templates/region-components/chart/chart._common.md`, `templates/region-components/chart/chart._axis._common.md`, and `assets/component-attributes.json` in findings.
-  - Fail if any chart `series` block omits `execution.sequence`, including gauges and other non-cartesian charts where series ordering is still required by page standards.
-- Classic report structure gate (hard fail when applicable):
-  - Validate classic report pagination against the allowed enum catalog: `externalPaginationButtons`, `nextAndPreviousLinks`, `rowRangesXToYNoPagination`, `rowRangesXToYOfZNoPagination`, `rowRangesXToYOfZWithPagination`, `setPaginationLinks`, `setPaginationSearchEngine`, `setPaginationSelectList`, or omitted (`null`).
-  - Flag unsupported classic report values such as `rowRangesXToY` / `rowRangesXToYOfZ` (Interactive Report-only tokens).
-  - Validate `pagination.displayPosition` only for Classic/IR and only when `pagination.type` is present; allowed values: `bottomLeft`, `bottomRight`, `topLeft`, `topRight`, `topAndBottomLeft`, `topAndBottomRight`.
-  - For classic report columns, fail unsupported `source` properties when not allowed by the relevant contract/template.
-  - For classic report columns using `columnFormatting.htmlExpression`, fail when `type: richText` is emitted; keep plain text type implicit unless a non-default type is required.
-  - Fail when classic report columns emit top-level `htmlExpression`; require `columnFormatting.htmlExpression`.
-- Authorization alias gate (hard fail):
-  - Fail `security.authorizationScheme` values that are emitted without alias reference syntax (`@...`) when used as component references.
-- ACL role declaration gate (hard fail):
-  - Hard-fail `ACL_ROLE_DECLARATION_REQUIRED_001` when role-based authorization checks exist but `shared-components/acl-roles.apx` is missing.
-  - Hard-fail `ACL_ROLE_DECLARATION_REQUIRED_001` when any role referenced by authorization logic is absent from the roles artifact.
-  - Hard-fail `ACL_ROLE_DECLARATION_REQUIRED_001` when declared or referenced ACL role static IDs are not lowercase kebab-case.
-- Item session state gate (hard fail):
-  - For page items, fail any `sessionState.storage` outside `request`, `session`, `user`.
-  - For page items detected as client-mutated after render by dynamic-action `setValue`, dynamic-action `itemsToReturn`, or explicit same-page JavaScript mutation patterns, require `security.sessionStateProtection: unrestricted` plus comments rationale.
-  - For hidden and ID-style page items that are not detected as client-mutated post-render state, require `security.sessionStateProtection: checksumRequiredSessionLevel`.
-  - Do not treat trigger-only references, client-side-condition inputs, or `itemsToSubmit` references as sufficient reason to force `unrestricted`.
-  - For `selectList`, fail `appearance.width`.
-- Interactive grid structure gate (hard fail when applicable):
-  - Validate interactive grid pagination type is `scroll` or `page`.
-  - Validate `pagination.showTotalCount` as explicit boolean when present.
-  - Flag any interactive grid `pagination.displayPosition` usage.
-  - Fail when interactive grid columns emit top-level `htmlExpression`; require `columnFormatting.htmlExpression`.
-  - For Interactive Grid saved-report chart sort behavior, fail drafts that emit explicit `LABEL` as though it were a required non-default override when the packaged metadata marks `LABEL` as the default.
-  - For Interactive Grid saved-report aggregate guidance, fail drafts or notes that claim metadata-backed view/static-id parameters are ignored when the accepted contract keeps them structurally visible.
-  - Saved-report structure gate (hard fail when applicable):
-    - For any `region` with `type: interactiveGrid`, fail if it defines zero `savedReport` children.
-    - For any `region` with `type: interactiveGrid`, if a `savedReport` block exists, fail if it contains no `displayColumn` children.
-    - If `savedReport.singleRowView.displayedColumns: true`, compare the `displayColumn.column` aliases against declared Interactive Grid columns in the same region.
-    - Fail if any declared Interactive Grid column other than `APEX$ROW_SELECTOR` is missing from the saved-report display list.
-    - Fail if `APEX$ROW_ACTION` is declared on the region but omitted from the saved-report display list.
-    - Fail if any `displayColumn.column` alias does not map to a declared Interactive Grid column in the same region.
-    - Treat legacy `savedReport` child `column (` or `singleRowView.displayedCols` syntax as a required revision because it does not satisfy the canonical Interactive Grid template contract.
-    - Cite `references/policies/memory-bank/30-pages/apex.interactive-grid-page.md`, `templates/region-components/interactive-grid/interactive-grid._common.md`, and `templates/region-components/interactive-grid/interactive-grid._saved-report._common.md`.
-- Interactive report general structure gate (hard fail when applicable):
-  - Validate interactive report pagination against the allowed enum catalog: `rowRangesXToY`, `rowRangesXToYOfZ`, or omitted (`null`).
-  - Flag unsupported interactive report values such as `rowRangesXToYNoPagination`, `setPaginationLinks`, or Classic-only pagination variants.
-  - Fail when any interactive report column omits the `heading` block or omits `heading.heading`, including hidden technical columns. Cite `references/policies/memory-bank/30-pages/apex.interactive-report.md`, `templates/region-components/interactive-report/interactive-report._columns._common.md`, and `assets/component-attributes.json`.
-  - Hard-fail `INTERACTIVE_REPORT_LINK_COLUMN_TYPE_FORBIDDEN_001` when any Interactive Report column has top-level `type: link`; `type: link` is Classic Report-only and Interactive Report links must keep `type: plainText` with `link {}`.
-  - Fail when interactive report columns emit `reportColumnQueryId` or `derivedColumn`; those attributes are Classic Report-only in this repository contract.
-  - Fail when interactive report columns emit top-level `htmlExpression`; require `columnFormatting.htmlExpression`.
-- Classic report column contract gate (hard fail when applicable):
-  - Hard-fail `CLASSIC_REPORT_HIDDEN_COLUMN_HEADING_FORBIDDEN_001` when a Classic Report column emitted as `type: hidden` still carries `heading {}`.
-  - Hard-fail when a delivered Classic Report SQL/table projection lacks a matching `column (...)` block before finals.
-  - For PK columns, require an explicit decision: declarative navigation when row navigation is intended, otherwise hidden technical PK handling.
-- Cards image mapping gate:
-  - Hard-fail when the requested cards design explicitly calls for images or thumbnails, the source projects an image-bearing value, and the draft leaves that value unmapped.
-  - Hard-fail when a cards draft embeds image markup into `title`, `subtitle`, `body`, or `secondaryBody` even though the native cards `media.image` hook can express the image.
-  - For BLOB-backed cards images, require `media.image` to map the raw BLOB alias and keep the companion storage columns in the source projection per `references/policies/memory-bank/40-components/apex.region-media.md`; this projection is display-only and remains subject to the SQL/PLSQL LOB comparison-key ban in `20-data/apex.sql.md`.
-  - For URL-backed cards images, require `media.image` to map the image-URL column alias or a projected `&COLUMN.` substitution-backed URL value.
-- Classic report default template gate (hard fail when applicable):
-  - For every `classicReport` region, require the canonical shared default template block exactly.
-  - Require `appearance { template: @/standard templateOptions: #DEFAULT# }`.
-  - Hard-fail `CLASSIC_REPORT_COMPONENT_APPEARANCE_REQUIRED_001` when `componentAppearance.template` is missing, omitted, or not `@/standard`; live compiler validation maps this to property `411` and reports `componentAppearance - template (string)`.
-  - Require `componentAppearance { template: @/standard templateOptions: [ #DEFAULT# t-Report--stretch t-Report--horizontalBorders ] }`.
-  - Hard-fail Classic Report component options that enable alternating rows (`t-Report--altRowsDefault`, `t-Report--staticRowColors`) or row highlight by default. Alternating Rows disabled is represented by omitting the alternating-row token.
-  - For the documented `@/contextual-info` variant, require that override through `appearance.template` while keeping `componentAppearance.template: @/standard`.
-  - Hard-fail `CLASSIC_REPORT_CONTEXTUAL_INFO_TEMPLATE_OPTIONS_REQUIRED_001` when a Classic Report uses `appearance.template: @/contextual-info` without exact wrapper options `[ #DEFAULT# t-Region--hideHeader js-addHiddenHeadingRoleDesc t-Region--noUI ]`.
-  - Fail missing blocks, alternate templates, extra modifiers, or invalid `appearance.templateOptions` / `componentAppearance.templateOptions` formatting unless the selected scenario contract explicitly documents an override.
-  - Cite `references/policies/memory-bank/40-components/apex.templates.md`, `references/policies/memory-bank/30-pages/apex.classic-report.md`, and `templates/region-components/classic-report/classic-report.contextual-info.md`.
-- Smart Filters target gate (hard fail when applicable):
-  - Hard-fail `SMART_FILTER_RESULTS_REGION_REQUIRED_001` when `filteredRegion` does not reference an existing page results region.
-  - Hard-fail `SMART_FILTER_MAP_TARGET_UNSUPPORTED_001` when `filteredRegion` points to a map region; Smart Filters must target a report/cards-style companion dataset and synchronize sibling maps with explicit refresh behavior.
-  - Hard-fail `SMART_FILTER_RESULTS_REGION_REQUIRED_001` when `filteredRegion` points to a map layer, Smart Filters region, Faceted Search region, or other non-results alias.
-  - Hard-fail `SMART_FILTER_RESULTS_REGION_ORDER_REQUIRED_001` when a Smart Filters region is declared after the results region referenced by `filteredRegion`.
-  - Hard-fail `SMART_FILTER_SEARCH_SOURCE_REQUIRED_001` when a free-text search filter uses an invalid single-column shortcut instead of the canonical `source.dbColumns` contract.
-- Content Row projection gate:
-  - Hard-fail when report-mode Content Row omits the PK-backed identity column needed for row actions, selection state, or same-page context binding.
-  - Hard-fail when any Content Row `rowSelection` mode is present but no child column is marked with `source.primaryKey: true`.
-  - Hard-fail when any Content Row child column uses grouping but the top-level `orderBy` does not sort by all grouped columns first, in grouping order, before remaining tie-breakers.
-  - Hard-fail when Content Row omits explicit child `column (...)` metadata for any delivered source projection when the generated artifact is meant to mirror the region source by default.
-  - Hard-fail when a Content Row source projects multiple fields but the emitted DSL adds only a compiler-satisfying subset of child columns.
-- Metric Card projection gate:
-  - Hard-fail when report-mode Metric Card omits explicit child `column (...)` metadata for any delivered source projection.
-  - Hard-fail when a Metric Card source projects multiple fields but the emitted DSL adds only one compiler-satisfying child column.
-  - Hard-fail when a draft tries to force several independent metrics into one card row without normalizing the source projection. When one Metric Card region is meant to render multiple cards, prefer a multi-row source, usually `UNION ALL` across per-metric SELECTs with the same aliases in the same order.
-  - Hard-fail when a draft collapses the Metric Card property surface down to `settings.title` and `settings.metric` even though the requested design clearly needs accepted family hooks such as `meta`, CSS-class settings, or `rowSelection`.
-  - Hard-fail when a Metric Card draft emits `settings.displayAvatar` instead of `plugin-avatar.displayAvatar`.
-  - Hard-fail when a Metric Card draft emits `settings.displayBadge` instead of `plugin-badge.displayBadge`.
-  - Hard-fail when critique rationale assumes settings/plugin hook names must match child-column names one-for-one. Treat those properties as value hooks, not as a second column declaration system.
-  - Hard-fail when any Metric Card `rowSelection` mode is present but no child column is marked with `source.primaryKey: true`.
-- Metric Card dashboard chrome gate:
-  - Hard-fail `DASHBOARD_KPI_METRIC_CARD_REQUIRED_001` when a dashboard KPI/count/total/revenue/average tile is emitted as a Classic Report instead of a Metric Card.
-  - Hard-fail `METRIC_CARD_STANDARD_TEMPLATE_FORBIDDEN_001` when a dashboard KPI Metric Card strip uses visible `@/standard` region chrome without an explicit titled or landmarked wrapper justification.
-- Dashboard layout row plan gate:
-  - Hard-fail `DASHBOARD_LAYOUT_ROW_PLAN_REQUIRED_001` when a dashboard draft omits `layout_row_plan` from the Generation Plan for KPI strips, chart rows, report/detail rows, or side-by-side component rows.
-  - Hard-fail `DASHBOARD_LAYOUT_ROW_PLAN_REQUIRED_001` when `layout_row_plan` entries do not include `slot`, `row`, `recipe`, and ordered `regions` static IDs.
-  - Hard-fail `DASHBOARD_LAYOUT_ROW_PLAN_REQUIRED_001` when a dashboard stacks all chart or content regions without explicit vertical-stack user intent or without marking the stacked region as an intentional detail/full-width section.
-  - Hard-fail `APP_UX_LAYOUT_RECIPE_REQUIRED_001` when one `layout_row_plan` entry groups multiple stacked full-width detail, contextual summary, or cards sections in one `regions` array. One row-plan entry equals one physical row.
-  - Hard-fail `APP_UX_LAYOUT_RECIPE_REQUIRED_001` when `recipe: dashboard-chart-flow` is emitted; require explicit `two-up-equal` / `three-up-equal` chart rows.
-  - For five dashboard charts, require one `two-up-equal` row followed by one `three-up-equal` row unless the prompt explicitly requests a different chart layout.
-  - Cite `references/policies/memory-bank/30-pages/apex.dashboard.md`, `references/policies/memory-bank/30-pages/apex.layout.md`, and `templates/page-examples/dashboard-page/dashboard-page._common.md`.
-- Drawer form gate:
-  - Hard-fail `DRAWER_POSITION_DEFAULT_END_REQUIRED_001` when a default drawer form omits explicit `js-dialog-class-t-Drawer--pullOutEnd` or uses start/top/bottom without requirement evidence.
-- Other report-type template component projection gate:
-  - For report-type template components such as Media List and Comments, hard-fail when the generated artifact responds to a missing-column compiler error by adding only one placeholder child column while the source still projects multiple fields.
-  - Treat the default expectation for those families as explicit child `column (...)` metadata aligned with the delivered source projection unless a stricter family contract says otherwise.
-  - Hard-fail when any template component emits `rowSelection` with a non-null mode but no child column is marked with `source.primaryKey: true`.
-- Image Upload stale-property gate:
-  - Hard-fail `IMAGE_UPLOAD_LEGACY_PROPERTY_FORBIDDEN_001` when `imageUpload` emits stale upload-only settings such as `storageType`, `displayAs`, `allowMultipleFiles`, `maxFileSize`, `displayDownloadLink`, `downloadLinkText`, `purgeFilesAt`, `dropzoneTitle`, `dropzoneDescription`, `maxWidth`, `maxHeight`, `allowCropping`, `aspectRatio`, `customAspectRatio`, `captureUsing`, or `previewSize`.
-  - Hard-fail `IMAGE_UPLOAD_LEGACY_PROPERTY_FORBIDDEN_001` when `imageUpload` emits stale source metadata such as `mimeTypeColumn`, `filenameColumn`, or `blobLastUpdatedColumn`.
-- Dynamic action vocabulary checks (hard fail):
-  - For `action: setValue`, fail if `setType` appears, if `settings.type` is missing, or if `settings.type: sqlStatement` appears.
-  - For `setValue`, require matching payload keys by type (`static -> value`, `sqlQuery -> sqlQuery`, `plsqlFunctionBody -> plsqlFunctionBody`, `javaScriptExpression -> javaScriptExpression`).
-  - Fail if `action: executeJavaScriptCode` appears; require `action: executeJsCode`.
-  - For `executeJsCode`, fail if `settings.code` appears; require `settings.jsCode`.
-  - For debounce/throttle execution control, require `execution.type` and `execution.time`.
-  - For debounce/throttle execution control, if `execution.immediate` is present it must be explicit boolean (`true`/`false`).
-  - For `when.selectionType: button`, fail if `when.button` is not alias format (`@button-static-id`).
-  - For every dynamic action action execution block, require explicit `fireOnInit`.
-  - Fail when `fireOnInit: true` appears unless the prompt explicitly requested initialization behavior.
-  - Include `DA_RULE_*` IDs in findings and required revisions.
-- Template-option serialization (hard fail):
-  - Fail any multi-value `templateOptions` array emitted inline with commas, such as `[#DEFAULT#, t-Report--stretch]`.
-  - Require bracketed multi-line arrays with one accepted value per line while keeping documented composite values atomic.
-- Buttons:
-  - For `button-actions-batch`, verify action-specific guardrails (targets for redirects, databaseAction usage for submitPage, nested triggerAction/menu entries) per 40-components/apex.buttons.md.
-  - For `button-actions-batch` remove operations, verify dependency scans are reported and blocked targets are not silently removed.
-  - Hard-fail button `appearance.templateOptions` aliases or naked suffix tokens such as `left`, `right`, `push`, `spin`, `hide-icon-on-desktop`, `hide-label-on-mobile`, `primary`, `simple`, `tiny`, `stretch`, `pillStart`, `padLeft`, `gapRight`, `padTop`, `gapBottom`, `link`, `success`, or `noUI`; require the canonical emitted `t-Button--...` value from the button family contract instead.
-  - Hard-fail `FA_ICON_REQUIRED_001` when any generated icon-bearing property uses a non-`fa-*` icon token, image icon, Material/JET icon class, or custom CSS icon alias.
-  - Confirm disabled buttons still define behavior blocks, confirmations exist when requiresConfirmation = true, and icon usage matches template rules.
-- Navigation & Grouping (non-modal pages)
-  - Navigation Menu: shared-components/lists.apx must contain an entry targeting the new page (f?p=&APP_ID.:&PAGE_ID.:&APP_SESSION.::&DEBUG.:::). If missing, record as Required Revision (fail per master).
-  - Breadcrumbs: shared-components/breadcrumbs.apx must contain a matching entry. If missing, record as Required Revision (fail per master).
-  - Breadcrumb hierarchy: for full-app generation, fail flat breadcrumbs when the application spec or app UX contract defines hub, management hub, contextual, parent-child, or detail launch paths. Child entries must use `appearance { parentEntry: @... }` and match `compositionPlan.breadcrumbs`.
-  - Hard-fail `BREADCRUMB_REGION_TITLE_VISIBLE_GENERIC_001` when a visible breadcrumb/title-bar region uses a generic title such as `Breadcrumb`, `Breadcrumbs`, `Title Bar`, or `Page Header`. The visible title source must be the current breadcrumb entry/page title, not the component purpose.
-  - Hub affordance: for management/launcher hub media lists, fail shared list launcher entries that omit `icon.imageIconCssClasses` with a `fa-*` token or omit the `userDefinedAttributes { 1: ... }` description.
-  - Vocabulary contract (hard fail): `application.apx` must use `navigation`, `navigationMenu`, and `navigationBar`; fail legacy `nav`, `navMenu`, or `navBar`.
-  - Vocabulary contract (hard fail): `shared-components/themes/**/theme.apx` must use `themeNumber`, `javaScript`, `navigationBarList`, `navigationMenuListPosition`, `navigationMenuListTop`, and `navigationMenuListSide`; fail `themeNo`, `js`, `navBarList`, `navMenuListPosition`, `navMenuListTop`, and `navMenuListSide`.
-  - Vocabulary contract (hard fail): `shared-components/breadcrumbs.apx` must use `pageNumber`; fail `pageNo`.
-  - Mixed vocabulary contract (hard fail): fail any app that mixes old and canonical scaffold vocabulary in baseline app/shared-component files.
-  - `BREADCRUMB_RULE_PARENT_SCOPE_001` (hard-fail): In shared-components/breadcrumbs.apx, allow `parentEntry` only inside `appearance {}` for breadcrumb entries.
-  - `BREADCRUMB_RULE_PARENT_SCOPE_001` (hard-fail): Flag any breadcrumb entry using `execution { parentEntry: ... }`; execution must not contain `parentEntry`.
-  - Shared list/breadcrumb link syntax: enforce `link { target: ... }`; fail `behavior { target: ... }` in shared-components lists/breadcrumbs.
-  - Shared component settings syntax: enforce `componentSetting ... settings { attributes: {...} }`; fail direct keys under `settings {}` (for example `display_as`, `mode`).
-  - Grouping key: At page root, forbid group; require pageGroup when grouping is requested. Cite references/policies/memory-bank/30-pages/apex.page.md. Region/item-level group within templates remains valid and is not flagged.
-- Server-side conditions: Check each `serverSideCondition {}` emitted by the draft. Ensure the type exists in references/policies/memory-bank/20-data/apex.logic.md, all required attributes are present, and values match the provided `server_side_condition` inputs or the resolved SSC token mapping. For `itemIsInColonDelimitedList` and `itemIsNotInColonDelimitedList`, require `list` in finals; treat legacy `value` as migration input only and flag normalization as Required Revision. Flag missing attributes, unknown tokens, or invented values as Required Revisions (Missing Inputs when data was not supplied).
-- When a batch SSC draft summary is generated, confirm the summary file exists and lists the targeted components. Fail if the summary was omitted before finals.
-- Faceted-search `listEntries` enforcement (reference-only; policy lives in `references/policies/memory-bank/30-pages/apex.faceted-search.md`):
-  - Allow `listEntries.maxDisplayedEntries` only when facet `type` is `checkboxGroup` or `radioGroup`.
-  - For checkbox/radio facets, flag missing `maxDisplayedEntries` and values outside 5-15 as Required Revision; use 10 when no stronger UX evidence exists.
-  - For high-cardinality checkbox/radio facets such as Product, Customer, Store, Assignee, Owner, User, Employee, Supplier, Email, SKU, name, or title facets, flag missing or false `listEntries.displayFilterInitially` as Required Revision.
-  - For all other facet types (for example `range`, `selectList`, `search`), flag `listEntries` as Required Revision.
-  - Facet `source.dataType` is not report-column metadata. Flag `varchar2`, `VARCHAR2`, `STRING`, `timestamp`, and omitted date/range facet data types as Required Revision. Date/time facets use `dataType: date`; numeric facets use `dataType: number`; string facets omit `source.dataType`.
-- Column Alignment (Reports/Grids)
-  - For each report/grid column: if source.dataType is NUMBER → heading.alignment: end and layout.columnAlignment: end; if STRING (VARCHAR2) → heading.alignment: start and layout.columnAlignment: start. Applies to Interactive Report, Classic Report, Interactive Grid. See 40-components/apex.templates.md.
-- Accessibility/UX (Universal Theme)
-  - Labels: Ensure every item has a visible label or an accessible name; flag placeholder-only labeling and undocumented hidden labels.
-  - Landmarks/Regions: Use UT templates that emit proper landmarks for breadcrumbs, page headers, nav, main content.
-  - CSS/class discipline: Flag invented CSS classes or selector-driven layout fixes. Structure must be solved through templates, template options, and layout/alignment attributes per 40-components/apex.templates.md.
-- Performance
-  - Pagination and limits: enforce region defaults unless justified otherwise from `20-data/apex.sql.md`:
-    - Classic Report: `rowRangesXToYNoPagination`
-    - Interactive Report: `rowRangesXToY`
-    - Interactive Grid: `scroll`
-    Flag missing pagination blocks, unbounded datasets, unsupported pagination types, or cross-region token misuse.
-  - SQL hygiene: No SELECT *; no SQL hints; table aliases on all tables; leading-comma SELECT formatting (one column per line); require explicit ordering for deterministic paging; encourage bind variables and view-based logic.
-  - Hard-fail SQL-backed template components when `source.sqlQuery` contains `ORDER BY` or the region lacks top-level `orderBy {}`. Static ordering must use `type: staticValue` plus `orderByClause`; item-controlled ordering must use `type: item` plus `item.itemName` and `item.orderBys`.
-  - Hard-fail `STATIC_ID_WHERE_LOWER_REQUIRED_001` when SQL/PLSQL `WHERE` predicates compare columns ending with `_static_id` without canonical LOWER normalization (`lower(col_static_id) = lower(value)` / `!=` or `lower(col_static_id) in ('lowercase', ...)`).
-  - Hard-fail `IR_TEXT_SEARCH_CASE_NORMALIZATION_REQUIRED_001` when Interactive Report SQL uses user-entered text predicates with `=` / `!=` / `LIKE` and does not normalize both sides with `LOWER()`.
-  - Lazy loading/caching: Recommend lazy load for secondary regions and caching for stable LOVs/reference data.
-  - Downloads: CSV/Excel/PDF restricted by authorization; flag formats enabled without authz.
-- Internationalization (i18n)
-  - Flag hard-coded user-facing strings in labels, headings, help text, region titles, and messages. Prefer Text Messages/shared components.
-  - Ensure format masks and NLS usage are consistent with i18n policy.
-- Help text governance
-  - Enforce the default guidance layer for generated apps. Record `DEFAULT_GUIDANCE_LAYER_REQUIRED_001` when major pages omit page help, when user-editable or filter/control items omit concise help without a documented exemption, or when key report columns omit the required guidance/comment plan.
-  - Record `DEFAULT_GUIDANCE_LAYER_REQUIRED_001` when help text or page help uses placeholder or empty-value patterns such as `Help Text Here`, `Inline Help Text Here`, `No help is available for this page`, or label-only restatements that fail to explain input, format, or purpose.
-  - Verify page/region/item help references Text Messages, planned message keys, or documented sources per 10-global/apex.global.md. Flag inline/detailed help exceeding length limits (inline <=60 chars; detailed <=400 chars) or duplicating labels.
-  - Require revision when provisional help text or user-facing column guidance is emitted without a Text Message key or planned key, even if the underlying copy is otherwise acceptable.
-  - Require revision when business-significant, derived, status, or action report/grid columns omit developer-facing `comments { comments: ... }` metadata, omit any of the required attributes (`Display Label`, `Display in Report`, `Display in Form`, `Format Mask`, `Value Required`, `Read Only`, `Primary Display Column`, `Authorization Scheme`), or drift from the canonical field order when `Summary` is present. Hidden technical IDs may skip user-facing guidance but not essential maintainability comments.
-  - Require revision when `comments { comments: ... }` uses placeholder or generic filler language instead of reflecting the emitted column behavior and semantics.
-  - Ensure draft summaries from the help-text workflow include intent, Text Message key/plan, and notes; fail if user-facing literals are emitted without localization plan.
-  - Differentiate help from metadata comments; when `comments {}` is used for region columns, treat it as generated metadata rather than runtime help text.
-- DevOps/Logging and CSP
-  - apex_debug: Recommend diagnostic checkpoints in non-prod for critical flows (do not enforce in prod).
-  - External URLs and CSP: Flag external asset URLs (images/icons/scripts) not under #APP_FILES#/#THEME_FILES#; require CSP-aligned sources.
-- Missing Inputs
-  - Identify required tables, PKs, columns, LOV mapping (per components.registry.json) without guessing.
-- Parallel-skill constitutional checks
-  - Verify Draft includes `claims`, `required_inputs`, `assumptions`, and `source_paths`.
-  - Fail when any `source_paths` entry does not exist.
-  - Detect contradictions across parallel skill claims/assumptions (identifiers, ownership, workflow path); require explicit reconciliation or `Missing Inputs`.
-- Confidence Score
-  - Emit a single score [0.00–1.00]; target ≥ 0.95.
-- Import runtime gate feedback:
-  - Hard-fail `RUNTIME_GATE_COMPLETION_REQUIRED_001` if completion wording is attempted without direct SQLcl validate success for the same `resolved_app_path`.
-  - Hard-fail `ONLINE_IMPORT_CONDITIONAL_001` for `validate-and-import` runs when completion is attempted without direct SQLcl import success after direct SQLcl validate success in the same authenticated session.
-  - If local predeploy validation or the direct SQLcl roundtrip reports failure, record the blocking reason in `FINDINGS` and keep run blocked.
-  - Map runtime gate errors deterministically:
-    - `DSL_VOCAB_CONTRACT_FAILED`
-    - `DSL_SCHEMA_CONTRACT_FAILED`
-    - `SQLCL_NOT_FOUND`
-    - `SQLCL_VALIDATE_FAILED`
-    - `SQLCL_IMPORT_FAILED`
-  - Require another generate -> review -> fix pass when any runtime gate error exists (up to 2 additional live retries after the first failure / 3 total live rounds under master loop policy).
-- Governance gates (existence checks only; no content expansion):
-  - Critical Pages (always): ensure presence of Page 0 (`p00000-*.apx`), Page 1 (`p00001-*.apx`), and Page 9999 (`p09999-*.apx`) in the appropriate output ({app_root}/pages/ when applicable).
-  - Critical Shared Components (Whole Application only):
-    - Ensure {app_root}/shared-components/ exists and is populated.
-    - If missing, record as a required Revision action “Provision the runtime shared-components seed from base-app-structure/scaffold-example/shared-components.”
-  - Application skeleton parity (Whole Application only):
-    - Verify {app_root}/ contains only named runtime artifacts at top level: `.apex/`, `application.apx`, `deployments/`, `page-groups.apx`, `pages/`, `shared-components/`, and `supporting-objects/`.
-    - Hard-fail `APP_TEMPLATE_ARTIFACT_LEAK_001` when the app root contains top-level entries outside that runtime-artifact set.
-    - Hard-fail `APP_TEMPLATE_ARTIFACT_LEAK_001` when the app root contains leaked template-family files such as `README.md`, `base-app-structure._common.md`, `base-app-structure._index.md`, or `base-app-structure.registry.json`.
-    - Compare {app_root}/pages/ against `templates/base-app-structure/scaffold-example/pages/`; flag if any baseline page seed (`p00000-*`, `p00001-*`, `p09999-*`) or other skeleton file was deleted/omitted without explicit user direction.
-    - Flag missing shared-components artifacts that exist in the skeleton source (authentications, authorizations, breadcrumbs, lists, LOVs, static-files, themes). Record as Required Revision if absent.
-  - Login page linkage:
-    - If a custom login page is created or the default login page is replaced, verify `{app_root}/application.apx` updates `navigation.loginUrl` to `f?p=&APP_ID.:<login_page_number>:&APP_SESSION.::&DEBUG.:::` using the active login page number.
-    - Flag as failure if `loginUrl` still points to `LOGIN`, `9999`, or any stale target that does not match the actual custom login page.
-  - Placeholder leakage:
-    - Flag documentation-only placeholders copied from `base-app-structure/`, including `CUSTOM_FILE_NAME.css`, `console.log('Page loaded')`, `console.log('Login page loaded')`, `Header text example`, `Footer text example`, `This is a help text example`, and `Comments example`.
-- Loop policy
-- If Confidence < 0.95, request one more generate -> review -> fix pass. If still < 0.95 after second pass, stop and record outstanding issues.
-
-Outputs
-- Review result: internal structured review payload with sections for Citations, Findings, Missing Inputs, Governance Gates, Required Revisions, and Confidence Score
-
-Output format (exact, machine‑parseable header must be first)
-PASS: 1
-CONFIDENCE: 0.92
+Output format
+```text
+PASS: 1|2
+CONFIDENCE: 0.00-1.00
+CAPSULE: <fingerprint>
+UNIT_ID: <unit-id or n/a>
+IR_POINTER: <json-pointer or n/a>
 CITATIONS:
-- 10-global/apex.global.md
-- 30-pages/… (as applicable)
-- 40-components/… (as applicable)
-- 20-data/… (as applicable)
 FINDINGS:
-- …
 MISSING INPUTS:
-- …
-GOVERNANCE GATES:
-- …
 REQUIRED REVISIONS:
-- …
+VERIFICATION:
+```
 
 Policy
-- PASS must be 1 or 2 (numeric integer).
-- CONFIDENCE must be numeric [0.00–1.00]. Target ≥ 0.95.
-- If CONFIDENCE < 0.95 on PASS=1 → request one more Draft → Critique → Revision pass.
-- If PASS=2 → stop after this pass; any CONFIDENCE < 0.95 must be recorded as outstanding issues.
-- Logging (first 5 lines of the file) must include PASS and CONFIDENCE.
-
-Notes
-- Keep tokens low by referencing paths and rules; avoid quoting large content from the draft unless necessary to illustrate a defect.
-- Do not seed or mutate files in this step — record as Required Revisions.
-
-Invocation (always constitutional)
-- This agent is orchestrated automatically when `SKILL.md` loads `references/workflows/apex-generation.md`.
-- No manual activation or deactivation steps are required.
-- Token discipline is preserved by keeping this file concise and path-referenced; the master governs minimal rule loading and routing.
+- Target confidence is at least 0.95.
+- A second pass may address deterministic findings; unresolved evidence stops the run.
+- This phase records findings only and does not mutate artifacts.
