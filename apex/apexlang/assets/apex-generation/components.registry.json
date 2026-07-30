@@ -356,10 +356,13 @@
       "target_type": "page",
       "synonyms": [
         "metric card",
+        "metric cards",
         "metric-card",
         "kpi card",
+        "kpi cards",
         "kpi",
-        "scorecard"
+        "scorecard",
+        "scorecards"
       ],
       "rules": [
         "30-pages/apex.page.md",

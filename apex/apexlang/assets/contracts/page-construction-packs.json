@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Renderer-facing construction packs for common page workflows. Each pack declares inputs, emitted components, validation gates, and follow-on references.",
+  "selection_order": ["report-modal-form", "dashboard", "master-detail", "faceted-search", "carousel-static-content", "lov-backed-form"],
+  "packs": [
+    {
+      "id": "report-modal-form",
+      "pattern_id": "report-modal-form",
+      "inputs": {
+        "required": ["app_path", "report_page_id", "form_page_id", "source_table_or_query", "primary_key", "report_columns", "form_items"],
+        "optional": ["authorization_scheme", "breadcrumb_parent", "create_button_label", "edit_action_label"]
+      },
+      "components": ["page:report", "region:interactiveReport", "button:create", "page:modalForm", "process:formAutomaticRowProcessing"],
+      "renderer_rules": ["emit_ir_first", "query_property_mapper_for_non_exact_shapes", "validate_generated_apx"],
+      "validation_rules": ["INTERACTIVE_REPORT_COLUMN_COVERAGE_001", "FORM_DRAWER_DEFAULT_END_REQUIRED_001"]
+    },
+    {
+      "id": "dashboard",
+      "pattern_id": "dashboard",
+      "inputs": {
+        "required": ["app_path", "page_id", "metrics", "chart_series"],
+        "optional": ["supporting_report_source", "time_filter_item", "drill_targets"]
+      },
+      "components": ["page:dashboard", "templateComponent:metricCard", "region:chart", "region:reportOrCards"],
+      "renderer_rules": ["emit_ir_first", "prefer_metric_card_template_components", "validate_generated_apx"],
+      "validation_rules": ["DASHBOARD_KPI_METRIC_CARD_REQUIRED_001", "DEFAULT_GUIDANCE_LAYER_REQUIRED_001"]
+    },
+    {
+      "id": "master-detail",
+      "pattern_id": "master-detail",
+      "inputs": {
+        "required": ["app_path", "page_id", "master_source", "detail_source", "join_key"],
+        "optional": ["modal_detail_target", "map_layer_target", "refresh_behavior"]
+      },
+      "components": ["region:masterResults", "region:detailResults", "dynamicAction:selectionRefresh"],
+      "renderer_rules": ["emit_ir_first", "explicit_refresh_for_child_context", "validate_generated_apx"],
+      "validation_rules": ["MASTER_DETAIL_DYNAMIC_ACTION_REQUIRED_001", "MAP_LAYER_CONTEXT_BIND_REQUIRED_001"]
+    },
+    {
+      "id": "faceted-search",
+      "pattern_id": "faceted-search",
+      "inputs": {
+        "required": ["app_path", "page_id", "results_source", "facet_columns"],
+        "optional": ["results_region_alias", "default_filters", "saved_report"]
+      },
+      "components": ["region:facetedSearch", "region:results", "facet:items"],
+      "renderer_rules": ["emit_ir_first", "target_results_region_only", "validate_generated_apx"],
+      "validation_rules": ["FACET_SOURCE_DATA_TYPE_REQUIRED_001", "SMART_FILTER_RESULTS_REGION_REQUIRED_001"]
+    },
+    {
+      "id": "carousel-static-content",
+      "pattern_id": "carousel-static-content",
+      "inputs": {
+        "required": ["app_path", "page_id", "content_items"],
+        "optional": ["action_targets", "template_variant", "empty_state"]
+      },
+      "components": ["region:staticContent", "templateComponent:contentRowOrCards"],
+      "renderer_rules": ["emit_ir_first", "avoid_unsupported_custom_html", "validate_generated_apx"],
+      "validation_rules": ["GENERATION_PLAN_REQUIRED_001"]
+    },
+    {
+      "id": "lov-backed-form",
+      "pattern_id": "lov-backed-form",
+      "inputs": {
+        "required": ["app_path", "page_id", "form_source", "lov_source", "display_column", "return_column", "target_item"],
+        "optional": ["display_null", "cascading_parent_item", "authorization_scheme"]
+      },
+      "components": ["sharedComponent:lov", "item:selectListOrPopupLov", "process:formAutomaticRowProcessing"],
+      "renderer_rules": ["emit_ir_first", "verify_lov_columns", "query_property_mapper_for_item_variant", "validate_generated_apx"],
+      "validation_rules": ["COMPILER_TRUTH_EVIDENCE_REQUIRED_001"]
+    }
+  ]
+}

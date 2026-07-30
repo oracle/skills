@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Compact selector catalog for supported APEX page patterns. Use this before Markdown templates when choosing a page construction path.",
+  "authority": {
+    "syntax": "assets/grammar/apexlang.ebnf",
+    "semantics": "tools/query-valid-props.mjs and compiler-truth audit",
+    "fallback_policy": "assets/component-attributes.json is curated fallback context only"
+  },
+  "patterns": [
+    {
+      "id": "report-modal-form",
+      "name": "Report plus modal form",
+      "intent_keywords": ["report", "interactive report", "crud", "modal form", "drawer form", "create edit"],
+      "selection_require_any": ["crud", "modal form", "drawer form", "create edit"],
+      "required_inputs": ["source_table_or_query", "primary_key", "report_columns", "form_items", "target_page_ids"],
+      "generated_components": ["interactive_report_region", "modal_form_page", "create_button", "edit_link_or_row_action", "automatic_row_processing"],
+      "validation_rules": [
+        "FORM_DRAWER_DEFAULT_END_REQUIRED_001",
+        "INTERACTIVE_REPORT_COLUMN_COVERAGE_001",
+        "DECLARATIVE_BUTTON_TARGET_REQUIRED"
+      ],
+      "reference_paths": [
+        "templates/page-examples/interactive-report-page/interactive-report-page.example.md",
+        "templates/page-examples/form-page/form-page.example.md",
+        "references/domains/page-components/regions/form/workflow-modal-crud-form.md"
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "intent_keywords": ["dashboard", "kpi", "metric", "chart", "operations summary"],
+      "required_inputs": ["metrics", "chart_series", "supporting_report_or_cards_region"],
+      "generated_components": ["metric_card_template_components", "chart_region", "supporting_results_region"],
+      "validation_rules": ["DASHBOARD_KPI_METRIC_CARD_REQUIRED_001", "DEFAULT_GUIDANCE_LAYER_REQUIRED_001"],
+      "reference_paths": [
+        "references/policies/memory-bank/30-pages/apex.dashboard.md",
+        "templates/template-components/metric-card/metric-card._common.md",
+        "references/domains/page-components/regions/dashboard/workflow-dashboard.md"
+      ]
+    },
+    {
+      "id": "master-detail",
+      "name": "Master detail",
+      "intent_keywords": ["master detail", "parent child", "detail region", "selected row"],
+      "required_inputs": ["master_source", "detail_source", "join_key", "selection_behavior"],
+      "generated_components": ["master_results_region", "detail_results_or_form_region", "selection_dynamic_action"],
+      "validation_rules": ["MASTER_DETAIL_DYNAMIC_ACTION_REQUIRED_001", "GENERATION_PLAN_REQUIRED_001"],
+      "reference_paths": ["references/domains/README.md", "references/workflows/apexlang/application-spec.template.md"]
+    },
+    {
+      "id": "faceted-search",
+      "name": "Faceted search",
+      "intent_keywords": ["faceted search", "facets", "filters", "search page"],
+      "required_inputs": ["results_source", "facet_columns", "results_region_alias"],
+      "generated_components": ["faceted_search_region", "filtered_results_region", "facet_items"],
+      "validation_rules": ["FACET_SOURCE_DATA_TYPE_REQUIRED_001", "SMART_FILTER_RESULTS_REGION_REQUIRED_001"],
+      "reference_paths": [
+        "templates/page-examples/faceted-search/faceted-search.example.md",
+        "templates/region-components/faceted-search/faceted-search._common.md"
+      ]
+    },
+    {
+      "id": "carousel-static-content",
+      "name": "Carousel or static content",
+      "intent_keywords": ["carousel", "static content", "empty state", "cards", "content band"],
+      "selection_require_any": ["carousel", "static content", "empty state", "content band"],
+      "required_inputs": ["content_items", "region_purpose", "navigation_or_action_targets"],
+      "generated_components": ["static_content_region", "template_component_or_cards_region"],
+      "validation_rules": ["GENERATION_PLAN_REQUIRED_001", "DEFAULT_GUIDANCE_LAYER_REQUIRED_001"],
+      "reference_paths": ["templates/region-components/static-content/README.md"]
+    },
+    {
+      "id": "lov-backed-form",
+      "name": "LOV-backed form",
+      "intent_keywords": ["lov", "select list", "popup lov", "lookup", "reference data"],
+      "required_inputs": ["form_source", "lov_source", "display_column", "return_column", "target_item"],
+      "generated_components": ["shared_lov", "form_item", "form_process"],
+      "validation_rules": ["COMPILER_TRUTH_EVIDENCE_REQUIRED_001", "DEFAULT_GUIDANCE_LAYER_REQUIRED_001"],
+      "reference_paths": [
+        "templates/shared-components/lovs/lovs.dynamic.query.md",
+        "templates/items/select-list/select-list.lov-shared.md",
+        "references/domains/README.md"
+      ]
+    }
+  ]
+}
