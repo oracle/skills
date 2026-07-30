@@ -23,9 +23,16 @@
     "assets/apexlang/domains-catalog.json",
     "assets/orchestration.manifest.json",
     "assets/rules-mapping.json",
+    "assets/rules.catalog.json",
     "assets/component-policies.json",
     "assets/component-attributes.json",
+    "assets/grammar/apexlang.ebnf",
     "assets/validator-fix-recipes.json",
+    "assets/contracts/page-patterns.json",
+    "assets/contracts/page-construction-packs.json",
+    "assets/contracts/grammar-semantic-rules.json",
+    "assets/contracts/package-layers.json",
+    "assets/apex-generation/components.registry.json",
     "references/policies/compiler-prop-map.md",
     "references/workflows/apex-generation.md",
     "references/workflows/apexlang/apexlang-execution-model.md",
@@ -37,6 +44,8 @@
     "references/ops/runtime-gates.md",
     "tools/apexctl.mjs",
     "tools/query-valid-props.mjs",
+    "tools/query-valid-props-context.mjs",
+    "tools/query-valid-props-semantics.mjs",
     "tools/query-valid-props-normalize.mjs",
     "tools/query-valid-props-runtime.mjs",
     "tools/compiler-truth-audit.mjs",
@@ -85,8 +94,20 @@
       "dest": "runtime/lib/common.mjs"
     },
     {
+      "source": "skills/apexlang/tools/lib/catalogs.mjs",
+      "dest": "runtime/lib/catalogs.mjs"
+    },
+    {
+      "source": "skills/apexlang/tools/public/grammar_contract.mjs",
+      "dest": "runtime/grammar_contract.mjs"
+    },
+    {
       "source": "skills/apexlang/tools/internal/python/validate_apexlang.py",
       "dest": "runtime/internal/python/validate_apexlang.py"
+    },
+    {
+      "source": "skills/apexlang/tools/internal/python/format_apexlang.py",
+      "dest": "runtime/internal/python/format_apexlang.py"
     },
     {
       "source": "skills/apexlang/tools/internal/python/validate_apexlang_vocab.py",
@@ -105,6 +126,8 @@
     "SKILL.md",
     "tools/apexctl.mjs",
     "tools/query-valid-props.mjs",
+    "tools/query-valid-props-context.mjs",
+    "tools/query-valid-props-semantics.mjs",
     "tools/query-valid-props-normalize.mjs",
     "tools/query-valid-props-runtime.mjs",
     "tools/compiler-truth-audit.mjs"
@@ -162,6 +185,22 @@
       "source": null
     },
     {
+      "path": "assets/contracts/grammar-semantic-rules.json",
+      "source": "skills/apexlang/contracts/grammar-semantic-rules.json"
+    },
+    {
+      "path": "assets/contracts/package-layers.json",
+      "source": "skills/apexlang/contracts/package-layers.json"
+    },
+    {
+      "path": "assets/contracts/page-construction-packs.json",
+      "source": "skills/apexlang/contracts/page-construction-packs.json"
+    },
+    {
+      "path": "assets/contracts/page-patterns.json",
+      "source": "skills/apexlang/contracts/page-patterns.json"
+    },
+    {
       "path": "assets/domains/business-logic/computations-prompt.md",
       "source": "skills/apexlang/business-logic/assets/computations-prompt.md"
     },
@@ -210,6 +249,10 @@
       "source": "skills/apexlang/universal-attr-config/assets/translations.prompts.json"
     },
     {
+      "path": "assets/grammar/apexlang.ebnf",
+      "source": "ai-context/apexlang/grammar/apexlang.ebnf"
+    },
+    {
       "path": "assets/orchestration.manifest.json",
       "source": "skills/sqlcl/assets/orchestration.manifest.json"
     },
@@ -228,6 +271,10 @@
     {
       "path": "assets/rules-mapping.json",
       "source": "ai-context/memory-bank/rules-mapping.json"
+    },
+    {
+      "path": "assets/rules.catalog.json",
+      "source": "ai-context/memory-bank/rules.catalog.json"
     },
     {
       "path": "assets/validator-fix-recipes.json",
@@ -702,6 +749,14 @@
       "source": "skills/apexlang/references/workflow-create-app-from-fr-and-model.md"
     },
     {
+      "path": "runtime/grammar_contract.mjs",
+      "source": null
+    },
+    {
+      "path": "runtime/internal/python/format_apexlang.py",
+      "source": null
+    },
+    {
       "path": "runtime/internal/python/validate_apexlang.py",
       "source": null
     },
@@ -715,6 +770,10 @@
     },
     {
       "path": "runtime/internal/python/validator_common.py",
+      "source": null
+    },
+    {
+      "path": "runtime/lib/catalogs.mjs",
       "source": null
     },
     {
@@ -3250,11 +3309,19 @@
       "source": null
     },
     {
+      "path": "tools/query-valid-props-context.mjs",
+      "source": null
+    },
+    {
       "path": "tools/query-valid-props-normalize.mjs",
       "source": null
     },
     {
       "path": "tools/query-valid-props-runtime.mjs",
+      "source": null
+    },
+    {
+      "path": "tools/query-valid-props-semantics.mjs",
       "source": null
     },
     {

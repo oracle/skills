@@ -40,6 +40,23 @@ function readOption(args, name, fallback = "") {
   return args[index + 1];
 }
 
+function readPositiveIntegerOption(args, name, fallback) {
+  const index = args.indexOf(name);
+  const rawValue = index === -1 ? String(fallback) : args[index + 1];
+  if (typeof rawValue !== "string" || !/^[1-9]\d*$/.test(rawValue)) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  const value = Number(rawValue);
+  if (!Number.isSafeInteger(value)) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return value;
+}
+
+function readOptions(args, name) {
+  return args.flatMap((value, index) => value === name && index + 1 < args.length ? [args[index + 1]] : []);
+}
+
 function isPathInside(rootPath, targetPath) {
   const relative = path.relative(path.resolve(rootPath), path.resolve(targetPath));
   return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
@@ -151,8 +168,13 @@ function printUsage() {
   node tools/apexctl.mjs runtime validate --app-path <absolute_path> --db-connection-name <name> [--apex-root <path>] [--compiler-oracle-home <path>] [--execution-mode <auto|build-root|path>] [--workspaceid <id>] [--artifact-dir <path>] [--vscode-problems-path <path>] [--report-path <path>] [--transcript-path <path>]
   node tools/apexctl.mjs runtime roundtrip --app-path <path> --db-connection-name <name> [--import-intent <validate-only|validate-and-import>] [--execution-mode <auto|build-root|path>] [--target-resolution-mode <update-existing|create-new>] [--create-new-confirmed] [--workspaceid <id>] [--runtime-base-url <url>] [--runtime-page-url <url>] [--runtime-provider <auto|chrome-devtools-mcp|http-fallback>] [--page <id>] [--artifact-dir <path>] [--require-runtime-verification] [--skip-runtime-verification] [--supporting-objects] [--preflight-only] [--import-mode <auto|direct>] [--apex-root <path>] [--report-path <path>] [--transcript-path <path>]
   node tools/apexctl.mjs runtime predeploy --app-path <path> [--fix-vocab]
+  node tools/apexctl.mjs apexlang format --app-path <path> [--strict-structure]
   node tools/apexctl.mjs apexlang validate --app-path <path> [--fix-vocab]
+  node tools/apexctl.mjs apexlang grammar contract --components <name[,name...]> [--children <parent.child[,parent.child...]>] [--instance <parent.child[id].[group.]property=value>]... [--groups <name[,name...]>] [--when <component[.group].property=value>]... [--cache-dir <path>] [--no-cache]
+  node tools/apexctl.mjs apexlang grammar audit --artifact-path <path> --components <name[,name...]> [--children <parent.child[,parent.child...]>] [--instance <parent.child[id].[group.]property=value>]... [--groups <name[,name...]>] [--when <component[.group].property=value>]... [--cache-dir <path>] [--no-cache]
   node tools/apexctl.mjs apexlang compiler-truth audit --app-path <path> [--report-path <path>] [--compiler-oracle-home <path>] [--verify-component-attributes]
+  node tools/apexctl.mjs context resolve --intent <text> [--phase <draft|critique|revision>] [--max-bytes <count>] [--cache-path <path>] [--no-cache]
+  node tools/apexctl.mjs context repair [--problems <path>] [--rule-id <id[,id...]>] [--unit-id <id>] [--ir-pointer <pointer>] [--cache-path <path>] [--no-cache]
   node tools/apexctl.mjs diagnostics resolve-build-root --db-connection-name <name> [--apex-root <path>] [--report-path <path>]
 `);
 }
@@ -340,6 +362,25 @@ async function runApexlangValidation(packageRoot, runtimeRoot, appPath, { fixVoc
   return 0;
 }
 
+async function runApexlangFormat(runtimeRoot, appPath, strictStructure = false) {
+  if (!appPath) {
+    console.error("Missing required --app-path");
+    return 1;
+  }
+  const reportDir = path.join(process.env.APEXLANG_OUTPUT_ROOT, "logs");
+  await ensureDir(reportDir);
+  const result = spawnSync("python3", [
+    path.join(runtimeRoot, "internal", "python", "format_apexlang.py"),
+    appPath,
+    "--report-path",
+    path.join(reportDir, "apexlang-format-report.json"),
+    ...(strictStructure ? ["--strict-structure"] : [])
+  ], { cwd: process.cwd(), encoding: "utf8", env: process.env });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  return typeof result.status === "number" ? result.status : 1;
+}
+
 async function handleWorkspace(runtimeModule, args) {
   const intelligencePath = path.join(process.cwd(), "assets", "workspace-intelligence.json");
   const intelligence = (await readJsonIfPresent(intelligencePath)) ?? runtimeModule.DEFAULT_CONFIG;
@@ -457,8 +498,57 @@ async function handleDiagnostics(runtimeModule, args) {
   return result.code;
 }
 
+async function writeContextCapsule(runRoot, result, args, kind) {
+  if (parseFlag(args, "--no-cache")) {
+    return "";
+  }
+  const requestedPath = readOption(args, "--cache-path", "");
+  const cachePath = requestedPath
+    ? path.resolve(requestedPath)
+    : path.join(runRoot, "context-capsules", kind + "-" + result.fingerprint + ".json");
+  await ensureDir(path.dirname(cachePath));
+  await writeJson(cachePath, result.payload);
+  return cachePath;
+}
+
+async function handleContext(runRoot, args) {
+  const action = args[0];
+  try {
+    const { resolveContextCapsule, resolveRepairCapsule } = await import("../runtime/lib/catalogs.mjs");
+    if (action === "resolve") {
+      const maxBytes = readPositiveIntegerOption(args, "--max-bytes", 12000);
+      const result = await resolveContextCapsule({
+        intent: readOption(args, "--intent", ""),
+        phase: readOption(args, "--phase", "draft"),
+        maxBytes
+      });
+      const cachePath = await writeContextCapsule(runRoot, result, args, "context");
+      console.log(JSON.stringify({ ...result.payload, capsule_bytes: result.bytes, cache_path: cachePath }, null, 2));
+      return 0;
+    }
+    if (action === "repair") {
+      const problemsPath = readOption(args, "--problems", "");
+      const problems = problemsPath ? await readJson(path.resolve(problemsPath)) : null;
+      const result = await resolveRepairCapsule({
+        ruleIds: args.flatMap((value, index) => value === "--rule-id" && args[index + 1] ? [args[index + 1]] : []),
+        problems,
+        unitId: readOption(args, "--unit-id", ""),
+        irPointer: readOption(args, "--ir-pointer", "")
+      });
+      const cachePath = await writeContextCapsule(runRoot, result, args, "repair");
+      console.log(JSON.stringify({ ...result.payload, capsule_bytes: result.bytes, cache_path: cachePath }, null, 2));
+      return 0;
+    }
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    return 1;
+  }
+  printUsage();
+  return 1;
+}
+
 async function main() {
-  const { packageRoot, runtimeRoot, runtimeModule } = await prepareRuntimeEnvironment();
+  const { packageRoot, runtimeRoot, runRoot, runtimeModule } = await prepareRuntimeEnvironment();
   const args = process.argv.slice(2);
   const namespace = args[0];
   const rest = args.slice(1);
@@ -473,10 +563,63 @@ async function main() {
   if (namespace === "new-app" && rest[0] === "materialize") {
     return materializeNewApp(packageRoot, readOption(rest, "--app-path", ""), readOption(rest, "--workspace-name", ""));
   }
+  if (namespace === "apexlang" && rest[0] === "format") {
+    return runApexlangFormat(runtimeRoot, readOption(rest, "--app-path", ""), parseFlag(rest, "--strict-structure"));
+  }
   if (namespace === "apexlang" && rest[0] === "validate") {
     return runApexlangValidation(packageRoot, runtimeRoot, readOption(rest, "--app-path", ""), {
       fixVocab: parseFlag(rest, "--fix-vocab")
     });
+  }
+  if (namespace === "apexlang" && rest[0] === "grammar" && rest[1] === "contract") {
+    const components = readOption(rest, "--components", "");
+    if (!components.trim()) {
+      console.error("Missing required --components");
+      return 1;
+    }
+    const { buildGrammarContract } = await import(pathToFileURL(path.join(runtimeRoot, "grammar_contract.mjs")).href);
+    try {
+      const result = await buildGrammarContract({
+        components: [components],
+        children: [readOption(rest, "--children", "")],
+        instances: readOptions(rest, "--instance"),
+        groups: [readOption(rest, "--groups", "")],
+        conditions: readOptions(rest, "--when"),
+        cacheDir: readOption(rest, "--cache-dir", ""),
+        useCache: !parseFlag(rest, "--no-cache")
+      });
+      console.log(JSON.stringify({ ...result.contract, cache: { status: result.cacheStatus, path: result.cachePath } }, null, 2));
+      return 0;
+    } catch (error) {
+      console.error(`APEXLANG_GRAMMAR_CONTRACT_FAILED ${error.message}`);
+      return 1;
+    }
+  }
+  if (namespace === "apexlang" && rest[0] === "grammar" && rest[1] === "audit") {
+    const components = readOption(rest, "--components", "");
+    const artifactPath = readOption(rest, "--artifact-path", "");
+    if (!components.trim() || !artifactPath.trim()) {
+      console.error("Missing required --components or --artifact-path");
+      return 1;
+    }
+    const { auditGrammarContract, buildGrammarContract } = await import(pathToFileURL(path.join(runtimeRoot, "grammar_contract.mjs")).href);
+    try {
+      const { contract } = await buildGrammarContract({
+        components: [components],
+        children: [readOption(rest, "--children", "")],
+        instances: readOptions(rest, "--instance"),
+        groups: [readOption(rest, "--groups", "")],
+        conditions: readOptions(rest, "--when"),
+        cacheDir: readOption(rest, "--cache-dir", ""),
+        useCache: !parseFlag(rest, "--no-cache")
+      });
+      const audit = await auditGrammarContract({ contract, artifactPath });
+      console.log(JSON.stringify(audit, null, 2));
+      return audit.status === "passed" ? 0 : 1;
+    } catch (error) {
+      console.error(`APEXLANG_GRAMMAR_AUDIT_FAILED ${error.message}`);
+      return 1;
+    }
   }
   if (namespace === "apexlang" && rest[0] === "compiler-truth" && rest[1] === "audit") {
     const auditToolPath = path.join(packageRoot, "tools", "compiler-truth-audit.mjs");
@@ -503,6 +646,9 @@ async function main() {
   }
   if (namespace === "runtime") {
     return handleRuntime(packageRoot, runtimeModule, rest);
+  }
+  if (namespace === "context") {
+    return handleContext(runRoot, rest);
   }
   if (namespace === "diagnostics") {
     return handleDiagnostics(runtimeModule, rest);

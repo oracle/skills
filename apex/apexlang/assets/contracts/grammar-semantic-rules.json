@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Compact renderer requirements selected by grammar components and variant conditions.",
+  "rules": [
+    {
+      "id": "canonical-page-identity",
+      "match": { "components": ["page"] },
+      "level": "must",
+      "scope": "page-local",
+      "check": "canonical-page-identity",
+      "requirements": [
+        "Declare the numeric page id in both `page <id> (` and `page: <id>`.",
+        "For pNNNNN-<slug>.apx, set alias to the uppercase slug with hyphens preserved."
+      ]
+    },
+    {
+      "id": "normal-static-content-slot",
+      "match": { "conditions": ["page.pageMode=normal", "region.type=staticContent"] },
+      "level": "must",
+      "scope": "page-local",
+      "check": "normal-static-content-slot",
+      "requirements": [
+        "Place static-content regions in `layout.slot: body`; `contentBody` is for modal-dialog content."
+      ]
+    },
+    {
+      "id": "normal-page-breadcrumb-region",
+      "match": { "conditions": ["page.pageMode=normal"] },
+      "level": "must",
+      "scope": "page-local",
+      "check": "normal-page-breadcrumb-region",
+      "requirements": [
+        "Render a named `region breadcrumb (` block with `type: breadcrumb`, `source.breadcrumb: @breadcrumb`, and `layout.slot: breadcrumbBar`."
+      ]
+    },
+    {
+      "id": "normal-page-breadcrumb-entry",
+      "match": { "conditions": ["page.pageMode=normal"] },
+      "level": "must",
+      "scope": "app-local",
+      "check": "shared-breadcrumb-entry",
+      "requirements": [
+        "Add a shared breadcrumb entry whose pageNumber matches this non-modal page."
+      ]
+    },
+    {
+      "id": "normal-page-body-regions",
+      "match": { "components": ["region"], "conditions": ["page.pageMode=normal"] },
+      "level": "must",
+      "scope": "page-local",
+      "check": "normal-page-body-regions",
+      "requirements": [
+        "Place every non-breadcrumb region on a normal page in `layout.slot: body`; reserve `contentBody` for modal-dialog content."
+      ]
+    },
+    {
+      "id": "normal-page-template-decision",
+      "match": { "conditions": ["page.pageMode=normal"] },
+      "level": "decision",
+      "scope": "page-local",
+      "requirements": ["Do not invent page template references."],
+      "decisions": [
+        {
+          "when": "No special page layout is requested or selected.",
+          "use": "appearance.pageTemplate: @/standard"
+        },
+        {
+          "when": "A special page layout is requested.",
+          "use": "Its compiler- or contract-verified template; stop if unavailable."
+        }
+      ]
+    },
+    {
+      "id": "static-content-region",
+      "match": { "conditions": ["region.type=staticContent"] },
+      "level": "decision",
+      "scope": "page-local",
+      "requirements": [
+        "Use `source.text` for plain text or `source.htmlCode` only when HTML is requested; do not add SQL.",
+        "Do not invent region template references."
+      ],
+      "decisions": [
+        {
+          "when": "Ordinary body content with no special shell.",
+          "use": "appearance.template: @/standard"
+        },
+        {
+          "when": "A special shell or interaction pattern is requested.",
+          "use": "A compiler- or contract-verified region template; stop if unavailable."
+        }
+      ]
+    },
+    {
+      "id": "same-app-button-target",
+      "match": { "conditions": ["button.action=redirectThisApp"] },
+      "level": "must",
+      "scope": "page-local",
+      "check": "same-app-button-target",
+      "requirements": [
+        "Use an object-valued `behavior.target` property; scalar page numbers and f?p URL strings are invalid."
+      ],
+      "shape": "target: {\n  page: <task-page-number>\n  clearCache: <task-page-number-if-needed>\n}"
+    },
+    {
+      "id": "button-presentation-evidence",
+      "match": { "components": ["button"] },
+      "level": "decision",
+      "scope": "page-local",
+      "requirements": [
+        "Derive `layout.slot` from the verified parent region template; do not infer it from the region type alone.",
+        "Emit alignment, row/column flags, `hot`, icons, and template options only from explicit task intent or a selected construction contract.",
+        "Do not invent button template references or presentation choices."
+      ],
+      "decisions": [
+        {
+          "when": "Text-only button with no specialized template.",
+          "use": "appearance.buttonTemplate: @/text"
+        },
+        {
+          "when": "The task explicitly marks the button primary.",
+          "use": "appearance.hot: true"
+        },
+        {
+          "when": "The task requests an icon.",
+          "use": "Select @/text-with-icon or @/icon from label intent; do not guess."
+        },
+        {
+          "when": "Unsaved-change behavior is relevant.",
+          "use": "Apply workflow or app policy; do not force doNotCheck globally."
+        }
+      ]
+    }
+  ]
+}

@@ -14,8 +14,10 @@ from pathlib import Path
 from typing import Any, Callable
 
 from validator_common import (
+    APEXLANG_GRAMMAR_PATH,
     COMPONENT_ATTRIBUTES_PATH,
     LOG_ROOT,
+    PACKAGED_SKILL,
     ROOT,
     collect_targets,
     display_path,
@@ -99,6 +101,45 @@ IMAGE_UPLOAD_LEGACY_SOURCE_PROPERTIES = {
     "mimeTypeColumn",
     "filenameColumn",
     "blobLastUpdatedColumn",
+}
+FILE_UPLOAD_LEGACY_SETTINGS = {
+    "storageType",
+    "displayAs",
+    "allowMultipleFiles",
+    "fileTypes",
+    "maxFileSize",
+    "displayDownloadLink",
+    "downloadLinkText",
+    "contentDisposition",
+    "purgeFileAt",
+    "dropzoneTitle",
+    "dropzoneDescription",
+    "captureUsing",
+}
+FILE_UPLOAD_DISPLAY_PROPERTIES = {
+    "displayAs",
+    "dropzoneTitle",
+    "dropzoneDesc",
+    "allowCopyPaste",
+    "captureUsing",
+}
+FILE_UPLOAD_STORAGE_PROPERTIES = {
+    "type",
+    "allowMultipleFiles",
+    "fileTypes",
+    "maxFileSize",
+}
+FILE_UPLOAD_DISPLAY_AS_VALUES = {
+    "blockDropzone",
+    "inlineDropzone",
+    "nativeFileBrowse",
+}
+FILE_UPLOAD_CAPTURE_USING_VALUES = {
+    "selfieCamera",
+    "mainCamera",
+}
+FILE_UPLOAD_STORAGE_TYPE_VALUES = {
+    "appTempFiles",
 }
 ICON_LITERAL_PROPERTIES = {
     "icon",
@@ -192,6 +233,131 @@ class LintContext:
     cache: dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class ApexlangGrammarComponentContract:
+    """Grammar-derived component shape used for template syntax linting."""
+
+    keyword: str
+    rule_name: str
+    direct_properties: set[str] = field(default_factory=set)
+    group_properties: dict[str, set[str]] = field(default_factory=dict)
+
+
+@dataclass
+class ApexlangTemplateSnippet:
+    """One fenced apexlang snippet extracted from a Markdown template."""
+
+    text: str
+    offset: int
+
+
+@dataclass
+class ApexlangSnippetComponent:
+    """One component declaration found inside a fenced apexlang snippet."""
+
+    keyword: str
+    offset: int
+    text: str
+
+
+@dataclass
+class ApexlangAstProperty:
+    """One source-located APX property captured from a component or group."""
+
+    name: str
+    value: str
+    offset: int
+
+
+@dataclass
+class ApexlangAstComponent:
+    """One APX component node with enough context for semantic validation."""
+
+    keyword: str
+    identifier: str
+    start_offset: int
+    end_offset: int
+    text: str
+    parent: "ApexlangAstComponent | None" = None
+    children: list["ApexlangAstComponent"] = field(default_factory=list)
+    direct_properties: dict[str, ApexlangAstProperty] = field(default_factory=dict)
+    group_properties: dict[str, dict[str, ApexlangAstProperty]] = field(default_factory=dict)
+    compiler_record: dict[str, Any] | None = None
+
+
+_APEXLANG_GRAMMAR_CONTRACTS_CACHE: dict[str, list[ApexlangGrammarComponentContract]] | None = None
+APEXLANG_TEMPLATE_COMPONENT_SCHEMA_KEYWORDS = {
+    "componentSetting": ("sharedComponent", "componentSetting"),
+}
+APEXLANG_TEMPLATE_PAGE_ITEM_SCHEMA_ALIASES = {
+    "checkbox": "radioGroup",
+}
+APEXLANG_PAGE_ITEM_PLUGIN_ATTRIBUTE_GROUPS = {"settings", "search"}
+APEXLANG_FILE_UPLOAD_PLUGIN_ATTRIBUTE_GROUPS = {"display", "storage"}
+APEXLANG_TEMPLATE_FENCE_START_PATTERN = re.compile(r"(?i)^[ \t]{0,3}```apexlang[ \t]*$")
+APEXLANG_TEMPLATE_FENCE_END_PATTERN = re.compile(r"^[ \t]{0,3}```[ \t]*$")
+APEXLANG_COMPONENT_DECLARATION_PATTERN = re.compile(
+    r"^[ \t]*([A-Za-z][A-Za-z0-9]*)\b(?![ \t]*:).*?\([ \t]*(?://.*)?$"
+)
+APEXLANG_PROPERTY_LINE_PATTERN = re.compile(r"^[ \t]*([A-Za-z][A-Za-z0-9]*)[ \t]*:")
+APEXLANG_GROUP_BLOCK_LINE_PATTERN = re.compile(r"^[ \t]*([A-Za-z][A-Za-z0-9]*)[ \t]*\{[ \t]*(?://.*)?$")
+APEXLANG_GRAMMAR_COMPONENT_RULE_PATTERN = re.compile(
+    r'^"(?P<keyword>[A-Za-z][A-Za-z0-9]*)"\s+\[\s*<required-ws>\s+<component-id>\s*\].*"\("[^\n]*'
+)
+APEXLANG_GRAMMAR_GROUP_RULE_PATTERN = re.compile(
+    r'^<indent>\s+"(?P<group>[A-Za-z][A-Za-z0-9]*)"\s+<ws>\s+"\{"'
+)
+APEXLANG_GRAMMAR_PROPERTY_PATTERN = re.compile(r'"([A-Za-z][A-Za-z0-9]*)"\s+":"')
+APEXLANG_GRAMMAR_RULE_REF_PATTERN = re.compile(r"<([A-Za-z0-9-]+)>")
+APEXLANG_COMPONENT_DECLARATION_DETAIL_PATTERN = re.compile(
+    r"^[ \t]*([A-Za-z][A-Za-z0-9]*)\b(?![ \t]*:)(?:[ \t]+([A-Za-z0-9_$-]+))?.*?\([ \t]*(?://.*)?$"
+)
+APEXLANG_NATIVE_VALUE_ALIASES = {
+    "facetedSearch": "NATIVE_FACETED_SEARCH",
+    "smartFilters": "NATIVE_SMART_FILTERS",
+    "classicReport": "NATIVE_SQL_REPORT",
+    "interactiveReport": "NATIVE_IR",
+    "interactiveGrid": "NATIVE_IG",
+    "form": "NATIVE_FORM",
+    "map": "NATIVE_MAP",
+    "chart": "NATIVE_JET_CHART",
+    "checkboxGroup": "NATIVE_CHECKBOX",
+    "radioGroup": "NATIVE_RADIOGROUP",
+    "selectList": "NATIVE_SELECT_LIST",
+    "search": "NATIVE_SEARCH",
+    "range": "NATIVE_RANGE",
+    "displayOnly": "DISPLAY_ONLY",
+}
+NATIVE_TYPE_FEATURES = {
+    "NATIVE_IR": {"COLUMNS"},
+    "NATIVE_IG": {"COLUMNS"},
+    "NATIVE_CHECKBOX": {
+        "VISIBLE",
+        "LOV",
+        "FC_HAS_FEEDBACK",
+        "FC_SHOW_SELECTED_FIRST",
+        "FC_SHOW_MORE_COUNT",
+        "FC_FILTER_VALUES",
+        "FC_LOV_DISPLAY_NULL",
+    },
+    "NATIVE_RADIOGROUP": {
+        "VISIBLE",
+        "LOV",
+        "FC_HAS_FEEDBACK",
+        "FC_SHOW_SELECTED_FIRST",
+        "FC_SHOW_MORE_COUNT",
+        "FC_FILTER_VALUES",
+        "FC_LOV_DISPLAY_NULL",
+    },
+    "NATIVE_SELECT_LIST": {"VISIBLE", "LOV", "FC_HAS_FEEDBACK", "FC_FILTER_VALUES", "FC_LOV_DISPLAY_NULL"},
+    "NATIVE_RANGE": {"FC_HAS_FEEDBACK"},
+}
+REQUIRED_CHILD_CONTRACTS = {
+    ("region", "NATIVE_FACETED_SEARCH"): ("facet", "compiler metadata/export behavior: faceted-search regions require facet children"),
+    ("region", "NATIVE_SMART_FILTERS"): ("filter", "compiler metadata/export behavior: smart-filter regions require filter children"),
+}
+
+
 def load_schema() -> dict:
     """Load the validator schema and attach runtime compiler metadata when available."""
     try:
@@ -209,6 +375,479 @@ def load_schema() -> dict:
         data["_runtimeComponentMap"] = None
         data["_runtimeComponentMapSource"] = "component-attributes-only"
     return data
+
+
+def iter_line_spans(text: str) -> list[tuple[int, str]]:
+    """Return line offsets paired with line text, preserving line endings."""
+    offset = 0
+    spans: list[tuple[int, str]] = []
+    for line in text.splitlines(keepends=True):
+        spans.append((offset, line))
+        offset += len(line)
+    if text and not text.endswith(("\n", "\r")):
+        return spans
+    return spans
+
+
+def parse_ebnf_rules(grammar_text: str) -> dict[str, str]:
+    """Parse a simple EBNF file into rule-name to rule-body text."""
+    rules: dict[str, str] = {}
+    current_name = ""
+    current_lines: list[str] = []
+
+    for line in grammar_text.splitlines():
+        match = re.match(r"^<([^>]+)>\s*::=\s*(.*)$", line)
+        if match:
+            if current_name:
+                rules[current_name] = "\n".join(current_lines).strip()
+            current_name = match.group(1)
+            current_lines = [match.group(2)]
+            continue
+        if current_name:
+            current_lines.append(line)
+
+    if current_name:
+        rules[current_name] = "\n".join(current_lines).strip()
+
+    return rules
+
+
+def apexlang_grammar_property_names(rule_body: str) -> set[str]:
+    """Return property literals declared by a `*-property` grammar rule."""
+    return set(APEXLANG_GRAMMAR_PROPERTY_PATTERN.findall(rule_body))
+
+
+def apexlang_grammar_rule_refs(rule_body: str) -> list[str]:
+    """Return referenced grammar rule names in source order."""
+    return APEXLANG_GRAMMAR_RULE_REF_PATTERN.findall(rule_body)
+
+
+def build_apexlang_grammar_contracts_from_text(grammar_text: str) -> dict[str, list[ApexlangGrammarComponentContract]]:
+    """Build grammar-derived component contracts keyed by emitted component keyword."""
+    rules = parse_ebnf_rules(grammar_text)
+    contracts: dict[str, list[ApexlangGrammarComponentContract]] = {}
+
+    for rule_name, rule_body in rules.items():
+        component_match = APEXLANG_GRAMMAR_COMPONENT_RULE_PATTERN.match(rule_body)
+        if not component_match:
+            continue
+
+        keyword = component_match.group("keyword")
+        direct_properties = apexlang_grammar_property_names(rules.get(f"{rule_name}-direct-property", ""))
+        group_properties: dict[str, set[str]] = {}
+
+        for group_rule_name in apexlang_grammar_rule_refs(rules.get(f"{rule_name}-group-block", "")):
+            group_body = rules.get(group_rule_name, "")
+            group_match = APEXLANG_GRAMMAR_GROUP_RULE_PATTERN.match(group_body)
+            if not group_match:
+                continue
+            group_name = group_match.group("group")
+            property_rule_name = f"{group_rule_name}-property"
+            properties = apexlang_grammar_property_names(rules.get(property_rule_name, ""))
+            group_properties.setdefault(group_name, set()).update(properties)
+
+        contracts.setdefault(keyword, []).append(
+            ApexlangGrammarComponentContract(
+                keyword=keyword,
+                rule_name=rule_name,
+                direct_properties=direct_properties,
+                group_properties=group_properties,
+            )
+        )
+
+    return contracts
+
+
+def load_apexlang_grammar_contracts() -> dict[str, list[ApexlangGrammarComponentContract]]:
+    """Load and cache grammar-derived component contracts."""
+    global _APEXLANG_GRAMMAR_CONTRACTS_CACHE
+    if _APEXLANG_GRAMMAR_CONTRACTS_CACHE is not None:
+        return _APEXLANG_GRAMMAR_CONTRACTS_CACHE
+    if not APEXLANG_GRAMMAR_PATH.exists():
+        raise RuntimeError(f"APEXlang grammar file not found: {APEXLANG_GRAMMAR_PATH}")
+
+    grammar_text = APEXLANG_GRAMMAR_PATH.read_text(encoding="utf-8")
+    contracts = build_apexlang_grammar_contracts_from_text(grammar_text)
+    if not contracts:
+        raise RuntimeError(f"APEXlang grammar produced no component contracts: {APEXLANG_GRAMMAR_PATH}")
+    _APEXLANG_GRAMMAR_CONTRACTS_CACHE = contracts
+    return contracts
+
+
+def apexlang_template_direct_property_value(block: str, prop_name: str) -> str | None:
+    """Return a simple immediate direct property value from a component block."""
+    paren_depth = 0
+    brace_depth = 0
+    in_fence = False
+    for line_offset, line in apexlang_component_body_lines(block):
+        _ = line_offset
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if paren_depth == 0 and brace_depth == 0:
+            prop_match = APEXLANG_PROPERTY_LINE_PATTERN.match(line)
+            if prop_match and prop_match.group(1) == prop_name:
+                return line[prop_match.end() :].strip().strip('"')
+
+        if line_is_apexlang_component_declaration(line):
+            paren_depth += 1
+            continue
+        if re.match(r"^[ \t]*\)[ \t]*(?://.*)?$", line):
+            paren_depth = max(0, paren_depth - 1)
+            continue
+        paren_delta, brace_delta = structural_delta_for_line(line)
+        paren_depth = max(0, paren_depth + paren_delta)
+        brace_depth = max(0, brace_depth + brace_delta)
+    return None
+
+
+def apexlang_template_variant_key(component: ApexlangSnippetComponent) -> str | None:
+    """Infer a component variant from direct template properties."""
+    if component.keyword == "region":
+        region_type = apexlang_template_direct_property_value(component.text, "type")
+        if region_type == "themeTemplateComponent/metricCard":
+            return "metricCard"
+        if region_type == "themeTemplateComponent/contentRow":
+            return "contentRow"
+        return region_type
+    if component.keyword == "pageItem":
+        item_type = apexlang_template_direct_property_value(component.text, "type")
+        return APEXLANG_TEMPLATE_PAGE_ITEM_SCHEMA_ALIASES.get(item_type or "", item_type)
+    return None
+
+
+def apexlang_contract_from_schema_node(
+    keyword: str,
+    rule_name: str,
+    node: Any,
+    *,
+    include_direct_properties: bool,
+) -> ApexlangGrammarComponentContract | None:
+    """Build a validator contract from a curated component-attributes node."""
+    if not isinstance(node, dict):
+        return None
+
+    direct_properties = set()
+    if include_direct_properties:
+        direct_properties.update(str(prop) for prop in node.get("allowedProperties", []) if isinstance(prop, str))
+
+    group_properties: dict[str, set[str]] = {}
+    for group_name, group_node in node.items():
+        if not isinstance(group_node, dict):
+            continue
+        allowed = {str(prop) for prop in group_node.get("allowedProperties", []) if isinstance(prop, str)}
+        if allowed:
+            group_properties[group_name] = allowed
+
+    if not direct_properties and not group_properties:
+        return None
+    return ApexlangGrammarComponentContract(
+        keyword=keyword,
+        rule_name=rule_name,
+        direct_properties=direct_properties,
+        group_properties=group_properties,
+    )
+
+
+def apexlang_schema_contracts_for_component(
+    schema: dict[str, Any],
+    component: ApexlangSnippetComponent,
+) -> list[ApexlangGrammarComponentContract]:
+    """Return compiler-provenanced schema contracts applicable to a snippet component."""
+    components_schema = schema.get("components", {})
+    contracts: list[ApexlangGrammarComponentContract] = []
+
+    if component.keyword in APEXLANG_TEMPLATE_COMPONENT_SCHEMA_KEYWORDS:
+        container_name, variant_name = APEXLANG_TEMPLATE_COMPONENT_SCHEMA_KEYWORDS[component.keyword]
+        node = components_schema.get(container_name, {}).get(variant_name)
+        contract = apexlang_contract_from_schema_node(
+            component.keyword,
+            f"component-attributes:{container_name}.{variant_name}",
+            node,
+            include_direct_properties=True,
+        )
+        return [contract] if contract else []
+
+    variant_key = apexlang_template_variant_key(component)
+    if not variant_key:
+        return contracts
+
+    node = components_schema.get(component.keyword, {}).get(variant_key)
+    contract = apexlang_contract_from_schema_node(
+        component.keyword,
+        f"component-attributes:{component.keyword}.{variant_key}",
+        node,
+        include_direct_properties=False,
+    )
+    if contract:
+        contracts.append(contract)
+    return contracts
+
+
+def apexlang_is_page_item_plugin_attribute_group(component: ApexlangSnippetComponent, group_name: str) -> bool:
+    """Return true for native item plugin attribute groups not enumerated by the generic EBNF snapshot."""
+    if component.keyword != "pageItem":
+        return False
+    item_type = apexlang_template_direct_property_value(component.text, "type")
+    if item_type == "fileUpload" and group_name in APEXLANG_FILE_UPLOAD_PLUGIN_ATTRIBUTE_GROUPS:
+        return True
+    return group_name in APEXLANG_PAGE_ITEM_PLUGIN_ATTRIBUTE_GROUPS
+
+
+def extract_apexlang_fenced_examples(markdown: str) -> list[ApexlangTemplateSnippet]:
+    """Extract only Markdown fences explicitly labeled `apexlang`."""
+    snippets: list[ApexlangTemplateSnippet] = []
+    lines = iter_line_spans(markdown)
+    idx = 0
+    while idx < len(lines):
+        line_offset, line = lines[idx]
+        if not APEXLANG_TEMPLATE_FENCE_START_PATTERN.match(line.rstrip("\r\n")):
+            idx += 1
+            continue
+
+        content_start = line_offset + len(line)
+        idx += 1
+        while idx < len(lines):
+            close_offset, close_line = lines[idx]
+            if APEXLANG_TEMPLATE_FENCE_END_PATTERN.match(close_line.rstrip("\r\n")):
+                snippets.append(ApexlangTemplateSnippet(markdown[content_start:close_offset], content_start))
+                break
+            idx += 1
+        idx += 1
+
+    return snippets
+
+
+def line_is_apexlang_component_declaration(line: str) -> re.Match[str] | None:
+    """Return a match for a line-oriented component declaration."""
+    return APEXLANG_COMPONENT_DECLARATION_PATTERN.match(line.rstrip("\r\n"))
+
+
+def structural_delta_for_line(line: str) -> tuple[int, int]:
+    """Return parenthesis and brace deltas outside strings and template placeholders."""
+    cleaned = re.sub(r"\{\{.*?\}\}", "", line)
+    paren_delta = 0
+    brace_delta = 0
+    in_string = False
+    idx = 0
+
+    while idx < len(cleaned):
+        ch = cleaned[idx]
+        if ch == '"' and (idx == 0 or cleaned[idx - 1] != "\\"):
+            in_string = not in_string
+            idx += 1
+            continue
+        if in_string:
+            idx += 1
+            continue
+        if ch == "(":
+            paren_delta += 1
+        elif ch == ")":
+            paren_delta -= 1
+        elif ch == "{":
+            brace_delta += 1
+        elif ch == "}":
+            brace_delta -= 1
+        idx += 1
+
+    return paren_delta, brace_delta
+
+
+def find_apexlang_component_end_line(lines: list[tuple[int, str]], start_line_index: int) -> int:
+    """Find the line index where a component declaration closes."""
+    depth = 0
+    in_fence = False
+
+    for idx in range(start_line_index, len(lines)):
+        _offset, line = lines[idx]
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        if line_is_apexlang_component_declaration(line):
+            depth += 1
+        elif re.match(r"^[ \t]*\)[ \t]*(?://.*)?$", line):
+            depth -= 1
+            if depth <= 0:
+                return idx
+
+    return start_line_index
+
+
+def find_apexlang_snippet_components(snippet_text: str) -> list[ApexlangSnippetComponent]:
+    """Find component declarations in a fenced apexlang snippet."""
+    components: list[ApexlangSnippetComponent] = []
+    lines = iter_line_spans(snippet_text)
+    in_fence = False
+
+    for idx, (line_offset, line) in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        match = line_is_apexlang_component_declaration(line)
+        if not match:
+            continue
+        end_idx = find_apexlang_component_end_line(lines, idx)
+        end_offset, end_line = lines[end_idx]
+        components.append(
+            ApexlangSnippetComponent(
+                keyword=match.group(1),
+                offset=line_offset,
+                text=snippet_text[line_offset : end_offset + len(end_line)],
+            )
+        )
+
+    return components
+
+
+def apexlang_component_body_lines(block: str) -> list[tuple[int, str]]:
+    """Return component body lines after the declaration line."""
+    lines = iter_line_spans(block)
+    if len(lines) <= 1:
+        return []
+    return lines[1:]
+
+
+def extract_apexlang_immediate_direct_properties(block: str) -> list[tuple[str, int]]:
+    """Extract immediate direct property names from a component block."""
+    props: list[tuple[str, int]] = []
+    paren_depth = 0
+    brace_depth = 0
+    in_fence = False
+
+    for line_offset, line in apexlang_component_body_lines(block):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        if paren_depth == 0 and brace_depth == 0:
+            prop_match = APEXLANG_PROPERTY_LINE_PATTERN.match(line)
+            if prop_match:
+                props.append((prop_match.group(1), line_offset + prop_match.start(1)))
+
+        if line_is_apexlang_component_declaration(line):
+            paren_depth += 1
+            continue
+        if re.match(r"^[ \t]*\)[ \t]*(?://.*)?$", line):
+            paren_depth = max(0, paren_depth - 1)
+            continue
+
+        paren_delta, brace_delta = structural_delta_for_line(line)
+        paren_depth = max(0, paren_depth + paren_delta)
+        brace_depth = max(0, brace_depth + brace_delta)
+
+    return props
+
+
+def find_apexlang_group_block_end_line(lines: list[tuple[int, str]], start_line_index: int) -> int:
+    """Find the line index where a named brace group closes."""
+    brace_depth = 0
+    in_fence = False
+
+    for idx in range(start_line_index, len(lines)):
+        _offset, line = lines[idx]
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        _paren_delta, brace_delta = structural_delta_for_line(line)
+        brace_depth += brace_delta
+        if brace_depth <= 0 and idx > start_line_index:
+            return idx
+
+    return start_line_index
+
+
+def extract_apexlang_immediate_group_blocks(block: str) -> list[tuple[str, int, str]]:
+    """Extract immediate named brace groups from a component block."""
+    groups: list[tuple[str, int, str]] = []
+    lines = apexlang_component_body_lines(block)
+    paren_depth = 0
+    brace_depth = 0
+    in_fence = False
+
+    for idx, (line_offset, line) in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        if paren_depth == 0 and brace_depth == 0:
+            group_match = APEXLANG_GROUP_BLOCK_LINE_PATTERN.match(line)
+            if group_match:
+                end_idx = find_apexlang_group_block_end_line(lines, idx)
+                end_offset, end_line = lines[end_idx]
+                groups.append((group_match.group(1), line_offset, block[line_offset : end_offset + len(end_line)]))
+
+        if line_is_apexlang_component_declaration(line):
+            paren_depth += 1
+            continue
+        if re.match(r"^[ \t]*\)[ \t]*(?://.*)?$", line):
+            paren_depth = max(0, paren_depth - 1)
+            continue
+
+        paren_delta, brace_delta = structural_delta_for_line(line)
+        paren_depth = max(0, paren_depth + paren_delta)
+        brace_depth = max(0, brace_depth + brace_delta)
+
+    return groups
+
+
+def extract_apexlang_immediate_group_properties(group_block: str) -> list[tuple[str, int]]:
+    """Extract immediate property names from a named brace group."""
+    props: list[tuple[str, int]] = []
+    lines = iter_line_spans(group_block)
+    paren_depth = 0
+    brace_depth = 0
+    in_fence = False
+
+    for idx, (line_offset, line) in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if idx == 0:
+            _paren_delta, brace_delta = structural_delta_for_line(line)
+            brace_depth = max(0, brace_depth + brace_delta - 1)
+            continue
+
+        if paren_depth == 0 and brace_depth == 0:
+            prop_match = APEXLANG_PROPERTY_LINE_PATTERN.match(line)
+            if prop_match:
+                props.append((prop_match.group(1), line_offset + prop_match.start(1)))
+
+        if line_is_apexlang_component_declaration(line):
+            paren_depth += 1
+            continue
+        if re.match(r"^[ \t]*\)[ \t]*(?://.*)?$", line):
+            paren_depth = max(0, paren_depth - 1)
+            continue
+
+        paren_delta, brace_delta = structural_delta_for_line(line)
+        paren_depth = max(0, paren_depth + paren_delta)
+        brace_depth = max(0, brace_depth + brace_delta)
+
+    return props
 
 
 def find_component_blocks(text: str, keyword: str) -> list[tuple[int, str, str]]:
@@ -3035,6 +3674,342 @@ def clean_scalar_value(value: str) -> str:
     return cleaned.strip()
 
 
+def normalize_semantic_value(value: str) -> str:
+    """Normalize APX-friendly values to compiler-native values for semantic checks."""
+    cleaned = clean_scalar_value(value)
+    return APEXLANG_NATIVE_VALUE_ALIASES.get(cleaned, cleaned)
+
+
+def apx_ast_component_label(node: ApexlangAstComponent) -> str:
+    """Render a concise component label for diagnostics."""
+    return f"{node.keyword} \"{node.identifier}\"" if node.identifier else node.keyword
+
+
+def parse_apx_component_tree(text: str) -> list[ApexlangAstComponent]:
+    """Parse APX component declarations into a source-offset component tree."""
+    lines = iter_line_spans(text)
+    nodes: list[ApexlangAstComponent] = []
+    for idx, (line_offset, line) in enumerate(lines):
+        match = APEXLANG_COMPONENT_DECLARATION_DETAIL_PATTERN.match(line.rstrip("\r\n"))
+        if not match:
+            continue
+        end_idx = find_apexlang_component_end_line(lines, idx)
+        end_offset, end_line = lines[end_idx]
+        nodes.append(
+            ApexlangAstComponent(
+                keyword=match.group(1),
+                identifier=match.group(2) or "",
+                start_offset=line_offset,
+                end_offset=end_offset + len(end_line),
+                text=text[line_offset : end_offset + len(end_line)],
+            )
+        )
+
+    nodes.sort(key=lambda node: (node.start_offset, -(node.end_offset - node.start_offset)))
+    roots: list[ApexlangAstComponent] = []
+    stack: list[ApexlangAstComponent] = []
+    for node in nodes:
+        while stack and not (stack[-1].start_offset < node.start_offset and stack[-1].end_offset >= node.end_offset):
+            stack.pop()
+        if stack:
+            node.parent = stack[-1]
+            stack[-1].children.append(node)
+        else:
+            roots.append(node)
+        stack.append(node)
+
+    for node in nodes:
+        node.direct_properties = {
+            prop_name: ApexlangAstProperty(
+                name=prop_name,
+                value=prop_value,
+                offset=node.start_offset + prop_offset,
+            )
+            for prop_name, prop_value, prop_offset in extract_immediate_property_values(node.text)
+        }
+        for group_name, (group_offset, group_block) in extract_top_level_blocks(node.text).items():
+            node.group_properties[group_name] = {
+                prop_name: ApexlangAstProperty(
+                    name=prop_name,
+                    value=prop_value,
+                    offset=node.start_offset + group_offset + prop_offset,
+                )
+                for prop_name, prop_value, prop_offset in extract_immediate_brace_property_values(group_block)
+            }
+    return roots
+
+
+def walk_apx_ast(nodes: list[ApexlangAstComponent]) -> list[ApexlangAstComponent]:
+    """Return APX AST nodes in preorder."""
+    result: list[ApexlangAstComponent] = []
+
+    def walk(node: ApexlangAstComponent) -> None:
+        result.append(node)
+        for child in node.children:
+            walk(child)
+
+    for root in nodes:
+        walk(root)
+    return result
+
+
+def runtime_component_records(runtime_component_map: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return normalized runtime component records from the compiler map."""
+    records = runtime_component_map.get("componentTypes")
+    return records if isinstance(records, list) else []
+
+
+def apx_component_property_values(node: ApexlangAstComponent) -> dict[str, str]:
+    """Return normalized semantic property values for one component."""
+    values: dict[str, str] = {}
+    for prop in node.direct_properties.values():
+        values[prop.name] = normalize_semantic_value(prop.value)
+    for group_props in node.group_properties.values():
+        for prop in group_props.values():
+            values.setdefault(prop.name, normalize_semantic_value(prop.value))
+    return values
+
+
+def condition_value(condition: dict[str, Any], values: dict[str, str]) -> tuple[str, str | None]:
+    """Resolve a metadata condition property against normalized source values."""
+    property_name = str(condition.get("propertyName") or "")
+    property_id = str(condition.get("propertyId") or "")
+    if property_id and property_id in values:
+        return "known", values[property_id]
+    if property_name and property_name in values:
+        return "known", values[property_name]
+    return "unknown", None
+
+
+def evaluate_metadata_leaf(condition: dict[str, Any], values: dict[str, str]) -> str:
+    """Evaluate one compiler metadata condition leaf against semantic values."""
+    state, actual_value = condition_value(condition, values)
+    if state != "known" or actual_value is None:
+        return "unknown"
+    actual = normalize_semantic_value(actual_value)
+    expected = normalize_semantic_value(str(condition.get("value", "")))
+    expected_values = [normalize_semantic_value(str(value)) for value in condition.get("values") or []]
+    condition_type = condition.get("type")
+    if condition_type == "EQUALS":
+        return "true" if actual == expected else "false"
+    if condition_type == "NOT_EQUALS":
+        return "false" if actual == expected else "true"
+    if condition_type == "IN_LIST":
+        return "true" if actual in expected_values else "false"
+    if condition_type == "NOT_IN_LIST":
+        return "false" if actual in expected_values else "true"
+    if condition_type == "NOT_NULL":
+        return "true" if actual else "false"
+    if condition_type == "NULL":
+        return "false" if actual else "true"
+    if condition_type == "STARTS_WITH":
+        return "true" if actual.startswith(expected) else "false"
+    if condition_type == "STARTS_WITH_ANY":
+        return "true" if any(actual.startswith(value) for value in expected_values) else "false"
+    if condition_type == "FEATURES":
+        features = NATIVE_TYPE_FEATURES.get(actual)
+        if features is None:
+            return "unknown"
+        return "true" if all(value in features for value in expected_values) else "false"
+    return "unknown"
+
+
+def combine_metadata_states(operator: str, states: list[str]) -> str:
+    """Combine metadata condition states using compiler condition operators."""
+    if operator == "AND":
+        if "false" in states:
+            return "false"
+        if states and all(state == "true" for state in states):
+            return "true"
+        return "unknown"
+    if operator == "OR":
+        if "true" in states:
+            return "true"
+        if states and all(state == "false" for state in states):
+            return "false"
+        return "unknown"
+    return "unknown"
+
+
+def evaluate_metadata_condition(condition: Any, values: dict[str, str]) -> str:
+    """Evaluate compiler metadata dependsOn/parentDependsOn conditions."""
+    if not isinstance(condition, dict):
+        return "true"
+    nested = condition.get("conditions")
+    if isinstance(nested, list):
+        return combine_metadata_states(
+            str(condition.get("operator") or "AND"),
+            [evaluate_metadata_condition(child, values) for child in nested],
+        )
+    return evaluate_metadata_leaf(condition, values)
+
+
+def filter_records_by_condition(records: list[dict[str, Any]], values: dict[str, str], condition_key: str) -> list[dict[str, Any]]:
+    """Apply condition filtering, preferring known-true matches over unknown matches."""
+    evaluated: list[tuple[dict[str, Any], str]] = []
+    for record in records:
+        condition = record.get(condition_key)
+        if not condition:
+            evaluated.append((record, "unconditional"))
+        else:
+            evaluated.append((record, evaluate_metadata_condition(condition, values)))
+    true_matches = [record for record, state in evaluated if state == "true"]
+    if true_matches:
+        return true_matches
+    return [record for record, state in evaluated if state != "false"]
+
+
+def resolve_apx_component_record(
+    node: ApexlangAstComponent,
+    runtime_component_map: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
+    """Resolve an APX component node to exactly one compiler component record."""
+    candidates = [
+        record
+        for record in runtime_component_records(runtime_component_map)
+        if isinstance(record, dict) and record.get("singular") == node.keyword
+    ]
+    if node.parent:
+        parent_singular = (
+            str(node.parent.compiler_record.get("singular"))
+            if isinstance(node.parent.compiler_record, dict)
+            else node.parent.keyword
+        )
+        candidates = [record for record in candidates if record.get("parentComponentType") == parent_singular]
+        candidates = filter_records_by_condition(candidates, apx_component_property_values(node.parent), "parentDependsOn")
+    elif len(candidates) > 1:
+        candidates = [record for record in candidates if not record.get("parentComponentType")]
+
+    if len(candidates) == 1:
+        return candidates[0], None
+    if not candidates:
+        return None, "none"
+    return None, "ambiguous"
+
+
+def compiler_property_candidates(
+    record: dict[str, Any],
+    group_name: str | None,
+    property_name: str,
+) -> list[dict[str, Any]]:
+    """Return compiler property records for a property name in component or group scope."""
+    if group_name:
+        groups = record.get("groups")
+        group_props = groups.get(group_name) if isinstance(groups, dict) else None
+        return [
+            prop
+            for prop in (group_props if isinstance(group_props, list) else [])
+            if isinstance(prop, dict) and prop.get("propertyName") == property_name
+        ]
+    props = record.get("properties")
+    return [
+        prop
+        for prop in (props if isinstance(props, list) else [])
+        if isinstance(prop, dict) and prop.get("propertyName") == property_name
+    ]
+
+
+def expected_child_keyword(node: ApexlangAstComponent) -> tuple[str, str] | None:
+    """Return provenance-tagged required child keyword for known compiler child contracts."""
+    native_type = apx_component_property_values(node).get("type", "")
+    return REQUIRED_CHILD_CONTRACTS.get((node.keyword, native_type))
+
+
+def lint_semantic_component_tree(ctx: LintContext) -> list[str]:
+    """Validate APX components through compiler metadata instead of BNF semantics."""
+    runtime_component_map = ctx.runtime_component_map
+    if not isinstance(runtime_component_map, dict):
+        return []
+    issues: list[str] = []
+    roots = parse_apx_component_tree(ctx.text)
+    for node in walk_apx_ast(roots):
+        record, failure = resolve_apx_component_record(node, runtime_component_map)
+        node.compiler_record = record
+        semantic_child_scope = bool(
+            node.parent
+            and node.parent.keyword == "region"
+            and node.keyword in {"filter", "facet"}
+        )
+        if record is None:
+            if not semantic_child_scope:
+                continue
+            if failure == "ambiguous":
+                issues.append(
+                    f"{display_path(ctx.path)}:{line_no(ctx.text, node.start_offset)}: "
+                    f"APEXLANG_AMBIGUOUS_COMPONENT_001 ambiguous component {apx_component_property_values(node)} "
+                    f"for {apx_ast_component_label(node)}; add parent/type context so compiler metadata resolves exactly one record"
+                )
+                continue
+            if node.parent:
+                parent_type = node.parent.direct_properties.get("type")
+                parent_type_value = clean_scalar_value(parent_type.value) if parent_type else "<missing>"
+                parent_native_type = normalize_semantic_value(parent_type_value)
+                expected = expected_child_keyword(node.parent)
+                expected_text = f"; {node.parent.keyword}.type = {parent_type_value} requires child \"{expected[0]}\"" if expected else ""
+                issues.append(
+                    f"{display_path(ctx.path)}:{line_no(ctx.text, node.start_offset)}: "
+                    "APEXLANG_INVALID_CHILD_COMPONENT_001 "
+                    f"Invalid child component \"{node.keyword}\" under {apx_ast_component_label(node.parent)}. "
+                    f"parent type: {parent_type_value} / {parent_native_type}{expected_text}"
+                )
+            else:
+                issues.append(
+                    f"{display_path(ctx.path)}:{line_no(ctx.text, node.start_offset)}: "
+                    f"APEXLANG_UNKNOWN_COMPONENT_001 compiler metadata has no component record for {apx_ast_component_label(node)}"
+                )
+            continue
+
+        values = apx_component_property_values(node)
+        if semantic_child_scope:
+            for prop in node.direct_properties.values():
+                candidates = compiler_property_candidates(record, None, prop.name)
+                if not candidates:
+                    issues.append(
+                        f"{display_path(ctx.path)}:{line_no(ctx.text, prop.offset)}: "
+                        f"APEXLANG_SEMANTIC_PROPERTY_UNKNOWN_001 {apx_ast_component_label(node)} property '{prop.name}' "
+                        f"is not present in compiler metadata componentTypeId {record.get('componentTypeId')}"
+                    )
+                    continue
+                active = filter_records_by_condition(candidates, values, "dependsOn")
+                if not active:
+                    issues.append(
+                        f"{display_path(ctx.path)}:{line_no(ctx.text, prop.offset)}: "
+                        f"APEXLANG_INACTIVE_PROPERTY_001 {apx_ast_component_label(node)} property '{prop.name}' "
+                        "exists in compiler metadata but is inactive under current component properties"
+                    )
+            for group_name, group_props in node.group_properties.items():
+                for prop in group_props.values():
+                    candidates = compiler_property_candidates(record, group_name, prop.name)
+                    if not candidates:
+                        issues.append(
+                            f"{display_path(ctx.path)}:{line_no(ctx.text, prop.offset)}: "
+                            f"APEXLANG_SEMANTIC_PROPERTY_UNKNOWN_001 {apx_ast_component_label(node)} group '{group_name}' "
+                            f"property '{prop.name}' is not present in compiler metadata componentTypeId {record.get('componentTypeId')}"
+                        )
+                        continue
+                    active = filter_records_by_condition(candidates, values, "dependsOn")
+                    if not active:
+                        issues.append(
+                            f"{display_path(ctx.path)}:{line_no(ctx.text, prop.offset)}: "
+                            f"APEXLANG_INACTIVE_PROPERTY_001 {apx_ast_component_label(node)} group '{group_name}' property '{prop.name}' "
+                            "exists in compiler metadata but is inactive under current component properties"
+                        )
+
+        required_child = expected_child_keyword(node)
+        if required_child:
+            required_keyword, provenance = required_child
+            if not any(child.keyword == required_keyword for child in node.children):
+                type_prop = node.direct_properties.get("type")
+                type_value = clean_scalar_value(type_prop.value) if type_prop else "<missing>"
+                issues.append(
+                    f"{display_path(ctx.path)}:{line_no(ctx.text, node.start_offset)}: "
+                    f"APEXLANG_REQUIRED_CHILD_COMPONENT_001 {apx_ast_component_label(node)} type {type_value} "
+                    f"requires at least one child \"{required_keyword}\" ({provenance})"
+                )
+
+    return issues
+
+
 def extract_fenced_property_body(block: str, prop_name: str) -> str | None:
     """Return the fenced body for a multiline property such as sqlQuery:."""
     pattern = re.compile(
@@ -3296,7 +4271,7 @@ def extract_select_expression_identifier(expression: str) -> str | None:
     if not expr:
         return None
 
-    alias_match = re.search(r'(?is)\bas\s+("?[A-Za-z][A-Za-z0-9_$#]*"?)\s*$', expr)
+    alias_match = re.search(r'(?is)\bas\s+("(?:[^"]+)"|[A-Za-z][A-Za-z0-9_$#]*)\s*$', expr)
     if alias_match:
         return alias_match.group(1)
 
@@ -5729,6 +6704,141 @@ def lint_image_upload_legacy_properties(path: Path, text: str) -> list[str]:
                     f"IMAGE_UPLOAD_LEGACY_PROPERTY_FORBIDDEN_001 {component_label} must not emit stale source."
                     f"{prop_name}"
                 )
+        for block_name in ("display", "storage"):
+            block_meta = top_level_blocks.get(block_name)
+            if not block_meta:
+                continue
+            block_offset, _block = block_meta
+            issues.append(
+                f"{display_path(path)}:{line_no(text, item_start + block_offset)}: "
+                f"IMAGE_UPLOAD_LEGACY_PROPERTY_FORBIDDEN_001 {component_label} must not emit file-upload "
+                f"{block_name} block"
+            )
+    return issues
+
+
+def lint_file_upload_display_storage_contract(path: Path, text: str) -> list[str]:
+    """Validate the compiler/export-proven grouped file-upload attribute shape."""
+    issues: list[str] = []
+
+    for item_start, item_name, item_block in find_component_blocks(text, "pageItem"):
+        if extract_item_type(item_block) != "fileUpload":
+            continue
+
+        component_label = f"pageItem '{item_name}' type 'fileUpload'"
+        top_level_blocks = extract_top_level_blocks(item_block)
+        settings_meta = top_level_blocks.get("settings")
+        if settings_meta:
+            settings_offset, settings_block = settings_meta
+            settings_props = extract_immediate_brace_property_values(settings_block)
+            if not settings_props:
+                issues.append(
+                    f"{display_path(path)}:{line_no(text, item_start + settings_offset)}: "
+                    f"FILE_UPLOAD_LEGACY_SETTINGS_FORBIDDEN_001 {component_label} must use display/storage "
+                    "grouped properties instead of settings"
+                )
+            for prop_name, _prop_value, prop_offset in settings_props:
+                rule_id = (
+                    "FILE_UPLOAD_LEGACY_SETTINGS_FORBIDDEN_001"
+                    if prop_name in FILE_UPLOAD_LEGACY_SETTINGS
+                    else "FILE_UPLOAD_SETTINGS_BLOCK_FORBIDDEN_001"
+                )
+                issues.append(
+                    f"{display_path(path)}:{line_no(text, item_start + settings_offset + prop_offset)}: "
+                    f"{rule_id} {component_label} must use display/storage "
+                    f"grouped properties instead of settings.{prop_name}"
+                )
+
+        display_meta = top_level_blocks.get("display")
+        if not display_meta:
+            issues.append(
+                f"{display_path(path)}:{line_no(text, item_start)}: "
+                f"FILE_UPLOAD_DISPLAY_MODE_REQUIRED_001 {component_label} must explicitly define "
+                "display.displayAs; use blockDropzone when the user does not request another supported mode"
+            )
+        else:
+            display_offset, display_block = display_meta
+            display_properties = extract_immediate_brace_property_values(display_block)
+            display_property_names = {prop_name for prop_name, _value, _offset in display_properties}
+            if "displayAs" not in display_property_names:
+                issues.append(
+                    f"{display_path(path)}:{line_no(text, item_start + display_offset)}: "
+                    f"FILE_UPLOAD_DISPLAY_MODE_REQUIRED_001 {component_label} must explicitly define "
+                    "display.displayAs; use blockDropzone when the user does not request another supported mode"
+                )
+            display_mode = next(
+                (clean_scalar_value(prop_value) for prop_name, prop_value, _offset in display_properties
+                 if prop_name == "displayAs"),
+                "",
+            )
+            for prop_name, prop_value, prop_offset in display_properties:
+                cleaned_value = clean_scalar_value(prop_value)
+                if prop_name not in FILE_UPLOAD_DISPLAY_PROPERTIES:
+                    issues.append(
+                        f"{display_path(path)}:{line_no(text, item_start + display_offset + prop_offset)}: "
+                        f"FILE_UPLOAD_DISPLAY_PROPERTY_FORBIDDEN_001 {component_label} display.{prop_name} "
+                        "is not in the proven file-upload display contract"
+                    )
+                    continue
+                if "{{" in cleaned_value and "}}" in cleaned_value:
+                    continue
+                if prop_name == "displayAs" and cleaned_value not in FILE_UPLOAD_DISPLAY_AS_VALUES:
+                    allowed = ", ".join(sorted(FILE_UPLOAD_DISPLAY_AS_VALUES))
+                    issues.append(
+                        f"{display_path(path)}:{line_no(text, item_start + display_offset + prop_offset)}: "
+                        f"FILE_UPLOAD_DISPLAY_AS_VALUE_001 {component_label} display.displayAs must be one of "
+                        f"{allowed}; omit displayAs for the default blockDropzone UI"
+                    )
+                if prop_name == "captureUsing" and cleaned_value not in FILE_UPLOAD_CAPTURE_USING_VALUES:
+                    allowed = ", ".join(sorted(FILE_UPLOAD_CAPTURE_USING_VALUES))
+                    issues.append(
+                        f"{display_path(path)}:{line_no(text, item_start + display_offset + prop_offset)}: "
+                        f"FILE_UPLOAD_CAPTURE_USING_VALUE_001 {component_label} display.captureUsing must be "
+                        f"one of {allowed}; omit captureUsing when no capture source is required"
+                    )
+            if display_mode in {"blockDropzone", "inlineDropzone"}:
+                for required_property in ("dropzoneTitle", "dropzoneDesc"):
+                    if required_property not in display_property_names:
+                        issues.append(
+                            f"{display_path(path)}:{line_no(text, item_start + display_offset)}: "
+                            f"FILE_UPLOAD_DROPZONE_COPY_REQUIRED_001 {component_label} display.{required_property} "
+                            f"is required for {display_mode}; use a user-specific value or the default fallback copy"
+                        )
+
+        storage_meta = top_level_blocks.get("storage")
+        if storage_meta:
+            storage_offset, storage_block = storage_meta
+            for prop_name, prop_value, prop_offset in extract_immediate_brace_property_values(storage_block):
+                cleaned_value = clean_scalar_value(prop_value)
+                if prop_name not in FILE_UPLOAD_STORAGE_PROPERTIES:
+                    issues.append(
+                        f"{display_path(path)}:{line_no(text, item_start + storage_offset + prop_offset)}: "
+                        f"FILE_UPLOAD_STORAGE_PROPERTY_FORBIDDEN_001 {component_label} storage.{prop_name} "
+                        "is not in the proven file-upload storage contract"
+                    )
+                    continue
+                if "{{" in cleaned_value and "}}" in cleaned_value:
+                    continue
+                if prop_name == "type" and cleaned_value not in FILE_UPLOAD_STORAGE_TYPE_VALUES:
+                    allowed = ", ".join(sorted(FILE_UPLOAD_STORAGE_TYPE_VALUES))
+                    issues.append(
+                        f"{display_path(path)}:{line_no(text, item_start + storage_offset + prop_offset)}: "
+                        f"FILE_UPLOAD_STORAGE_TYPE_VALUE_001 {component_label} storage.type must be one of {allowed}"
+                    )
+                if prop_name == "fileTypes" and ("[" in cleaned_value or "]" in cleaned_value):
+                    issues.append(
+                        f"{display_path(path)}:{line_no(text, item_start + storage_offset + prop_offset)}: "
+                        f"FILE_UPLOAD_FILE_TYPES_TEXT_REQUIRED_001 {component_label} storage.fileTypes must be a "
+                        "free-form comma-delimited text scalar such as image/png,video/*"
+                    )
+                if prop_name == "maxFileSize":
+                    if not re.fullmatch(r"[1-9][0-9]*", cleaned_value):
+                        issues.append(
+                            f"{display_path(path)}:{line_no(text, item_start + storage_offset + prop_offset)}: "
+                            f"FILE_UPLOAD_MAX_FILE_SIZE_KB_REQUIRED_001 {component_label} storage.maxFileSize must "
+                            "be a positive integer number of KB"
+                        )
+
     return issues
 
 
@@ -9060,14 +10170,14 @@ def lint_apx_line_endings(path: Path, _text: str) -> list[str]:
         raw = path.read_bytes()
     except OSError:
         return []
-    first_crlf = raw.find(b"\r\n")
-    if first_crlf == -1:
+    first_carriage_return = raw.find(b"\r")
+    if first_carriage_return == -1:
         return []
-    line = raw.count(b"\n", 0, first_crlf) + 1
+    line = raw.count(b"\n", 0, first_carriage_return) + 1
     return [
         f"{display_path(path)}:{line}: "
         "APEXLANG_LF_LINE_ENDINGS_REQUIRED_001 .apx files must use LF line endings; "
-        "convert CRLF to LF before validation or publish"
+        "convert CRLF or CR to LF before validation or publish"
     ]
 
 
@@ -9234,6 +10344,68 @@ def lint_template_item_schema_examples(ctx: LintContext) -> list[str]:
     return issues
 
 
+def lint_apexlang_template_grammar_contract(ctx: LintContext) -> list[str]:
+    """Validate fenced apexlang examples against the EBNF component surface."""
+    issues: list[str] = []
+    snippets = extract_apexlang_fenced_examples(ctx.text)
+    if not snippets:
+        return issues
+
+    contracts_by_keyword = load_apexlang_grammar_contracts()
+
+    for snippet in snippets:
+        for component in find_apexlang_snippet_components(snippet.text):
+            contracts = [
+                *contracts_by_keyword.get(component.keyword, []),
+                *apexlang_schema_contracts_for_component(ctx.schema, component),
+            ]
+            component_offset = snippet.offset + component.offset
+            if not contracts:
+                issues.append(
+                    f"{display_path(ctx.path)}:{line_no(ctx.text, component_offset)}: "
+                    "APEXLANG_GRAMMAR_UNKNOWN_COMPONENT_001 "
+                    f"fenced apexlang example emits unknown component keyword '{component.keyword}'"
+                )
+                continue
+
+            for prop_name, prop_offset in extract_apexlang_immediate_direct_properties(component.text):
+                if any(prop_name in contract.direct_properties for contract in contracts):
+                    continue
+                issues.append(
+                    f"{display_path(ctx.path)}:{line_no(ctx.text, component_offset + prop_offset)}: "
+                    "APEXLANG_GRAMMAR_UNKNOWN_DIRECT_PROPERTY_001 "
+                    f"component '{component.keyword}' does not allow direct property '{prop_name}' "
+                    "in any grammar candidate"
+                )
+
+            for group_name, group_offset, group_block in extract_apexlang_immediate_group_blocks(component.text):
+                group_contracts = [
+                    contract for contract in contracts if group_name in contract.group_properties
+                ]
+                if not group_contracts:
+                    if apexlang_is_page_item_plugin_attribute_group(component, group_name):
+                        continue
+                    issues.append(
+                        f"{display_path(ctx.path)}:{line_no(ctx.text, component_offset + group_offset)}: "
+                        "APEXLANG_GRAMMAR_UNKNOWN_GROUP_BLOCK_001 "
+                        f"component '{component.keyword}' does not allow group block '{group_name}' "
+                        "in any grammar candidate"
+                    )
+                    continue
+
+                for prop_name, prop_offset in extract_apexlang_immediate_group_properties(group_block):
+                    if any(prop_name in contract.group_properties.get(group_name, set()) for contract in group_contracts):
+                        continue
+                    issues.append(
+                        f"{display_path(ctx.path)}:{line_no(ctx.text, component_offset + group_offset + prop_offset)}: "
+                        "APEXLANG_GRAMMAR_UNKNOWN_GROUP_PROPERTY_001 "
+                        f"component '{component.keyword}' group '{group_name}' does not allow property '{prop_name}' "
+                        "in any grammar candidate"
+                    )
+
+    return issues
+
+
 def lint_calendar_template_contract(ctx: LintContext) -> list[str]:
     """Validate calendar template docs and examples against canonical calendar rules."""
     issues: list[str] = []
@@ -9339,6 +10511,7 @@ APX_NAVIGATION_REPORT_AND_REGION_LINTERS: list[LintRunner] = [
 
 APX_SECURITY_SQL_AND_FORM_LINTERS: list[LintRunner] = [
     _ctx_path_text_lint(lint_image_upload_legacy_properties),
+    _ctx_path_text_lint(lint_file_upload_display_storage_contract),
     _ctx_path_text_lint(lint_generated_security_contract),
     _ctx_path_text_lint(lint_inline_code_block_char_limits),
     _ctx_path_text_lint(lint_static_id_where_lower),
@@ -9370,6 +10543,7 @@ APX_SCHEMA_BACKED_LINTERS: list[LintRunner] = [
 ]
 
 APX_LINTERS: list[LintRunner] = [
+    lint_semantic_component_tree,
     *APX_STRUCTURE_AND_FORMAT_LINTERS,
     *APX_APP_AND_SHARED_METADATA_LINTERS,
     *APX_NAVIGATION_REPORT_AND_REGION_LINTERS,
@@ -9393,10 +10567,12 @@ TEMPLATE_NAVIGATION_ITEM_AND_REGION_LINTERS: list[LintRunner] = [
     _ctx_path_text_validation_lint(lint_smart_filter_results_regions),
     _ctx_path_text_lint(lint_smart_filter_settings_contract),
     _ctx_path_text_lint(lint_image_upload_legacy_properties),
+    _ctx_path_text_lint(lint_file_upload_display_storage_contract),
     _ctx_path_text_lint(lint_sql_lob_comparison_keys),
 ]
 
 TEMPLATE_SCHEMA_EXAMPLE_LINTERS: list[LintRunner] = [
+    lint_apexlang_template_grammar_contract,
     lint_template_item_schema_examples,
     lint_calendar_template_contract,
 ]
