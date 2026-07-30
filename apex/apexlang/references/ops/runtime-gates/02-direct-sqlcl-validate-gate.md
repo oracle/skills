@@ -16,7 +16,7 @@ Preconditions
 - Target artifacts were produced by the internal generate -> review -> fix loop in the transient temp workspace.
 - `resolved_app_path` is absolute and points to the application folder being changed.
 - `db_connection_name` is resolved for this run.
-- The corresponding APEX workspace name is resolved for this run.
+- Workspace identity is required only if the active runtime reports ambiguity; resolve the workspace id deterministically for that rerun.
 - Runtime capability status is resolved for this run.
 
 Runtime contract

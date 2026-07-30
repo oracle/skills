@@ -12,17 +12,15 @@ Startup and precedence
   - `40-components/`
 
 Connection contract
-- Use `db_connection_name` as the canonical saved SQLcl connection input and the corresponding APEX workspace name as required live APEXlang context.
+- Use `db_connection_name` as the canonical saved SQLcl connection input. Resolve workspace identity from the active runtime for existing apps; require an exact destination workspace name before new-app materialization.
 - For DB-backed workflows, resolve prerequisite metadata source first:
   - inspect `assets/workspace-intelligence.json`
   - auto-select a single eligible schema dictionary
   - prompt the user to choose when multiple eligible schema dictionaries exist
   - scan saved SQLcl connections before any DB-mode prompt
-  - use discovered saved connections as candidates, not as automatic approval for live work
-  - use discovered saved connections as candidates, not as automatic approval for live work
+  - auto-bind exactly one deterministic saved connection for live work
   - prompt the user to choose when multiple saved SQLcl connections exist
-  - require the user to specify `db_connection_name` and the corresponding APEX workspace name before live metadata validation, `apex validate`, `apex import`, runtime diagnostics, or new-app materialization
-  - require the user to specify `db_connection_name` and the corresponding APEX workspace name before live metadata validation, `apex validate`, `apex import`, runtime diagnostics, or new-app materialization
+  - request manual `db_connection_name` only when saved-connection discovery cannot resolve one; require an exact workspace name only for new-app materialization or after runtime-reported ambiguity
   - treat `offline` as an explicit override when the user asks for offline-only behavior
 - Record one machine-readable prerequisite state:
   - `prereq_source: schema_doc`
@@ -34,10 +32,10 @@ Connection contract
   - `connection_source: user_prompt`
   - `connection_source: unresolved`
 - Resolve `db_mode` after deterministic discovery for interactive DB-backed runs:
-  - `db_mode: online` requires `db_connection_name` and the corresponding APEX workspace name
+  - `db_mode: online` requires a resolved `db_connection_name`
   - `db_mode: offline` is explicit and blocks live metadata/runtime work
 - Do not infer offline mode.
-- Treat `prereq_source: schema_doc` as sufficient for offline metadata reasoning only; live runtime/import still requires `db_connection_name` and the corresponding APEX workspace name.
+- Treat `prereq_source: schema_doc` as sufficient for offline metadata reasoning only; live runtime/import still requires a resolved `db_connection_name`.
 - Allow `prereq_source: schema_doc` and `connection_source: saved_connection` to coexist when offline schema metadata is preferred for evidence and a deterministic live connection was also discovered.
 
 How to use SQLcl
@@ -66,7 +64,7 @@ Canonical roundtrip commands
 - `apex export -applicationid <application_id> -exptype APEXLANG -split -dir <absolute_export_dir>`
 - Allow validate/import only when the capability probe confirms the required commands exist in the selected runtime path.
 - Do not add `-workspaceid` to the validate/import happy path. Only add it after the active SQLcl session explicitly reports multiple-workspace ambiguity and blocks the command without a workspace override. When that happens, resolve the workspace id automatically for the active `db_connection_name` and rerun immediately.
-- When workspace-id resolution is in progress, send the user this exact short status sentence before continuing: `Identifying workspace ID for DB connection, please bare with me...`
+- When workspace-id resolution is in progress, send the user this exact short status sentence before continuing: `Identifying workspace ID for the DB connection, please bear with me...`
 - Treat standalone bridge or wrapper execution as diagnostic only; the real SQLcl session is the source of truth when they disagree.
 - Do not count sandbox-only build-root filesystem/setup failures as real validate attempts for the live retry budget; only real SQLcl/compiler outcomes should feed the fix loop.
 
@@ -75,7 +73,7 @@ Same-session requirement
 - If the session changes between validate and import, STOP and re-run validation before import.
 
 Policy and quality gates
-- Never perform live DB work if `db_connection_name` or the corresponding APEX workspace name is missing or ambiguous.
+- Never perform live DB work if `db_connection_name` is unresolved. Require workspace input only for new-app materialization or when runtime ambiguity cannot be resolved deterministically.
 - Never run live metadata validation, `apex validate`, or `apex import` in offline mode.
 - Never treat APEX build-root inference or SQLcl version alone as sufficient proof that live validate/import can run.
 - Ask for an environment-specific APEX build path only when automatic build-root resolution fails and the user still wants build-root runtime or diagnostics.
@@ -85,9 +83,9 @@ Policy and quality gates
 Prompt pattern
 - For interactive DB-backed workflows:
   - first run deterministic discovery: inspect offline schema dictionaries and scan saved SQLcl connections
-  - if exactly one saved SQLcl connection exists, present it as the default candidate before prompting
+  - if exactly one saved SQLcl connection exists, auto-bind it
   - if multiple saved SQLcl connections exist, present them as selectable options
-  - use `Provide db_connection_name and the corresponding APEX workspace name for this workflow.` when live DB context is still unresolved after discovery
+  - use `Provide db_connection_name for this workflow.` when live DB context is still unresolved after discovery
   - accept `offline` only when the user explicitly asks for offline-only execution
 
 Tags: db, connection, sqlcl, oracle, connect, schema, validate, apex, roundtrip

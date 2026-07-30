@@ -15,8 +15,10 @@ Use this workflow when the user asks to create or generate an app from functiona
 1. Model/schema metadata is authoritative for database objects, columns, keys, constraints, data types, display labels, LOV candidates, and semantic facts such as image, date, latitude/longitude, status, and amount fields.
 2. Functional requirements are authoritative for business behavior, page inventory, workflow, page pattern intent, navigation, UI composition, validations, derived metrics, acceptance criteria, and exclusions.
 3. `application-spec.template.md` defines the required planning output shape.
-4. Existing app files may be read only for integration facts after app resolution. Do not use existing app files as reusable pattern or DSL-shape examples.
-5. If same-rank sources conflict on structural facts, stop with `Missing Inputs` and list the conflict.
+4. `assets/contracts/page-patterns.json` and `assets/contracts/page-construction-packs.json` define the structured pattern-selection path before final `.apx`.
+5. `assets/grammar/apexlang.ebnf` and compiler metadata define APEXlang syntax and property legality; templates are exact-match examples after these sources select the emitted family.
+6. Existing app files may be read only for integration facts after app resolution. Do not use existing app files as reusable pattern or DSL-shape examples.
+7. If same-rank sources conflict on structural facts, stop with `Missing Inputs` and list the conflict.
 
 ## Required Workflow
 
@@ -47,7 +49,8 @@ Use this workflow when the user asks to create or generate an app from functiona
    - secondary maintenance pages can be grouped through a hub/list page
    - report-to-form CRUD defaults to a drawer end/right form unless the requirements explicitly select standard modal dialog, drawer start/top/bottom, wizard modal, popout-style dialog, or full-page detail flow
    - drawer form pages must emit `dialogTemplate: @/drawer` plus an explicit end/right drawer template option; `templateOptions: #DEFAULT#` alone is not enough for default drawer behavior
-6. Write project-root `.apexlang/app-ux-contract.json` before drafting non-trivial `.apx` artifacts. This machine-readable contract must contain non-empty `sourceEvidence`, `pageInventory`, `compositionPlan`, `richUiPatternPlan`, `lovPlan`, `behaviorPlan`, and `testPlan` sections.
+6. Select page/workflow patterns from `assets/contracts/page-patterns.json` and `assets/contracts/page-construction-packs.json` before loading Markdown templates. Record the selected pack id, required inputs, generated components, validation rules, and reference paths in the application spec and source trace.
+7. Write project-root `.apexlang/app-ux-contract.json` before drafting non-trivial `.apx` artifacts. This machine-readable contract must contain non-empty `sourceEvidence`, `pageInventory`, `compositionPlan`, `richUiPatternPlan`, `lovPlan`, `behaviorPlan`, and `testPlan` sections.
    - Every generated user page must map to a requirement or declared low-risk derived workflow.
    - `compositionPlan.breadcrumbs` must be an object array with `page`, `entry`, and either `root: true`, `parentEntry`, or `parentPage`; do not replace it with a flat page-number list.
    - If `compositionPlan.managementHubPages` is present, resolve the management hub page and parent every management child breadcrumb to that hub.
@@ -64,10 +67,15 @@ Use this workflow when the user asks to create or generate an app from functiona
    - Every declared rich UI pattern, display mapping, link, modal target, refresh dependency, LOV, layout recipe, and accessibility/guidance requirement must be traceable to requirements, model/schema metadata, or explicit user assertion.
    - Add `requiresAppUxContract: true` to the app-local `.apex/apexlang.json` runtime metadata for full-app FR/model generation so local validation blocks missing UX contracts.
    - Keep the completed `application-spec.md` planning artifact in project-root `.apexlang/`, not inside `applications/<app>/` or the app-local `.apex/` runtime metadata directory.
-7. For every SQL-bearing page, region, LOV, validation, or process, record object evidence as `schema_doc`, `live_db`, `user_asserted`, or `unresolved`.
-8. If any required object, column, relationship, target page, target item, UX contract mapping, or compiler-truth decision remains unresolved, stop with `Missing Inputs` instead of drafting artifacts.
-9. After the spec and UX contract are complete, run the normal APEX generation workflow. For each non-trivial page or shared component, emit a compact `Generation Plan` before APEXlang.
-10. Validate generated artifacts with local validation and compiler-truth audit before publish, live validation, or import eligibility. Live validation/import still requires explicit `db_connection_name` and matching APEX workspace name.
+8. Render from the frozen application spec, UX contract, selected pattern packs, grammar, and compiler evidence. Render into staging, run `apexlang format --strict-structure` immediately, reject structural formatter changes, and publish only after local validation passes.
+9. For every SQL-bearing page, region, LOV, validation, or process, record object evidence as `schema_doc`, `live_db`, `user_asserted`, or `unresolved`.
+10. If any required object, column, relationship, target page, target item, UX contract mapping, pattern-pack input, grammar/compiler decision, or compiler-truth decision remains unresolved, stop with `Missing Inputs` instead of drafting artifacts.
+11. After the spec, UX contract, and pattern-pack selection are complete, generate each implementation unit in a fresh isolated model context containing the selected task-specific context capsule and required compiler/tool results. For each non-trivial unit, emit a compact `Generation Plan` before APEXlang.
+12. Stage validation to avoid repeated whole-app work:
+    - During unit generation, run only unit-local syntax, property, reference, and unresolved-placeholder checks.
+    - After all units are assembled, run one full local integration validation and one compiler-truth audit across the application.
+    - Run live APEX validation once after local integration passes. Rerun it only after a deterministic repair changes the validated artifact, preserving the existing maximum repair-attempt policy.
+    - Live validation/import requires a resolved `db_connection_name`; new-app materialization also requires the exact destination APEX workspace name.
 
 ## Output Contract
 
@@ -76,6 +84,8 @@ The completed application spec must be traceable:
 - every page maps to one requirement or low-risk derived workflow
 - every DB object and column maps to model/schema evidence or explicit user assertion
 - every rich UI pattern maps to native APEX components, not static HTML substitutes
+- every common page workflow maps to a structured pattern pack when one exists
+- every final `.apx` structure maps to the frozen application spec, UX contract, pattern-pack selection, and grammar/compiler evidence before template examples
 - every link or modal target identifies the target page and item mappings
 - every form target records its presentation choice and button/process/dynamic-action contract
 - every form validation, context-owned item, and defaulting behavior maps to requirement evidence and generated page artifacts
@@ -89,6 +99,7 @@ The completed application spec must be traceable:
 - Conflicting page inventory, table, column, key, or constraint facts.
 - Rich UI pattern requested without the required semantic evidence.
 - Missing or incomplete project-root `.apexlang/app-ux-contract.json` for full-app FR/model generation.
+- Missing structured pattern-pack inputs for a workflow covered by `page-construction-packs.json`.
 - Unresolved compiler-truth requirement for a non-exact-match structural artifact.
 - Missing APEX workspace name when materializing a brand new app.
 - Missing `db_connection_name` or workspace name for live validation/import.

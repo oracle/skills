@@ -161,8 +161,8 @@ Critique Gate — Navigation & Grouping (non-modal)
 - Allow a thin `type: executeCode` wrapper for packaged routines only when the block is a small named-notation package call plus direct page-item assignment required for a page-coupled loader or before-header branch-gated flow.
 - DO NOT use `type: executeCode` to re-embed business logic that belongs in the package; non-compliant wrappers must be flagged by critique (see 00-guard and 20-data/apex.logic.md).
 - This section governs page processes only. Application processes (`appProcess`) must use `type: executeCode` per 00-guard and 10-global policies.
-- Advisory threshold: if any inline PL/SQL body in page-level artifacts exceeds 4000 raw characters, critique should emit warning `PLSQL_LENGTH_WARN_001` and recommend extracting logic into `app_process_api` (or justified alternative). For processes, the preferred target shape is `type: invokeApi`, with the thin-wrapper exception used only when it is explicitly justified by runtime-safe page-item orchestration.
-- Advisory threshold: if any inline SQL body in page-level artifacts exceeds 4000 raw characters, critique should emit warning `SQL_LENGTH_WARN_001` and recommend extracting the query into a secure view that page-level artifacts reference instead of embedding inline.
+- Hard limit: if an inline PL/SQL body in a page-level artifact exceeds 4000 raw characters, critique must hard-fail `PLSQL_INLINE_BLOCK_001` and require extraction into `app_process_api` (or a justified alternative). For processes, the preferred target shape is `type: invokeApi`, with the thin-wrapper exception used only when justified by runtime-safe page-item orchestration.
+- Hard limit: if an inline SQL body in a page-level artifact exceeds 4000 raw characters, critique must hard-fail `SQL_INLINE_BLOCK_001` and require extraction into a secure view referenced by the page artifact.
 - Dynamic Content regions may use plsqlFunctionBody for rendering HTML/CLOB; they must not perform DML or manage transactions.
 
 ## Linking Patterns

@@ -10,7 +10,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
 ## Purpose
 - Provide the APEXlang-specific SQLcl runtime adapter for this repository.
 - Preserve local behavior for offline schema dictionary fallback, saved SQLcl connection discovery, runtime preflight, and same-session APEX validate/import/export roundtrips.
-- Resolve saved Oracle connection aliases using `db_connection_name` and require the corresponding APEX workspace name for live APEXlang work.
+- Resolve saved Oracle connection aliases using `db_connection_name`; resolve workspace identity from the active runtime for existing apps and require an exact destination workspace name for new-app materialization.
 - Defer generic SQLcl capabilities and best practices to Oracle upstream DB skills instead of duplicating them locally.
 - Keep command knowledge inherent. Do not generate scripts or code to discover SQLcl commands.
 - Oracle's upstream DB skills remain useful general references: `https://github.com/oracle/skills/tree/main/db`.
@@ -26,7 +26,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
 | SQLcl scripting and command usage | Oracle upstream `db/sqlcl` | Do not duplicate; apply upstream guidance when needed |
 | Formatting, DDL, data loading, Liquibase | Oracle upstream `db/sqlcl` | Route to upstream best practice |
 | MCP, scheduler daemon, AWR, background jobs | Oracle upstream `db/sqlcl` | Route to upstream best practice |
-| Saved connection discovery for APEXlang | This repo | Resolve user-specified `db_connection_name` and corresponding APEX workspace name |
+| Saved connection discovery for APEXlang | This repo | Auto-bind one deterministic saved connection or resolve a user-selected/manual `db_connection_name` |
 | APEX validate/import/export roundtrip | This repo | Run preflight and same-session SQLcl runtime gates |
 
 ## Authoritative Policies
@@ -52,11 +52,9 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
   - auto-select one eligible schema dictionary when exactly one exists
   - prompt the user to choose when multiple eligible schema dictionaries exist
   - scan saved SQLcl connections before any DB-mode prompt
-  - use discovery to suggest saved SQLcl connection aliases, not to auto-approve live work
-  - use discovery to suggest saved SQLcl connection aliases, not to auto-approve live work
+  - auto-bind exactly one deterministic saved SQLcl connection for live work
   - prompt the user to choose when multiple saved SQLcl connection aliases exist
-  - require the user to specify `db_connection_name` and the corresponding APEX workspace name before live metadata validation, `apex validate`, `apex import`, runtime diagnostics, or new-app materialization
-  - require the user to specify `db_connection_name` and the corresponding APEX workspace name before live metadata validation, `apex validate`, `apex import`, runtime diagnostics, or new-app materialization
+  - request manual `db_connection_name` only when discovery cannot resolve one; require an exact workspace name before new-app materialization and resolve workspace id only after runtime-reported ambiguity for existing apps
   - treat `offline` as an explicit override rather than the first prompt
 - Load this skill alongside other domain skills when a workflow needs a live Oracle DB connection, SQL metadata validation, or a same-session APEXlang roundtrip.
 - Normalize terse or fragmentary user input directly according to `references/policies/governance/prompt-normalization.md`; it is repo governance, not a SQLcl reusable prompt.
@@ -68,7 +66,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
 - Default APEX artifact workflows to check-only; do not ask users to type import intent before the live APEXlang check.
 - After the live APEXlang check passes, offer GUI/clickable choices using plain language: `Check APEXlang code` (recommended) or `Check and import APEXlang code`; include a short purpose summary for each choice, and if GUI choices are unavailable, stop after checking the code and report import as a follow-up.
 - In normal user-facing responses, describe internal check-only runs as `Check APEXlang code` and import-approved runs as `Check and import APEXlang code`.
-- Treat `node tools/apexctl.mjs runtime roundtrip ...` as a post-connection-gate runtime entrypoint. Interactive callers must not invoke it before deterministic metadata discovery, saved-connection discovery, and required `db_connection_name` plus APEX workspace name resolution are complete.
+- Treat `node tools/apexctl.mjs runtime roundtrip ...` as a post-connection-gate runtime entrypoint. Interactive callers must not invoke it before deterministic metadata discovery and `db_connection_name` resolution are complete.
 - Run `node tools/apexctl.mjs runtime preflight --db-connection-name <db_connection_name>` before any live validate/import/export roundtrip and treat it as the runtime capability, metadata-probe, and target-identity freezing gate.
 - `node tools/apexctl.mjs runtime doctor` is the human-readable alias for a preflight-only runtime check.
 - Prefer the resolved build-root runtime when it is available and runtime-capable; otherwise use the PATH SQLcl runtime.
@@ -77,6 +75,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
   - `apex validate -input <absolute_app_path>`
 - `apex import -input <absolute_app_path>` only after the user explicitly chooses import in the post-check GUI flow
 - Treat live `apex validate` as the first mandatory blocking runtime action in the roundtrip happy path, and run `apex import` immediately after it for explicit `validate-and-import` runs.
+- Normalize and verify every `.apx` file as LF before live `apex validate` or `apex import`, independently of the advisory local-lint policy. Block the runtime lane with `APEXLANG_LF_LINE_ENDINGS_REQUIRED_001` if this deterministic normalization fails.
 - Post-import browser/runtime verification is disabled by default in the public CLI and only runs when the caller explicitly opts in with `--require-runtime-verification`.
 - Treat any post-import runtime verification findings as diagnostics: record them in runtime artifacts, but do not rewrite a successful `import_status` or `runtime_gate_status` to fail.
   - optionally `apex export -applicationid <application_id> -exptype APEXLANG -split -dir <absolute_export_dir>` only when the active runtime path confirms export support
@@ -100,7 +99,7 @@ description: APEXlang SQLcl runtime adapter for saved Oracle DB connection handl
 - Validate is mandatory for every live runtime action.
 - If the post-check GUI choice resolves to import, the live APEXlang check and import MUST happen in the same authenticated SQLcl user session.
 - If the real SQLcl session reports multiple-workspace ambiguity, automatically resolve the workspace id for the active `db_connection_name` and restart the same-session roundtrip with a run-scoped explicit `-workspaceid` without waiting for extra user direction.
-- When the workflow is actively resolving or confirming a workspace id for a DB connection, send the user this short progress update before continuing: `Identifying workspace ID for DB connection, please bare with me...`
+- When the workflow is actively resolving or confirming a workspace id for a DB connection, send the user this short progress update before continuing: `Identifying workspace ID for the DB connection, please bear with me...`
 - The runtime layer resolves the workspace id from live metadata using a dedicated helper keyed by the staged app identity and active `db_connection_name`; the helper must hard-fail when it does not reduce to exactly one workspace id.
 - `runtime-run.json` and `runtime-run.log` must record the blocked ambiguity attempt, the workspace-resolution step, and the rerun outcome. A workspace-blocked first attempt is not success evidence for validate/import.
 - The runtime executor is phase-based and must stop on the first failed mandatory phase: `preflight`, `target_resolve`, `live_validate`, and `import`. `local_validate` remains in the phase model as an advisory/helper stage and must report whether it ran or was skipped by roundtrip policy.

@@ -311,6 +311,41 @@ export async function collectFiles(dirPath, predicate) {
 }
 
 /**
+ * Normalize APEXlang source files to LF and verify that no carriage returns remain.
+ */
+export async function normalizeApxLineEndings(rootPath) {
+  const resolvedRoot = path.resolve(rootPath);
+  const files = await collectFiles(resolvedRoot, (filePath) => {
+    if (path.extname(filePath).toLowerCase() !== ".apx") {
+      return false;
+    }
+    const relativeParts = path.relative(resolvedRoot, filePath).split(path.sep);
+    return !relativeParts.includes("apex-exports");
+  });
+  const normalizedFiles = [];
+  for (const filePath of files) {
+    const raw = await fs.readFile(filePath);
+    if (!raw.includes(0x0d)) {
+      continue;
+    }
+    const normalized = raw.toString("utf8").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    await fs.writeFile(filePath, normalized, "utf8");
+    const verified = await fs.readFile(filePath);
+    if (verified.includes(0x0d)) {
+      throw new Error(
+        `APEXLANG_LF_LINE_ENDINGS_REQUIRED_001 failed to normalize ${path.relative(resolvedRoot, filePath)}`
+      );
+    }
+    normalizedFiles.push(path.relative(resolvedRoot, filePath));
+  }
+  return {
+    status: "pass",
+    checkedFiles: files.length,
+    normalizedFiles
+  };
+}
+
+/**
  * Classify files whose contents should be treated as text by package tooling.
  */
 export function isTextPath(filePath, extraSuffixes = []) {

@@ -42,8 +42,8 @@
   - Dynamic actions `DA_<purpose>`
 - SQL and PL/SQL must use named notation, and appear inside fenced blocks. Process-type policy split: page processes default to `invokeApi`, appProcess remains `executeCode`-only, and a thin page-level `executeCode` wrapper is allowed only for page-coupled loaders or branch-gated flows when direct page-item assignment is the reliable runtime-safe choice.
 - Prefer declarative shapes over PL/SQL when the workflow can be expressed through supported native APEX DSL/process constructs.
-- Advisory threshold: for any PL/SQL text block longer than 4000 raw characters, emit `PLSQL_LENGTH_WARN_001` and recommend extraction into a package API (`app_process_api` default) plus page-process `invokeApi` or a justified thin wrapper exception (appProcess stays `executeCode`). This warning is non-blocking.
-- Advisory threshold: for any inline SQL block longer than 4000 raw characters, emit `SQL_LENGTH_WARN_001` and recommend extraction into a secure view that the page artifact references instead of embedding the full query inline. This warning is non-blocking.
+- Hard limit: a PL/SQL text block longer than 4000 raw characters violates `PLSQL_INLINE_BLOCK_001`; extract it into a package API (`app_process_api` default) plus page-process `invokeApi` or a justified thin wrapper exception (`appProcess` stays `executeCode`). This finding blocks final output.
+- Hard limit: an inline SQL block longer than 4000 raw characters violates `SQL_INLINE_BLOCK_001`; extract it into a secure view that the page artifact references instead of embedding the full query inline. This finding blocks final output.
 
 ## 3. Processes
 - **Execution points:**
@@ -112,7 +112,7 @@ validation [validationStaticId] (
   - Server execution: `da-execute-server-side-code.apx`, `da-delete-with-notification.apx`
   - Alert/Confirm: `da-alert-confirm-cancel.apx`
   - Timer, slider, debounce/throttle, plugin styling: see dedicated templates
-- Server-side work should be packaged and referenced via `invokeApi` by default; use a thin page-level `executeCode` wrapper only when the page must assign items directly in a runtime-safe loader or branch flow, and keep inline business logic out of that wrapper. Critique must warn when inline PL/SQL exceeds 4000 raw characters and fail when existing non-negotiable rules are violated.
+- Server-side work should be packaged and referenced via `invokeApi` by default; use a thin page-level `executeCode` wrapper only when the page must assign items directly in a runtime-safe loader or branch flow, and keep inline business logic out of that wrapper. Critique must hard-fail inline PL/SQL over 4000 raw characters under `PLSQL_INLINE_BLOCK_001`.
 - Use specific `itemsToSubmit`; avoid broad lists.
 - AI assistant settings note:
   - Prefer `genAI { agent: @AGENT }` referencing an existing AI agent alias (for example `@home`).

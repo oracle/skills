@@ -26,13 +26,13 @@ Execution model
 1. Router receives one-message prompt, including fragmentary or free-form user input.
 2. `SKILL.md` normalizes intent directly according to `references/policies/governance/prompt-normalization.md` and asks only one simple-English clarification round for critical blockers.
 3. `SKILL.md` routes to the appropriate app-development subskill.
-4. For full generation, `SKILL.md` first loads `assets/routing-catalog-main.json`, `assets/routing-load-policy.json`, and `assets/apexlang/domains-catalog.json`, then opens the narrow matching README package plus `assets/apex-generation/components.registry.json` only when needed.
-5. The execution subskill loads minimal rules using `assets/rules-mapping.json`.
-6. The execution subskill runs one internal generate -> review -> fix loop with confidence gates.
-7. The execution subskill must run local repo validation against the temporary working copy before any SQLcl roundtrip for generated APEX artifacts.
+4. For full generation, use the frozen application spec and UX contract to select each implementation unit. The resolver queries the component registry; the model receives only selected component routes, not the full registry.
+5. Resolve a fresh task-specific `context resolve` capsule for each implementation unit; do not retain prior unit capsules.
+6. Run generate -> unit-local review -> deterministic repair for that unit. Do not retain prior unit capsules or re-run whole-app validation after every page.
+7. After all units are assembled, run one full local integration validation and compiler-truth audit against the temporary working copy before any SQLcl roundtrip.
 8. Only after the local first-pass check runs may the workflow perform the live APEXlang check through the selected live runtime path under `references/ops/runtime-gates/02-direct-sqlcl-validate-gate.md`.
 9. If a sandboxed build-root runtime attempt fails before real `apex validate` / `apex import` output because of filesystem/setup errors such as `EPERM`, `ENOENT`, or build-root `workdir/*` write failures, treat that as an environment blocker, not a DSL defect, and escalate immediately to the real live build-root roundtrip.
-10. If the runtime/import path fails, each real live retry must feed findings back into critique/revision, rerun local DSL validation, and then rerun the real SQLcl roundtrip; do not use blind unchanged retries.
+10. If the runtime/import path fails, each real live retry must feed findings back into the identified unit critique/revision, rerun local integration validation, and then rerun the real SQLcl roundtrip; do not use blind unchanged retries.
 11. A run may attempt the live APEXlang check at most 3 times. After the third failed live check attempt, stop and surface the owning layer plus remaining blocker.
 12. Default every APEX artifact workflow to check-only before live SQLcl execution; in user-facing responses, label that choice as `Check APEXlang code`. After the live APEXlang check passes, offer GUI/clickable choices labeled `Check APEXlang code` or `Check and import APEXlang code`.
 13. If GUI choices are unavailable, stop after checking the code and report import as a follow-up.

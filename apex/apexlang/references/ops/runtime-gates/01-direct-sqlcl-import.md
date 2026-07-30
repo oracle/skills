@@ -11,7 +11,7 @@ When to invoke
 
 Preconditions
 - `db_connection_name` is resolved.
-- The corresponding APEX workspace name is resolved.
+- The target workspace identity is resolved from the active runtime; if ambiguity is reported, resolve the workspace id before restarting validation and import.
 - The post-check GUI import choice for the run resolved to import.
 - `resolved_app_path` is absolute and points to the transient temp app copy selected for import.
 - Runtime capability status confirms validate/import support for the active run.

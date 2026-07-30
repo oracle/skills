@@ -14,8 +14,9 @@ Canonical contract for APEXlang agent prompting. Use this file as the shared rul
 1. `references/policies/memory-bank/00-guard/ai.guard.md`
 2. `references/policies/governance/00-governance.md`
 3. This file
-4. Phase-specific workflow prompts
-5. Templates and examples
+4. Machine-readable contracts, grammar, and compiler metadata
+5. Phase-specific workflow prompts
+6. Exact-match templates and examples
 
 If a lower layer conflicts with a higher layer, follow the higher layer and mark the lower layer as defective.
 
@@ -51,6 +52,20 @@ Each entry must include:
 - conclusion
 - emitted decision
 
+### Progressive Disclosure Trace
+
+Required for non-trivial routing, page generation, component generation, and complete app generation.
+
+Each trace must be compact and ordered:
+
+- normalized intent and matched component or pattern id
+- exact rule card, contract, or workflow path opened first
+- grammar or compiler metadata evidence used for structural legality
+- exact template path loaded only when an exact-match example is needed
+- skipped broad surfaces, such as template directories or README packages, when a smaller contract answered the decision
+
+Do not load `templates/**` broadly to discover syntax. Use `assets/grammar/apexlang.ebnf` for syntax, compiler metadata or `query-valid-props` for semantic property legality, structured pattern packs for common workflows, and then one exact template family only when the preceding sources select it.
+
 ### Generation Plan
 
 Required for non-trivial page, component, or application generation before emitting APEXlang.
@@ -58,10 +73,11 @@ Required for non-trivial page, component, or application generation before emitt
 Minimum required fields:
 
 - target artifact scope
-- exact template family or variant selected
+- selected contract, pattern pack, or exact template family/variant
 - region, item, and button inventory in output order when applicable
 - source mode decisions such as `table/view` vs `sql`
 - navigation or target decisions
+- progressive disclosure trace references
 - compiler-truth evidence references when required
 
 Required response order for non-trivial structural generation:
@@ -97,23 +113,26 @@ The spec must use `references/workflows/apexlang/application-spec.template.md` a
 Use this precedence order for every generation and revision task:
 
 1. Apply guardrails and governance.
-2. Apply the relevant workflow and template family.
-3. Use compiler-backed truth and machine-readable contracts.
-4. Stop with `Missing Inputs` or request human intervention when the rules and workflow do not answer the need.
-5. Only then use bounded inference, and only for low-risk connective details that do not change structural legality.
+2. Normalize intent and select the smallest matching rule card, structured contract, workflow, or domain entry.
+3. Use `assets/grammar/apexlang.ebnf` for syntax legality and compiler-backed truth for allowed blocks, properties, enums, slots, and template options.
+4. Use structured pattern packs, the frozen application spec, and UX contract before full `.apx` rendering for common workflows.
+5. Load exact-match templates only after the smaller sources select a concrete family or variant.
+6. Stop with `Missing Inputs` or request human intervention when the rules, contracts, grammar, compiler truth, and workflow do not answer the need.
+7. Only then use bounded inference, and only for low-risk connective details that do not change structural legality.
 
 Do not:
 
-- guess when a rule, workflow, template, or compiler-truth step has not been exhausted
+- guess when a rule, contract, grammar, compiler-truth, workflow, or exact-template step has not been exhausted
 - skip to “best judgment” because a template seems close enough
+- scan broad template trees to discover syntax that the grammar or metadata can answer
 - invent target pages, target item names, enum values, slots, or block shapes when the workflow cannot prove them
 - treat local validator success as permission to infer missing structure
 
 ## Generation Boundary
 
-For non-trivial APEXlang output, the `Generation Plan` is a boundary contract, not only a summary. It must identify the supported template family or documented page/design pattern that authorizes each emitted page, region family, item family, button/navigation mode, dynamic-action shape, and non-default template option.
+For non-trivial APEXlang output, the `Generation Plan` is a boundary contract, not only a summary. It must identify the smallest loaded authority that authorizes each emitted page, region family, item family, button/navigation mode, dynamic-action shape, and non-default template option: structured contract or pattern pack first, grammar/compiler evidence next, and exact template family only when loaded.
 
-Generated `.apx` artifacts must stay inside the current authoritative sources: guardrails, governance, loaded memory-bank rules, current template documentation, compiler-backed truth, and machine-readable contracts. Requirements may select, combine, or parameterize supported native APEX/APEXlang patterns, but they do not authorize new DSL surface or undocumented component behavior.
+Generated `.apx` artifacts must stay inside the current authoritative sources: guardrails, governance, loaded memory-bank rule cards, machine-readable contracts, grammar, compiler-backed truth, and selected exact-match template documentation. Requirements may select, combine, or parameterize supported native APEX/APEXlang patterns, but they do not authorize new DSL surface or undocumented component behavior.
 
 Do not invent properties, enum values, block names, target shapes, item mappings, template options, region capabilities, dynamic-action selectors, page patterns, component families, or navigation modes outside the loaded authoritative sources. Unsupported design intent must be recorded as blocked/deferred, simplified to a documented native APEX pattern, or represented by a supported placeholder only when the active workflow explicitly allows placeholders.
 
@@ -149,6 +168,58 @@ For each reported issue, the critique/revision loop must preserve:
 If a rule ID has no deterministic recipe and the owning guidance does not prove a fix, keep the run blocked with Required Revisions or Missing Inputs instead of guessing.
 
 ## Rule IDs
+
+### GRAMMAR_FIRST_AUTHORITY_REQUIRED_001
+
+Statement:
+- APEXlang syntax decisions must come from `assets/grammar/apexlang.ebnf`; semantic legality for blocks, properties, enums, slots, template options, and component variants must come from compiler metadata, direct compiler validation, or `query-valid-props`. Templates are exact-match examples or renderer references, not the primary syntax oracle.
+
+Why:
+- This repo is template-heavy. Treating prose templates as syntax authority increases latency and creates drift. Grammar and compiler metadata are smaller, more deterministic, and easier to validate.
+
+Valid:
+
+```text
+Checked grammar for the block/property shape, queried compiler metadata for the chart series option, then loaded one chart template for an exact emitted example.
+```
+
+Invalid:
+
+```text
+Searched several template folders and copied the closest shape even though grammar or compiler metadata was not checked.
+```
+
+Ownership:
+- Router prompt
+- Draft prompt
+- Critique prompt
+- Package prompt tests
+
+### PROGRESSIVE_DISCLOSURE_TRACE_REQUIRED_001
+
+Statement:
+- Non-trivial APEXlang work must keep a compact source trace from normalized intent to the smallest loaded rule or contract, then grammar/compiler evidence, then an exact template path only if needed.
+
+Why:
+- The agent should finish faster by avoiding broad README/template scans and should make every emitted structure traceable to the right source.
+
+Valid:
+
+```text
+source_trace: dashboard -> rules.catalog:DASHBOARD_KPI_METRIC_CARD_REQUIRED_001 -> page-construction-packs:dashboard -> query-valid-props:themeTemplateComponent/metricCard -> metric-card._common.md
+```
+
+Invalid:
+
+```text
+I browsed the page examples and used the closest dashboard-like template.
+```
+
+Ownership:
+- Router prompt
+- Draft prompt
+- Critique prompt
+- Package prompt tests
 
 ### DESTINATION_WORKSPACE_NAME_REQUIRED_001
 

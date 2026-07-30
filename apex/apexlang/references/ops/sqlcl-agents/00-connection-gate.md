@@ -2,7 +2,7 @@
 
 Purpose
 - Be the first live-database gate for shared workflows in this repository.
-- Resolve prerequisite metadata source first, and resolve `db_connection_name` plus the corresponding APEX workspace name only when live DB context is still required.
+- Resolve prerequisite metadata first, then resolve `db_connection_name` only when live DB context is required. Resolve workspace identity separately for new-app materialization or runtime-reported ambiguity.
 - Keep SQLcl command usage direct and deterministic.
 - Be the single source of truth for global startup/load ordering.
 
@@ -19,7 +19,7 @@ Inputs
 - `selected_schema_doc_path`: optional selected schema dictionary path
 - `db_mode`: `online` or `offline`
 - `db_connection_name`: saved SQLcl connection alias
-- `apex_workspace_name`: corresponding APEX workspace name, recorded as `db_context.workspace.name` when session context is available
+- `apex_workspace_name`: exact destination workspace for new-app materialization, or a workspace identity resolved after runtime ambiguity
 - `environment`: optional environment label
 
 Rules
@@ -27,14 +27,14 @@ Rules
 - If `db_mode = offline`, inspect `assets/workspace-intelligence.json`.
 - If exactly one eligible schema dictionary exists, set `prereq_source = schema_doc`, record `selected_schema_name` plus `selected_schema_doc_path`, and skip DB prompting unless later live work requires it.
 - If multiple eligible schema dictionaries exist, ask the user to choose one schema dictionary before continuing.
-- If exactly one saved SQLcl connection alias is discovered, present it as the default candidate but still require the user to specify or confirm `db_connection_name` and the corresponding APEX workspace name before live work.
+- If exactly one saved SQLcl connection alias is discovered, auto-bind it and record `connection_source = saved_connection`.
 - If multiple saved SQLcl connection aliases are discovered, ask the user to choose one connection alias from the discovered list; record `connection_source = saved_connection` when one is chosen from that list.
-- Use the final natural-language clarification prompt only when live prerequisite routing still remains unresolved; record `connection_source = user_prompt` when that final prompt resolves to explicit `db_connection_name` and APEX workspace name: `Provide db_connection_name and the corresponding APEX workspace name for this workflow.`
-- If `prereq_source = saved_connection` or (`prereq_source = user_prompt` and `db_mode = online`) or `db_mode = online`, `db_connection_name` and the corresponding APEX workspace name are required.
+- Use the final natural-language clarification prompt only when live prerequisite routing remains unresolved; record `connection_source = user_prompt` when it resolves manual `db_connection_name`: `Provide db_connection_name for this workflow.`
+- If `prereq_source = saved_connection`, `prereq_source = user_prompt` with `db_mode = online`, or `db_mode = online`, a resolved `db_connection_name` is required.
 - Allow `prereq_source = schema_doc` and `connection_source = saved_connection` to coexist when schema docs remain the preferred evidence source and a deterministic live connection was also resolved.
 - If `prereq_source = schema_doc`, stop before live metadata validation or APEXlang roundtrips unless the workflow later escalates to live runtime work.
 - If `db_mode = offline`, stop before live metadata validation or APEXlang roundtrips.
-- Use natural-language prompting only for manual connection and workspace entry when the connection alias or APEX workspace name is still missing or ambiguous after deterministic discovery and any required selection prompt.
+- Use natural-language prompting for manual connection entry only after deterministic discovery fails. Ask for workspace identity only for new-app materialization or unresolved runtime ambiguity.
 - Do not generate code to discover SQLcl commands. Command knowledge is assumed.
 - Never log secrets or full connect strings. Record only the saved connection alias when needed.
 - Accept two supported runtime paths:
@@ -54,6 +54,6 @@ Exit criteria
 - `prereq_source` is resolved and recorded for downstream use, or the workflow halts with Missing Inputs.
 - `connection_source` is resolved and recorded for downstream use when live DB context is discovered, or remains `unresolved`.
 - If `prereq_source = schema_doc`, `selected_schema_name` and `selected_schema_doc_path` are recorded for downstream use.
-- If `db_mode = online`, `db_connection_name` and the corresponding APEX workspace name are resolved and recorded for downstream use, or the workflow halts with Missing Inputs.
+- If `db_mode = online`, `db_connection_name` is resolved and recorded for downstream use, or the workflow halts with Missing Inputs.
 - For APEX runtime work, PATH SQLcl capability status is recorded for downstream use, or the workflow halts with Missing Inputs or a blocked preflight result.
 - For APEX runtime work, the selected runtime path and its capability status are recorded for downstream use, or the workflow halts with Missing Inputs or a blocked preflight result.

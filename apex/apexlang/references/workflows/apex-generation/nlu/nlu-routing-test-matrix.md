@@ -2,7 +2,7 @@
 
 ## Purpose
 - Verify the NLU Router behavior defined by `SKILL.md` while loading `references/workflows/apex-generation.md`, using the Component Registry (`assets/apex-generation/components.registry.json`) and rule loading via `assets/rules-mapping.json`.
-- Each test lists expected: target_type, matched components, rules, templates, required inputs to ask for, and outputs.
+- Each test lists expected: target_type, matched components, compact rules/contracts, exact templates only when selected, required inputs to ask for, source trace, and outputs.
 
 ## Conventions
 - Message 1: references/workflows/apex-generation.md
@@ -15,7 +15,9 @@
 
 ## Legend
 - Rules are union-loaded: 00-guard + 10-global + matched 20-data/30-pages/40-components.
-- Only templates present under templates/* may be used.
+- Use `assets/rules.catalog.json` and structured contracts before broad prose.
+- Use `assets/grammar/apexlang.ebnf` and compiler metadata or `query-valid-props` before template-derived DSL.
+- Only exact templates selected by the rule/contract/workflow trace may be used.
 
 1) Page with Interactive Report + Form (same page) + LOV + Refresh
 - Input: “Build a page with an interactive report and a form on {{source.table}}; use Lookup LOV for {{lookup.valueColumn}}; refresh report after submit”
@@ -39,6 +41,8 @@
   - {{source.table}}: table, pk, columns
   - LOV: source table/view={{lookup.table}}, value={{lookup.valueColumn}}, display={{lookup.displayColumn}}
   - DA: target region identifier (IR region), trigger (after form submit)
+- Source trace:
+  - rules.catalog/rules-mapping -> page-construction-packs:report-modal-form or explicit page workflow -> grammar/compiler metadata -> listed exact templates
 - Outputs: internal generate/review/fix loop, then final written under pages/
 
 2) Interactive Report only ({{source.table}} with {{lookup.valueColumn}} filter LOV)
@@ -104,6 +108,8 @@
   - templates/page-examples/dashboard-page/dashboard-page._index.md
   - Optional: templates/page-examples/classic-report-page/classic-report-page._index.md (tile-like classic report)
 - Required inputs: SQL or table/view for aggregation
+- Source trace:
+  - rules.catalog:DASHBOARD_KPI_METRIC_CARD_REQUIRED_001 -> page-construction-packs:dashboard -> grammar/compiler metadata for metricCard/chart/report shape -> exact dashboard/metric templates only when selected
 - Outputs: internal generate/review/fix loop, then final page
 
 5) Single Chart (amount by category)
