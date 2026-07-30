@@ -27,7 +27,13 @@
 - `skills/`
   - Direct-entrypoint skills, domain skills, agents, references, and assets.
 - `templates/`
-  - Canonical template families and scenario docs.
+  - Canonical exact-match example families and renderer reference docs. Templates are not the primary syntax oracle.
+- APEXlang grammar asset
+  - Syntax oracle for generated DSL shape.
+- Compiler prop-map tools
+  - Compiler-backed semantic oracle for property, enum, slot, template-option, and component-variant legality.
+- APEXlang structured contracts
+  - Compact pattern, IR, and package-layer contracts used before broad Markdown loading.
 - `applications/app_###/`
   - Final output root for generated application artifacts.
 - `artifacts/`
@@ -42,8 +48,10 @@
 
 ## Deterministic Routing
 - Natural-language routing relies on:
+  - `assets/rules.catalog.json`
   - `assets/apex-generation/components.registry.json`
   - `assets/rules-mapping.json`
+- Non-trivial routing should produce a compact trace from normalized intent to rule/contract, grammar/compiler evidence, and exact template path only when needed.
 - Direct-entrypoint skills that support one-message invocation should expose a `Router Contract` section in `SKILL.md`.
 - Secondary reference docs must not redefine router behavior; they should point back to the owning skill.
 

@@ -20,7 +20,7 @@
       "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", "references/workflows/apex-generation/agents/40-agent-revision.md"]
     },
     "APEXLANG_LF_LINE_ENDINGS_REQUIRED_001": {
-      "cause": ".apx artifact contains CRLF line endings.",
+      "cause": ".apx artifact contains CRLF or CR line endings.",
       "deterministicFix": "Rewrite only the affected .apx files with LF line endings; keep content unchanged.",
       "owningGuidance": ["references/policies/memory-bank/00-guard/ai.guard.md", ".gitattributes"]
     },
@@ -218,6 +218,11 @@
       "cause": "Likely high-cardinality facet does not show the value filter initially.",
       "deterministicFix": "Add listEntries.displayFilterInitially: true for Product, Customer, Store, Employee, Supplier, Email, SKU, name/title, and similar high-cardinality facets.",
       "owningGuidance": ["references/policies/memory-bank/30-pages/apex.faceted-search.md"]
+    },
+    "FILE_UPLOAD_DISPLAY_MODE_REQUIRED_001": {
+      "cause": "A File Upload item omits its explicit display mode and would inherit the compiler's simple inline file-browse UI.",
+      "deterministicFix": "Add display.displayAs. Use blockDropzone by default with dropzoneTitle 'Drop files here' and dropzoneDesc 'or click to browse'; preserve an explicitly requested inlineDropzone or nativeFileBrowse mode.",
+      "owningGuidance": ["templates/items/file-upload/file-upload._common.md"]
     },
     "FA_ICON_REQUIRED_001": {
       "cause": "An icon-bearing property uses a non-Font APEX icon token, custom CSS icon alias, image icon, or framework-specific icon class.",

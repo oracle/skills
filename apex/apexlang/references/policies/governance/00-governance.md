@@ -40,9 +40,9 @@
 5. For DB-backed work, resolve the prerequisite metadata source before routing further:
    - read `assets/workspace-intelligence.json` and apply the schema-dictionary selection rules for offline metadata reasoning
    - scan saved SQLcl connections before any user prompt about DB mode or connection knowledge
-   - use discovered saved connections as candidates, not as automatic approval for live DB work
+   - auto-bind exactly one deterministic saved connection for live DB work
    - ask the user to choose only when multiple eligible schema dictionaries or multiple saved connections exist
-   - if live-connection selection still remains unresolved and live DB context is required, ask for `db_connection_name` and the corresponding APEX workspace name
+   - if live-connection selection remains unresolved and live DB context is required, ask for `db_connection_name`; require an exact workspace name only for new-app materialization or resolve a workspace id after runtime-reported ambiguity
    - treat `offline` as explicit user intent, not as the default first prompt
    - before drafting object-specific SQL or DB-object references, resolve `object_evidence_source` for each referenced object as `schema_doc`, `live_db`, `user_asserted`, or `unresolved`
    - if any required object remains unresolved, stop with `Missing Inputs` instead of substituting sample or inferred object names

@@ -1,0 +1,787 @@
+{
+  "schemaVersion": 2,
+  "purpose": "Machine-readable best-practice source for task-specific context projection. Resolve it through apexctl context commands instead of loading the complete catalog or broad agent checklists into model context.",
+  "prose_migration_coverage": {
+    "source_path": "references/policies/memory-bank/00-guard/ai.guard.md",
+    "source_revision": "0683cc52b17b829232f881d2d2ea1a4da476f63a",
+    "source_bytes": 72944,
+    "source_sha256": "29164e1625cc03e9475986870e23ac251e51f23b41c8dd822aa0fd880ab541ee",
+    "instruction_selector": "top-level Markdown bullets containing MUST or MUST NOT",
+    "normalization": "trim each selected line, collapse whitespace, preserve source order, and join with LF",
+    "instruction_count": 273,
+    "instruction_digest": "10c95299880cf3cd96779fae112b40c5babbc1e29a6bc9d19f55b4a2b5bcb686",
+    "coverage_groups": [
+      {
+        "id": "routing-authority",
+        "rule_ids": ["PROMPT_NORMALIZATION_REQUIRED_001", "GRAMMAR_FIRST_AUTHORITY_REQUIRED_001", "PROGRESSIVE_DISCLOSURE_TRACE_REQUIRED_001", "TOOLING_REWRITE_ALIAS_LITERAL_REQUIRED_001", "ORACLE_DB_SKILLS_DELEGATION_REQUIRED_001"],
+        "profile_ids": [],
+        "enforcement_paths": ["SKILL.md", "references/policies/governance/00-governance.md"],
+        "source_sections": [
+          {"heading": "Prompt Normalization Gate (NON-NEGOTIABLE)", "instruction_count": 8, "instruction_digest": "5fb945ce4becf728ea4a8ec0cabe2fd97d6a20b1b7d5d34eef6c06f523493a03"},
+          {"heading": "Grammar-First Progressive Disclosure Gate (NON-NEGOTIABLE)", "instruction_count": 8, "instruction_digest": "3c79d4fd276c6705cd4db1e6a930fb556b9fd12b27100e0b0a4641c39e447109"},
+          {"heading": "Tooling Rewrite Safety (NON-NEGOTIABLE)", "instruction_count": 3, "instruction_digest": "787167d75074a62cfe3aca9ba931bda0a4c00ac43371129aea81a76be40594c9"},
+          {"heading": "Oracle DB Skills Delegation Boundary (NON-NEGOTIABLE)", "instruction_count": 7, "instruction_digest": "4560b6237403b11542c612b857cfb87e4404de447f6683d43b8be9263a6219ad"}
+        ]
+      },
+      {
+        "id": "security-artifacts",
+        "rule_ids": ["SECURITY_BASELINE_REQUIRED_001", "PUBLIC_PAGE_REVIEW_REQUIRED_001", "HIDDEN_ITEM_SSP_REQUIRED_001", "REPORT_ESCAPE_REQUIRED_001", "SECURE_COOKIE_DSL_UNVERIFIED_001", "APP_TEMPLATE_ARTIFACT_LEAK_001", "APEXLANG_LF_LINE_ENDINGS_REQUIRED_001"],
+        "profile_ids": ["full-app"],
+        "enforcement_paths": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json", "tools/apexctl.mjs"],
+        "source_sections": [
+          {"heading": "Generated Application Security Baseline (NON-NEGOTIABLE)", "instruction_count": 47, "instruction_digest": "2a7b8e4380fe96b94101cc9a0a555bf2e0d53d4b6ab72f51bf095c542fe778d1"},
+          {"heading": "APEXlang Line Ending Gate (NON-NEGOTIABLE)", "instruction_count": 3, "instruction_digest": "7c2b91e98f7426e47aa67e3f7e0f7c60dded9e25681c3a7bed7af384eb526e72"}
+        ]
+      },
+      {
+        "id": "calendar-composition",
+        "rule_ids": ["CALENDAR_CREATE_LINK_TARGET_REQUIRED_001", "CALENDAR_VIEW_LINK_TARGET_REQUIRED_001", "CALENDAR_REPORT_TYPE_REQUIRED_001", "CALENDAR_REPORT_PK_FILTER_REQUIRED_001", "COMPOSITION_CONTRACT_REQUIRED_001", "GRID_SCOPE_REQUIRED_001", "CSS_CLASS_INVENTION_FORBIDDEN_001"],
+        "profile_ids": [],
+        "enforcement_paths": ["runtime/internal/python/validate_apexlang.py", "references/policies/memory-bank/40-components/apex.templates.md"],
+        "source_sections": [
+          {"heading": "Calendar Link Target Resolution Gate (NON-NEGOTIABLE)", "instruction_count": 11, "instruction_digest": "05f15af2886132fabc2a5d3cf18e5c2e581611b3e69fb75e3959edbbbd6bde1a"},
+          {"heading": "Structure-First UI Composition Gate (NON-NEGOTIABLE)", "instruction_count": 6, "instruction_digest": "1df05269da25a8d09c5a39dd2ce84bc66e698606c6b5de9eef11cb9f332e606d"}
+        ]
+      },
+      {
+        "id": "database-evidence",
+        "rule_ids": ["DB_MODE_PROMPT_REQUIRED_001", "DB_CONN_REQUIRED_001", "DB_OBJECT_EVIDENCE_REQUIRED_001", "DB_METADATA_REQUIRED_REPORT_001", "DB_VERIFY_BEFORE_GENERATION_001"],
+        "profile_ids": ["interactive-report", "classic-report", "form", "faceted-search"],
+        "enforcement_paths": ["tools/apexctl.mjs", "references/ops/sqlcl.md", "references/workflows/apex-generation/agents/20-agent-draft.md", "references/workflows/apex-generation/agents/30-agent-critique.md"],
+        "source_sections": [
+          {"heading": "DB Metadata Prerequisite Gate (NON-NEGOTIABLE)", "instruction_count": 49, "instruction_digest": "cca8061238d3156def2a38d6900f7a9821ae74f8f78cdc7c86806c7bf0cdd3ea"},
+          {"heading": "Local Database Source Metadata Gate (NON-NEGOTIABLE)", "instruction_count": 5, "instruction_digest": "00db8969b65976e58a2717944a70cf22146ba42095751e5a149434fc45065bc0"},
+          {"heading": "Object Evidence Gate (NON-NEGOTIABLE)", "instruction_count": 6, "instruction_digest": "c4ea758b6cdad687cf008e9866f9b86da6b0d78171fa5b205ffca555e8197da2"},
+          {"heading": "Report DB Metadata Verification Gate (NON-NEGOTIABLE)", "instruction_count": 4, "instruction_digest": "058d38e23e0bdaf3ee1926a50a61949cedfacb605ba26b771eabbf64868fc4c1"},
+          {"heading": "Pre-Generation DB Verification Gate (NON-NEGOTIABLE)", "instruction_count": 6, "instruction_digest": "7129cd20d766f1a6d2bf679f8f84ee9f00fafbd480b964e717bbb93b4add2d9c"}
+        ]
+      },
+      {
+        "id": "runtime-completion",
+        "rule_ids": ["LIVE_RUNTIME_VALIDATION_REQUIRED_001", "RUNTIME_GATE_COMPLETION_REQUIRED_001", "ONLINE_IMPORT_CONDITIONAL_001"],
+        "profile_ids": [],
+        "enforcement_paths": ["tools/apexctl.mjs", "runtime/runtime.bundle.mjs", "references/ops/runtime-gates.md"],
+        "source_sections": [
+          {"heading": "Validation Deferral Prevention Gate (NON-NEGOTIABLE)", "instruction_count": 15, "instruction_digest": "8753390b89e9b2a3a06ff9a4864f0f3bda9f4a4a09d046887441945b1e31ac00"},
+          {"heading": "APEX Artifact Completion Gate (NON-NEGOTIABLE)", "instruction_count": 5, "instruction_digest": "b72af170861eda97393abf4e87ba20ad4a14c561294237cb38b46491d9e12324"}
+        ]
+      },
+      {
+        "id": "compatibility-maintenance",
+        "rule_ids": ["GRAMMAR_FIRST_AUTHORITY_REQUIRED_001", "APEXLANG_BUILD_REFRESH_SCOPE_REQUIRED_001"],
+        "profile_ids": [],
+        "enforcement_paths": ["runtime/internal/python/validate_apexlang_vocab.py", "tools/apexctl.mjs", "references/policies/governance/00-governance.md"],
+        "source_sections": [
+          {"heading": "APEXlang Vocabulary Compatibility Gate (NON-NEGOTIABLE)", "instruction_count": 11, "instruction_digest": "1f3aadeccdacdc2d28d0065977467943abbd83429cfeb8a6923acf6da36d87f6"},
+          {"heading": "APEXlang Build Refresh Discipline Gate (NON-NEGOTIABLE)", "instruction_count": 6, "instruction_digest": "ecf75183ebd2bdf6f9af849e702079faaea4e78a23cd14782bb0b14e9129ed9c"}
+        ]
+      },
+      {
+        "id": "nl2ir-metadata",
+        "rule_ids": ["DB_OBJECT_EVIDENCE_REQUIRED_001", "DB_METADATA_REQUIRED_REPORT_001", "INTERACTIVE_REPORT_COLUMN_COVERAGE_001"],
+        "profile_ids": ["interactive-report"],
+        "enforcement_paths": ["references/policies/memory-bank/30-pages/apex.interactive-report.md", "templates/region-components/interactive-report/interactive-report.nl2ir.md"],
+        "source_sections": [
+          {"heading": "NL2IR Context Source Resolution (NON‑NEGOTIABLE)", "instruction_count": 13, "instruction_digest": "2a1c837739e8f35f59bf2f91a10b9e05f384226e39d687a2d7d80d097d2f9722"}
+        ]
+      },
+      {
+        "id": "report-sql-acl",
+        "rule_ids": ["REPORT_SQL_HTML_LITERAL_FORBIDDEN_001", "STATIC_ID_WHERE_LOWER_REQUIRED_001", "ACL_ROLE_DECLARATION_REQUIRED_001"],
+        "profile_ids": ["interactive-report", "classic-report"],
+        "enforcement_paths": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+        "source_sections": [
+          {"heading": "Report SQL/PLSQL HTML Literal Gate (NON-NEGOTIABLE)", "instruction_count": 4, "instruction_digest": "4efd88c442002fcb1dc9777d07776f66afca36cf481603a7f1fe7c3f7d4465cc"},
+          {"heading": "Static-ID WHERE Comparison Normalization Gate (NON-NEGOTIABLE)", "instruction_count": 4, "instruction_digest": "0d011659dea844285448bbe5bc6530ea5647771ce8549652cf87e1a3ed873dcc"},
+          {"heading": "ACL Role Declaration Dependency Gate (NON-NEGOTIABLE)", "instruction_count": 4, "instruction_digest": "e049624d7f5aca777463cc63c6c57b90aef9e9c53339afde0bd3ebd30cf3da22"}
+        ]
+      },
+      {
+        "id": "rest-source-contract",
+        "rule_ids": ["GRAMMAR_FIRST_AUTHORITY_REQUIRED_001", "DB_OBJECT_EVIDENCE_REQUIRED_001"],
+        "profile_ids": ["rest-data-source"],
+        "enforcement_paths": ["references/policies/memory-bank/40-components/apex.region-data-source.md", "runtime/internal/python/validate_apexlang.py"],
+        "source_sections": [
+          {"heading": "REST Source Canonical Reference Rule (NON‑NEGOTIABLE)", "instruction_count": 4, "instruction_digest": "29e93b25c0697dacb1a1aae6c11a97b90e8b3e5e7950533fe36796cf7194f923"},
+          {"heading": "REST Data Source Alias Mapping (NON‑NEGOTIABLE)", "instruction_count": 3, "instruction_digest": "c70d3387dce1a42363ce24ab6ca8ccba4783464aa616331b896de9509ed40b54"},
+          {"heading": "Remote Server “single origin” rule for REST Data Source (NON-NEGOTIABLE)", "instruction_count": 1, "instruction_digest": "a704328dd54fe36dbaa0dc46437cde95a07da128cbf81e73ca59cc67aa5f3522"},
+          {"heading": "Templates of REST Data Source, REST Data Source Remote Servers and REST Source as Page/Region Source are examples only (NON-NEGOTIABLE)", "instruction_count": 1, "instruction_digest": "c6c900f530c2eb34db96d538db7e5d86635b62b82932abd1e09ab83ba55f0624"},
+          {"heading": "REST synchronization attributes in examples are placeholders (NON-NEGOTIABLE)", "instruction_count": 2, "instruction_digest": "a02ed81afe68658598d568821287229e84fbde0accfd0741b42176e15793b449"},
+          {"heading": "REST Data Source dataProfile requirements (NON-NEGOTIABLE)", "instruction_count": 1, "instruction_digest": "5d49718c198bfc1071459fe20828fc3246b9183b758349afa2f4a8eef3995112"},
+          {"heading": "REST Source page/region requirements (NON-NEGOTIABLE)", "instruction_count": 4, "instruction_digest": "0fc808ce62d154ff0ed8af5d5bb1c1885d9ad8f036f257604dc1cfe07520814d"},
+          {"heading": "REST Source process requirements (NON-NEGOTIABLE)", "instruction_count": 1, "instruction_digest": "9646fd2e69070a6577e517180a1714f6ac29888098a5f5803f4380671b2ea3d9"}
+        ]
+      },
+      {
+        "id": "declarative-navigation",
+        "rule_ids": ["BUTTON_BEHAVIOR_TARGET_CONTRACT_001", "INTERACTIVE_REPORT_COLUMN_COVERAGE_001"],
+        "profile_ids": ["buttons", "interactive-report", "classic-report"],
+        "enforcement_paths": ["runtime/internal/python/validate_apexlang.py", "references/policies/memory-bank/40-components/apex.buttons.md"],
+        "source_sections": [
+          {"heading": "Report Region Link Target Resolution Gate (Non-Negotiable)", "instruction_count": 6, "instruction_digest": "0c2a2687eb0b15b346e31d95871ac00be53d74af78f90836a38be892ee80d2f0"},
+          {"heading": "Button Same-App Target Resolution Gate (Non-Negotiable)", "instruction_count": 3, "instruction_digest": "1b9b640896aed7600348dff7ff18ea610b1e4e18978680cb42c67f33b76fb610"}
+        ]
+      },
+      {
+        "id": "business-logic-payloads",
+        "rule_ids": ["GRAMMAR_FIRST_AUTHORITY_REQUIRED_001", "DB_CONN_REQUIRED_001", "DB_OBJECT_EVIDENCE_REQUIRED_001", "PLSQL_INLINE_BLOCK_001", "SQL_INLINE_BLOCK_001"],
+        "profile_ids": ["dynamic-actions"],
+        "enforcement_paths": ["runtime/internal/python/validate_apexlang.py", "references/policies/memory-bank/20-data/apex.logic.md", "references/policies/memory-bank/20-data/apex.sql.md"],
+        "source_sections": [
+          {"heading": "Process Type Policy — invokeApi Preferred with Thin Wrapper Exception (Non‑Negotiable)", "instruction_count": 7, "instruction_digest": "d1553bc4b8a11a91eb7ee5abba90245687e596a8f7c702b1d90fed95efb14e6c"},
+          {"heading": "SQL/PLSQL Inline Size and DB Object Connection Gate — Non‑Negotiable", "instruction_count": 9, "instruction_digest": "4d535ffedb263094f7fa86813cafbb219208a2294eaf234dc0d9e7aa3bb8b2a3"},
+          {"heading": "Computation Type Guardrail — Non‑Negotiable", "instruction_count": 3, "instruction_digest": "0f3cfc6e36a16d05c6257dde8824f75ba8bae7344168c599f7be3c0810a9c840"},
+          {"heading": "APEX Artifact PL/SQL Call Safety — Non‑Negotiable", "instruction_count": 3, "instruction_digest": "1667606eac113c0fd22990c343b6178cbfb75f8e9ba828c051263a06cffe6a97"}
+        ]
+      }
+    ]
+  },
+  "core_rule_ids": [
+    "GRAMMAR_FIRST_AUTHORITY_REQUIRED_001",
+    "PROGRESSIVE_DISCLOSURE_TRACE_REQUIRED_001",
+    "DEFAULT_GUIDANCE_LAYER_REQUIRED_001",
+    "VALIDATOR_REPAIR_RECIPE_REQUIRED_001"
+  ],
+  "stop_conditions": [
+    "Stop with Missing Inputs when authoritative structure, database-object evidence, target mappings, or compiler-backed legality cannot be proven.",
+    "Stop when same-rank authoritative sources conflict.",
+    "Do not invent blocks, properties, enum values, template options, schema objects, targets, or identifiers."
+  ],
+  "required_validation": [
+    "Run compiler-truth audit before publish or live work.",
+    "Use problems.json plus projected validator repair recipes for deterministic revision.",
+    "Treat live APEX validation as authoritative when the workflow requires runtime completion."
+  ],
+  "profiles": [
+    {
+      "id": "buttons",
+      "keywords": ["button", "redirect button", "submit button", "button icon", "text with icon", "button action"],
+      "rule_ids": ["BUTTON_ICON_POSITION_DEFAULT_001", "BUTTON_BEHAVIOR_TARGET_CONTRACT_001", "TEMPLATE_OPTIONS_EMITTED_VALUES_001", "FA_ICON_REQUIRED_001", "PAGE_ACTION_BREADCRUMB_REQUIRED_001"],
+      "directives": [
+        "Select the exact button behavior variant before drafting.",
+        "Use declarative targets for redirects and canonical Font APEX/template-option values."
+      ],
+      "guidance_paths": ["references/policies/memory-bank/40-components/apex.buttons.md"],
+      "template_projections": [
+        {
+          "path": "templates/buttons/buttons._common.md",
+          "sections": ["Generation Rules", "Conditional Rendering Rules"]
+        }
+      ],
+      "template_routes": [
+        {"keywords": ["redirect", "same app"], "path": "templates/buttons/buttons.redirect-this-app.md", "sections": ["Output Template", "Example"]},
+        {"keywords": ["submit"], "path": "templates/buttons/buttons.submit.md", "sections": ["Output Template", "Example"]},
+        {"keywords": ["icon", "text with icon"], "path": "templates/buttons/buttons.appearance-icon.md", "sections": ["Output Template", "Example", "Rules"]}
+      ]
+    },
+    {
+      "id": "interactive-report",
+      "keywords": ["interactive report", "report page", "report columns", "report link"],
+      "rule_ids": ["INTERACTIVE_REPORT_COLUMN_COVERAGE_001", "IR_PROJECTED_COLUMNS_REQUIRED_001", "IR_CONTEXT_BIND_SUBMIT_REQUIRED_001", "IR_TEXT_SEARCH_CASE_NORMALIZATION_REQUIRED_001", "INTERACTIVE_REPORT_LINK_COLUMN_INVALID_001", "REPORT_ESCAPE_REQUIRED_001"],
+      "directives": [
+        "Project every source column into explicit Interactive Report column metadata.",
+        "Use declarative column links and submit every same-page bind used by the source."
+      ],
+      "guidance_paths": ["references/policies/memory-bank/30-pages/apex.interactive-report.md", "references/policies/memory-bank/20-data/apex.sql.md"],
+      "template_projections": [
+        {"path": "templates/region-components/interactive-report/interactive-report._common.md", "sections": ["Generation Rules", "Mandatory Rendering Rules", "Conditional Rendering Rules", "Guardrails"]}
+      ],
+      "template_routes": [
+        {"keywords": ["interactive report", "report page"], "path": "templates/region-components/interactive-report/interactive-report.standard.md", "sections": ["Output Template", "Example"]}
+      ]
+    },
+    {
+      "id": "classic-report",
+      "keywords": ["classic report", "report region", "report pagination"],
+      "rule_ids": ["CLASSIC_REPORT_DEFAULT_TEMPLATE_REQUIRED_001", "CLASSIC_REPORT_COMPONENT_APPEARANCE_REQUIRED_001", "CLASSIC_REPORT_HIDDEN_COLUMN_HEADING_FORBIDDEN_001", "REPORT_ESCAPE_REQUIRED_001"],
+      "directives": ["Keep Classic Report column, component appearance, pagination, and hidden-column rules separate from Interactive Report rules."],
+      "guidance_paths": ["references/policies/memory-bank/30-pages/apex.classic-report.md"],
+      "template_projections": [
+        {"path": "templates/region-components/classic-report/classic-report._common.md", "sections": ["Generation Rules", "Conditional Rendering Rules", "Guardrails"]}
+      ]
+    },
+    {
+      "id": "dashboard",
+      "keywords": ["dashboard", "kpi", "metric card", "scorecard"],
+      "rule_ids": ["DASHBOARD_KPI_METRIC_CARD_REQUIRED_001", "DASHBOARD_LAYOUT_ROW_PLAN_REQUIRED_001", "METRIC_CARD_REGION_NORMALIZATION_REQUIRED_001", "METRIC_CARD_STANDARD_TEMPLATE_FORBIDDEN_001"],
+      "directives": ["Use one normalized Metric Card region for KPI strips and freeze the dashboard row plan before rendering."],
+      "guidance_paths": ["references/policies/memory-bank/30-pages/apex.dashboard.md", "references/policies/memory-bank/30-pages/apex.layout.md"],
+      "template_projections": [
+        {"path": "templates/template-components/metric-card/metric-card._common.md", "sections": ["Generation Rules", "Metric Card Column Data Types", "Guardrails"]}
+      ]
+    },
+    {
+      "id": "form",
+      "keywords": ["form", "modal form", "drawer form", "edit page", "create page"],
+      "rule_ids": ["FORM_DRAWER_DEFAULT_END_REQUIRED_001", "FORM_PRIMARY_KEY_REQUIRED_001", "APP_UX_FORM_CONTEXT_REQUIRED_001", "APP_UX_FORM_DEFAULT_REQUIRED_001", "APP_UX_FORM_VALIDATION_REQUIRED_001"],
+      "directives": ["Prove primary-key, source, defaulting, validation, and launcher mappings before drafting the form."],
+      "guidance_paths": ["references/policies/memory-bank/30-pages/apex.form.md"],
+      "template_projections": [
+        {"path": "templates/region-components/form/form._common.md", "sections": ["Generation Rules", "Conditional Rendering Rules", "Guardrails"]}
+      ]
+    },
+    {
+      "id": "faceted-search",
+      "keywords": ["faceted search", "facet", "filter facets"],
+      "rule_ids": ["FACETED_SEARCH_DEFAULT_SETTINGS_REQUIRED_001", "FACET_SOURCE_DATA_TYPE_REQUIRED_001", "FACET_LIST_ENTRIES_LIMIT_REQUIRED_001", "FACET_VALUE_FILTER_INITIAL_REQUIRED_001", "FACET_ENTITY_ID_DISPLAY_REQUIRED_001"],
+      "directives": ["Select facet types from column semantics, keep date/number data types runtime-safe, and bound high-cardinality lists."],
+      "guidance_paths": ["references/policies/memory-bank/30-pages/apex.faceted-search.md"],
+      "template_projections": [
+        {"path": "templates/region-components/faceted-search/faceted-search._common.md", "sections": ["Generation Rules", "Conditional Rendering Rules", "Guardrails"]}
+      ]
+    },
+    {
+      "id": "dynamic-actions",
+      "keywords": ["dynamic action", "set value", "execute javascript", "dialog closed", "refresh action"],
+      "rule_ids": ["MODAL_REPORT_REFRESH_REQUIRED_001", "MASTER_DETAIL_DYNAMIC_ACTION_REQUIRED_001"],
+      "directives": [
+        "Select event, selection type, action capability, affected elements, and fire-on-initialization behavior explicitly.",
+        "Use the compiler-supported action vocabulary and settings payload for the selected action."
+      ],
+      "guidance_paths": ["references/policies/memory-bank/20-data/apex.logic.md", "references/domains/business-logic/dynamic-actions/workflow-dynamic-actions-batch.md"],
+      "template_projections": [
+        {"path": "templates/business-logic/dynamic-actions/dynamic-actions._common.md", "sections": ["Generation Rules", "Approved when.event Values", "Action Capability Matrix", "Conditional Rendering Rules", "Validation Checklist"]}
+      ]
+    },
+    {
+      "id": "cards",
+      "keywords": ["cards", "cards region", "card navigation", "card media"],
+      "rule_ids": ["TEMPLATE_OPTIONS_EMITTED_VALUES_001", "FA_ICON_REQUIRED_001"],
+      "directives": ["Select standard versus REST source, media shape, row action, advanced formatting, and exact template-option values before rendering."],
+      "guidance_paths": ["references/policies/memory-bank/40-components/apex.templates.md", "references/policies/memory-bank/40-components/apex.region-data-source.md"],
+      "template_projections": [
+        {"path": "templates/region-components/cards/cards._common.md", "sections": ["Generation Rules", "Media Source Shapes", "Row Navigation Action Shape", "Conditional Rendering Rules", "Guardrails"]}
+      ],
+      "template_routes": [
+        {"keywords": ["rest", "rest source"], "path": "templates/region-components/cards/cards.rest-source.md", "sections": ["Output Template", "Example"]},
+        {"keywords": ["cards", "cards region"], "path": "templates/region-components/cards/cards.standard.md", "sections": ["Output Template", "Example"]}
+      ]
+    },
+    {
+      "id": "map",
+      "keywords": ["map", "map layer", "markers", "bounding box"],
+      "rule_ids": ["MAP_INITIAL_VIEWPORT_BOUNDS_REQUIRED_001", "MAP_LAYER_CONTEXT_BIND_REQUIRED_001", "MAP_LAYER_CONTEXT_BIND_SUBMIT_REQUIRED_001"],
+      "directives": ["Use schema-proven coordinates, fit multi-marker views to bounds, and use normal bind variables for context-dependent layers."],
+      "guidance_paths": ["references/policies/memory-bank/30-pages/apex.map-page.md"],
+      "template_projections": [
+        {"path": "templates/region-components/map/map._common.md", "sections": ["Generation Rules", "Conditional Rendering Rules", "Guardrails"]}
+      ]
+    },
+    {
+      "id": "full-app",
+      "keywords": ["create app", "generate app", "complete app", "functional requirements", "multi page application"],
+      "rule_ids": ["APPLICATION_SPEC_REQUIRED_001", "COMPONENT_REGISTRY_ROUTING_REQUIRED_001", "ISOLATED_UNIT_CONTEXT_REQUIRED_001", "STAGED_APPLICATION_VALIDATION_REQUIRED_001", "STRUCTURED_PATTERN_PACK_REQUIRED_001", "SECURITY_BASELINE_REQUIRED_001", "APP_UX_CONTRACT_REQUIRED_001", "APP_UX_TRACEABILITY_REQUIRED_001"],
+      "directives": ["Freeze application spec, UX contract, page inventory, composition plan, and behavior plan before APEXlang rendering.", "Resolve a fresh task-specific context capsule for each implementation unit."],
+      "guidance_paths": ["references/workflows/apexlang/workflow-create-app-from-fr-and-model.md", "references/workflows/apexlang/application-spec.template.md"]
+    },
+    {
+      "id": "rest-data-source",
+      "keywords": ["rest data source", "rest source", "remote server", "data profile", "web source"],
+      "rule_ids": ["DB_OBJECT_EVIDENCE_REQUIRED_001"],
+      "directives": [
+        "Resolve the real REST source alias and remote-server origin; never guess either value.",
+        "Validate operations, parameters, and the complete data profile from an authoritative response or specification before generating consumers."
+      ],
+      "guidance_paths": ["references/policies/memory-bank/00-guard/ai.guard.md", "references/policies/memory-bank/40-components/apex.region-data-source.md"],
+      "template_projections": [
+        {"path": "templates/shared-components/rest-data-sources/example_rest_data_source.example.md", "sections": ["Generation Rules", "Variable Contract", "Output Template", "Guardrails"]}
+      ]
+    },
+    {
+      "id": "translation",
+      "keywords": ["translation", "translate", "localization", "localise", "multilingual", "messages apx", "app_text$"],
+      "rule_ids": [],
+      "directives": ["Generate shared text messages and rewire consuming attributes to APP_TEXT substitutions; never replace component attributes with direct translated literals."],
+      "guidance_paths": ["references/domains/shared-components/workflow-translations.md", "assets/domains/shared-components/translations/languages.json"]
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "GRAMMAR_FIRST_AUTHORITY_REQUIRED_001",
+      "owner": "references/policies/memory-bank/00-guard/ai.guard.md",
+      "applies_to": ["apexlang syntax", "dsl shape", "template inference", "property legality"],
+      "summary": "APEXlang syntax comes from the EBNF grammar and semantic property legality comes from compiler metadata before templates are used as exact examples.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Stop with Missing Inputs when compiler-backed legality cannot be resolved or when authoritative syntax sources conflict.",
+      "required_load_when": ["apexlang generation", "dsl syntax", "property lookup", "template conflict", "compiler truth"],
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md", "runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/workflows/apexlang/prompt-contracts.md",
+      "examples_doc": "assets/grammar/apexlang.ebnf"
+    },
+    {
+      "rule_id": "PROGRESSIVE_DISCLOSURE_TRACE_REQUIRED_001",
+      "owner": "references/workflows/apexlang/prompt-contracts.md",
+      "applies_to": ["routing", "source trace", "progressive disclosure", "generation plan"],
+      "summary": "Non-trivial APEXlang work records the smallest source path from intent to rule/contract, grammar/compiler evidence, and exact template only when needed.",
+      "phases": ["intent_normalization", "planning", "generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Stop rather than widening context when the smallest authoritative route cannot support a required high-impact decision.",
+      "required_load_when": ["non-trivial generation", "multi-file generation", "page pattern selection", "agent critique"],
+      "enforced_by": ["references/workflows/apex-generation/agents/20-agent-draft.md", "references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/workflows/apexlang/prompt-contracts.md",
+      "examples_doc": "references/workflows/apex-generation/nlu/nlu-routing-test-matrix.md"
+    },
+    {
+      "rule_id": "PROMPT_NORMALIZATION_REQUIRED_001",
+      "owner": "references/policies/governance/00-governance.md",
+      "summary": "Accept free-form requests, normalize explicit intent first, and use at most one simple clarification round for critical blockers.",
+      "phases": ["intent_normalization"],
+      "profile_ids": [],
+      "stop_behavior": "Stop with Missing Inputs when critical ambiguity remains after one clarification round.",
+      "enforced_by": ["SKILL.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "TOOLING_REWRITE_ALIAS_LITERAL_REQUIRED_001",
+      "owner": "references/policies/governance/00-governance.md",
+      "summary": "Treat APEXlang @aliases as literal values during rewrites and avoid unescaped Perl interpolation.",
+      "phases": ["generation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Stop an unsafe rewrite before it can erase or interpolate an @alias value.",
+      "enforced_by": ["references/policies/governance/00-governance.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "ORACLE_DB_SKILLS_DELEGATION_REQUIRED_001",
+      "owner": "references/policies/memory-bank/00-guard/ai.guard.md",
+      "summary": "Keep APEXlang ownership limited to APEX artifact integration and delegate generic Oracle Database, PL/SQL, SQLcl, and utPLSQL guidance to Oracle DB skills.",
+      "phases": ["intent_normalization", "planning"],
+      "profile_ids": [],
+      "stop_behavior": "Stop generic DB-only work with Missing Inputs or an Oracle DB skills required notice when the upstream skills are unavailable.",
+      "enforced_by": ["SKILL.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "SECURITY_BASELINE_REQUIRED_001",
+      "owner": "references/policies/memory-bank/10-global/apex.global.md",
+      "summary": "Generated business applications must use the authenticated-page, session-protection, Page 0, and session-timeout security baseline.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["full-app"],
+      "stop_behavior": "Block publish and completion until required application and page security defaults are present.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "PUBLIC_PAGE_REVIEW_REQUIRED_001",
+      "owner": "references/policies/memory-bank/10-global/apex.global.md",
+      "summary": "Treat the login page as the only default public page and require explicit review rationale for every other public page.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["full-app"],
+      "stop_behavior": "Block completion when a non-login public page lacks explicit security-review rationale.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "HIDDEN_ITEM_SSP_REQUIRED_001",
+      "owner": "references/policies/memory-bank/10-global/apex.global.md",
+      "summary": "Classify hidden items as protected server-owned data or explicitly justified same-page client-owned state and apply matching Session State Protection.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": ["form", "dynamic-actions"],
+      "stop_behavior": "Block finalization when hidden-item ownership and Session State Protection disagree.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "REPORT_ESCAPE_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.report-column-rendering.md",
+      "summary": "Keep report and grid output escaped unless a reviewed declarative column-formatting contract safely uses escaped substitutions.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": ["interactive-report", "classic-report"],
+      "stop_behavior": "Block finalization when report output disables escaping without an approved declarative rendering shape.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.report-column-rendering.md"
+    },
+    {
+      "rule_id": "SECURE_COOKIE_DSL_UNVERIFIED_001",
+      "owner": "references/policies/governance/00-governance.md",
+      "summary": "Do not invent secure-cookie DSL attributes that cannot be proven against the active compiler/runtime contract.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": ["full-app"],
+      "stop_behavior": "Emit a blocking validation finding instead of speculative secure-cookie syntax.",
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "APP_TEMPLATE_ARTIFACT_LEAK_001",
+      "owner": "SKILL.md",
+      "summary": "Publish only manifest-declared runtime artifacts and never copy template documentation, metadata, or the scaffold-example container into an application root.",
+      "phases": ["generation", "validation", "repair", "deployment"],
+      "profile_ids": ["full-app"],
+      "stop_behavior": "Block publish when template-only files or containers leak into a generated application.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "APEXLANG_LF_LINE_ENDINGS_REQUIRED_001",
+      "owner": "runtime/internal/python/validate_apexlang.py",
+      "summary": "Write and validate .apx artifacts with LF line endings only.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Block validation and publish until CRLF line endings are normalized to LF.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "CALENDAR_CREATE_LINK_TARGET_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.calendar.md",
+      "summary": "Resolve whether a calendar create link uses an explicit existing form target or a new same-source modal form.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Stop with Missing Inputs when the form target choice or required mapping remains unresolved.",
+      "enforced_by": ["references/domains/page-components/regions/calendar/workflow-calendar-link-targets.md"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.calendar.md"
+    },
+    {
+      "rule_id": "CALENDAR_VIEW_LINK_TARGET_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.calendar.md",
+      "summary": "Resolve whether a calendar view/edit link uses an explicit existing report target or a new report page.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Stop with Missing Inputs when the report target choice or primary-key mapping remains unresolved.",
+      "enforced_by": ["references/domains/page-components/regions/calendar/workflow-calendar-link-targets.md"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.calendar.md"
+    },
+    {
+      "rule_id": "CALENDAR_REPORT_TYPE_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.calendar.md",
+      "summary": "Require an explicit Classic Report or Interactive Report choice when a calendar view/edit link creates a report page.",
+      "phases": ["planning", "generation"],
+      "profile_ids": [],
+      "stop_behavior": "Stop with Missing Inputs rather than defaulting the new report type.",
+      "enforced_by": ["references/domains/page-components/regions/calendar/workflow-calendar-link-targets.md"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.calendar.md"
+    },
+    {
+      "rule_id": "CALENDAR_REPORT_PK_FILTER_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.calendar.md",
+      "summary": "Give a calendar-linked report a dedicated primary-key page item and filter its SQL with that item.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["interactive-report", "classic-report"],
+      "stop_behavior": "Block finalization when the calendar primary-key receiver or report filter is missing.",
+      "enforced_by": ["references/domains/page-components/regions/calendar/workflow-calendar-link-targets.md"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.calendar.md"
+    },
+    {
+      "rule_id": "COMPOSITION_CONTRACT_REQUIRED_001",
+      "owner": "references/policies/memory-bank/40-components/apex.templates.md",
+      "summary": "Solve layout and visual composition through native templates, options, slots, and layout attributes before styling workarounds.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["dashboard", "form"],
+      "stop_behavior": "Stop for clarification when the requested composition cannot be expressed through the active native contract.",
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/40-components/apex.templates.md"
+    },
+    {
+      "rule_id": "GRID_SCOPE_REQUIRED_001",
+      "owner": "references/policies/memory-bank/40-components/apex.templates.md",
+      "summary": "Keep page-region grid scope separate from item-grid scope and validate child spans only within their parent item region.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["dashboard", "form"],
+      "stop_behavior": "Block finalization when layout spans are validated or emitted against the wrong grid scope.",
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/40-components/apex.templates.md"
+    },
+    {
+      "rule_id": "CSS_CLASS_INVENTION_FORBIDDEN_001",
+      "owner": "references/policies/memory-bank/40-components/apex.templates.md",
+      "summary": "Do not invent CSS classes or selector-level styling to solve structural layout problems.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["dashboard", "form"],
+      "stop_behavior": "Stop for clarification instead of improvising class-based structural styling.",
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/40-components/apex.templates.md"
+    },
+    {
+      "rule_id": "DB_MODE_PROMPT_REQUIRED_001",
+      "owner": "references/policies/memory-bank/20-data/db.connection.md",
+      "summary": "Discover offline schema metadata and saved SQLcl connections before asking for DB mode or connection input.",
+      "phases": ["intent_normalization", "planning", "runtime"],
+      "profile_ids": [],
+      "stop_behavior": "Stop with Missing Inputs when required DB mode, schema selection, connection, or workspace remains unresolved after deterministic discovery and one clarification.",
+      "enforced_by": ["references/ops/sqlcl.md", "references/ops/runtime-gates.md"],
+      "details_doc": "references/policies/memory-bank/20-data/db.connection.md"
+    },
+    {
+      "rule_id": "DB_OBJECT_EVIDENCE_REQUIRED_001",
+      "owner": "references/policies/memory-bank/00-guard/ai.guard.md",
+      "summary": "Prove every referenced database object and column through schema documentation, live metadata, or exact user assertion before emitting object-specific code.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["interactive-report", "classic-report", "form", "faceted-search", "rest-data-source"],
+      "stop_behavior": "Stop with Missing Inputs while any required object_evidence_source remains unresolved.",
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "DB_METADATA_REQUIRED_REPORT_001",
+      "owner": "references/policies/memory-bank/20-data/apex.sql.md",
+      "summary": "Verify report source objects, projected columns, and sort columns against authoritative schema metadata before drafting report SQL.",
+      "phases": ["planning", "generation", "validation", "repair"],
+      "profile_ids": ["interactive-report", "classic-report", "faceted-search"],
+      "stop_behavior": "Stop with Missing Inputs when report object or column metadata cannot be verified.",
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "DB_VERIFY_BEFORE_GENERATION_001",
+      "owner": "references/policies/memory-bank/00-guard/ai.guard.md",
+      "summary": "Resolve prerequisite metadata and confirm referenced objects and columns before generating DB-backed APEX artifacts.",
+      "phases": ["planning", "generation"],
+      "profile_ids": ["interactive-report", "classic-report", "form", "faceted-search"],
+      "stop_behavior": "Stop before drafting when prerequisite metadata or required object verification is unavailable.",
+      "enforced_by": ["references/workflows/apex-generation/agents/20-agent-draft.md", "references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "DB_CONN_REQUIRED_001",
+      "owner": "references/policies/memory-bank/20-data/db.connection.md",
+      "summary": "Require an explicit resolved connection before live creation or update of database objects.",
+      "phases": ["planning", "runtime", "deployment"],
+      "profile_ids": [],
+      "stop_behavior": "Block live DB object changes when db_mode or db_connection_name is unresolved or ambiguous.",
+      "enforced_by": ["references/ops/sqlcl.md"],
+      "details_doc": "references/policies/memory-bank/20-data/db.connection.md"
+    },
+    {
+      "rule_id": "LIVE_RUNTIME_VALIDATION_REQUIRED_001",
+      "owner": "references/ops/runtime-gates.md",
+      "summary": "Require authoritative live APEX validation evidence for workflows that claim runtime completion.",
+      "phases": ["runtime"],
+      "profile_ids": [],
+      "stop_behavior": "Block completion when required runtime inputs or live validation evidence are missing.",
+      "enforced_by": ["tools/apexctl.mjs", "runtime/runtime.bundle.mjs"],
+      "details_doc": "references/ops/runtime-gates.md"
+    },
+    {
+      "rule_id": "RUNTIME_GATE_COMPLETION_REQUIRED_001",
+      "owner": "references/ops/runtime-gates.md",
+      "summary": "Allow completion only after the same resolved application path passes the required direct SQLcl validation path.",
+      "phases": ["runtime"],
+      "profile_ids": [],
+      "stop_behavior": "Block completion wording until the canonical validation gate succeeds.",
+      "enforced_by": ["tools/apexctl.mjs", "runtime/runtime.bundle.mjs"],
+      "details_doc": "references/ops/runtime-gates.md"
+    },
+    {
+      "rule_id": "ONLINE_IMPORT_CONDITIONAL_001",
+      "owner": "references/ops/runtime-gates.md",
+      "summary": "Treat an explicit post-check GUI choice as the only authority for live import and preserve validate/import session continuity.",
+      "phases": ["runtime", "deployment"],
+      "profile_ids": [],
+      "stop_behavior": "Stop after validation when import is not explicitly selected or when session or target identity is uncertain.",
+      "enforced_by": ["tools/apexctl.mjs", "runtime/runtime.bundle.mjs"],
+      "details_doc": "references/ops/runtime-gates.md"
+    },
+    {
+      "rule_id": "APEXLANG_BUILD_REFRESH_SCOPE_REQUIRED_001",
+      "owner": "references/policies/governance/00-governance.md",
+      "summary": "Classify packaged-build changes as narrow metadata deltas unless compiler evidence proves broader DSL drift.",
+      "phases": ["planning", "validation"],
+      "profile_ids": [],
+      "stop_behavior": "Do not broaden a component-local build delta into unrelated guidance without compiler-backed evidence.",
+      "enforced_by": ["references/policies/governance/00-governance.md"],
+      "details_doc": "references/policies/memory-bank/00-guard/ai.guard.md"
+    },
+    {
+      "rule_id": "REPORT_SQL_HTML_LITERAL_FORBIDDEN_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.report-column-rendering.md",
+      "summary": "Return raw report data from SQL or PL/SQL and perform presentation through declarative column rendering.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": ["interactive-report", "classic-report"],
+      "stop_behavior": "Block finalization while report SQL or PL/SQL contains presentation HTML literals.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.report-column-rendering.md"
+    },
+    {
+      "rule_id": "STATIC_ID_WHERE_LOWER_REQUIRED_001",
+      "owner": "references/policies/memory-bank/20-data/apex.sql.md",
+      "summary": "Normalize SQL comparisons against _static_id columns with LOWER on the column and matching value or bind.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Block finalization while case-sensitive or mixed-case _static_id predicates remain.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/20-data/apex.sql.md"
+    },
+    {
+      "rule_id": "ACL_ROLE_DECLARATION_REQUIRED_001",
+      "owner": "references/policies/memory-bank/20-data/apex.logic.md",
+      "summary": "Declare each referenced application ACL role exactly once with a lowercase kebab-case static ID.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": [],
+      "stop_behavior": "Block finalization when role checks lack matching valid acl-roles declarations.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/domains/README.md"
+    },
+    {
+      "rule_id": "PLSQL_INLINE_BLOCK_001",
+      "owner": "references/policies/memory-bank/20-data/apex.logic.md",
+      "summary": "Extract APEX artifact PL/SQL bodies over 4000 raw characters into a verified package API.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": ["dynamic-actions"],
+      "stop_behavior": "Block final output until oversized PL/SQL is extracted and referenced through the allowed process shape.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/20-data/apex.logic.md"
+    },
+    {
+      "rule_id": "SQL_INLINE_BLOCK_001",
+      "owner": "references/policies/memory-bank/20-data/apex.sql.md",
+      "summary": "Extract APEX artifact SQL bodies over 4000 raw characters into a verified secure view.",
+      "phases": ["generation", "validation", "repair"],
+      "profile_ids": ["interactive-report", "classic-report", "form", "faceted-search"],
+      "stop_behavior": "Block final output until oversized SQL is extracted and the artifact references the verified view.",
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py", "assets/validator-fix-recipes.json"],
+      "details_doc": "references/policies/memory-bank/20-data/apex.sql.md"
+    },
+    {
+      "rule_id": "DEFAULT_GUIDANCE_LAYER_REQUIRED_001",
+      "owner": "references/policies/memory-bank/10-global/apex.global.md",
+      "applies_to": ["user-facing page", "form", "report", "item help", "column comments", "accessibility guidance"],
+      "summary": "User-facing pages need useful page help, behavior-aware item help, and specific developer-facing report/grid column comments by default.",
+      "directives": [
+        "Generate actually helpful guidance content, not placeholders.",
+        "Comment content must be specific to the column.",
+        "Reject placeholder or empty-value patterns such as `Help Text Here`, `Inline Help Text Here`, `No help is available for this page`.",
+        "Reject placeholder or generic filler language.",
+        "Auto-revise the draft to add helpful page help, item help, and column comments.",
+        "Replace placeholders and label-only restatements with concise, behavior-aware wording."
+      ],
+      "required_load_when": ["apexlang generation", "user-facing page", "form", "report", "help text"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/10-global/apex.global.md",
+      "examples_doc": "templates/items/items._common.md"
+    },
+    {
+      "rule_id": "BUTTON_ICON_POSITION_DEFAULT_001",
+      "owner": "references/policies/memory-bank/40-components/apex.buttons.md",
+      "applies_to": ["button", "template-component-button", "buttons-container"],
+      "summary": "Icon-plus-text buttons default to t-Button--iconLeft; t-Button--iconRight is explicit-only; icon-only buttons omit left/right placement.",
+      "required_load_when": ["button icon", "text-with-icon button", "template component button icon", "buttons-container with icon button"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/40-components/apex.buttons.md",
+      "examples_doc": "templates/buttons/buttons.appearance-icon.md"
+    },
+    {
+      "rule_id": "TEMPLATE_OPTIONS_EMITTED_VALUES_001",
+      "owner": "references/policies/memory-bank/40-components/apex.templates.md",
+      "applies_to": ["templateOptions", "universal-theme-template-options"],
+      "summary": "Template options must use accepted emitted values, keep #DEFAULT# atomic, and preserve documented composite values as one entry.",
+      "required_load_when": ["template options", "universal theme option", "template option repair"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/40-components/apex.templates.md",
+      "examples_doc": "templates/buttons/buttons._common.md"
+    },
+    {
+      "rule_id": "BUTTON_BEHAVIOR_TARGET_CONTRACT_001",
+      "owner": "references/policies/memory-bank/40-components/apex.buttons.md",
+      "applies_to": ["button", "button behavior", "redirectThisApp", "redirectOtherApp"],
+      "summary": "Redirect buttons require declarative targets; submit and dynamic-action buttons omit targets; definedByDynamicAction omits warnOnUnsavedChanges.",
+      "required_load_when": ["button redirect", "button action", "button behavior", "button validation repair"],
+      "enforced_by": ["assets/component-policies.json", "runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/40-components/apex.buttons.md",
+      "examples_doc": "templates/buttons/buttons.redirect-this-app.md"
+    },
+    {
+      "rule_id": "FORM_DRAWER_DEFAULT_END_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.form.md",
+      "applies_to": ["modal form", "drawer form", "form page"],
+      "summary": "Report-to-form create/edit pages default to modal drawer forms with explicit end/right drawer positioning unless requirements prove another presentation.",
+      "required_load_when": ["modal form", "drawer form", "form page generation"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.form.md",
+      "examples_doc": "templates/page-examples/form-page/form-page.example.md"
+    },
+    {
+      "rule_id": "INTERACTIVE_REPORT_COLUMN_COVERAGE_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.interactive-report.md",
+      "applies_to": ["interactive report", "report columns"],
+      "summary": "SQL-backed report pages need explicit column coverage and report guidance aligned to the delivered projection.",
+      "required_load_when": ["interactive report", "report page", "report column validation"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.interactive-report.md",
+      "examples_doc": "templates/region-components/interactive-report/interactive-report.standard.md"
+    },
+    {
+      "rule_id": "DASHBOARD_KPI_METRIC_CARD_REQUIRED_001",
+      "owner": "references/policies/memory-bank/30-pages/apex.dashboard.md",
+      "applies_to": ["dashboard", "kpi", "metric card"],
+      "summary": "Dashboard KPI strips use normalized Metric Card template components rather than KPI-like Classic Reports or static fake cards.",
+      "required_load_when": ["dashboard", "kpi card", "metric card", "scorecard"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/policies/memory-bank/30-pages/apex.dashboard.md",
+      "examples_doc": "templates/template-components/metric-card/metric-card._common.md"
+    },
+    {
+      "rule_id": "APPLICATION_SPEC_REQUIRED_001",
+      "owner": "references/workflows/apexlang/application-spec.template.md",
+      "applies_to": ["complete app", "functional requirements", "data model"],
+      "summary": "Complete app generation from functional requirements plus model/schema evidence must produce an implementation-ready application spec before drafting non-trivial .apx artifacts.",
+      "required_load_when": ["create app from fr and model", "complete app generation", "functional requirements plus model"],
+      "enforced_by": ["runtime/internal/python/validate_apexlang.py"],
+      "details_doc": "references/workflows/apexlang/application-spec.template.md",
+      "examples_doc": "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md"
+    },
+    {
+      "rule_id": "APPLICATION_CAPSULE_SET_REQUIRED_001",
+      "owner": "runtime/lib/catalogs.mjs",
+      "applies_to": ["complete app", "multi-page generation", "application capsule set"],
+      "summary": "Full-app generation must use one small application-plan capsule plus adaptive page-first units, splitting oversized pages into shell, region, and logic units only when needed.",
+      "required_load_when": ["complete app generation", "multi-page generation", "application capsule set"],
+      "directives": ["Load the application-plan capsule once.", "Retrieve exactly one manifest unit by unit_id.", "Use a fresh context and never concatenate or retain prior unit capsules."],
+      "enforced_by": ["tools/apexctl.mjs", "assets/routing-load-policy.json"],
+      "details_doc": "runtime/lib/catalogs.mjs",
+      "examples_doc": "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md"
+    },
+    {
+      "rule_id": "STRUCTURED_PATTERN_PACK_REQUIRED_001",
+      "owner": "assets/contracts/page-construction-packs.json",
+      "applies_to": ["page patterns", "report modal form", "dashboard", "master-detail", "faceted search", "lov-backed form"],
+      "summary": "Common page workflows should be selected from structured pattern packs before falling back to Markdown template inference.",
+      "required_load_when": ["page pattern selection", "report modal form", "dashboard", "master-detail", "faceted search", "lov-backed form"],
+      "enforced_by": ["assets/contracts/page-patterns.json", "assets/contracts/page-construction-packs.json"],
+      "details_doc": "assets/contracts/page-construction-packs.json",
+      "examples_doc": "assets/contracts/page-patterns.json"
+    },
+    {
+      "rule_id": "COMPONENT_REGISTRY_ROUTING_REQUIRED_001",
+      "owner": "assets/apex-generation/components.registry.json",
+      "applies_to": ["component generation", "page generation", "full app generation"],
+      "summary": "Resolve requested component families through the component registry and expose only their exact rules, templates, requirements, and workflow routes.",
+      "required_load_when": ["component selection", "page component inventory", "unknown page pattern"],
+      "directives": ["Do not scan template folders to discover components.", "Stop when neither a structured pattern nor a component-registry route supports the requested shape."],
+      "enforced_by": ["runtime/lib/catalogs.mjs"],
+      "details_doc": "assets/apex-generation/components.registry.json",
+      "examples_doc": "runtime/lib/catalogs.mjs"
+    },
+    {
+      "rule_id": "ISOLATED_UNIT_CONTEXT_REQUIRED_001",
+      "owner": "assets/routing-load-policy.json",
+      "applies_to": ["full app generation", "multi-page generation", "application capsule set"],
+      "summary": "Each manifest unit must run in a fresh model context containing the plan, one unit capsule, its symbol projection, and necessary tool results only.",
+      "required_load_when": ["complete app generation", "unit capsule generation"],
+      "directives": ["Resolve a fresh task-specific context capsule for each implementation unit.", "Do not retain previous unit context."],
+      "enforced_by": ["references/workflows/apex-generation/agents/20-agent-draft.md", "tools/apexctl.mjs"],
+      "details_doc": "assets/routing-load-policy.json",
+      "examples_doc": "references/workflows/apex-generation/agents/20-agent-draft.md"
+    },
+    {
+      "rule_id": "STAGED_APPLICATION_VALIDATION_REQUIRED_001",
+      "owner": "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md",
+      "applies_to": ["full app generation", "multi-page validation", "runtime validation"],
+      "summary": "Use unit-local checks during generation, one full-app local/compiler integration pass after assembly, and one live validation after local success unless a repair changes the artifact.",
+      "required_load_when": ["complete app validation", "multi-page generation"],
+      "enforced_by": ["references/workflows/apex-generation/agents/30-agent-critique.md"],
+      "details_doc": "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md",
+      "examples_doc": "references/workflows/apex-generation/agents/30-agent-critique.md"
+    },
+    {
+      "rule_id": "VALIDATOR_REPAIR_RECIPE_REQUIRED_001",
+      "owner": "assets/validator-fix-recipes.json",
+      "applies_to": ["validation repair", "runtime repair", "lint repair"],
+      "summary": "Validation findings must map to the exact rule ID, deterministic fix, owning guidance, and rerun evidence before revision.",
+      "required_load_when": ["validator failure", "runtime failure", "problems.json repair", "lint repair"],
+      "enforced_by": ["references/workflows/apex-generation/agents/40-agent-revision.md"],
+      "details_doc": "assets/validator-fix-recipes.json",
+      "examples_doc": "references/workflows/apex-generation/agents/40-agent-revision.md"
+    }
+  ]
+}
