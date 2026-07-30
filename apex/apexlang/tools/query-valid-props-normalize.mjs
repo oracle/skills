@@ -110,6 +110,7 @@ function buildComponentRecord(componentTypeId, componentType, metadata) {
     parentDependsOn: summarizeCondition(componentType.parent?.dependingOn, metadata),
     pluginPropertyId: componentType.plugin?.propertyId || null,
     pluginComponentTypeName: componentType.plugin?.componentTypeName || null,
+    pluginApiExpression: componentType.plugin?.api?.expression || null,
     propertyCount: properties.length,
     groups,
     properties

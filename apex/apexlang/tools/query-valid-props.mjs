@@ -1,7 +1,15 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildOracleNormalizedMap, ORACLE_NORMALIZER_VERSION, readOracleRuntimeMetadata } from "./query-valid-props-normalize.mjs";
-import { resolveOracleRuntime } from "./query-valid-props-runtime.mjs";
+import { loadOracleCompilerContext } from "./query-valid-props-context.mjs";
+import {
+  buildPropertyLookup as basePropertyLookup,
+  parseQueryAssumptions as parseAssumptions,
+  queryPropertyStatus as propertyStatus,
+  resolveDottedComponentAlias,
+  resolveLovValues,
+  selectQueryComponents as selectComponents
+} from "./query-valid-props-semantics.mjs";
 import { loadTemplateComponentProfile } from "./query-valid-props-template-components.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
@@ -36,6 +44,7 @@ function parseArgs(argv) {
     parent: null,
     group: null,
     templateComponent: null,
+    auditOptionalProperties: false,
     assumes: [],
     list: false,
     dumpJson: false,
@@ -75,6 +84,9 @@ function parseArgs(argv) {
         args.templateComponent = readRequiredOptionValue(argv, index, arg);
         index += 1;
         break;
+      case "--audit-optional-properties":
+        args.auditOptionalProperties = true;
+        break;
       case "--when":
         args.assumes.push(readRequiredOptionValue(argv, index, arg));
         index += 1;
@@ -101,98 +113,187 @@ function parseArgs(argv) {
   return args;
 }
 
-const DOTTED_COMPONENT_ALIASES = new Map([
-  ["map.region", { component: "region", assumes: ["94=NATIVE_MAP"] }],
-  ["map.layer", { component: "layer" }],
-  ["map.layer.source", { component: "layer", group: "source" }],
-  ["map.layer.columnMapping", { component: "layer", group: "columnMapping" }],
-  ["map.layer.tooltip", { component: "layer", group: "tooltip" }],
-  ["map.layer.infoWindow", { component: "layer", group: "infoWindow" }],
-  ["map.layer.link", { component: "layer", group: "link" }],
-  ["chart.region", { component: "region", assumes: ["94=NATIVE_JET_CHART"] }],
-  ["chart.series", { component: "series" }],
-  ["chart.series.marker", { component: "series", group: "marker" }],
-  ["chart.series.line", { component: "series", group: "line" }],
-  ["chart.series.label", { component: "series", group: "label" }],
-  ["chart.series.tooltip", { component: "series", group: "tooltip" }],
-  ["chart.axis", { component: "axis" }],
-  ["chart.axis.x", { component: "axis" }],
-  ["chart.axis.y", { component: "axis" }],
-  ["chart.axis.y2", { component: "axis" }],
-  ["interactiveReport.region", { component: "region", assumes: ["94=NATIVE_IR"] }],
-  ["interactiveGrid.region", { component: "region", assumes: ["94=NATIVE_IG"] }],
-  ["classicReport.region", { component: "region", assumes: ["94=NATIVE_SQL_REPORT"] }],
-  ["form.region", { component: "region", assumes: ["94=NATIVE_FORM"] }],
-  ["report.column", { component: "column", parent: "region" }],
-  ["report.column.heading", { component: "column", parent: "region", group: "heading" }],
-  ["report.column.layout", { component: "column", parent: "region", group: "layout" }],
-  ["report.column.source", { component: "column", parent: "region", group: "source" }],
-  ["report.column.appearance", { component: "column", parent: "region", group: "appearance" }],
-  ["report.column.link", { component: "column", parent: "region", group: "link" }],
-  ["pageItem.layout", { component: "pageItem", group: "layout" }],
-  ["pageItem.source", { component: "pageItem", group: "source" }],
-  ["pageItem.validation", { component: "pageItem", group: "validation" }],
-  ["displayOnly.source", { component: "pageItem", group: "source", assumes: ["381=DISPLAY_ONLY"] }]
-]);
+const APEXLANG_GRAMMAR_COMPONENT_RULE_PATTERN = /^"(?<keyword>[A-Za-z][A-Za-z0-9]*)"\s+\[\s*<required-ws>\s+<component-id>\s*\].*"\("[^\n]*/;
+const APEXLANG_GRAMMAR_GROUP_RULE_PATTERN = /^<indent>\s+"(?<group>[A-Za-z][A-Za-z0-9]*)"\s+<ws>\s+"\{"/;
+const APEXLANG_GRAMMAR_PROPERTY_PATTERN = /"([A-Za-z][A-Za-z0-9]*)"\s+":"[^(\n]*(?:\(\*\s*(?<comment>.*?)\s*\*\))?/g;
+const APEXLANG_GRAMMAR_RULE_REF_PATTERN = /<([A-Za-z0-9-]+)>/g;
 
-/**
- * Expand friendly dotted aliases such as chart.series.tooltip into compiler metadata filters.
- */
-function resolveDottedComponentAlias(args) {
-  if (!args.component || !args.component.includes(".")) {
-    return;
+function resolveGrammarPath() {
+  const repoGrammarPath = path.resolve("ai-context", "apexlang", "grammar", "apexlang.ebnf");
+  if (fs.existsSync(repoGrammarPath)) {
+    return repoGrammarPath;
   }
+  const packagedGrammarPath = path.resolve(path.dirname(SCRIPT_PATH), "..", "assets", "grammar", "apexlang.ebnf");
+  if (fs.existsSync(packagedGrammarPath)) {
+    return packagedGrammarPath;
+  }
+  return null;
+}
 
-  const alias = DOTTED_COMPONENT_ALIASES.get(args.component);
-  if (!alias) {
-    throw new Error(`Unknown dotted component alias: ${args.component}`);
-  }
+function parseEbnfRules(grammarText) {
+  const rules = new Map();
+  let currentName = "";
+  let currentLines = [];
 
-  args.component = alias.component;
-  if (!args.group && alias.group) {
-    args.group = alias.group;
+  for (const line of grammarText.split(/\r?\n/)) {
+    const match = /^<([^>]+)>\s*::=\s*(.*)$/.exec(line);
+    if (match) {
+      if (currentName) {
+        rules.set(currentName, currentLines.join("\n").trim());
+      }
+      currentName = match[1];
+      currentLines = [match[2]];
+      continue;
+    }
+    if (currentName) {
+      currentLines.push(line);
+    }
   }
-  if (alias.parent && !args.parent) {
-    args.parent = alias.parent;
+  if (currentName) {
+    rules.set(currentName, currentLines.join("\n").trim());
   }
-  if (alias.assumes?.length) {
-    const existing = new Set(args.assumes);
-    for (const assumption of alias.assumes) {
-      if (!existing.has(assumption)) {
-        args.assumes.push(assumption);
+  return rules;
+}
+
+function grammarRuleRefs(ruleBody) {
+  return [...String(ruleBody || "").matchAll(APEXLANG_GRAMMAR_RULE_REF_PATTERN)].map((match) => match[1]);
+}
+
+function grammarProperties(ruleBody) {
+  const properties = [];
+  for (const match of String(ruleBody || "").matchAll(APEXLANG_GRAMMAR_PROPERTY_PATTERN)) {
+    const comment = match.groups?.comment || "";
+    properties.push({
+      name: match[1],
+      required: /\brequired\b/.test(comment),
+      comment: comment || null
+    });
+  }
+  return properties;
+}
+
+function buildGrammarComponentContracts(grammarText) {
+  const rules = parseEbnfRules(grammarText);
+  const contracts = new Map();
+  for (const [ruleName, ruleBody] of rules.entries()) {
+    const componentMatch = APEXLANG_GRAMMAR_COMPONENT_RULE_PATTERN.exec(ruleBody);
+    if (!componentMatch) {
+      continue;
+    }
+    const keyword = componentMatch.groups.keyword;
+    const contract = {
+      keyword,
+      ruleName,
+      directProperties: grammarProperties(rules.get(`${ruleName}-direct-property`)),
+      groups: {}
+    };
+    for (const groupRuleName of grammarRuleRefs(rules.get(`${ruleName}-group-block`))) {
+      const groupMatch = APEXLANG_GRAMMAR_GROUP_RULE_PATTERN.exec(rules.get(groupRuleName) || "");
+      if (!groupMatch) {
+        continue;
+      }
+      contract.groups[groupMatch.groups.group] = grammarProperties(rules.get(`${groupRuleName}-property`));
+    }
+    if (!contracts.has(keyword)) {
+      contracts.set(keyword, []);
+    }
+    contracts.get(keyword).push(contract);
+  }
+  return contracts;
+}
+
+function propertyConditionFeatures(prop) {
+  const features = new Set();
+  function walk(node) {
+    if (!node) {
+      return;
+    }
+    if (node.conditions) {
+      for (const condition of node.conditions) {
+        walk(condition);
+      }
+      return;
+    }
+    if (node.type === "FEATURES") {
+      for (const value of node.values || []) {
+        features.add(value);
       }
     }
   }
+  walk(prop.dependsOn);
+  return [...features].sort();
 }
 
-/**
- * Convert --when entries into lookup maps used by dependency evaluation.
- */
-function parseAssumptions(entries) {
-  const byRawKey = new Map();
-  const byScopedName = new Map();
-  const byPropertyName = new Map();
-
-  for (const entry of entries) {
-    const pivot = entry.indexOf("=");
-    if (pivot === -1) {
-      throw new Error(`Invalid --when expression: ${entry}. Expected group.property=value or property=value`);
-    }
-    const key = entry.slice(0, pivot).trim();
-    const value = entry.slice(pivot + 1).trim();
-    if (!key || !value) {
-      throw new Error(`Invalid --when expression: ${entry}. Expected non-empty key and value`);
-    }
-    byRawKey.set(key, value);
-    byScopedName.set(key, value);
-    const propertyName = key.split(".").at(-1);
-    if (!byPropertyName.has(propertyName)) {
-      byPropertyName.set(propertyName, []);
-    }
-    byPropertyName.get(propertyName).push({ key, value });
+function buildPageItemOptionalPropertiesAudit(map) {
+  const grammarPath = resolveGrammarPath();
+  if (!grammarPath) {
+    throw new Error("APEXlang grammar file not found for optional property audit");
+  }
+  const grammarText = fs.readFileSync(grammarPath, "utf8");
+  const grammarContracts = buildGrammarComponentContracts(grammarText).get("pageItem") || [];
+  const grammarContract = grammarContracts[0];
+  if (!grammarContract) {
+    throw new Error(`APEXlang grammar file does not expose a pageItem contract: ${grammarPath}`);
   }
 
-  return { byRawKey, byScopedName, byPropertyName };
+  const pageItemRecord = map.componentTypes.find((record) => record.componentTypeId === "5120" || record.singular === "pageItem");
+  if (!pageItemRecord) {
+    throw new Error("Compiler metadata does not expose pageItem component type 5120");
+  }
+
+  const compilerLookup = basePropertyLookup(pageItemRecord);
+  const groups = {};
+  for (const [groupName, grammarProps] of Object.entries(grammarContract.groups)) {
+    groups[groupName] = grammarProps.map((grammarProp) => {
+      const compilerProps = compilerLookup.get(`${groupName}.${grammarProp.name}`) || [];
+      return {
+        propertyName: grammarProp.name,
+        grammarRequired: grammarProp.required,
+        grammarComment: grammarProp.comment,
+        compilerStatus: compilerProps.length ? "present" : "missing",
+        compilerPropertyIds: compilerProps.map((prop) => prop.propertyId),
+        compilerRequired: compilerProps.some((prop) => prop.required),
+        compilerConditionFeatures: [...new Set(compilerProps.flatMap(propertyConditionFeatures))].sort(),
+        compilerConditionText: compilerProps.map((prop) => conditionToText(prop.dependsOn)).filter(Boolean)
+      };
+    });
+  }
+
+  return {
+    status: "pass",
+    compilerTruth: map.compilerTruth,
+    grammar: {
+      path: grammarPath,
+      component: "pageItem",
+      ruleName: grammarContract.ruleName,
+      directProperties: grammarContract.directProperties,
+      groups
+    },
+    baseCompiler: {
+      componentTypeId: pageItemRecord.componentTypeId,
+      pluginPropertyId: pageItemRecord.pluginPropertyId,
+      pluginComponentTypeName: pageItemRecord.pluginComponentTypeName,
+      pluginApiExpression: pageItemRecord.pluginApiExpression,
+      groups: Object.fromEntries(
+        Object.entries(pageItemRecord.groups || {}).map(([groupName, props]) => [
+          groupName,
+          props.map((prop) => ({
+            propertyName: prop.propertyName,
+            propertyId: prop.propertyId,
+            required: prop.required,
+            conditionFeatures: propertyConditionFeatures(prop),
+            conditionText: conditionToText(prop.dependsOn) || null
+          }))
+        ])
+      )
+    },
+    pluginSettings: {
+      state: "plugin_attribute_metadata_not_exposed",
+      reason: "Live metadata exposes the pageItem plugin attribute sink but not a complete built-in native item plugin custom-attribute inventory; absence from generic grammar must not be treated as invalid settings syntax.",
+      attributeSink: pageItemRecord.pluginApiExpression || null,
+      pluginPropertyId: pageItemRecord.pluginPropertyId
+    }
+  };
 }
 
 /**
@@ -217,112 +318,6 @@ function conditionToText(node) {
   return `${left} ${node.type}`;
 }
 
-function resolveAssumptionValue(condition, assumptionIndex) {
-  if (condition.propertyId && assumptionIndex.byRawKey.has(condition.propertyId)) {
-    return { state: "known", value: assumptionIndex.byRawKey.get(condition.propertyId) };
-  }
-
-  const propertyName = condition.propertyName;
-  if (!propertyName) {
-    return { state: "unknown", reason: "condition has no property name" };
-  }
-
-  if (assumptionIndex.byScopedName.has(propertyName)) {
-    return { state: "known", value: assumptionIndex.byScopedName.get(propertyName) };
-  }
-
-  const matches = assumptionIndex.byPropertyName.get(propertyName) || [];
-  if (!matches.length) {
-    return { state: "unknown", reason: `no assumption for ${propertyName}` };
-  }
-  if (matches.length > 1) {
-    return {
-      state: "unknown",
-      reason: `ambiguous assumption for ${propertyName}: ${matches.map((match) => match.key).join(", ")}`
-    };
-  }
-  return { state: "known", value: matches[0].value };
-}
-
-function evaluateLeaf(condition, assumptionIndex) {
-  const resolved = resolveAssumptionValue(condition, assumptionIndex);
-  if (resolved.state !== "known") {
-    return { state: "unknown", reason: resolved.reason };
-  }
-
-  const actual = resolved.value;
-  switch (condition.type) {
-    case "EQUALS":
-      return { state: actual === condition.value ? "true" : "false" };
-    case "NOT_EQUALS":
-      return { state: actual !== condition.value ? "true" : "false" };
-    case "IN_LIST":
-      return { state: condition.values?.includes(actual) ? "true" : "false" };
-    case "NOT_IN_LIST":
-      return { state: condition.values?.includes(actual) ? "false" : "true" };
-    case "NOT_NULL":
-      return { state: actual ? "true" : "false" };
-    case "NULL":
-      return { state: actual ? "false" : "true" };
-    case "STARTS_WITH":
-      return { state: actual.startsWith(condition.value || "") ? "true" : "false" };
-    case "STARTS_WITH_ANY":
-      return { state: (condition.values || []).some((value) => actual.startsWith(value)) ? "true" : "false" };
-    default:
-      return { state: "unknown", reason: `unsupported operator ${condition.type}` };
-  }
-}
-
-function combineResults(operator, results) {
-  const states = results.map((result) => result.state);
-  if (operator === "AND") {
-    if (states.includes("false")) return { state: "false" };
-    if (states.every((state) => state === "true")) return { state: "true" };
-    return { state: "unknown" };
-  }
-  if (operator === "OR") {
-    if (states.includes("true")) return { state: "true" };
-    if (states.every((state) => state === "false")) return { state: "false" };
-    return { state: "unknown" };
-  }
-  return { state: "unknown" };
-}
-
-/**
- * Evaluate one metadata condition against caller-provided --when assumptions.
- */
-function evaluateCondition(node, assumptionIndex) {
-  if (!node) {
-    return { state: "true" };
-  }
-  if (node.conditions) {
-    return combineResults(
-      node.operator || "AND",
-      node.conditions.map((condition) => evaluateCondition(condition, assumptionIndex))
-    );
-  }
-  return evaluateLeaf(node, assumptionIndex);
-}
-
-/**
- * Return compiler components that match the requested component, parent, and type filters.
- */
-function selectComponents(map, args) {
-  let matches = map.componentTypes;
-
-  if (args.componentTypeId) {
-    matches = matches.filter((record) => record.componentTypeId === args.componentTypeId);
-  }
-  if (args.component) {
-    matches = matches.filter((record) => record.singular === args.component);
-  }
-  if (args.parent) {
-    matches = matches.filter((record) => record.parentComponentType === args.parent);
-  }
-
-  return matches.sort((left, right) => left.componentTypeId.localeCompare(right.componentTypeId));
-}
-
 function listComponents(map, args) {
   const matches = selectComponents(map, args);
   if (!matches.length) {
@@ -332,24 +327,13 @@ function listComponents(map, args) {
   for (const match of matches) {
     console.log(`${match.componentTypeId}\t${match.singular}\tparent=${match.parentComponentType || "none"}\tprops=${match.propertyCount}`);
     if (match.parentDependsOn) {
-      console.log(`  when ${conditionToText(match.parentDependsOn)}`);
+      console.log(`  valid when parent.${conditionToText(match.parentDependsOn)}`);
     }
   }
 }
 
-function propertyStatus(prop, assumptionIndex) {
-  const result = evaluateCondition(prop.dependsOn, assumptionIndex);
-  if (result.state === "true") return "active";
-  if (result.state === "false") return "inactive";
-  return prop.dependsOn ? "conditional" : "active";
-}
-
 function renderLovValues(prop) {
-  if (!prop.lov?.values?.length) {
-    return [];
-  }
-
-  return prop.lov.values.map((value) => {
+  return resolveLovValues(prop).map((value) => {
     const parts = [value.name];
     if (value.returnValue && value.returnValue !== value.name) {
       parts.push(`internal=${value.returnValue}`);
@@ -368,7 +352,7 @@ function renderComponent(record, args, assumptionIndex) {
   console.log(`${record.singular} [componentTypeId=${record.componentTypeId}]`);
   console.log(`parent: ${record.parentComponentType || "none"}`);
   if (record.parentDependsOn) {
-    console.log(`parent condition: ${conditionToText(record.parentDependsOn)}`);
+    console.log(`valid when parent.${conditionToText(record.parentDependsOn)}`);
   }
   if (record.filePath) {
     console.log(`filePath: ${record.filePath}`);
@@ -440,6 +424,7 @@ Options:
   --parent <name>              Filter by parent semantic name, for example page or region
   --group <name>               Show only one group, for example source
   --template-component <name>  Inspect Universal Theme template-component metadata and distilled settings
+  --audit-optional-properties  Emit pageItem grammar/compiler optional-property audit JSON
   --when <expr>                Assumption used to classify props, for example identification.type=NATIVE_IR or 94=NATIVE_IR
   --list                       List matching component types instead of property details
   --json                       Emit a machine-readable compiler-truth payload
@@ -452,6 +437,7 @@ Examples:
   ${command} --component map.layer.link
   ${command} --component chart.series.marker
   ${command} --template-component metricCard
+  ${command} --component pageItem --audit-optional-properties --json
   ${command} --json > /tmp/apexlang-runtime-map.json
   ${command} --compiler-oracle-home /path/to/oracle.sql-developer-26.1.2 --component-type-id 7320
 `);
@@ -494,25 +480,11 @@ function renderTemplateComponentProfile(profile) {
 }
 
 function resolveOracleBackedMap(args) {
-  const oracleRuntime = resolveOracleRuntime(args.compilerOracleHome);
-  const { metadata, buildId, metadataHash } = readOracleRuntimeMetadata(oracleRuntime.compilerJarPath);
-  const map = buildOracleNormalizedMap({
-    metadata,
-    compilerJarPath: oracleRuntime.compilerJarPath,
-    oracleHome: oracleRuntime.oracleHome,
-    source: oracleRuntime.source
-  });
-  map.compilerTruth = {
-    buildID: buildId,
-    metadataHash,
-    normalizerVersion: ORACLE_NORMALIZER_VERSION,
-    source: oracleRuntime.source,
-    oracleHome: oracleRuntime.oracleHome,
-    compilerJar: oracleRuntime.compilerJarPath
-  };
+  const { map, provenance } = loadOracleCompilerContext(args.compilerOracleHome);
+  map.compilerTruth = provenance;
 
   console.error(
-    `Using compiler metadata from SQLcl/Oracle runtime (build=${buildId}, normalizer=${ORACLE_NORMALIZER_VERSION}, metadataHash=${metadataHash}, source=${oracleRuntime.source})`
+    `Using compiler metadata from SQLcl/Oracle runtime (build=${provenance.buildID}, normalizer=${provenance.normalizerVersion}, metadataHash=${provenance.metadataHash}, source=${provenance.source})`
   );
   return map;
 }
@@ -537,6 +509,13 @@ function main() {
   }
 
   const map = resolveOracleBackedMap(args);
+  if (args.auditOptionalProperties) {
+    if (args.component && args.component !== "pageItem") {
+      throw new Error("--audit-optional-properties currently supports only --component pageItem");
+    }
+    console.log(JSON.stringify(buildPageItemOptionalPropertiesAudit(map), null, 2));
+    return;
+  }
   if (wantsFullMapJson) {
     console.log(JSON.stringify(map, null, 2));
     return;

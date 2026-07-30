@@ -3,8 +3,12 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildOracleNormalizedMap, ORACLE_NORMALIZER_VERSION, readOracleRuntimeMetadata } from "./query-valid-props-normalize.mjs";
-import { resolveOracleRuntime } from "./query-valid-props-runtime.mjs";
+import { loadOracleCompilerContext } from "./query-valid-props-context.mjs";
+import {
+  normalizeSemanticValue,
+  resolveAuditComponentRecord as resolveRecordFor,
+  resolveAuditProperty
+} from "./query-valid-props-semantics.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const IS_PACKAGED_ROOT = path.basename(path.dirname(SCRIPT_PATH)) === "tools";
@@ -33,10 +37,6 @@ const SUPPORTED_COMPONENTS = new Set([
   "entry",
   "breadcrumb",
 ]);
-const COMPILER_METADATA_PROPERTY_ALIASES = new Map([
-  ["app.authentication.scheme", "authenticationScheme"]
-]);
-
 function defaultCommand() {
   return IS_PACKAGED_ROOT
     ? "node tools/compiler-truth-audit.mjs"
@@ -153,38 +153,13 @@ async function collectApxFiles(targetPath) {
   return files.sort();
 }
 
-function buildCompilerContext(oracleHome) {
-  const oracleRuntime = resolveOracleRuntime(oracleHome || undefined);
-  const { metadata, buildId, metadataHash } = readOracleRuntimeMetadata(oracleRuntime.compilerJarPath);
-  const map = buildOracleNormalizedMap({
-    metadata,
-    compilerJarPath: oracleRuntime.compilerJarPath,
-    oracleHome: oracleRuntime.oracleHome,
-    source: oracleRuntime.source
-  });
-  const provenance = {
-    buildID: buildId,
-    metadataHash,
-    normalizerVersion: ORACLE_NORMALIZER_VERSION,
-    source: oracleRuntime.source,
-    oracleHome: oracleRuntime.oracleHome,
-    compilerJar: oracleRuntime.compilerJarPath
-  };
-  return { map, provenance };
-}
-
-function firstRecordFor(map, singular, parentSingular = "") {
-  const records = map.componentTypes.filter((record) => record.singular === singular);
-  if (!records.length) {
-    return null;
-  }
-  if (parentSingular) {
-    const parentMatch = records.find((record) => record.parentComponentType === parentSingular);
-    if (parentMatch) {
-      return parentMatch;
-    }
-  }
-  return records.length === 1 ? records[0] : records[0];
+function normalizePropertySemanticValue(property, value) {
+  const normalized = normalizeSemanticValue(value);
+  const token = String(normalized).replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+  const match = (property?.lov?.values || []).find(({ name, returnValue }) =>
+    [name, returnValue].some((candidate) =>
+      String(candidate ?? "").replace(/[^A-Za-z0-9]/g, "").toLowerCase() === token));
+  return match?.returnValue || normalized;
 }
 
 function nearestComponent(stack) {
@@ -255,26 +230,18 @@ function addIssue(issues, filePath, lineNumber, code, message, details = {}) {
   });
 }
 
-function compilerMetadataPropertyNames(componentName, groupName, propertyName) {
-  const names = [propertyName];
-  const scopedKey = groupName
-    ? `${componentName}.${groupName}.${propertyName}`
-    : `${componentName}.${propertyName}`;
-  const alias = COMPILER_METADATA_PROPERTY_ALIASES.get(scopedKey);
-  if (alias && !names.includes(alias)) {
-    names.push(alias);
-  }
-  return names;
-}
-
 function validateProperty({ issues, filePath, lineNumber, componentFrame, groupFrame, propertyName }) {
   if (!componentFrame?.record || !propertyName) {
-    return;
+    return null;
   }
-  const compilerPropertyNames = compilerMetadataPropertyNames(componentFrame.name, groupFrame?.name || "", propertyName);
+  const { property: match, conditionState } = resolveAuditProperty({
+    record: componentFrame.record,
+    componentName: componentFrame.name,
+    groupName: groupFrame?.name || "",
+    propertyName,
+    props: componentFrame.props || {}
+  });
   if (groupFrame) {
-    const props = componentFrame.record.groups[groupFrame.name] || [];
-    const match = props.find((prop) => compilerPropertyNames.includes(prop.propertyName));
     if (!match) {
       addIssue(
         issues,
@@ -289,12 +256,27 @@ function validateProperty({ issues, filePath, lineNumber, componentFrame, groupF
           property: propertyName
         }
       );
+      return null;
     }
-    return;
+    if (conditionState === "false") {
+      addIssue(
+        issues,
+        filePath,
+        lineNumber,
+        "COMPILER_TRUTH_PROP_INACTIVE",
+        `${componentFrame.name}.${groupFrame.name}.${propertyName} exists in compiler metadata but is inactive under current component assumptions`,
+        {
+          component: componentFrame.name,
+          componentTypeId: componentFrame.record.componentTypeId,
+          group: groupFrame.name,
+          property: propertyName
+        }
+      );
+    }
+    return match;
   }
 
-  const anyMatch = componentFrame.record.properties.some((prop) => compilerPropertyNames.includes(prop.propertyName));
-  if (!anyMatch) {
+  if (!match) {
     addIssue(
       issues,
       filePath,
@@ -307,7 +289,23 @@ function validateProperty({ issues, filePath, lineNumber, componentFrame, groupF
         property: propertyName
       }
     );
+    return null;
   }
+  if (conditionState === "false") {
+    addIssue(
+      issues,
+      filePath,
+      lineNumber,
+      "COMPILER_TRUTH_PROP_INACTIVE",
+      `${componentFrame.name}.${propertyName} exists in compiler metadata but is inactive under current component assumptions`,
+      {
+        component: componentFrame.name,
+        componentTypeId: componentFrame.record.componentTypeId,
+        property: propertyName
+      }
+    );
+  }
+  return match;
 }
 
 export function auditApxText(filePath, text, map) {
@@ -326,9 +324,9 @@ export function auditApxText(filePath, text, map) {
     const currentComponent = nearestComponent(stack);
     const currentGroup = nearestGroup(stack);
     const opaqueScope = insideOpaque(stack);
-    const propMatch = trimmed.match(/^([A-Za-z][A-Za-z0-9]*)\s*:/);
+    const propMatch = trimmed.match(/^([A-Za-z][A-Za-z0-9]*)\s*:\s*(.*)$/);
     if (propMatch && currentComponent && !opaqueScope) {
-      validateProperty({
+      const compilerProperty = validateProperty({
         issues,
         filePath,
         lineNumber,
@@ -336,6 +334,14 @@ export function auditApxText(filePath, text, map) {
         groupFrame: currentGroup,
         propertyName: propMatch[1]
       });
+      currentComponent.props ||= {};
+      const semanticValue = normalizePropertySemanticValue(compilerProperty, propMatch[2]);
+      if (currentComponent.props[propMatch[1]] === undefined) {
+        currentComponent.props[propMatch[1]] = semanticValue;
+      }
+      if (compilerProperty?.propertyId) {
+        currentComponent.props[String(compilerProperty.propertyId)] = semanticValue;
+      }
     }
 
     const blockMatch = trimmed.match(/^([A-Za-z][A-Za-z0-9]*)\b(?:\s+[^({]+?)?\s*([({])/);
@@ -346,8 +352,25 @@ export function auditApxText(filePath, text, map) {
       const { opens, closes } = lineOpenCloseBalance(line);
       const shouldPush = opens > closes;
       if (delimiter === "(" && SUPPORTED_COMPONENTS.has(token)) {
-        const record = firstRecordFor(map, token, parentName);
-        if (record) {
+        const { record, failure, candidates } = resolveRecordFor(map, token, parentComponent);
+        if (!record) {
+          addIssue(
+            issues,
+            filePath,
+            lineNumber,
+            failure === "ambiguous" ? "COMPILER_TRUTH_COMPONENT_AMBIGUOUS" : "COMPILER_TRUTH_COMPONENT_UNKNOWN",
+            failure === "ambiguous"
+              ? `${token} resolves to multiple compiler component records; add parent/type context (${(candidates || []).map((record) => record.componentTypeId).join(", ")})`
+              : `${token} is not valid under parent ${parentName || "none"} for current compiler metadata assumptions`,
+            {
+              component: token,
+              parent: parentName || ""
+            }
+          );
+          if (shouldPush) {
+            stack.push({ kind: "component", name: token, record: null, props: {} });
+          }
+        } else {
           observations.push({
             file: path.relative(process.cwd(), filePath) || path.basename(filePath),
             line: lineNumber,
@@ -356,7 +379,7 @@ export function auditApxText(filePath, text, map) {
             parent: record.parentComponentType || ""
           });
           if (shouldPush) {
-            stack.push({ kind: "component", name: token, record });
+            stack.push({ kind: "component", name: token, record, props: {} });
           }
         }
       } else if (delimiter === "{" && !opaqueScope && parentComponent?.record?.groups?.[token]) {
@@ -443,7 +466,7 @@ async function writeReport(reportPath, payload) {
 }
 
 export async function runCompilerTruthAudit(options = {}) {
-  const { map, provenance } = buildCompilerContext(options.compilerOracleHome || options.oracleHome || "");
+  const { map, provenance } = loadOracleCompilerContext(options.compilerOracleHome || options.oracleHome || undefined);
   const issues = [];
   const observations = [];
   const targets = [];

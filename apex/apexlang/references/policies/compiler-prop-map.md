@@ -5,15 +5,17 @@ Bundled compiler-truth lookup helper for APEXlang property debugging.
 ## Contents
 
 - `tools/query-valid-props.mjs`
+- `tools/query-valid-props-semantics.mjs`
 - `tools/query-valid-props-template-components.mjs`
 - `templates/template-components/template-component-profiles.json`
 - `tools/compiler-truth-audit.mjs`
 
 ## Authority
 
-1. Compiler metadata from the active SQLcl or Oracle runtime and direct compiler validation
-2. Exact-match templates and examples that already match the same component family and variant
-3. Repository machine-readable fallback guidance such as `assets/component-attributes.json`
+1. `assets/grammar/apexlang.ebnf` for APEXlang syntax shape
+2. Compiler metadata from the active SQLcl or Oracle runtime and direct compiler validation for semantic legality
+3. Exact-match templates and examples that already match the same component family and variant
+4. Repository machine-readable fallback guidance such as `assets/component-attributes.json`
 
 ## Use When
 
