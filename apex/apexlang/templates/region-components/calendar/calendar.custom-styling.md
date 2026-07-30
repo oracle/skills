@@ -96,7 +96,9 @@ region {{regionStaticIdIcons}} (
 
 # Output Template – Custom CSS Variant
 
-```apexlang
+Note: This custom CSS snippet is illustrative; the current grammar-backed emitted calendar contract does not expose a region-level `css {}` block.
+
+```text
 region {{regionStaticIdCss}} (
   name: {{name}} Custom Styling
   type: calendar

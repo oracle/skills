@@ -46,9 +46,12 @@ region {{chartRegion.staticId}} (
   }
   chart {
     type: {{chart.type}}
+  }
+  settings {
     pieSelectionEffect: {{chart.pieSelectionEffect}}
-    style: {{chart.style}}
-    otherThreshold: {{chart.otherThreshold}}
+  }
+  value {
+    pieChartOtherThreshold: {{chart.otherThreshold}}
   }
   chartLayout {
     {{chartLayout}}
@@ -70,3 +73,4 @@ region {{chartRegion.staticId}} (
 - Render `{{seriesBlocks}}` using `chart._series._common.md`.
 - Omit pie-only options when using non-pie chart types.
 - Suppress axis guidance for pie charts.
+- Do not emit `chart.style`; the current grammar has no pie chart style property.

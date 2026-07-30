@@ -35,10 +35,14 @@ Inherits the full family contract from `file-upload._common.md`. Base family req
 - `layout.slot`
 - `layout.alignment`
 - `appearance.templateOptions`
+- `appearance.icon`
 - `security.sessionStateProtection`
-- `settings.storageType`
-- `settings.displayAs`
-- `settings.allowMultipleFiles`
+- `display.allowCopyPaste`
+- `display.captureUsing`
+- `storage.type`
+- `storage.allowMultipleFiles`
+- `storage.fileTypes`
+- `storage.maxFileSize`
 
 ---
 
@@ -60,11 +64,20 @@ pageItem {{itemName}} (
     appearance {
         template: {{appearance.template}}
         templateOptions: {{appearance.templateOptions}}
+        icon: {{appearance.icon}}
     }
-    settings {
-        storageType: {{settings.storageType}}
-        displayAs: {{settings.displayAs}}
-        allowMultipleFiles: {{settings.allowMultipleFiles}}
+    display {
+        displayAs: blockDropzone
+        dropzoneTitle: Drop files here
+        dropzoneDesc: or click to browse
+        allowCopyPaste: {{display.allowCopyPaste}}
+        captureUsing: {{display.captureUsing}}
+    }
+    storage {
+        type: {{storage.type}}
+        allowMultipleFiles: {{storage.allowMultipleFiles}}
+        fileTypes: {{storage.fileTypes}}
+        maxFileSize: {{storage.maxFileSize}}
     }
     security {
         sessionStateProtection: {{security.sessionStateProtection}}
@@ -77,7 +90,9 @@ pageItem {{itemName}} (
 # Conditional Rendering Rules
 
 - Show optional defaults only when the generator needs them visible in the final output.
-- Remove family-specific settings that are not relevant to the requested prompt.
+- Always emit the `display {}` block. Keep its explicit `blockDropzone` defaults unless the user requests another supported mode or custom dropzone copy.
+- Emit `storage {}` only when the generator needs those file-upload plugin attributes visible in the final output.
+- Keep `storage.fileTypes` as one free-form comma-delimited text scalar and `storage.maxFileSize` as a positive integer number of KB.
 
 ---
 

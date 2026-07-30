@@ -31,7 +31,7 @@ Define the shared variable contract, guardrails, and base `pageItem` skeleton us
 | type | yes | enum | Family-specific item type token such as `textField`, `selectList`, or `displayOnly`. |
 | label.* | conditional | variant | Label attributes when the family supports visible labels. |
 | layout.* | yes | variant | Placement attributes such as `region`, `sequence`, `slot`, and alignment. When `layout.region` is present, `layout.slot` should usually be the host region slot such as `regionBody`, not a page-level slot like `body`. `layout.labelColumnSpan` is an optional deliberate override when label-grid width must be controlled explicitly. |
-| appearance.* | conditional | variant | Template, template options, size hints, placeholder text, and format masks when supported. |
+| appearance.* | conditional | variant | Template, template options, icon, size hints, placeholder text, and format masks when supported. |
 | lov.* | conditional | variant | LOV source attributes for LOV-based item families. |
 | settings.* | optional | variant | Family-specific settings emitted by the routed family template. |
 | validation.* | optional | variant | Declarative validation attributes supported by the selected family. |
@@ -60,6 +60,7 @@ pageItem {{itemName}} (
     appearance {
         template: {{appearance.template}}
         templateOptions: {{appearance.templateOptions}}
+        icon: {{appearance.icon}}
         width: {{appearance.width}}
         height: {{appearance.height}}
         valuePlaceholder: {{appearance.valuePlaceholder}}
@@ -115,7 +116,7 @@ pageItem {{itemName}} (
    order by ...
   ```
 - Emit `source {}` only for form-bound or persisted items.
-- Keep `settings {}` reserved for family-specific attributes exposed by the routed family template.
+- Keep `settings {}` reserved for family-specific attributes exposed by the routed family template and backed by compiler/export evidence.
 - When `layout.region` is present, use the host region slot rather than a page-level slot. The default for items rendered inside a standard host region is usually `regionBody`, not `body` or `BODY`.
 - Only apply validation.maxLength to text fields
 - Emit `help { helpText: ... }` by default for visible editable, filter/control, and other user-facing items unless the item is hidden or a documented exemption applies.

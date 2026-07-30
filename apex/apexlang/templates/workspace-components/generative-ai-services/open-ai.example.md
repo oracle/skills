@@ -16,17 +16,19 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
 ```apexlang
 genAIService open-ai (
     name: Open AI
-    genAIService {
-        provider: openai
-        defaultGenAIService: true
-        defaultForNewApps: true
-        modelName: gpt-4.1
-    }
+    provider: openai
     endpointUrl {
         url: "https://api.openai.com/v1"
     }
     authentication {
         credentials: @credentials-for-open-ai
+    }
+    appBuilder {
+        usedByAppBuilder: true
+        defaultForNewApps: true
+    }
+    advanced {
+        modelName: gpt-4.1
     }
 )
 ```

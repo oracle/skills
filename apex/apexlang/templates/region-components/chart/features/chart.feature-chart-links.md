@@ -13,7 +13,7 @@ description: Adds link targets to chart data points using SQL-generated URLs.
 # Usage
 
 1. Add a SQL column that returns the desired URL (e.g., `apex_page.get_url`).
-2. Map the column through `columnMapping.link`.
+2. Enable the series `link` block using `type: redirectUrlReturnedByFirstCol`.
 3. Ensure navigation targets respect security (checksums, authorization).
 
 # Example Snippet
@@ -26,11 +26,11 @@ series FEATURE_CHART_LINKS (
         type: sqlQuery
         sqlQuery:
             ```sql
-            select product_name,
-                   sum(quantity) total_quantity,
-                   apex_page.get_url(p_page => 10,
+            select apex_page.get_url(p_page => 10,
                                       p_items => 'P10_PRODUCT',
-                                      p_values => product_name) as detail_link
+                                      p_values => product_name) as detail_link,
+                   product_name,
+                   sum(quantity) total_quantity,
               from eba_demo_chart_orders
              group by product_name
             ```
@@ -39,7 +39,10 @@ series FEATURE_CHART_LINKS (
     columnMapping {
         label: PRODUCT_NAME
         value: TOTAL_QUANTITY
-        link: DETAIL_LINK
+    }
+
+    link {
+        type: redirectUrlReturnedByFirstCol
     }
 )
 ```
@@ -50,4 +53,3 @@ series FEATURE_CHART_LINKS (
 - Combine with region actions (refresh, modal launch) to keep navigation consistent with UX guidelines.
 
 # References
-

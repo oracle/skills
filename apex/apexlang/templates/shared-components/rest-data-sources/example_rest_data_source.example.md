@@ -27,7 +27,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         urlPathPrefix: /data/Pagination
     }
     /*STRICTLY - Use this ONLY when asked to do Synchronization to local table with Synchronization type as 'append' */    
-    restSynchronization {
+    synchronization {
         jobIsActive: true
         localTableOwner: SAN
         localTableName: {{source.table}}
@@ -35,7 +35,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         httpRequestLimit: 1000
     }
     /*STRICTLY - Use this ONLY when asked to do Synchronization to local table with Synchronization type as 'merge' */    
-      restSynchronization {
+      synchronization {
         jobIsActive: true
         localTableOwner: SAN
         localTableName: {{source.table}}
@@ -44,7 +44,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         httpRequestLimit: 1000
     }
      /*STRICTLY - Use this ONLY when asked to do Synchronization to local table with Synchronization type as 'replace' or 'fullRefreshDelete' */    
-     restSynchronization {
+     synchronization {
         jobIsActive: true
         localTableOwner: SAN
         localTableName: {{source.table}}
@@ -60,11 +60,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
     authentication {
         credentials: @moviedb_api_key
     }
-    settings {
-        paginationType: pageSizeAndFetchOffset
-        pageSizeUrlParam: limit
-        rowOffsetUrlParam: offset
-        hasMoreRowsSelector: hasMore
+    comments {
+        comments: Confirm pagination settings with compiler-backed REST Data Source attributes before emission.
     }
 
     parameter search_query (
@@ -86,8 +83,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         rowSelector: items
     }
 
-    dataProfileCol data (
-        colName: DATA
+    dataProfileColumn data (
+        columnName: DATA
         source {
             sequence: 1
             dataType: varchar2
@@ -100,8 +97,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol data-capacity (
-        colName: DATA_CAPACITY
+    dataProfileColumn data-capacity (
+        columnName: DATA_CAPACITY
         source {
             sequence: 2
             dataType: varchar2
@@ -114,8 +111,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol data-hard-disk-size (
-        colName: DATA_HARD_DISK_SIZE
+    dataProfileColumn data-hard-disk-size (
+        columnName: DATA_HARD_DISK_SIZE
         source {
             sequence: 3
             dataType: varchar2
@@ -128,8 +125,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
     
-    dataProfileCol data-capacity-gb (
-        colName: DATA_CAPACITY_GB
+    dataProfileColumn data-capacity-gb (
+        columnName: DATA_CAPACITY_GB
         source {
             sequence: 4
             dataType: number
@@ -142,8 +139,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol ID (
-        colName: ID
+    dataProfileColumn ID (
+        columnName: ID
         source {
             sequence: 5
             dataType: number
@@ -158,8 +155,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol NAME (
-        colName: NAME
+    dataProfileColumn NAME (
+        columnName: NAME
         source {
             sequence: 6
             dataType: varchar2
@@ -173,8 +170,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol {{source.dateColumn}} (
-        colName: {{source.dateColumn}}
+    dataProfileColumn {{source.dateColumn}} (
+        columnName: {{source.dateColumn}}
         source {
             sequence: 7
             dataType: timestampWithTimeZone
@@ -189,8 +186,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
         }
     )
 
-    dataProfileCol {{source.amountColumn}} (
-        colName: {{source.amountColumn}}
+    dataProfileColumn {{source.amountColumn}} (
+        columnName: {{source.amountColumn}}
         source {
             sequence: 8
             dataType: number
@@ -205,9 +202,7 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
     )
 
     operation get_rows (
-        label {
-            label: GET
-        }
+        label: GET
         operation {
             urlPattern: .
             httpMethod: get
@@ -283,8 +278,8 @@ restDataSource icm-claims-data (
         rowSelector: items
     }
 
-    dataProfileCol claim-id (
-        colName: CLAIM_ID
+    dataProfileColumn claim-id (
+        columnName: CLAIM_ID
         source {
             sequence: 1
             dataType: number
@@ -294,8 +289,8 @@ restDataSource icm-claims-data (
         }
     )
 
-    dataProfileCol claim-number (
-        colName: CLAIM_NUMBER
+    dataProfileColumn claim-number (
+        columnName: CLAIM_NUMBER
         source {
             sequence: 3
             dataType: varchar2
@@ -305,8 +300,8 @@ restDataSource icm-claims-data (
         }
     )
 
-    dataProfileCol currency-code (
-        colName: CURRENCY_CODE
+    dataProfileColumn currency-code (
+        columnName: CURRENCY_CODE
         source {
             sequence: 6
             dataType: varchar2
@@ -316,8 +311,8 @@ restDataSource icm-claims-data (
         }
     )
 
-    dataProfileCol policy-id (
-        colName: POLICY_ID
+    dataProfileColumn policy-id (
+        columnName: POLICY_ID
         source {
             sequence: 2
             dataType: number
@@ -327,8 +322,8 @@ restDataSource icm-claims-data (
         }
     )
 
-    dataProfileCol reported-date (
-        colName: REPORTED_DATE
+    dataProfileColumn reported-date (
+        columnName: REPORTED_DATE
         source {
             sequence: 4
             dataType: date
@@ -338,8 +333,8 @@ restDataSource icm-claims-data (
         }
     )
 
-    dataProfileCol total-claimed-amount (
-        colName: TOTAL_CLAIMED_AMOUNT
+    dataProfileColumn total-claimed-amount (
+        columnName: TOTAL_CLAIMED_AMOUNT
         source {
             sequence: 5
             dataType: number
@@ -350,9 +345,7 @@ restDataSource icm-claims-data (
     )
 
     operation get (
-        label {
-            label: GET
-        }
+        label: GET
         operation {
             urlPattern: .
             httpMethod: get
@@ -361,14 +354,14 @@ restDataSource icm-claims-data (
     )
 
     operation post (
-        label {
-            label: POST
-        }
+        label: POST
         operation {
             urlPattern: .
             httpMethod: post
             databaseOperation: insert
-            requestBodyTemplate: 
+        }
+        requestBody {
+            template:
                 ```
                 {
                     "claim_id":"#CLAIM_ID#"
@@ -379,6 +372,7 @@ restDataSource icm-claims-data (
                    ,"currency_code":"#CURRENCY_CODE#"
                 }
                 ```
+            versionNumber: 1
         }
     )
 

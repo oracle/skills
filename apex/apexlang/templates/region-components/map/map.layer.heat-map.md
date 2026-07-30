@@ -27,10 +27,10 @@ Document heat-map behavior for Maps: point-density rendering, heat-map color sch
 
 ## Optional Variables
 
-- `layer.featureHeatmapValueColumn`
-- `layer.layerHeatmapSpectrumType`
+- `layer.appearance.valueColumn`
+- `layer.appearance.colorScheme`
 - `layer.layerHeatmap*Name`
-- `layer.layerHeatmapCustomSpectrum`
+- `layer.appearance.customColorList`
 
 ---
 
@@ -57,9 +57,12 @@ layer {{layer.staticId}} (
     latitudeColumn: {{layer.columnMapping.latitudeColumn}}
     primaryKeyColumn: {{layer.columnMapping.primaryKeyColumn}}
   }
-  featureHeatmapValueColumn: {{layer.featureHeatmapValueColumn}}
-  layerHeatmapSpectrumType: {{layer.layerHeatmapSpectrumType}}
-  layerHeatmapCustomSpectrum: {{layer.layerHeatmapCustomSpectrum}}
+  appearance {
+    valueColumn: {{layer.appearance.valueColumn}}
+    colorScheme: {{layer.appearance.colorScheme}}
+    schemeName: {{layer.appearance.schemeName}}
+    customColorList: {{layer.appearance.customColorList}}
+  }
 )
 ```
 
@@ -69,5 +72,5 @@ layer {{layer.staticId}} (
 
 - Heat maps are point-only in practice. If the source uses `sdoGeometry` or `geojson`, it must still return point objects.
 - Heat-map layers do not expose the normal tooltip, link-target, or info-window metadata paths.
-- `featureHeatmapValueColumn` is optional. Without it, the widget derives color intensity from point density alone.
+- `appearance.valueColumn` is optional. Without it, the widget derives color intensity from point density alone.
 - Use high-contrast color ramps and avoid problematic red-green-only schemes.

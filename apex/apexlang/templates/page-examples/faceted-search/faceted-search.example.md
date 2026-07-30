@@ -211,11 +211,6 @@ page 27 (
     accessibility {
       landmarkLabel: Filters
     }
-    settings {
-      compactNosThreshold: 10000
-      showCurrentFacets: true
-      showTotalRowCount: true
-    }
     facet FS_SEARCH_TEXT (
       type: search
       label {

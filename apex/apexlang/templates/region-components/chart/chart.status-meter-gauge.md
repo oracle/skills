@@ -30,10 +30,10 @@ region {{chartRegion.staticId}} (
   }
   chart {
     type: {{chart.type}}
-    orientation: {{chart.orientation}}
     {{chart.options}}
   }
   gauge {
+    orientation: {{chart.orientation}}
     {{gauge}}
   }
 

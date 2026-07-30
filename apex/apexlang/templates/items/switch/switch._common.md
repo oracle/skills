@@ -67,12 +67,12 @@ pageItem {{itemName}} (
         templateOptions: {{appearance.templateOptions}}
     }
     settings {
-            useDefaults: {{settings.useDefaults}}
-            onValue: {{settings.onValue}}
-            onLabel: {{settings.onLabel}}
-            offValue: {{settings.offValue}}
-            offLabel: {{settings.offLabel}}
-        }
+        useDefaults: {{settings.useDefaults}}
+        onValue: {{settings.onValue}}
+        onLabel: {{settings.onLabel}}
+        offValue: {{settings.offValue}}
+        offLabel: {{settings.offLabel}}
+    }
     validation {
         valueRequired: {{validation.valueRequired}}
     }
@@ -98,8 +98,8 @@ pageItem {{itemName}} (
 - Remove unsupported or unused blocks before finalizing the DSL.
 - Omit `source {}` when the item is not bound to persisted data or a form region.
 - Emit `validation {}` only when the scenario requires declarative checks.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
-- Use `useDefaults:false` always unless you are asked not to. Determine on/off value based on the table or source. can be `Yes`/`No` or `0`/`1`
+- Emit native switch `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
+- Use `useDefaults: false` when custom on/off values or labels are intentionally emitted and backed by compiler/export evidence.
 
 ---
 

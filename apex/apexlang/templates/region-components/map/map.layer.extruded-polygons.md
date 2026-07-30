@@ -24,15 +24,15 @@ Document 3D polygon-layer behavior for Maps: extruded polygon geometry, height-b
 - `layer.layout.sequence`
 - `layer.source.tableName`
 - `layer.columnMapping.geometryColumnDataType`
-- `layer.feature3dValueColumn`
-- `layer.feature3dValueUnit`
+- `layer.appearance.extrusionValueColumn`
+- `layer.appearance.unit`
 
 ## Optional Variables
 
-- `layer.featureFillColor`
-- `layer.featureFillOpacity`
-- `layer.featureStrokeColor`
-- `layer.featureStrokeWidth`
+- `layer.appearance.fillColor`
+- `layer.appearance.fillOpacity`
+- `layer.appearance.strokeColor`
+- `layer.appearance.strokeWidth`
 
 ---
 
@@ -57,10 +57,14 @@ layer {{layer.staticId}} (
     geometryColumn: {{layer.columnMapping.geometryColumn}}
     primaryKeyColumn: {{layer.columnMapping.primaryKeyColumn}}
   }
-  feature3dValueColumn: {{layer.feature3dValueColumn}}
-  feature3dValueUnit: {{layer.feature3dValueUnit}}
-  featureFillColor: {{layer.featureFillColor}}
-  featureFillOpacity: {{layer.featureFillOpacity}}
+  appearance {
+    extrusionValueColumn: {{layer.appearance.extrusionValueColumn}}
+    unit: {{layer.appearance.unit}}
+    fillColor: {{layer.appearance.fillColor}}
+    fillOpacity: {{layer.appearance.fillOpacity}}
+    strokeColor: {{layer.appearance.strokeColor}}
+    strokeWidth: {{layer.appearance.strokeWidth}}
+  }
 )
 ```
 
@@ -68,7 +72,7 @@ layer {{layer.staticId}} (
 
 # Guardrails
 
-- `feature3dValueColumn` is required for `POLYGON_3D`.
-- `feature3dValueUnit` becomes required once the extrusion value column is set.
+- `appearance.extrusionValueColumn` is required for extruded polygons.
+- `appearance.unit` becomes required once the extrusion value column is set.
 - Use polygon geometry for the layer source; extrusion metadata is not a substitute for valid polygon geometry.
 - Extruded polygons share the same fill-color-spectrum rules as normal polygon layers.

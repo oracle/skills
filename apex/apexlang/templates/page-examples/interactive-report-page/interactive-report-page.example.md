@@ -430,14 +430,14 @@ page 1 (
                 column: BUDGET
             )
 
-            pivotCol (
+            pivotColumn (
                 column: ASSIGNED_TO
                 layout {
                     sequence: 1
                 }
             )
 
-            pivotRowCol (
+            pivotRowColumn (
                 column: PROJECT
                 layout {
                     sequence: 1

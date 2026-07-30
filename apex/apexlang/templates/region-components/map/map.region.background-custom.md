@@ -21,19 +21,19 @@ Document the region-level background path where `tileLayerType` uses the built-i
 - `name`
 - `layout.sequence`
 - `layout.slot`
-- `tileLayerType` (use `custom`)
-- `standardTileLayer`
+- `map.background` (use `builtIn`)
+- `map.standard`
 
 ## Optional Variables
 
-- `darkModeTileLayer`
+- `map.darkMode`
 - `map.height`
-- `navigationBarType`
-- `navigationBarPosition`
-- `mapFeatures`
-- `showLegend`
-- `legendPosition`
-- `lazyLoading`
+- `controls.navigationBar`
+- `controls.navigationBarPosition`
+- `controls.options`
+- `legend.show`
+- `legend.position`
+- `performance.lazyLoading`
 
 ---
 
@@ -44,21 +44,27 @@ region {{regionStaticId}} (
   name: {{name}}
   type: map
   map {
+    background: builtIn
+    standard: {{map.standard}}
+    darkMode: {{map.darkMode}}
     height: {{map.height}}
   }
   layout {
     sequence: {{layout.sequence}}
     slot: {{layout.slot}}
   }
-  tileLayerType: custom
-  standardTileLayer: {{standardTileLayer}}
-  darkModeTileLayer: {{darkModeTileLayer}}
-  navigationBarType: {{navigationBarType}}
-  navigationBarPosition: {{navigationBarPosition}}
-  mapFeatures: {{mapFeatures}}
-  showLegend: {{showLegend}}
-  legendPosition: {{legendPosition}}
-  lazyLoading: {{lazyLoading}}
+  controls {
+    navigationBar: {{controls.navigationBar}}
+    navigationBarPosition: {{controls.navigationBarPosition}}
+    options: {{controls.options}}
+  }
+  legend {
+    show: {{legend.show}}
+    position: {{legend.position}}
+  }
+  performance {
+    lazyLoading: {{performance.lazyLoading}}
+  }
 )
 ```
 
@@ -66,6 +72,6 @@ region {{regionStaticId}} (
 
 # Guardrails
 
-- `tileLayerType: custom` selects built-in standard and dark-mode background names, not shared `mapBackground` components.
+- `map.background: builtIn` selects built-in standard and dark-mode background names, not shared `mapBackground` components.
 - The app/plugin attribute `useVectorTileLayers` still separately controls whether supported built-in backgrounds use vector tile layers behind the scenes.
 - Load `map.backgrounds.md` only when the request uses shared backgrounds instead of built-in background names.

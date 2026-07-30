@@ -26,8 +26,8 @@ Document SQL-driven initial positioning for map regions using the attached `init
 
 ## Optional Variables
 
-- `initialPositionAndZoom.initialGeometrySdogeomColumn`
-- `initialPositionAndZoom.initialGeometryGeojsonColumn`
+- `initialPositionAndZoom.geometryColumn`
+- `initialPositionAndZoom.geojsonColumn`
 - `initialPositionAndZoom.initialLongitudeColumn`
 - `initialPositionAndZoom.initialLatitudeColumn`
 - `initialPositionAndZoom.initialZoomlevelColumn`
@@ -53,10 +53,10 @@ region {{regionStaticId}} (
     sqlQuery:
       ```sql
       {{initialPositionAndZoom.sqlQuery}}
-      ```
+    ```
     geometryColumnDataType: {{initialPositionAndZoom.geometryColumnDataType}}
-    initialGeometrySdogeomColumn: {{initialPositionAndZoom.initialGeometrySdogeomColumn}}
-    initialGeometryGeojsonColumn: {{initialPositionAndZoom.initialGeometryGeojsonColumn}}
+    geometryColumn: {{initialPositionAndZoom.geometryColumn}}
+    geojsonColumn: {{initialPositionAndZoom.geojsonColumn}}
     initialLongitudeColumn: {{initialPositionAndZoom.initialLongitudeColumn}}
     initialLatitudeColumn: {{initialPositionAndZoom.initialLatitudeColumn}}
     initialZoomlevelColumn: {{initialPositionAndZoom.initialZoomlevelColumn}}
@@ -68,8 +68,8 @@ region {{regionStaticId}} (
 
 # Guardrails
 
-- `geometryColumnDataType: sdoGeometry` requires `initialGeometrySdogeomColumn`.
-- `geometryColumnDataType: geojson` requires `initialGeometryGeojsonColumn`.
+- `geometryColumnDataType: sdoGeometry` requires `geometryColumn`.
+- `geometryColumnDataType: geojson` requires `geojsonColumn`.
 - `geometryColumnDataType: longitudeLatitude` requires `initialLongitudeColumn` and `initialLatitudeColumn`.
 - For `type: sqlQuery`, the SQL select list must expose aliases that exactly match each configured `initial*Column` property.
 - `initialZoomlevelColumn` is optional in SQL mode, but when present the SQL must return that alias explicitly.

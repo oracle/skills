@@ -20,9 +20,9 @@ Document the `mapBackground` shared component family: raster XYZ tile layers, ve
 | `type` | yes | enum | `raster`, `vector`, or OGC WMS. |
 | `url` | yes | string | Background URL. |
 | `attribution` | conditional | text | Used for raster and OGC WMS backgrounds. |
-| `apiKeyType` | optional | enum | none, static value, or web credential. |
-| `apiKey` | conditional | string | Static API-key value. |
-| `apiKeyCredential` | conditional | credential ref | URL Query String Web Credential. |
+| `apiKey.type` | optional | enum | `staticValue` or `webCredential`. |
+| `apiKey.staticValue` | conditional | string | Static API-key value. |
+| `apiKey.webCredential` | conditional | credential ref | URL Query String Web Credential. |
 | `httpHeaders` | optional | text | Key-value pairs, one per line. |
 | `minZoomLevel` / `maxZoomLevel` | optional | number | Background zoom limits. |
 | subscription fields | optional | subscription | Shared-component subscription metadata. |
@@ -34,16 +34,18 @@ Document the `mapBackground` shared component family: raster XYZ tile layers, ve
 ```apexlang
 mapBackground {{staticId}} (
   name: {{name}}
-  staticId: {{staticId}}
   type: {{type}}
   url: {{url}}
   attribution: {{attribution}}
-  apiKeyType: {{apiKeyType}}
-  apiKey: {{apiKey}}
-  apiKeyCredential: {{apiKeyCredential}}
+  apiKey: {{apiKey.type}}
+  staticValue: {{apiKey.staticValue}}
+  webCredential: @{{apiKey.webCredential}}
   httpHeaders: {{httpHeaders}}
-  minZoomLevel: {{minZoomLevel}}
-  maxZoomLevel: {{maxZoomLevel}}
+  advanced {
+    staticId: {{staticId}}
+    minZoomLevel: {{minZoomLevel}}
+    maxZoomLevel: {{maxZoomLevel}}
+  }
 )
 ```
 
@@ -64,7 +66,7 @@ Use shared backgrounds from a map region when `tileLayerType` selects the shared
 - OGC WMS
   - Provide the URL with the required WMS parameters except `BBOX`, `WIDTH`, `HEIGHT`, `REQUEST`, `FORMAT`, and `SRS/CRS`; the map region adds those automatically.
 - `attribution` only applies to raster and OGC WMS backgrounds in the current seed metadata.
-- `apiKeyType: webCredential`
+- `apiKey: webCredential`
   - The credential must be a URL Query String Web Credential.
 - Background vector-tile usage is still subject to the application-scoped native plugin setting `useVectorTileLayers`.
 

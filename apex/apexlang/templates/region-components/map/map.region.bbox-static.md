@@ -29,7 +29,7 @@ Document static bounding-box authoring for map regions.
 
 ## Optional Variables
 
-- `mapStatusItem`
+- `boundingBox.currentBoundsItem`
 - `map.height`
 
 ---
@@ -53,8 +53,8 @@ region {{regionStaticId}} (
     minLatitude: {{boundingBox.minLatitude}}
     maxLongitude: {{boundingBox.maxLongitude}}
     maxLatitude: {{boundingBox.maxLatitude}}
+    currentBoundsItem: {{boundingBox.currentBoundsItem}}
   }
-  mapStatusItem: {{mapStatusItem}}
 )
 ```
 

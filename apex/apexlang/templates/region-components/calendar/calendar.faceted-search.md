@@ -78,7 +78,6 @@ region {{regionStaticId}} (
     startDateColumn: START_DATE
     endDateColumn: END_DATE
     pkColumn: ID
-    multipleLineEvents: false
     additionalCalendarViews: [
       list
       navigation
@@ -113,7 +112,9 @@ region {{regionStaticId}} (
 
 # Faceted Search Companion
 
-```apexlang
+Note: This companion faceted-search snippet is illustrative until its settings surface is compiler-provenanced for emitted template use.
+
+```text
 region {{facetRegionId}} (
   name: {{facetName}}
   type: facetedSearch

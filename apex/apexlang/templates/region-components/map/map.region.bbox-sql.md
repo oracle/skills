@@ -27,12 +27,12 @@ Document SQL-derived bounding-box authoring for map regions.
 
 ## Optional Variables
 
-- `boundingBox.sdoGeometryColumn`
-- `boundingBox.minLongitudeColumn`
-- `boundingBox.minLatitudeColumn`
-- `boundingBox.maxLongitudeColumn`
-- `boundingBox.maxLatitudeColumn`
-- `mapStatusItem`
+- `boundingBox.geometryColumn`
+- `boundingBox.minLongitude`
+- `boundingBox.minLatitude`
+- `boundingBox.maxLongitude`
+- `boundingBox.maxLatitude`
+- `boundingBox.currentBoundsItem`
 
 ---
 
@@ -53,13 +53,13 @@ region {{regionStaticId}} (
     {{boundingBox.sqlQuery}}
     ```
     geometryColumnDataType: {{boundingBox.geometryColumnDataType}}
-    sdoGeometryColumn: {{boundingBox.sdoGeometryColumn}}
-    minLongitudeColumn: {{boundingBox.minLongitudeColumn}}
-    minLatitudeColumn: {{boundingBox.minLatitudeColumn}}
-    maxLongitudeColumn: {{boundingBox.maxLongitudeColumn}}
-    maxLatitudeColumn: {{boundingBox.maxLatitudeColumn}}
+    geometryColumn: {{boundingBox.geometryColumn}}
+    minLongitude: {{boundingBox.minLongitude}}
+    minLatitude: {{boundingBox.minLatitude}}
+    maxLongitude: {{boundingBox.maxLongitude}}
+    maxLatitude: {{boundingBox.maxLatitude}}
+    currentBoundsItem: {{boundingBox.currentBoundsItem}}
   }
-  mapStatusItem: {{mapStatusItem}}
 )
 ```
 
@@ -67,7 +67,7 @@ region {{regionStaticId}} (
 
 # Guardrails
 
-- `boundingBox.geometryColumnDataType: sdoGeometry` requires `boundingBox.sdoGeometryColumn`.
+- `boundingBox.geometryColumnDataType: sdoGeometry` requires `boundingBox.geometryColumn`.
 - `boundingBox.geometryColumnDataType: longitudeLatitude` requires the min/max longitude and latitude column set.
 - Use bbox metadata only when `mapFeatures` does not include `infiniteMap`.
 - Use this scenario as the default viewport strategy for multi-marker longitude/latitude maps. Source the bounds from the same filtered dataset as the visible layer, for example `min(longitude)`, `min(latitude)`, `max(longitude)`, and `max(latitude)`.

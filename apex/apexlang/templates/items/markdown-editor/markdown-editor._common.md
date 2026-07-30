@@ -95,7 +95,7 @@ pageItem {{itemName}} (
 - Remove unsupported or unused blocks before finalizing the DSL.
 - Omit `source {}` when the item is not bound to persisted data or a form region.
 - Emit `validation {}` only when the scenario requires declarative checks.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
+- Emit native markdown-editor `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
 
 ---
 

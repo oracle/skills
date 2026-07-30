@@ -50,9 +50,6 @@ page 80 (
             template: @/buttons-container
             templateOptions: #DEFAULT#
         }
-        settings {
-            outputAs: text
-        }
     )
 
     region form (
@@ -108,9 +105,6 @@ page 80 (
         label {
             label: Item Checkbox
             alignment: left
-        }
-        settings {
-            noOfCols: 3
         }
         lov {
             type: staticValues
@@ -175,9 +169,6 @@ page 80 (
         label {
             label: Related Records
             alignment: left
-        }
-        settings {
-            noOfCols: 1
         }
         lov {
             type: sqlQuery

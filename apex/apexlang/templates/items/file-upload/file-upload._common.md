@@ -36,15 +36,20 @@ Define the canonical contract, conditional rules, and output skeleton for `file-
 | layout.alignment | optional | enum | Item alignment inside the slot. |
 | appearance.template | yes | alias | Family-appropriate template alias. |
 | appearance.templateOptions | optional | array/string | Template modifiers such as `#DEFAULT#` or compact options. |
-| settings.* | optional | variant | Normalized family settings such as `storageType`, `displayAs`, `allowMultipleFiles`, `fileTypes`, `maxFileSize`, `displayDownloadLink`, `downloadLinkText`, `contentDisposition`, `purgeFileAt`, `dropzoneTitle`, `dropzoneDescription`, and `captureUsing`. |
+| appearance.icon | optional | string | Font APEX icon class such as `fa-file`. |
+| display.displayAs | yes | enum | Upload UI mode: `blockDropzone`, `inlineDropzone`, or `nativeFileBrowse`. Emit `blockDropzone` when the user does not request another supported mode. |
+| display.dropzoneTitle | conditional | string | Required for dropzone modes; use `Drop files here` when custom copy is unavailable. |
+| display.dropzoneDesc | conditional | string | Required for dropzone modes; use `or click to browse` when custom copy is unavailable. |
+| display.allowCopyPaste | optional | boolean | Allows file copy/paste into supported dropzone UIs. |
+| display.captureUsing | optional | enum | Device capture source: `selfieCamera` or `mainCamera`. Omit when no capture source is required. |
+| storage.type | optional | enum | Proven storage type: `appTempFiles`. |
+| storage.allowMultipleFiles | optional | boolean | Allows multiple files. |
+| storage.fileTypes | optional | string | Free-form comma-delimited file type list such as `image/png,video/*`; do not emit as an array. |
+| storage.maxFileSize | optional | number | Maximum file size in KB. |
 | validation.valueRequired | optional | boolean | Set when the item value is mandatory. |
 | source.formRegion | conditional | alias | Required for form-bound upload items. |
 | source.column | conditional | string | Primary file payload column. |
 | source.dataType | conditional | enum | Data type for the stored payload, typically BLOB. |
-| source.mimeTypeColumn | optional | string | Column storing the MIME type. |
-| source.filenameColumn | optional | string | Column storing the uploaded file name. |
-| source.characterSetColumn | optional | string | Column storing the character set when applicable. |
-| source.blobLastUpdatedColumn | optional | string | Column storing the last-updated timestamp. |
 | help.helpText | required by default | string | Builder help text or assistive guidance for visible user-facing file-upload items; omit only for hidden items or a documented exemption. |
 | security.sessionStateProtection | optional | enum | Session state protection policy. |
 | security.authorizationScheme | optional | alias | Authorization scheme alias when the item is conditionally visible. |
@@ -69,20 +74,20 @@ pageItem {{itemName}} (
     appearance {
         template: {{appearance.template}}
         templateOptions: {{appearance.templateOptions}}
+        icon: {{appearance.icon}}
     }
-    settings {
-        storageType: {{settings.storageType}}
-        displayAs: {{settings.displayAs}}
-        allowMultipleFiles: {{settings.allowMultipleFiles}}
-        fileTypes: {{settings.fileTypes}}
-        maxFileSize: {{settings.maxFileSize}}
-        displayDownloadLink: {{settings.displayDownloadLink}}
-        downloadLinkText: {{settings.downloadLinkText}}
-        contentDisposition: {{settings.contentDisposition}}
-        purgeFileAt: {{settings.purgeFileAt}}
-        dropzoneTitle: {{settings.dropzoneTitle}}
-        dropzoneDescription: {{settings.dropzoneDescription}}
-        captureUsing: {{settings.captureUsing}}
+    display {
+        displayAs: {{display.displayAs}}
+        dropzoneTitle: {{display.dropzoneTitle}}
+        dropzoneDesc: {{display.dropzoneDesc}}
+        allowCopyPaste: {{display.allowCopyPaste}}
+        captureUsing: {{display.captureUsing}}
+    }
+    storage {
+        type: {{storage.type}}
+        allowMultipleFiles: {{storage.allowMultipleFiles}}
+        fileTypes: {{storage.fileTypes}}
+        maxFileSize: {{storage.maxFileSize}}
     }
     validation {
         valueRequired: {{validation.valueRequired}}
@@ -91,10 +96,6 @@ pageItem {{itemName}} (
         formRegion: @{{source.formRegion}}
         column: {{source.column}}
         dataType: {{source.dataType}}
-        mimeTypeColumn: {{source.mimeTypeColumn}}
-        filenameColumn: {{source.filenameColumn}}
-        characterSetColumn: {{source.characterSetColumn}}
-        blobLastUpdatedColumn: {{source.blobLastUpdatedColumn}}
     }
     help {
         helpText: {{help.helpText}}
@@ -113,7 +114,11 @@ pageItem {{itemName}} (
 - Remove unsupported or unused blocks before finalizing the DSL.
 - Omit `source {}` when the item is not bound to persisted data or a form region.
 - Emit `validation {}` only when the scenario requires declarative checks.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
+- Always emit a grouped `display {}` block with an explicit `displayAs` value.
+- Use `displayAs: blockDropzone` when the user does not request `inlineDropzone` or `nativeFileBrowse`.
+- For dropzone modes, provide `dropzoneTitle` and `dropzoneDesc` when user-specific copy is available; otherwise emit `Drop files here` and `or click to browse`.
+- Keep `storage.fileTypes` as one free-form comma-delimited text scalar, for example `image/png,video/*`.
+- Keep `storage.maxFileSize` as a positive integer number of KB.
 
 ---
 
@@ -122,4 +127,5 @@ pageItem {{itemName}} (
 - Follow guardrails in `references/policies/memory-bank/00-guard/ai.guard.md`.
 - Do not invent unsupported attributes or UT classes.
 - Keep placeholder names aligned with `templates/items/items._common.md`.
-- Validate the storage strategy and metadata column mappings before finalizing upload items.
+- Validate the storage strategy before finalizing upload items.
+- Do not reintroduce legacy flat `settings.storageType`, `settings.displayAs`, or related file-upload settings.

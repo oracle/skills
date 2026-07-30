@@ -22,16 +22,16 @@ Document the region-level background path where `tileLayerType` uses shared `map
 - `name`
 - `layout.sequence`
 - `layout.slot`
-- `tileLayerType` (use `shared`)
-- `standardTileLayer`
+- `map.background` (use `sharedComponent`)
+- `map.standard`
 
 ## Optional Variables
 
-- `darkModeTileLayer`
+- `map.darkMode`
 - `map.height`
-- `mapFeatures`
-- `showLegend`
-- `lazyLoading`
+- `controls.options`
+- `legend.show`
+- `performance.lazyLoading`
 
 ---
 
@@ -42,18 +42,24 @@ region {{regionStaticId}} (
   name: {{name}}
   type: map
   map {
+    background: sharedComponent
+    standard: @{{map.standard}}
+    darkMode: @{{map.darkMode}}
     height: {{map.height}}
   }
   layout {
     sequence: {{layout.sequence}}
     slot: {{layout.slot}}
   }
-  tileLayerType: shared
-  standardTileLayer: @{{standardTileLayer}}
-  darkModeTileLayer: @{{darkModeTileLayer}}
-  mapFeatures: {{mapFeatures}}
-  showLegend: {{showLegend}}
-  lazyLoading: {{lazyLoading}}
+  controls {
+    options: {{controls.options}}
+  }
+  legend {
+    show: {{legend.show}}
+  }
+  performance {
+    lazyLoading: {{performance.lazyLoading}}
+  }
 )
 ```
 
@@ -61,6 +67,6 @@ region {{regionStaticId}} (
 
 # Guardrails
 
-- `standardTileLayer` and `darkModeTileLayer` must reference existing `mapBackground` shared components.
+- `map.standard` and `map.darkMode` must reference existing `mapBackground` shared components.
 - Use `map.backgrounds.md` for API-key, WMS, raster, and vector background-specific guidance.
 - Shared backgrounds are the correct path when the request needs custom hosted tiles or shared reuse across multiple regions.

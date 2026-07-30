@@ -42,7 +42,6 @@ Standardize `column` variable contracts, output shape, and guardrails for all in
 | column.link.linkAttributes | optional | string | HTML attributes for the rendered link. |
 | column.comments | required by default | string | Descriptive metadata string for `comments { comments: ... }` on business-significant, derived, status, and action columns; include the required attributes `Display Label`, `Display in Report`, `Display in Form`, `Format Mask`, `Value Required`, `Read Only`, `Primary Display Column`, and `Authorization Scheme`, with optional leading `Summary`. |
 | column.genAI.columnContext | optional | string | NL2IR column context from column annotation `column_context`, else `ai_context`, else `description`, else column comment. |
-| column.advanced.columnAlias | optional | string | APEX alias for REST/NL2IR scenarios. |
 
 ---
 
@@ -71,7 +70,7 @@ column {{column.name}} (
   }
   lov {
     type: {{column.lov.type}}
-    listOfValues: @{{column.lov.sharedComponent}}
+    lov: @{{column.lov.sharedComponent}}
   }
   security {
     authorizationScheme: @{{column.security.authorizationScheme}}
@@ -93,9 +92,6 @@ column {{column.name}} (
   genAI {
     columnContext: {{column.genAI.columnContext}}
   }
-  advanced {
-    columnAlias: {{column.advanced.columnAlias}}
-  }
 )
 ```
 
@@ -115,7 +111,7 @@ column {{column.name}} (
 - Omit `link` unless column-level navigation is explicitly requested and target page/item mappings are known.
 - Omit `comments` only for hidden technical columns or when a documented exemption applies.
 - Omit `genAI` unless NL2IR context is required.
-- Omit `advanced` unless `column.advanced.colAlias` is provided.
+- Do not emit `advanced.columnAlias`; the current grammar does not allow that property for Interactive Report columns.
 
 ---
 

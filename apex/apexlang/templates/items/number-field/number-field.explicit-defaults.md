@@ -35,10 +35,15 @@ Inherits the full family contract from `number-field._common.md`. Base family re
 - `layout.slot`
 - `layout.alignment`
 - `appearance.templateOptions`
-- `security.sessionStateProtection`
+- `appearance.icon`
+- `appearance.formatMask`
+- `appearance.width`
+- `appearance.valuePlaceholder`
 - `settings.minValue`
 - `settings.maxValue`
 - `settings.numberAlignment`
+- `settings.virtualKeyboard`
+- `security.sessionStateProtection`
 
 ---
 
@@ -60,11 +65,16 @@ pageItem {{itemName}} (
     appearance {
         template: {{appearance.template}}
         templateOptions: {{appearance.templateOptions}}
+        icon: {{appearance.icon}}
+        formatMask: {{appearance.formatMask}}
+        width: {{appearance.width}}
+        valuePlaceholder: {{appearance.valuePlaceholder}}
     }
     settings {
         minValue: {{settings.minValue}}
         maxValue: {{settings.maxValue}}
         numberAlignment: {{settings.numberAlignment}}
+        virtualKeyboard: {{settings.virtualKeyboard}}
     }
     security {
         sessionStateProtection: {{security.sessionStateProtection}}
@@ -77,7 +87,7 @@ pageItem {{itemName}} (
 # Conditional Rendering Rules
 
 - Show optional defaults only when the generator needs them visible in the final output.
-- Remove family-specific settings that are not relevant to the requested prompt.
+- Emit native number-field `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
 
 ---
 

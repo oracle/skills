@@ -57,6 +57,11 @@ pageItem {{itemName}} (
         template: {{appearance.template}}
         templateOptions: {{appearance.templateOptions}}
     }
+    display {
+        displayAs: blockDropzone
+        dropzoneTitle: Drop files here
+        dropzoneDesc: or click to browse
+    }
     security {
         sessionStateProtection: {{security.sessionStateProtection}}
     }
@@ -69,6 +74,7 @@ pageItem {{itemName}} (
 
 - Use `appearance.templateOptions` only when the requested control needs compact or condensed rendering.
 - Keep the rest of the item aligned with the inherited family contract.
+- Keep the explicit `blockDropzone` display block unless the user requests another supported upload mode.
 
 ---
 

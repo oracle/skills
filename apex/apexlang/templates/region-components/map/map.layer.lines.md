@@ -27,10 +27,10 @@ Document line-layer behavior for Maps: line geometry mapping, stroke styling, co
 
 ## Optional Variables
 
-- `layer.featureStrokeColor`
-- `layer.featureStrokeWidth`
-- `layer.featureStrokeStyle`
-- `layer.featureFillColorValueColumn`
+- `layer.appearance.strokeColor`
+- `layer.appearance.strokeWidth`
+- `layer.appearance.strokeStyle`
+- `layer.appearance.colorValueColumn`
 
 ---
 
@@ -55,10 +55,12 @@ layer {{layer.staticId}} (
     geometryColumn: {{layer.columnMapping.geometryColumn}}
     primaryKeyColumn: {{layer.columnMapping.primaryKeyColumn}}
   }
-  featureStrokeColor: {{layer.featureStrokeColor}}
-  featureStrokeWidth: {{layer.featureStrokeWidth}}
-  featureStrokeStyle: {{layer.featureStrokeStyle}}
-  featureFillColorValueColumn: {{layer.featureFillColorValueColumn}}
+  appearance {
+    strokeColor: {{layer.appearance.strokeColor}}
+    strokeWidth: {{layer.appearance.strokeWidth}}
+    strokeStyle: {{layer.appearance.strokeStyle}}
+    colorValueColumn: {{layer.appearance.colorValueColumn}}
+  }
 )
 ```
 

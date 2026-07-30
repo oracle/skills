@@ -32,7 +32,6 @@ Inherits the full family contract from `text-field._common.md`. Base family requ
 
 ## Optional Variables
 
-- `validation.minLength`
 - `appearance.templateOptions`
 - `security.sessionStateProtection`
 
@@ -59,7 +58,6 @@ pageItem {{itemName}} (
     }
     validation {
         valueRequired: {{validation.valueRequired}}
-        minLength: {{validation.minLength}}
         maxLength: {{validation.maxLength}}
     }
     security {
@@ -73,7 +71,7 @@ pageItem {{itemName}} (
 # Conditional Rendering Rules
 
 - Use this overlay only for textual families where declarative length checks are relevant.
-- Keep validation limited to the requested length requirements.
+- Keep validation limited to `valueRequired` and `maxLength` under the current grammar.
 
 ---
 

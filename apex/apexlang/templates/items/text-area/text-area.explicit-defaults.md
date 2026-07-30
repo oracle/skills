@@ -77,7 +77,7 @@ pageItem {{itemName}} (
 # Conditional Rendering Rules
 
 - Show optional defaults only when the generator needs them visible in the final output.
-- Remove family-specific settings that are not relevant to the requested prompt.
+- Emit native text-area `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
 
 ---
 

@@ -104,7 +104,7 @@ pageItem {{itemName}} (
 - Omit `source {}` when the item is not bound to persisted data or a form region.
 - Emit `validation {}` only when the scenario requires declarative checks.
 - Keep width, placeholder, and format-mask attributes absent unless the scenario explicitly asks for them.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
+- Emit native date-picker `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
 
 ---
 

@@ -38,7 +38,7 @@ page 10 (
         resizable: false
     }
     javaScript {
-        functionAndGlobalVarDeclaration:
+        functionAndGlobalVariableDeclaration:
             ```javascript-browser
             apex.jQuery(() => {
                 apex.jQuery("a.taskActionMenu").each((index, item) => {
@@ -97,9 +97,6 @@ page 10 (
                     p_operation => apex_human_task.c_task_op_add_comment )
                 ```
         }
-        settings {
-            outputAs: text
-        }
     )
 
     region buttons (
@@ -120,9 +117,6 @@ page 10 (
         }
         advanced {
             regionDisplaySelector: true
-        }
-        settings {
-            outputAs: text
         }
     )
 
@@ -214,12 +208,17 @@ page 10 (
         componentAppearance {
             display: report
         }
-        settings {
-            commentText: COMMENT_TEXT
-            userName: USER_NAME
-            date: COMMENT_DATE
-            style: chatSpeechBubbles
-            applyThemeColors: false
+        title {
+            advancedFormatting: false
+            column: USER_NAME
+        }
+        body {
+            advancedFormatting: false
+            column: COMMENT_TEXT
+        }
+        subtitle {
+            advancedFormatting: false
+            column: COMMENT_DATE
         }
         plugin-avatar {
             avatarType: initials
@@ -326,9 +325,6 @@ page 10 (
                     p_operation => apex_human_task.c_task_op_delegate )
                 ```
         }
-        settings {
-            outputAs: text
-        }
     )
 
     region details (
@@ -378,9 +374,13 @@ page 10 (
         componentAppearance {
             display: report
         }
-        settings {
-            overline: &PARAM_LABEL.
-            title: &PARAM_VALUE.
+        title {
+            advancedFormatting: false
+            column: PARAM_VALUE
+        }
+        subtitle {
+            advancedFormatting: false
+            column: PARAM_LABEL
         }
         plugin-appearance {
             applyThemeColors: false
@@ -555,9 +555,6 @@ page 10 (
                     p_operation => apex_human_task.c_task_op_set_due_date )
                 ```
         }
-        settings {
-            outputAs: text
-        }
     )
 
     region edit-parameter (
@@ -582,9 +579,6 @@ page 10 (
         serverSideCondition {
             type: expression
             plsqlExpression: :P10_CAN_UPDATE_PARAMS = 'Y'
-        }
-        settings {
-            outputAs: text
         }
     )
 
@@ -629,12 +623,17 @@ page 10 (
         componentAppearance {
             display: report
         }
-        settings {
-            commentText: DISPLAY_MSG
-            userName: EVENT_CREATOR
-            date: EVENT_TIMESTAMP
-            displayAvatar: false
-            applyThemeColors: false
+        title {
+            advancedFormatting: false
+            column: EVENT_CREATOR
+        }
+        body {
+            advancedFormatting: false
+            column: DISPLAY_MSG
+        }
+        subtitle {
+            advancedFormatting: false
+            column: EVENT_TIMESTAMP
         }
 
         column DISPLAY_MSG (
@@ -709,9 +708,6 @@ page 10 (
                     p_operation => apex_human_task.c_task_op_add_owner )
                 ```
         }
-        settings {
-            outputAs: text
-        }
     )
 
     region priority (
@@ -744,9 +740,6 @@ page 10 (
                     p_task_id   => :P10_TASK_ID,
                     p_operation => apex_human_task.c_task_op_set_priority )
                 ```
-        }
-        settings {
-            outputAs: text
         }
     )
 
@@ -781,9 +774,6 @@ page 10 (
                     p_operation => apex_human_task.c_task_op_remove_owner )
                 ```
         }
-        settings {
-            outputAs: text
-        }
     )
 
     region request-information (
@@ -816,9 +806,6 @@ page 10 (
                     p_task_id   => :P10_TASK_ID,
                     p_operation => apex_human_task.c_task_op_request_info )
                 ```
-        }
-        settings {
-            outputAs: text
         }
     )
 
@@ -877,9 +864,12 @@ page 10 (
         componentAppearance {
             display: partial
         }
-        settings {
+        title {
             title: &SUBJECT.
-            description:
+        }
+        subtitle {
+            advancedFormatting: true
+            htmlExpression:
                 ```html
                 <strong>&TASK_DEF_NAME!HTML.</strong>
                 {if INITIATOR/}
@@ -928,9 +918,9 @@ page 10 (
                     &OUTCOME.
                 {endif/}
                 ```
-            displayBadge: true
         }
         plugin-badge {
+            displayBadge: true
             label: State
             value: BADGE_TEXT
             state: BADGE_STATE
@@ -1404,9 +1394,6 @@ page 10 (
                     p_operation => apex_human_task.c_task_op_submit_info )
                 ```
         }
-        settings {
-            outputAs: text
-        }
     )
 
     pageItem P10_ALL_COMMENTS (
@@ -1414,11 +1401,6 @@ page 10 (
         label {
             label: Include comments from expired tasks
             alignment: left
-        }
-        settings {
-            useDefaults: false
-            checkedValue: Y
-            uncheckedValue: N
         }
         layout {
             sequence: 20
@@ -1455,11 +1437,6 @@ page 10 (
         label {
             label: Include history from expired tasks
             alignment: left
-        }
-        settings {
-            useDefaults: false
-            checkedValue: Y
-            uncheckedValue: N
         }
         layout {
             sequence: 10
@@ -1512,9 +1489,6 @@ page 10 (
             label: Comment
             alignment: left
         }
-        settings {
-            autoHeight: true
-        }
         layout {
             sequence: 10
             region: @add-comment
@@ -1541,9 +1515,6 @@ page 10 (
 
     pageItem P10_IS_REQUIRED (
         type: hidden
-        settings {
-            valueProtected: false
-        }
         layout {
             sequence: 50
             region: @edit-parameter
@@ -1556,6 +1527,7 @@ page 10 (
             storage: request
         }
         security {
+            sessionStateProtection: unrestricted
             encryptSessionState: false
         }
     )
@@ -1565,10 +1537,6 @@ page 10 (
         label {
             label: New Due Date
             alignment: left
-        }
-        settings {
-            showTime: true
-            displayAs: inline
         }
         layout {
             sequence: 10
@@ -1736,9 +1704,6 @@ page 10 (
             label: Parameter
             alignment: left
         }
-        settings {
-            sendOnPageSubmit: false
-        }
         layout {
             sequence: 20
             region: @edit-parameter
@@ -1762,9 +1727,6 @@ page 10 (
 
     pageItem P10_PARAM_STATIC_ID (
         type: hidden
-        settings {
-            valueProtected: false
-        }
         layout {
             sequence: 10
             region: @edit-parameter
@@ -1777,6 +1739,7 @@ page 10 (
             storage: request
         }
         security {
+            sessionStateProtection: unrestricted
             encryptSessionState: false
         }
     )
@@ -1786,9 +1749,6 @@ page 10 (
         label {
             label: Current Value
             alignment: left
-        }
-        settings {
-            sendOnPageSubmit: false
         }
         layout {
             sequence: 30
@@ -1852,9 +1812,6 @@ page 10 (
             label: Message
             alignment: left
         }
-        settings {
-            autoHeight: true
-        }
         layout {
             sequence: 10
             region: @request-information
@@ -1884,9 +1841,6 @@ page 10 (
         label {
             label: Message
             alignment: left
-        }
-        settings {
-            autoHeight: true
         }
         layout {
             sequence: 10
@@ -2721,11 +2675,6 @@ page 10 (
 
         action native-set-value (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: apex.jQuery(this.triggeringElement).attr("data-id")
-                suppressChangeEvent: true
-            }
             affectedElements {
                 selectionType: items
                 items: P10_PARAM_STATIC_ID
@@ -2739,11 +2688,6 @@ page 10 (
 
         action native-set-value-2 (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: apex.jQuery(this.triggeringElement).attr("data-label")
-                suppressChangeEvent: true
-            }
             affectedElements {
                 selectionType: items
                 items: P10_PARAM_LABEL
@@ -2757,11 +2701,6 @@ page 10 (
 
         action native-set-value-3 (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: apex.jQuery(this.triggeringElement).attr("data-value")
-                suppressChangeEvent: true
-            }
             affectedElements {
                 selectionType: items
                 items: [
@@ -2778,11 +2717,6 @@ page 10 (
 
         action native-set-value-4 (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: apex.jQuery(this.triggeringElement).attr("data-required")
-                suppressChangeEvent: true
-            }
             affectedElements {
                 selectionType: items
                 items: P10_IS_REQUIRED
@@ -2870,13 +2804,6 @@ page 10 (
     process add-comment (
         name: Add Comment
         type: humanTaskManage
-        action {
-            type: comment
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            commentText: &P10_COMMENT_TEXT.
-        }
         execution {
             sequence: 150
         }
@@ -2897,12 +2824,6 @@ page 10 (
     process cancel-task (
         name: Cancel Task
         type: humanTaskManage
-        action {
-            type: cancel
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-        }
         execution {
             sequence: 130
         }
@@ -2923,13 +2844,6 @@ page 10 (
     process change-due-date (
         name: Change Due Date
         type: humanTaskManage
-        action {
-            type: setDueDate
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            dueDateItem: P10_NEW_DUE_DATE
-        }
         execution {
             sequence: 80
         }
@@ -2950,13 +2864,6 @@ page 10 (
     process change-priority (
         name: Change Priority
         type: humanTaskManage
-        action {
-            type: setPriority
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            priorityItem: P10_NEW_PRIORITY
-        }
         execution {
             sequence: 70
         }
@@ -2977,12 +2884,6 @@ page 10 (
     process claim (
         name: Claim
         type: humanTaskManage
-        action {
-            type: claim
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-        }
         execution {
             sequence: 20
         }
@@ -3015,12 +2916,6 @@ page 10 (
     process complete (
         name: Complete
         type: humanTaskManage
-        action {
-            type: completeWithoutOutcome
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-        }
         execution {
             sequence: 30
         }
@@ -3041,13 +2936,6 @@ page 10 (
     process delegate (
         name: Delegate
         type: humanTaskManage
-        action {
-            type: delegate
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            toUserItem: P10_NEW_OWNER
-        }
         execution {
             sequence: 60
         }
@@ -3068,13 +2956,6 @@ page 10 (
     process invite-participant (
         name: Invite Participant
         type: humanTaskManage
-        action {
-            type: inviteParticipant
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            toUserItem: P10_NEW_POTENTIAL_OWNER
-        }
         execution {
             sequence: 110
         }
@@ -3095,12 +2976,6 @@ page 10 (
     process release (
         name: Release
         type: humanTaskManage
-        action {
-            type: release
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-        }
         execution {
             sequence: 50
         }
@@ -3122,13 +2997,6 @@ page 10 (
     process remove-participant (
         name: Remove Participant
         type: humanTaskManage
-        action {
-            type: removeParticipant
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            toUserItem: P10_POTENTIAL_OWNER
-        }
         execution {
             sequence: 120
         }
@@ -3149,15 +3017,6 @@ page 10 (
     process renew-task (
         name: Renew Task
         type: humanTaskManage
-        action {
-            type: renew
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-        }
-        renew {
-            renewedTaskIdItem: P10_TASK_ID
-        }
         execution {
             sequence: 10
         }
@@ -3179,13 +3038,6 @@ page 10 (
     process request-information (
         name: Request Information
         type: humanTaskManage
-        action {
-            type: requestInfo
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            commentText: &P10_REQUEST_INFO_TEXT.
-        }
         execution {
             sequence: 90
         }
@@ -3206,13 +3058,6 @@ page 10 (
     process submit-information (
         name: Submit Information
         type: humanTaskManage
-        action {
-            type: submitInfo
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            commentText: &P10_SUBMIT_INFO_TEXT.
-        }
         execution {
             sequence: 100
         }
@@ -3233,14 +3078,6 @@ page 10 (
     process update-parameter (
         name: Update Parameter
         type: humanTaskManage
-        action {
-            type: updateParam
-        }
-        humanTask {
-            taskIdItem: P10_TASK_ID
-            paramItem: P10_PARAM_STATIC_ID
-            newValueItem: P10_NEW_VALUE
-        }
         execution {
             sequence: 140
         }

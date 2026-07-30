@@ -130,13 +130,6 @@ dynamicAction {{dynamicAction.staticId}} (
 
   action {{dynamicAction.action.staticId}} (
     action: {{dynamicAction.action.type}}
-    settings {
-      title: {{dynamicAction.action.title}}
-      message: {{dynamicAction.action.message}}
-      style: {{dynamicAction.action.style}}
-      icon: {{dynamicAction.action.icon}}
-      okLabel: {{dynamicAction.action.okLabel}}
-    }
     execution {
       sequence: {{dynamicAction.action.sequence}}
       event: @{{dynamicAction.staticId}}
@@ -152,3 +145,4 @@ dynamicAction {{dynamicAction.staticId}} (
 
 - Replace theme template references with valid aliases.
 - Remove button and dynamic action blocks when no custom action is required.
+- Do not emit a dynamic-action `action.settings` block; action-specific dialog text must wait for a grammar-backed property path.

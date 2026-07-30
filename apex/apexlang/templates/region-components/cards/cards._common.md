@@ -220,7 +220,6 @@ Derive `{{targetPageItem}}` and `{{sourceColumn}}` from one of these evidence so
 - Use `appearance.template: @/cards-container` for cards regions.
 - Emit at most one of `style-a`, `style-b`, or `style-c` for any one cards region.
 - Keep `templateOptions` to exact accepted values. `style-a` is valid when documented; `t-CardsRegion--styleA` is not.
-- Do not emit `componentAppearance.gridColumns` with values outside `2`, `3`, `4`, or `5`.
 - Ensure all referenced columns exist in the selected source.
 - Do not leave image-bearing source columns unmapped when the requested cards design explicitly calls for images or thumbnails.
 - Do not emit a generic `image` block for cards regions in this runtime; use the native `media` block instead.
@@ -230,7 +229,4 @@ Derive `{{targetPageItem}}` and `{{sourceColumn}}` from one of these evidence so
 - Do not emit `position` on native Cards actions.
 - Do not add media properties beyond `source`, `blobColumn`, `urlColumn`, `url`, `position`, `appearance`, and `sizing`, or `blobAttributes` properties beyond `mimeTypeColumn` and `lastUpdatedColumn`, unless compiler-backed truth proves them for the active runtime.
 - Keep HTML expressions small and escaped when output includes user data.
-- Do not emit `title.htmlExpression` or `subtitle.htmlExpression` without `advancedFormatting: true`.
-- Do not emit `body.htmlExpression` or `secondaryBody.htmlExpression` without `advancedFormatting: true`.
-- Do not use `#COLUMN#` tokens inside cards `title.htmlExpression`, `subtitle.htmlExpression`, `body.htmlExpression`, or `secondaryBody.htmlExpression`; use `&COLUMN.` substitution strings instead.
 - Metadata export lookup: search for `Cards`, `column-card`, and card attribute names used by the owning region.

@@ -81,7 +81,7 @@ pageItem {{itemName}} (
 - If a hidden item appears in dynamic-action `itemsToReturn` or as a `setValue` target, treat that as a hard signal that the item is client-owned post-render state rather than protected hidden data.
 - Remove unsupported or unused blocks before finalizing the DSL.
 - Omit `source {}` when the item is not bound to persisted data or a form region.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
+- Emit native hidden-item `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
 
 ---
 

@@ -38,7 +38,6 @@ Standardize reusable form item blocks so scenario templates can render item defi
 - `item.label.*`
 - `item.layout.*`
 - `item.appearance.*`
-- `item.settings.*`
 - `item.validation.*`
 - `item.lov.*`
 - `item.security.*`
@@ -65,9 +64,6 @@ pageItem {{item.staticId}} (
     templateOptions: {{item.appearance.templateOptions}}
     width: {{item.appearance.width}}
   }
-  settings {
-    sendOnPageSubmit: {{item.settings.sendOnPageSubmit}}
-  }
   validation {
     valueRequired: {{item.validation.valueRequired}}
   }
@@ -93,7 +89,7 @@ pageItem {{item.staticId}} (
 
 - Omit optional blocks when values are not provided.
 - Do not emit `appearance.width` for item types whose schema forbids it; `displayOnly` supports only `appearance.template` and `appearance.templateOptions`.
-- For `displayOnly`, always emit `settings { sendOnPageSubmit: false }` by default.
+- Do not emit page-item `settings` blocks; the current grammar does not expose a pageItem settings group.
 - Keep each item mapped to exactly one form region via `item.region`.
 - For items rendered inside the main form region body, emit `layout.slot: regionBody` instead of `BODY`.
 - Every form region must have at least one source-mapped primary-key item; emit `primaryKey: true` on each PK item.

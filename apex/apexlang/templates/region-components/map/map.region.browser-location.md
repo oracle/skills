@@ -23,13 +23,11 @@ Document browser-location-assisted initial positioning and the associated sessio
 - `layout.slot`
 - `controls.options` (must include `browserLocation`)
 - `initialPositionAndZoom.type`
-- `initialPositionAndZoom.fromBrowser`
+- `initialPositionAndZoom.getPositionFromBrowser`
 
 ## Optional Variables
 
-- `initialPositionAndZoom.zoomType`
 - `map.height`
-- `mapStatusItem`
 
 ---
 
@@ -51,10 +49,8 @@ region {{regionStaticId}} (
   }
   initialPositionAndZoom {
     type: {{initialPositionAndZoom.type}}
-    zoomType: {{initialPositionAndZoom.zoomType}}
-    fromBrowser: {{initialPositionAndZoom.fromBrowser}}
+    getPositionFromBrowser: {{initialPositionAndZoom.getPositionFromBrowser}}
   }
-  mapStatusItem: {{mapStatusItem}}
 )
 ```
 
@@ -62,5 +58,5 @@ region {{regionStaticId}} (
 
 # Guardrails
 
-- `initialPositionAndZoom.fromBrowser` is available only when `controls.options` includes browser location support.
+- `initialPositionAndZoom.getPositionFromBrowser` is available only when `controls.options` includes browser location support.
 - Browser-derived initial positioning applies only to the first page load in the APEX session; the widget then remembers position across page requests in the same session.

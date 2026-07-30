@@ -36,7 +36,6 @@ Standardize reusable series contracts across all chart scenarios.
 - `series.label.*`
 - `series.marker.*`
 - `series.line.*`
-- `series.tooltip.*`
 - `series.advanced.*`
 
 ---
@@ -73,9 +72,6 @@ series {{series.staticId}} (
   label {
     {{series.label}}
   }
-  tooltip {
-    {{series.tooltip}}
-  }
   advanced {
     {{series.advanced}}
   }
@@ -90,3 +86,4 @@ series {{series.staticId}} (
 - Keep alias mappings deterministic and schema-valid.
 - SQL output aliases referenced by `columnMapping` must match the returned query metadata exactly, including case.
 - For generated SQL-backed charts, prefer uppercase aliases in both the SQL and `columnMapping` (for example `LABEL`, `VALUE`, `STORE_LABEL`, `TOTAL_VALUE`) to avoid runtime column-resolution mismatches.
+- Use `columnMapping.customTooltip`, `columnMapping.legendTooltip`, or `columnMapping.labelTooltip` for tooltip columns; do not emit a `series.tooltip` group.

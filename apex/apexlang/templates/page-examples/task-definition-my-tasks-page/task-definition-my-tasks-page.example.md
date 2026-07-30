@@ -121,9 +121,6 @@ page 9 (
             label {
                 label: Due
             }
-            settings {
-                selectMultiple: true
-            }
             lov {
                 type: sharedComponent
                 lov: @unified-task-list-lov-due
@@ -144,9 +141,6 @@ page 9 (
             type: range
             label {
                 label: Initiated
-            }
-            settings {
-                selectMultiple: true
             }
             lov {
                 type: sharedComponent
@@ -372,9 +366,12 @@ page 9 (
         componentAppearance {
             display: report
         }
-        settings {
+        title {
             title: &SUBJECT.
-            description:
+        }
+        subtitle {
+            advancedFormatting: true
+            htmlExpression:
                 ```html
                 <strong>&TASK_DEF_NAME!HTML.</strong>
                 {if INITIATOR/}
@@ -416,9 +413,9 @@ page 9 (
                 {endif/}
 
                 ```
-            displayBadge: true
         }
         plugin-badge {
+            displayBadge: true
             label: State
             value: BADGE_TEXT
             state: BADGE_STATE
@@ -751,11 +748,6 @@ page 9 (
             label: Show expired tasks
             alignment: left
         }
-        settings {
-            useDefaults: false
-            checkedValue: Y
-            uncheckedValue: N
-        }
         layout {
             sequence: 20
             region: @my-tasks-report
@@ -810,9 +802,6 @@ page 9 (
 
     pageItem P9_TASK_ID (
         type: hidden
-        settings {
-            valueProtected: false
-        }
         layout {
             sequence: 10
             slot: BODY
@@ -821,6 +810,7 @@ page 9 (
             storage: request
         }
         security {
+            sessionStateProtection: unrestricted
             encryptSessionState: false
         }
     )
@@ -840,15 +830,6 @@ page 9 (
 
         action native-execute-plsql-code (
             action: executeServerSideCode
-            settings {
-                plsqlCode:
-                    ```plsql
-                    apex_human_task.approve_task (
-                        p_task_id   => :P9_TASK_ID,
-                        p_autoclaim => true );
-                    ```
-                itemsToSubmit: P9_TASK_ID
-            }
             execution {
                 sequence: 20
                 event: @approve
@@ -858,9 +839,6 @@ page 9 (
 
         action native-javascript-code (
             action: executeJsCode
-            settings {
-                jsCode: apex.message.showPageSuccess('Task approved' );
-            }
             affectedElements {
                 selectionType: region
                 region: @my-tasks-report
@@ -900,10 +878,6 @@ page 9 (
 
         action native-set-value (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: this.triggeringElement.dataset.id
-            }
             affectedElements {
                 selectionType: items
                 items: P9_TASK_ID
@@ -932,15 +906,6 @@ page 9 (
 
         action native-execute-plsql-code (
             action: executeServerSideCode
-            settings {
-                plsqlCode:
-                    ```plsql
-                    apex_human_task.claim_task (
-                        p_task_id   => :P9_TASK_ID );
-
-                    ```
-                itemsToSubmit: P9_TASK_ID
-            }
             execution {
                 sequence: 20
                 event: @claim
@@ -950,9 +915,6 @@ page 9 (
 
         action native-javascript-code (
             action: executeJsCode
-            settings {
-                jsCode: apex.message.showPageSuccess('Task claimed' );
-            }
             affectedElements {
                 selectionType: region
                 region: @my-tasks-report
@@ -992,10 +954,6 @@ page 9 (
 
         action native-set-value (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: this.triggeringElement.dataset.id
-            }
             affectedElements {
                 selectionType: items
                 items: P9_TASK_ID
@@ -1101,15 +1059,6 @@ page 9 (
 
         action native-execute-plsql-code (
             action: executeServerSideCode
-            settings {
-                plsqlCode:
-                    ```plsql
-                    apex_human_task.reject_task (
-                        p_task_id   => :P9_TASK_ID,
-                        p_autoclaim => true );
-                    ```
-                itemsToSubmit: P9_TASK_ID
-            }
             execution {
                 sequence: 20
                 event: @reject
@@ -1119,9 +1068,6 @@ page 9 (
 
         action native-javascript-code (
             action: executeJsCode
-            settings {
-                jsCode: apex.message.showPageSuccess('Task rejected' );
-            }
             affectedElements {
                 selectionType: region
                 region: @my-tasks-report
@@ -1161,10 +1107,6 @@ page 9 (
 
         action native-set-value (
             action: setValue
-            settings {
-                type: javaScriptExpression
-                javaScriptExpression: this.triggeringElement.dataset.id
-            }
             affectedElements {
                 selectionType: items
                 items: P9_TASK_ID

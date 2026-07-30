@@ -40,7 +40,6 @@ Define the canonical contract, conditional rules, and output skeleton for `text-
 | appearance.valuePlaceholder | optional | string | Placeholder or helper text shown before a value is entered. |
 | settings.* | optional | variant | Normalized family settings such as `resizable`, `autoHeight`, `characterCounter`, and `trimSpaces`. |
 | validation.valueRequired | optional | boolean | Set when the item value is mandatory. |
-| validation.minLength | optional | number | Minimum character length when the scenario enforces it. |
 | validation.maxLength | optional | number | Maximum character length when the scenario enforces it. |
 | source.formRegion | conditional | alias | Required for form-bound items. |
 | source.column | conditional | string | Target column for form-bound items. |
@@ -80,7 +79,6 @@ pageItem {{itemName}} (
     }
     validation {
         valueRequired: {{validation.valueRequired}}
-        minLength: {{validation.minLength}}
         maxLength: {{validation.maxLength}}
     }
     source {
@@ -107,7 +105,8 @@ pageItem {{itemName}} (
 - Emit `validation {}` only when the scenario requires declarative checks.
 - For form-bound textual columns, `validation.maxLength` should match the bound column length exactly.
 - Keep width, placeholder, and format-mask attributes absent unless the scenario explicitly asks for them.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
+- Emit native text-area `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
+- Do not emit `validation.minLength`; current item validation supports `valueRequired` and `maxLength`.
 
 ---
 

@@ -30,11 +30,6 @@ Document the native faceted-search region shell and its filter child metadata bo
 | source.filteredRegion | yes | ref | Must reference results region id. |
 | layout.slot | optional | string | Default to `leftColumn` for the standard pattern. |
 | appearance.template | optional | string | Default to `@/standard`. |
-| compactNosThreshold setting | yes | number | Standard default is `10000`. |
-| showCurrentFacets setting | yes | boolean/string | Standard default is `true`; use `selector` only for explicit selector-mode requests. |
-| showTotalRowCount setting | yes | boolean | Standard default is `true`. |
-| displayChartForTopNValues setting | optional | positive integer | Opt-in only for explicit chart/top-N requests; common value is `10`. |
-| currentFacetsSelector setting | conditional | selector | Required only when `showCurrentFacets: selector` is emitted. |
 | facets | optional | array | Facet definitions and LOV/source metadata. |
 | searchFacet.enabled | optional | boolean | Enables free-text facet search. |
 
@@ -143,21 +138,13 @@ region {{regionStaticId}} (
     template: {{appearance.template}}
     templateOptions: #DEFAULT#
   }
-  settings {
-    compactNosThreshold: 10000
-    showCurrentFacets: true
-    showTotalRowCount: true
-  }
   {{facets}}
 )
 ```
 
 # Conditional Rendering Rules
 
-- Emit the standard three-property `settings` block by default: `compactNosThreshold: 10000`, `showCurrentFacets: true`, and `showTotalRowCount: true`.
-- Keep current-facets selector configuration in `settings`, but only for explicit selector-mode requests.
-- When selector mode is requested, emit both `showCurrentFacets: selector` and a concrete `currentFacetsSelector` value. Do not invent an external target unless the generated page also creates a clearly named target.
-- Emit `displayChartForTopNValues` only for explicit chart/top-N requests; use a positive integer such as `10`.
+- Do not emit faceted-search `settings` properties unless the grammar exposes them; the current region grammar does not allow the prior `compactNosThreshold`, `showCurrentFacets`, or `showTotalRowCount` properties.
 - Do not merge facet child definitions into the region shell description.
 - The standard page-level composition for this region family is breadcrumb in `breadcrumbBar`, results in `body`, and faceted search in `leftColumn`.
 - When the request calls for Product, Store, Status, or other discrete value filters, start from `selectList`, `checkboxGroup`, or `radioGroup` plus `lov { type: distinctValues }` instead of internal `NATIVE_*` token guessing.

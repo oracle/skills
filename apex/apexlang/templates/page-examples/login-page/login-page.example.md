@@ -177,10 +177,6 @@ page 9999 (
     process login (
         name: Login
         type: invokeApi
-        invoke {
-            package: APEX_AUTHENTICATION
-            procedureOrFunction: LOGIN
-        }
         execution {
             sequence: 20
         }
@@ -229,10 +225,6 @@ page 9999 (
     process set-username-cookie (
         name: Set Username Cookie
         type: invokeApi
-        invoke {
-            package: APEX_AUTHENTICATION
-            procedureOrFunction: SEND_LOGIN_USERNAME_COOKIE
-        }
         execution {
             sequence: 10
         }

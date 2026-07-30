@@ -16,8 +16,8 @@ Markdown-preserved APEXlang example. Use this file for syntax and structure only
 ```apexlang
 webCredential credentials-for-open-ai (
     name: Credentials for open ai
+    type: httpHeader
     authentication {
-        type: httpHeader
         credentialName: Authorization
     }
 )

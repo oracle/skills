@@ -87,7 +87,7 @@ emailTemplate order-confirmation (
             ```
     }
     advanced {
-        versionNo: 2
+        versionNumber: 2
     }
 )
 ```

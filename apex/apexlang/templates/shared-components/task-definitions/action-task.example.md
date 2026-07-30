@@ -116,36 +116,8 @@ taskDefinition LOAN_ACTION (
     action send-email (
         name: Send Email
         type: sendEMail
-        emailHeader {
-            to: &P12_CUSTOMER_EMAIL.
-        }
-        emailTemplate {
-            emailTemplate: @order-confirmation
-            placeholderValues: 
-                ```
-                {
-                    "ORDER_NUMBER":"&P12_ORDER_ID.",
-                    "CUSTOMER_NAME":"&P12_CUSTOMER_NAME.",
-                    "ORDER_DATE":"&P12_ORDER_DATE.",
-                    "SHIP_TO":"",
-                    "SHIPPING_ADDRESS_LINE_1":"",
-                    "SHIPPING_ADDRESS_LINE_2":"",
-                    "ITEMS_ORDERED":"",
-                    "ORDER_TOTAL":"&P12_TOTAL_AMT.",
-                    "ORDER_URL":"","MY_APPLICATION_LINK":""
-                }
-                ```
-        }
-        emailAttachments {
-            attachmentSql: 
-                ```sql
-                select file_blob blob_column,
-                       file_name,
-                       mime_type,
-                       null content_id
-                  from order_files
-                 where order_id = :APEX$TASK_PK
-                ```
+        comments {
+            comments: Email header, template placeholder, and attachment attributes require compiler-backed sendEMail task-action syntax before emission.
         }
         execution {
             onEvent: complete

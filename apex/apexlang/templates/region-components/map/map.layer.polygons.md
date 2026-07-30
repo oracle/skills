@@ -27,16 +27,16 @@ Document 2D polygon-layer behavior for Maps: polygon geometry, static fill and s
 
 ## Optional Variables
 
-- `layer.featureFillColorIsSpectrum`
-- `layer.layerColorSpectrumType`
+- `layer.appearance.useColorScheme`
+- `layer.appearance.colorScheme`
 - `layer.layerColorSpectrum*Name`
 - `layer.featureFillColorSpectrum`
-- `layer.featureFillColorValueColumn`
-- `layer.featureFillColor`
-- `layer.featureFillOpacity`
-- `layer.featureStrokeColor`
-- `layer.featureStrokeWidth`
-- `layer.featureStrokeStyle`
+- `layer.appearance.colorValueColumn`
+- `layer.appearance.fillColor`
+- `layer.appearance.fillOpacity`
+- `layer.appearance.strokeColor`
+- `layer.appearance.strokeWidth`
+- `layer.appearance.strokeStyle`
 - `layer.mapFeatureLegendAdvFormatting`
 - `layer.mapFeatureLegendHtmlExpr`
 
@@ -63,14 +63,17 @@ layer {{layer.staticId}} (
     geometryColumn: {{layer.columnMapping.geometryColumn}}
     primaryKeyColumn: {{layer.columnMapping.primaryKeyColumn}}
   }
-  featureFillColorIsSpectrum: {{layer.featureFillColorIsSpectrum}}
-  layerColorSpectrumType: {{layer.layerColorSpectrumType}}
-  featureFillColorValueColumn: {{layer.featureFillColorValueColumn}}
-  featureFillColor: {{layer.featureFillColor}}
-  featureFillOpacity: {{layer.featureFillOpacity}}
-  featureStrokeColor: {{layer.featureStrokeColor}}
-  featureStrokeWidth: {{layer.featureStrokeWidth}}
-  featureStrokeStyle: {{layer.featureStrokeStyle}}
+  appearance {
+    useColorScheme: {{layer.appearance.useColorScheme}}
+    colorScheme: {{layer.appearance.colorScheme}}
+    schemeName: {{layer.appearance.schemeName}}
+    colorValueColumn: {{layer.appearance.colorValueColumn}}
+    fillColor: {{layer.appearance.fillColor}}
+    fillOpacity: {{layer.appearance.fillOpacity}}
+    strokeColor: {{layer.appearance.strokeColor}}
+    strokeWidth: {{layer.appearance.strokeWidth}}
+    strokeStyle: {{layer.appearance.strokeStyle}}
+  }
 )
 ```
 
@@ -78,6 +81,6 @@ layer {{layer.staticId}} (
 
 # Guardrails
 
-- Spectrum-driven fill on polygons requires a numeric `featureFillColorValueColumn`.
-- When spectrum mode is off, the layer falls back to static `featureFillColor`.
+- Spectrum-driven fill on polygons requires a numeric `appearance.colorValueColumn`.
+- When spectrum mode is off, the layer falls back to static `appearance.fillColor`.
 - Keep contrast between polygon fill, stroke, and the underlying basemap high enough for clear differentiation.

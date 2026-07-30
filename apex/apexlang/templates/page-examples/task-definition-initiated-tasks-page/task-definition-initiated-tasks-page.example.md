@@ -105,9 +105,6 @@ page 8 (
             label {
                 label: Due
             }
-            settings {
-                selectMultiple: true
-            }
             lov {
                 type: sharedComponent
                 lov: @unified-task-list-lov-due
@@ -128,9 +125,6 @@ page 8 (
             type: range
             label {
                 label: Initiated
-            }
-            settings {
-                selectMultiple: true
             }
             lov {
                 type: sharedComponent
@@ -356,9 +350,12 @@ page 8 (
         componentAppearance {
             display: report
         }
-        settings {
+        title {
             title: &SUBJECT.
-            description:
+        }
+        subtitle {
+            advancedFormatting: true
+            htmlExpression:
                 ```html
                 <strong>&TASK_DEF_NAME!HTML.</strong>
                 {if ACTUAL_OWNER/}
@@ -404,9 +401,9 @@ page 8 (
                 {endif/}
 
                 ```
-            displayBadge: true
         }
         plugin-badge {
+            displayBadge: true
             label: State
             value: BADGE_TEXT
             state: BADGE_STATE
@@ -678,11 +675,6 @@ page 8 (
             label: Show expired tasks
             alignment: left
         }
-        settings {
-            useDefaults: false
-            checkedValue: Y
-            uncheckedValue: N
-        }
         layout {
             sequence: 20
             region: @initiated-by-me-report
@@ -737,9 +729,6 @@ page 8 (
 
     pageItem P8_TASK_ID (
         type: hidden
-        settings {
-            valueProtected: false
-        }
         layout {
             sequence: 10
             slot: BODY
@@ -748,6 +737,7 @@ page 8 (
             storage: request
         }
         security {
+            sessionStateProtection: unrestricted
             encryptSessionState: false
         }
     )

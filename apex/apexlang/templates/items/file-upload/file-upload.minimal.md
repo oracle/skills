@@ -51,6 +51,11 @@ pageItem {{itemName}} (
     appearance {
         template: {{appearance.template}}
     }
+    display {
+        displayAs: blockDropzone
+        dropzoneTitle: Drop files here
+        dropzoneDesc: or click to browse
+    }
     security {
         sessionStateProtection: {{security.sessionStateProtection}}
     }
@@ -62,6 +67,7 @@ pageItem {{itemName}} (
 # Conditional Rendering Rules
 
 - Keep the item block minimal and rely on the inherited family contract for anything not shown here.
+- Keep the explicit `blockDropzone` display block unless the user requests another supported upload mode.
 - Remove optional blocks that are not populated by the final prompt.
 
 ---

@@ -31,6 +31,8 @@ region {{chartRegion.staticId}} (
   }
   chart {
     type: {{chart.type}}
+  }
+  settings {
     initialZooming: {{chart.initialZooming}}
     {{chart.options}}
   }

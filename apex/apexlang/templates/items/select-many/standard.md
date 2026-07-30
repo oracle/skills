@@ -138,7 +138,7 @@ pageItem {{itemName}} (
 # Conditional Rendering Rules
 
 - Choose one LOV source per item and remove the unused LOV attributes.
-- Keep `settings.display` aligned with the interaction pattern requested by the prompt.
+- Emit native select-many display settings only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
 
 ---
 

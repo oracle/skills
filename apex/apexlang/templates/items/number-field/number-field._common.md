@@ -39,10 +39,12 @@ Define the canonical contract, conditional rules, and output skeleton for `numbe
 | appearance.width | optional | number | Width or character width when the family supports it. |
 | appearance.valuePlaceholder | optional | string | Placeholder or helper text shown before a value is entered. |
 | appearance.formatMask | optional | string | Format mask used when the family supports formatted input or display. |
-| settings.* | optional | variant | Normalized family settings such as `minValue`, `maxValue`, `numberAlignment`, and `virtualKeyboard`. |
+| appearance.icon | optional | string | Font APEX icon class such as `fa-american-sign-language-interpreting` when an icon is intentionally shown. |
+| settings.minValue | optional | number | Minimum accepted value when compiler/export evidence proves number-field settings are available. |
+| settings.maxValue | optional | number | Maximum accepted value when compiler/export evidence proves number-field settings are available. |
+| settings.numberAlignment | optional | enum | Text alignment for numeric values, for example `start`, `end`, or `left` as accepted by the active compiler/export evidence. |
+| settings.virtualKeyboard | optional | boolean | Controls numeric virtual keyboard behavior when compiler/export evidence proves the setting is available. |
 | validation.valueRequired | optional | boolean | Set when the item value is mandatory. |
-| validation.minimumValue | optional | number | Minimum numeric value when the scenario enforces it. |
-| validation.maximumValue | optional | number | Maximum numeric value when the scenario enforces it. |
 | source.formRegion | conditional | alias | Required for form-bound items. |
 | source.column | conditional | string | Target column for form-bound items. |
 | source.dataType | conditional | enum | Data type for DML binding. |
@@ -70,6 +72,7 @@ pageItem {{itemName}} (
     appearance {
         template: {{appearance.template}}
         templateOptions: {{appearance.templateOptions}}
+        icon: {{appearance.icon}}
         width: {{appearance.width}}
         valuePlaceholder: {{appearance.valuePlaceholder}}
         formatMask: {{appearance.formatMask}}
@@ -82,8 +85,6 @@ pageItem {{itemName}} (
     }
     validation {
         valueRequired: {{validation.valueRequired}}
-        minimumValue: {{validation.minimumValue}}
-        maximumValue: {{validation.maximumValue}}
     }
     source {
         formRegion: @{{source.formRegion}}
@@ -108,7 +109,8 @@ pageItem {{itemName}} (
 - Omit `source {}` when the item is not bound to persisted data or a form region.
 - Emit `validation {}` only when the scenario requires declarative checks.
 - Keep width, placeholder, and format-mask attributes absent unless the scenario explicitly asks for them.
-- Keep the settings block lean and emit only the family-specific properties that are actually needed.
+- Emit native number-field `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
+- Do not emit `validation.minimumValue` or `validation.maximumValue`; current item validation supports `valueRequired` and `maxLength`.
 
 ---
 
