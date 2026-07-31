@@ -14,12 +14,35 @@ page 1 (
         formAutoComplete: false
     }
 
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
     region app-name (
         name: Home
         title: &APP_TITLE.
         type: staticContent
         layout {
-            sequence: 10
+            sequence: 20
             slot: breadcrumbBar
         }
         appearance {
@@ -32,4 +55,3 @@ page 1 (
     )
 
 )
-

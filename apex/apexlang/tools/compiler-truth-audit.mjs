@@ -351,7 +351,7 @@ export function auditApxText(filePath, text, map) {
       const parentName = parentComponent?.name || "";
       const { opens, closes } = lineOpenCloseBalance(line);
       const shouldPush = opens > closes;
-      if (delimiter === "(" && SUPPORTED_COMPONENTS.has(token)) {
+      if (delimiter === "(" && SUPPORTED_COMPONENTS.has(token) && !opaqueScope) {
         const { record, failure, candidates } = resolveRecordFor(map, token, parentComponent);
         if (!record) {
           addIssue(

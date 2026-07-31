@@ -80,6 +80,11 @@ def structural_violations(text: str) -> list[str]:
         if "{" in stripped or "(" in stripped:
             for opener in ("{", "("):
                 if opener in stripped:
+                    # Parentheses and braces in a property value (for example a
+                    # PL/SQL expression) are not APEXlang structural blocks.
+                    # Only validate declaration/block openers here.
+                    if ":" in stripped[:stripped.index(opener)]:
+                        continue
                     tail = stripped[stripped.index(opener) + 1:].strip()
                     if tail or ("}" in stripped or ")" in stripped):
                         violations.append(f"line {line_number}: structural block must be multiline and opening delimiter must end its line")
@@ -121,8 +126,6 @@ def format_text(text: str) -> tuple[str, bool, list[str]]:
             continue
 
         tokens = structural_tokens(stripped)
-        if len(tokens) == 1 and ("(" in stripped or "{" in stripped or "}" in stripped or ")" in stripped):
-            findings.append("compact structural line expanded")
         expanded: list[str] = []
         for token in tokens:
             expanded.extend(split_properties(token))
