@@ -115,7 +115,16 @@
         "debug id",
         "session id",
         "apex runtime error",
-        "ORA error"
+        "ORA error",
+        "ORA-22816",
+        "ORA-20987",
+        "ITEM_POSTING_VIOLATION",
+        "reload on submit",
+        "HTTP 400 on save",
+        "success message on failure",
+        "session state protection",
+        "runtime verification",
+        "data-write verification"
       ],
       "load_path": "references/domains/README.md",
       "failure_branch": true
