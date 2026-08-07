@@ -5,6 +5,7 @@
 Oracle SQL Property Graph lets you model and query graph data — vertices (nodes) and edges (relationships) — directly on top of existing relational tables, views, materialized views, or external tables. No data is copied; the graph definition stores only metadata, and queries operate against current table data.
 
 The core components are:
+
 - **`CREATE PROPERTY GRAPH`** — defines which tables are vertices and edges, their keys, labels, and properties
 - **`GRAPH_TABLE` operator** — queries the graph using a pattern-matching syntax (`MATCH`) inside regular SQL `SELECT` statements
 
@@ -463,6 +464,130 @@ FROM GRAPH_TABLE (students_graph
 
 ---
 
+## Graph Algorithms
+
+In-database graph algorithms are provided by the `DBMS_OGA`PL/SQL package available since version 26.2.
+
+Implemented algorithms are:
+
+- **PageRank**, including the variants **Personalized PageRank** and **Personalized PageRank Set**
+- **Bellmann-Ford**
+- **Weakly Connected Components** (WCC)
+
+### PageRank example
+
+```sql
+SELECT *
+FROM GRAPH_TABLE(
+  DBMS_OGA.pagerank(
+    students_graph,
+    PROPERTY(VERTEX OUTPUT rank),
+    10, 1.0, 0.85d, FALSE
+  )
+  MATCH (a IS person)
+  COLUMNS (a.name, a.rank)
+)
+ORDER BY rank DESC
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### Personalized PageRank example
+
+```sql
+SELECT *
+FROM GRAPH_TABLE (
+  DBMS_OGA.PERSONALIZED_PAGERANK(
+    students_graph,
+    PROPERTY(VERTEX OUTPUT rank),
+    JSON('{
+      "GRAPH_OWNER": "GRAPHUSER",
+      "GRAPH_NAME": "STUDENTS_GRAPH",
+      "ELEM_TABLE": "PERSONS",
+      "KEY_VALUE": { "PERSON_ID":1 }
+    }'),
+    50, 0.5, 0.85d, FALSE
+  )
+  MATCH (a IS person)
+  COLUMNS (a.person_id, a.name, a.rank)
+)
+ORDER BY rank DESC
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### Personalized PageRank Set example
+
+```sql
+-- Step 1: Construct a set of vertices and return it as JSON
+SELECT JSON_ARRAYAGG (s_json)
+FROM GRAPH_TABLE(
+  students_graph
+  MATCH (a IS person)
+  WHERE a.person_id IN (1, 2, 3)
+  COLUMNS(VERTEX_ID(a) AS s_json)
+);
+
+-- Step 2: Run the algorithm using the returned JSON
+SELECT *
+FROM GRAPH_TABLE (
+  DBMS_OGA.PERSONALIZED_PAGERANK_SET(
+    students_graph,
+    PROPERTY(VERTEX OUTPUT rank),
+    JSON('[
+      {"GRAPH_OWNER":"GRAPHUSER","GRAPH_NAME":"STUDENTS_GRAPH","ELEM_TABLE":"PERSONS","KEY_VALUE":{"PERSON_ID":1}},
+      {"GRAPH_OWNER":"GRAPHUSER","GRAPH_NAME":"STUDENTS_GRAPH","ELEM_TABLE":"PERSONS","KEY_VALUE":{"PERSON_ID":2}},
+      {"GRAPH_OWNER":"GRAPHUSER","GRAPH_NAME":"STUDENTS_GRAPH","ELEM_TABLE":"PERSONS","KEY_VALUE":{"PERSON_ID":3}}
+    ]'),
+    50, 0.5, 0.85d, FALSE
+  )
+  MATCH (a IS person)
+  COLUMNS (a.person_id, a.name, a.rank)
+)
+ORDER BY rank DESC 
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### Bellmann-Ford example
+
+```sql
+-- Assumes an edges property named `class` to be used as weight
+SELECT *
+FROM GRAPH_TABLE(
+  DBMS_OGA.BELLMAN_FORD(
+    students_graph,
+    JSON(
+      '{
+        "GRAPH_OWNER": "GRAPHUSER",
+        "GRAPH_NAME": "STUDENTS_GRAPH",
+        "ELEM_TABLE": "PERSONS",
+        "KEY_VALUE" : {"PERSON_ID" : 1}
+       }'
+    ),
+    PROPERTY(EDGE INPUT amount DEFAULT ON NULL 0),
+    PROPERTY(VERTEX OUTPUT class)
+  )
+  MATCH (a IS person)
+  COLUMNS (a.person_id, a.name, a.class)
+)
+ORDER BY class ASC
+FETCH FIRST 5 ROWS ONLY;
+```
+
+### WCC example
+
+```sql
+SELECT *
+FROM GRAPH_TABLE (
+  DBMS_OGA.WCC (
+    students_graph,
+    PROPERTY(VERTEX OUTPUT comp_id))
+  MATCH (a IS persons)
+  COLUMNS (a.person_id, a.name, a.comp_id)
+)
+FETCH FIRST 5 ROWS ONLY;
+```
+
+---
+
 ## DDL Management
 
 ### Drop and Rename
@@ -661,9 +786,10 @@ SQL graph query support has evolved across 23ai and 26ai release updates. Check 
 
 ## Sources
 
-- [Oracle Property Graph Developer's Guide, Release 26.1 — SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/sql-property-graph.html#SPGDG-GUID-B813BA1B-AEA0-4C70-8094-739FFC0E805B)
-- [Oracle Property Graph Developer's Guide, Release 26.1 — Creating a SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/creating-sql-property-graph.html)
-- [Oracle Property Graph Developer's Guide, Release 26.1 — SQL Graph Queries](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/sql-graph-queries.html)
-- [Oracle Property Graph Developer's Guide, Release 26.1 — Key Property Graph Features in Oracle AI Database 26ai](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/key-property-graph-features-oracle-ai-database-26ai.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/sql-property-graph.html#SPGDG-GUID-B813BA1B-AEA0-4C70-8094-739FFC0E805B)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — Creating a SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/creating-sql-property-graph.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — SQL Graph Queries](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/sql-graph-queries.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — Running Graph Algorithm Functions in SQL Graph Queries](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/running-graph-algorithm-functions-sql-graph-queries.html)
+- [Oracle Property Graph Developer's Guide, Release 26.2 — Key Property Graph Features in Oracle AI Database 26ai](https://docs.oracle.com/en/database/oracle/property-graph/26.2/spgdg/key-property-graph-features-oracle-ai-database-26ai.html)
 - [Oracle Database SQL Language Reference 23ai — CREATE PROPERTY GRAPH](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/create-property-graph.html)
 - [Oracle Database SQL Language Reference 23ai — ALTER PROPERTY GRAPH](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/alter-property-graph.html)
