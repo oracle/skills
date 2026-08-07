@@ -76,9 +76,11 @@ db/
 
 | Task | Recommended Sequence |
 |------|----------------------|
-| Diagnose a slow query | `explain-plan` → `wait-events` → `optimizer-stats` → `awr-reports` |
-| Plan a migration | `migration-assessment` → `oracle-migration-tools` → source-specific `migrate-*.md` → `migration-cutover-strategy` |
+| Diagnose a slow query | `explain-plan` → `wait-events` → `optimizer-stats` → ✓ verify plan changed / stats gathered → `awr-reports` |
+| Plan a migration | `migration-assessment` → `oracle-migration-tools` → source-specific `migrate-*.md` → ✓ verify data integrity before cutover → `migration-cutover-strategy` |
 | Build RAG on Oracle Database | `ai-profiles` → `vector-search` → `dbms-vector` |
 | Build a Java JDBC service | `java-oracle-jdbc` → `java-oracle-jdbc/dependencies` → `java-oracle-jdbc/connections` → `java-oracle-jdbc/sql` → `java-oracle-jdbc/pooling-production` |
-| Perform agent-safe schema change | `schema-discovery` → `destructive-op-guards` → `idempotency-patterns` → `schema-migrations` |
+| Perform agent-safe schema change | `schema-discovery` → `destructive-op-guards` → `idempotency-patterns` → ✓ verify change applied cleanly → `schema-migrations` |
 | Set up AI-driven database access via MCP | `sqlcl-basics` (save connections) → `security/privilege-management` (least-privilege user) → `sqlcl-mcp-server` (configure + start) |
+
+A `✓ verify` checkpoint means: confirm the prior step's expected outcome before proceeding. If a step fails or verification does not pass, stop and remediate that step (re-run it, correct the input, or roll back the partial change) rather than advancing to the next one. This matters most for the migration-cutover and schema-change flows, which touch live data.
