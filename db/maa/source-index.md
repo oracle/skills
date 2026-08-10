@@ -24,7 +24,9 @@ Primary sources:
 - MAA Platinum Reference Architecture: https://docs.oracle.com/en/database/oracle/oracle-database/26/haiad/maa_platinum.html
 - Technical Brief Paper: Oracle Maximum Availability Architecture Overview: https://www.oracle.com/a/tech/docs/maa-overview-technical-brief.pdf
 - Oracle MAA data sheet, updated Feb 2026: https://www.oracle.com/a/tech/docs/maa-data-sheet.pdf
+- Leverage Oracle MAA for a More Resilient Database Fleet: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf
 - Ascend to the Diamond Tier: Introducing the Next-Gen Oracle Maximum Availability Architecture (MAA): https://blogs.oracle.com/maa/ascend-to-the-diamond-tier-introducing-the-next-gen-oracle-maximum-availability-architecture-maa
+- Evaluating Databases for Mission-Critical Workloads - Established vs. Emerging: https://blogs.oracle.com/maa/evaluating-databases-for-mission-critical-workloads
 
 ### Oracle AI Database Cloud And Multicloud
 
@@ -168,6 +170,8 @@ Primary sources:
   Summary: Use for MAA architecture patterns and tier-oriented guidance.
 - MAA Platinum Reference Architecture: https://docs.oracle.com/en/database/oracle/oracle-database/26/haiad/maa_platinum.html
   Summary: Use for Platinum-tier MAA architecture guidance and near-zero downtime/continuous availability architecture discussions.
+- Leverage Oracle MAA for a More Resilient Database Fleet: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf
+  Summary: Use for the August 2026 MAA tier objectives and public on-premises, Exadata, cloud, maintenance, Data Guard, RAC, and recovery-service architecture overview.
 
 ### P2 Public Product Documentation
 
@@ -229,6 +233,8 @@ Primary sources:
   Summary: Use for a concise MAA overview suitable for executive or architecture-level explanations.
 - Oracle MAA data sheet, updated Feb 2026: https://www.oracle.com/a/tech/docs/maa-data-sheet.pdf
   Summary: Use for compact positioning and summary-level MAA messaging.
+- Leverage Oracle MAA for a More Resilient Database Fleet: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf
+  Summary: Use for the August 2026 MAA tier objectives and public on-premises, Exadata, cloud, maintenance, Data Guard, RAC, and recovery-service architecture overview.
 - Oracle Exadata Database Machine: Maximum Availability Architecture: https://www.oracle.com/docs/tech/exadata-maa.pdf
   Summary: Use for Exadata-specific MAA architecture and best-practice discussions.
 - Exadata Maximum Security Architecture: https://www.oracle.com/a/tech/docs/exadata-maximum-security-architecture.pdf
@@ -280,7 +286,9 @@ Use Oracle MAA blog posts for current announcements, applied examples, and expla
 - Ascend to the Diamond Tier: Introducing the Next-Gen Oracle Maximum Availability Architecture (MAA): https://blogs.oracle.com/maa/ascend-to-the-diamond-tier-introducing-the-next-gen-oracle-maximum-availability-architecture-maa
   Summary: Use for MAA Diamond-tier positioning and next-generation MAA concepts.
 - MAA Platinum Tier Across Oracle Multicloud: https://blogs.oracle.com/maa/maa-platinum-tier-across-oracle-multicloud
-  Summary: Use for Active Data Guard and MAA Platinum-tier context across Oracle multicloud deployments.
+  Summary: Use for Oracle AI Database 26ai, Exadata Database Service, faster Active Data Guard role transitions, and MAA Platinum-tier architecture across Oracle Database@Azure, Oracle Database@AWS, and Oracle Database@Google Cloud.
+- Evaluating Databases for Mission-Critical Workloads - Established vs. Emerging: https://blogs.oracle.com/maa/evaluating-databases-for-mission-critical-workloads
+  Summary: Use for evidence-based mission-critical database evaluation, including operational maturity, resilience under failure and maintenance, security, support ecosystem, portability, and exit risk.
 - From Green Lights to Gold Tiers: MAA and Oracle Update Advisor: https://blogs.oracle.com/maa/from-green-lights-to-gold-tiers-maa-oracleupdateadvisor
   Summary: Use for Oracle Update Advisor's role in operationalizing software health and MAA resilience.
 - Accept the AI Challenge: Build Your Own Oracle Update Advisor Client or Agent: https://blogs.oracle.com/maa/accept-the-ai-challenge-build-your-own-oracle-update-advisor-client-or-agent
@@ -296,7 +304,7 @@ Use Oracle MAA blog posts for current announcements, applied examples, and expla
 - Oracle RAC 26ai: Unlocking Resilient, Scalable, and AI-Driven Applications: https://blogs.oracle.com/maa/oracle-rac-26ai-unlocking-resilient-scalable-and-ai-driven-applications
   Summary: Use for RAC 26ai availability, scalability, and AI-driven application positioning.
 - DR with Azure and OCI: https://blogs.oracle.com/maa/dr-azure-oci
-  Summary: Use for Data Guard disaster recovery across Oracle Database@Azure and OCI.
+  Summary: Use for Data Guard disaster recovery across Oracle Database@Azure and OCI, including network peering, private DNS, protection-mode selection, site-aware connectivity, and backup considerations.
 - Introducing DG Redo Decrypt for Hybrid Cloud: https://blogs.oracle.com/maa/introducing-dg-redo-decrypt-for-hybrid-cloud
   Summary: Use for hybrid cloud Data Guard redo decryption context.
 - Surviving Regional and DNS Failures in the Cloud: https://blogs.oracle.com/maa/surviving-regional-and-dns-failures-in-the-cloud
@@ -308,10 +316,10 @@ Use Oracle MAA blog posts for current announcements, applied examples, and expla
 - Faster Disaster Recovery Troubleshooting with Generative AI Log Summarization in OCI Full Stack DR: https://blogs.oracle.com/maa/faster-disaster-recovery-troubleshooting-generative-ai-log-summarization-in-oci-full-stack-dr
   Summary: Use for OCI Full Stack DR troubleshooting and generative AI log summarization context.
 - Introducing the OCI Full Stack Disaster Recovery MCP Server: https://blogs.oracle.com/maa/introducing-the-oci-full-stack-disaster-recovery-mcp-server
-  Summary: Use for MCP integration with OCI Full Stack Disaster Recovery.
+  Summary: Use for live DRPG readiness and execution inspection, guided Full Stack DR workflows, and human-approved action through an MCP-compatible agent.
 - Announcing Oracle Update Advisor: https://blogs.oracle.com/maa/announcing-oracle-update-advisor
   Summary: Use for Oracle Update Advisor announcement and purpose.
 - The High Availability Connection String Explained: https://blogs.oracle.com/maa/the-high-availability-connection-string-explained
-  Summary: Use for practical explanation of high availability connection strings.
+  Summary: Use for practical behavior and tuning of FAILOVER, LOAD_BALANCE, RETRY_COUNT, RETRY_DELAY, TRANSPORT_CONNECT_TIMEOUT, CONNECT_TIMEOUT, and connection-pool wait alignment.
 - Edition-Based Redefinition: A Solution for Zero-Downtime Application Upgrades: https://blogs.oracle.com/maa/edition-based-redefinition-a-solution-for-zero-downtime-application-upgrades
   Summary: Use for EBR as a zero-downtime application upgrade pattern.

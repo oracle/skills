@@ -10,6 +10,7 @@ Use this file for MAA patching strategy, maintenance planning, Oracle Update Adv
 - Validate the target state before changing roles or moving workload.
 - Use automation and repeatable runbooks for patch analysis, prechecks, execution, validation, and fallback.
 - Keep patch recommendations current; patching guidance is release- and environment-sensitive.
+- For fleet maintenance, use FPP or Exadata Fleet Update capabilities where they fit the estate: gold-image drift detection, job scheduling, prechecks, staging, rolling or non-rolling execution, session draining, and out-of-place patching reduce repeated operational work.
 
 ## Choosing A Patching Pattern
 
@@ -50,6 +51,12 @@ For an ongoing agent, schedule health checks, identify systems that fall behind 
 - Include database release, patch level, deployment type, Data Guard/RAC status, and Exadata/cloud context in the workflow.
 - Render recommendations by urgency, dependency, downtime impact, and MAA tier impact.
 
+## Fleet Execution Considerations
+
+- Group databases and Grid Infrastructure targets into intentional maintenance collections; do not let an automation boundary become an unreviewed blast radius.
+- Separate recommendation, precheck, image staging, service draining, patch execution, validation, and fallback into observable workflow steps.
+- Use Oracle Update Advisor output to select and justify software images or fixes, then use DBCA, FPP, AutoUpgrade, or an approved REST API client/agent to feed the reviewed decision into the maintenance workflow.
+
 ## Common Mistakes
 
 - Patching primary first in a Data Guard configuration when standby-first maintenance would reduce risk.
@@ -65,3 +72,4 @@ For an ongoing agent, schedule health checks, identify systems that fall behind 
 - Data Guard patch maintenance: https://docs.oracle.com/en/database/oracle/oracle-database/26/dbpdg/index.html
 - RAC patch maintenance: https://docs.oracle.com/en/database/oracle/oracle-database/26/dbprc/index.html
 - Build an Oracle Update Advisor client or agent: https://blogs.oracle.com/maa/accept-the-ai-challenge-build-your-own-oracle-update-advisor-client-or-agent
+- MAA on-premises, Exadata, and cloud overview: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf

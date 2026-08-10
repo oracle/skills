@@ -10,6 +10,7 @@ Use this file for MAA backup/recovery strategy, RMAN, restore validation, corrup
 - Keep backup retention, immutability, encryption, offsite copies, and compliance requirements explicit.
 - Use standby databases to offload backups where it fits the architecture and licensing.
 - Use ZDLRA when the requirement is centralized, database-aware protection, incremental-forever strategy, recovery validation, and stronger recovery automation for Oracle databases.
+- For Oracle AI Database estates using Zero Data Loss Autonomous Recovery Service (ZRCV), consider real-time redo protection, continuous recovery validation, space-efficient incremental-forever backups, and one-step recovery. Evaluate immutable retention, separation of duties, logical air-gap design, and cross-domain or cross-region clean-room recovery for ransomware resilience.
 
 ## Data Guard Versus Backup
 
@@ -46,3 +47,4 @@ Use this file for MAA backup/recovery strategy, RMAN, restore validation, corrup
 - Backup and Recovery Reference: https://docs.oracle.com/en/database/oracle/oracle-database/26/rcmrf/index.html
 - ZDLRA Protected Database Configuration Guide: https://docs.oracle.com/en/engineered-systems/zero-data-loss-recovery-appliance/23.1/ampdb/index.html
 - ZDLRA Administrator's Guide: https://docs.oracle.com/en/engineered-systems/zero-data-loss-recovery-appliance/23.1/amagd/index.html
+- MAA on-premises, Exadata, and cloud overview: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf

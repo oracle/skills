@@ -6,6 +6,7 @@ Use this file for the MAA layer of Data Guard and Active Data Guard decisions. F
 
 - Data Guard is the primary Oracle database-aware DR technology for physical standby, role transition, and redo-based recovery across sites or clouds.
 - Active Data Guard adds read-only workload offload, reporting, backups from standby, and additional use cases while redo apply continues.
+- Use Active Data Guard as part of comprehensive data protection: continuous block checking at the standby, corruption isolation and repair, lost-write detection, and a tested automatic-failover path can materially reduce recovery risk.
 - Data Guard Broker should be the default management path for MAA-style operations because it centralizes configuration, validation, switchover, failover, and Fast-Start Failover.
 - Use Data Guard for planned maintenance as well as disaster recovery: standby-first patching, switchover, validation, and fallback planning reduce outage risk.
 
@@ -29,6 +30,12 @@ Use this file for the MAA layer of Data Guard and Active Data Guard decisions. F
 - Size and test redo transport for peak redo generation, not only average redo rate.
 - Document decision criteria for switchover, failover, reinstate, and fallback. During an incident, ambiguity burns RTO.
 - For hybrid or multicloud deployments, validate network latency, routing, security controls, DNS behavior, and operational ownership across providers.
+
+## Rolling Upgrades And Application Continuity
+
+- Use `DBMS_ROLLING` for eligible Data Guard rolling maintenance and upgrades when a transient logical standby approach fits the release and topology.
+- Plan the small remaining interruption around the switchover; it is not a substitute for service design, connection draining, or application readiness.
+- Oracle AI Database 26ai extends Application Continuity support to `DBMS_ROLLING` operations. Validate the exact release, driver, service, and replay eligibility before committing to user-visible downtime objectives.
 
 ## Standby-First Maintenance Pattern
 
@@ -55,3 +62,4 @@ Use this file for the MAA layer of Data Guard and Active Data Guard decisions. F
 - Active Data Guard scaling context: https://blogs.oracle.com/maa/application-and-ai-scalability-with-oracle-active-data-guard
 - Redo transport throughput context: https://blogs.oracle.com/maa/higher-data-guard-redo-transport-throughput
 - ADG vs. storage mirroring: https://www.oracle.com/docs/tech/adg-vs-storage-mirroring-v1.pdf
+- MAA on-premises, Exadata, and cloud overview: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf

@@ -11,6 +11,17 @@ Use this file when users ask how to reduce or hide application interruption duri
 - Use Transaction Guard to determine transaction outcome after recoverable errors.
 - Use Application Continuity or Transparent Application Continuity where supported to replay safe requests and mask outages from users.
 - Use connection draining and service relocation for planned maintenance instead of abruptly breaking sessions.
+- For eligible Active Data Guard rolling maintenance with `DBMS_ROLLING`, Oracle AI Database 26ai can extend Application Continuity across the operation. Confirm release, driver, service, and replay eligibility before treating it as transparent to users.
+
+## Connection Profile Tuning
+
+- Keep client-side `FAILOVER` enabled so the client can try alternate addresses and sites.
+- Choose `LOAD_BALANCE` deliberately. Prefer the local or primary site first when locality and normal-case connect time matter; balance across sites when role changes are frequent and consistent connect time matters more.
+- Set `RETRY_COUNT` and a nonzero `RETRY_DELAY` together so clients wait for service startup or role transition without creating tight retry loops against listeners.
+- Set `TRANSPORT_CONNECT_TIMEOUT` above observed worst-case healthy TCP connection latency but low enough to move past unreachable SCAN or redirected listener addresses promptly.
+- Set `CONNECT_TIMEOUT` high enough for connection establishment under peak load and above `TRANSPORT_CONNECT_TIMEOUT`; it limits an individual connection attempt and can end that attempt before retries occur.
+- Calculate and test the worst-case client wait across every resolved SCAN address, retry round, and delay. Keep the connection-pool acquisition timeout longer than this wait to avoid overlapping attempts and connection storms.
+- Test with the actual patched Oracle client, driver, pool, DNS behavior, IPv4/IPv6 resolution, and failure scenarios used in production. Do not assume all clients interpret subsecond units identically.
 
 ## RAC And Data Guard Application Pattern
 
@@ -34,6 +45,8 @@ Use this file when users ask how to reduce or hide application interruption duri
 
 - Using a single host in the connect descriptor.
 - Setting long TCP/connect timeouts that make failover appear hung.
+- Setting a pool acquisition timeout shorter than the client connection profile's worst-case wait.
+- Using `RETRY_COUNT` without a suitable `RETRY_DELAY`, causing rapid retries while the service is still starting.
 - Forgetting role-based services after Data Guard switchover.
 - Assuming AC/TAC can replay every request without checking driver, service, and application requirements.
 - Testing only database role transition and not the application pool behavior.
@@ -45,4 +58,5 @@ Use this file when users ask how to reduce or hide application interruption duri
 - Continuous Availability: https://www.oracle.com/a/ocom/docs/database/continuous-availabiliity.pdf
 - Fast Application Notification: https://www.oracle.com/a/ocom/docs/database/fast-application-notification.pdf
 - Application checklist for continuous availability: https://www.oracle.com/a/tech/docs/application-checklist-for-continuous-availability-for-maa.pdf
-- High availability connection string: https://blogs.oracle.com/maa/the-high-availability-connection-string-explained
+- High availability connection string and timeout behavior: https://blogs.oracle.com/maa/the-high-availability-connection-string-explained
+- MAA on-premises, Exadata, and cloud overview: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf

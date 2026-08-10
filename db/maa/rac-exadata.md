@@ -9,6 +9,7 @@ Use this file for MAA guidance involving Oracle RAC, Oracle Clusterware, Exadata
 - Services are the operational abstraction. Place, drain, relocate, and fail over services intentionally.
 - Use rolling maintenance where supported, but validate application behavior because local rolling database maintenance still depends on client failover and service draining.
 - Use Clusterware to manage resources consistently; avoid hand-built failover logic around cluster-managed components.
+- For a single-instance database, Oracle Clusterware can provide an automatic-restart foundation for database instances, listeners, services, and ASM. Account for the additional Grid Infrastructure maintenance responsibility.
 
 ## Exadata MAA Role
 
@@ -44,3 +45,4 @@ Use this file for MAA guidance involving Oracle RAC, Oracle Clusterware, Exadata
 - Exadata Database Machine MAA: https://www.oracle.com/docs/tech/exadata-maa.pdf
 - Exadata security architecture: https://www.oracle.com/a/tech/docs/exadata-maximum-security-architecture.pdf
 - Exadata maintenance guide: https://docs.oracle.com/en/engineered-systems/exadata-database-machine/dbmmn/index.html
+- MAA on-premises, Exadata, and cloud overview: https://www.oracle.com/a/tech/docs/maa-onpremises-overview.pdf
