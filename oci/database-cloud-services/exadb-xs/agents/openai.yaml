@@ -1,4 +1,4 @@
 interface:
   display_name: "ExaDB-XS"
-  short_description: "Manage ExaDB-XS with Terraform or OCI MCP"
-  default_prompt: "Use $exadb-xs-tf-skills to manage an OCI ExaDB-XS resource through OCI MCP or generate Terraform."
+  short_description: "Manage ExaDB-XS through OCI MCP"
+  default_prompt: "Use $exadb-xs to manage an OCI ExaDB-XS resource through the OCI API MCP server."
