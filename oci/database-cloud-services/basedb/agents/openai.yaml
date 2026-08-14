@@ -1,4 +1,4 @@
 interface:
   display_name: "BaseDB"
-  short_description: "Manage BaseDB with Terraform files or OCI MCP"
-  default_prompt: "Use $basedb to manage an OCI BaseDB resource through OCI MCP or generate the three Terraform files."
+  short_description: "Manage BaseDB through OCI API MCP"
+  default_prompt: "Use $basedb to manage an OCI BaseDB resource through OCI API MCP."

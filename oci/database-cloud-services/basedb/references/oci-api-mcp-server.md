@@ -31,8 +31,6 @@ Every OCI call must use this MCP server. Never run `oci ...` in a shell on this 
 
 Treat generic OCI database, databases, DB-system, dbsystem, DB home, CDB, PDB, backup, and Data Guard requests as BaseDB unless the user explicitly names another database service.
 
-Before using this reference for any action, confirm that the user selected OCI MCP. If no mode was selected, ask whether they want OCI MCP or Terraform first.
-
 ## About oci-api-mcp-server
 
 `oracle.oci-api-mcp-server` exposes OCI CLI access through MCP.
@@ -46,7 +44,6 @@ Assume the active MCP server session already uses the intended OCI authenticatio
 
 ## Workflow Highlights
 
-- Ask the user to choose OCI MCP or Terraform before every action whose mode is not already explicit, including list and read actions.
 - Default generic OCI database and DB-system requests to BaseDB unless another database service is named.
 - Scope this reference to BaseDB virtual machine DB systems; reject bare metal and other service-specific command families.
 - For list/read, resolve a direct OCID or compartment and region first.
@@ -89,7 +86,6 @@ Assume the active MCP server session already uses the intended OCI authenticatio
 18. Never echo passwords, private keys, wallet secrets, TDE passwords, or session tokens.
 19. Never use implicit wait flags or repeated polling unless the user asks to monitor.
 20. Require RSA SSH public keys with at least 2048-bit strength. Never use ED25519 keys for BaseDB.
-21. Never execute an MCP command until the user has selected OCI MCP for the requested action.
 
 ## MCP Server Contract
 
@@ -305,7 +301,7 @@ Recommended DB-system inventory:
 
 For a known DB-system OCID, skip compartment discovery and get it directly.
 
-Read-only list/get operations still require the OCI MCP-or-Terraform mode choice, but do not require a separate mutation confirmation after OCI MCP is selected.
+Read-only list/get operations do not require a mutation confirmation.
 
 ## Create Workflows
 
@@ -591,7 +587,7 @@ Before any mutation, show:
 
 Require the user to reply `yes`. Return the initial response and work-request OCID if present. Do not wait or poll unless requested.
 
-Read-only list/get operations need the OCI MCP-or-Terraform mode choice, but do not need a separate mutation confirmation after OCI MCP is selected.
+Read-only list/get operations do not need a mutation confirmation.
 
 ## Error Handling
 
@@ -609,7 +605,7 @@ Read-only list/get operations need the OCI MCP-or-Terraform mode choice, but do 
 
 - Confusing BaseDB `db system` with another service's command groups.
 - Routing a generic DB-system request to another service when none is named.
-- Using bare metal or another service's Terraform/CLI recipes for a VM DB system.
+- Using bare metal or another service's CLI recipes for a VM DB system.
 - Listing DB homes without a DB-system parent.
 - Listing databases without a DB-home parent.
 - Listing PDBs, backups, or Data Guard associations without a database parent.
@@ -674,4 +670,3 @@ Any command family other than the BaseDB `db system` hierarchy is incorrect for 
 - Oracle OCI CLI command reference: `oci db backup`
 - Oracle OCI CLI command reference: `oci db data-guard-association`
 - Oracle Base Database Service documentation
-- Oracle OCI Terraform provider resource: `oci_database_db_system`

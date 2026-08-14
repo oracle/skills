@@ -163,5 +163,4 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscreatingapps.htm
 - https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionstroubleshooting.htm
 - https://docs.oracle.com/en-us/iaas/base-database/index.html
-- https://docs.oracle.com/en-us/iaas/tools/terraform-provider-oci/latest/docs/r/database_db_system.html
 - https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/system.html
