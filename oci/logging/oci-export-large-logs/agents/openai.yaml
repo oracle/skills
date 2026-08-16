@@ -1,0 +1,4 @@
+interface:
+  display_name: "OCI Large Log Export"
+  short_description: "Export complete paginated OCI Logging searches"
+  default_prompt: "Use $oci-export-large-logs to export every page of an OCI Logging Search to an auditable JSON file."
