@@ -5,7 +5,7 @@ description: Oracle Cloud Infrastructure guidance for designing, operating, and 
 
 # Oracle Cloud Infrastructure Skills
 
-Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
+Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It includes a constrained Terraform configuration generator for OCI networking resources. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
 
 ## How to Use This Domain
 
@@ -46,6 +46,11 @@ oci/
 │   ├── scripts/
 │   ├── templates/
 │   └── tests/
+├── oci-landing-zone-terraform-module/
+│   └── terraform-oci-modules-networking-skill/
+│       ├── SKILL.md
+│       ├── agents/
+│       └── references/
 └── oke/
     ├── cluster-design.md
     ├── troubleshooting.md
@@ -69,6 +74,7 @@ oci/
 | Deploy or validate Multus NetworkAttachmentDefinitions and multi-interface pods on OKE | Start with `oci/oke/multus-multihome.md`, then load `oci/oke/skills/oke-multihome-deployer/SKILL.md` |
 | Deploy an OCI Function from a local macOS or Linux workstation | `oci/functions/oci-functions-deploy/SKILL.md` |
 | Troubleshoot OCI Functions setup, deployment, invocation, or observability | `oci/functions/oci-functions-troubleshoot/SKILL.md` |
+| Generate or update Terraform configuration for OCI VCNs, subnets, routes, gateways, security lists, NSGs, or ZPR security-attribute assignments | `oci/oci-landing-zone-terraform-module/terraform-oci-modules-networking-skill/SKILL.md` |
 | OCI IoT domains, domain groups, digital twin models, adapters, instances, relationships, raw commands, Data API access, or HTTPS publish flows | `oci/iot-platform/SKILL.md` |
 | OCI Generative AI models, custom/imported models, endpoints, or private endpoints | `oci/enterprise-ai/SKILL.md` |
 | OCI Responses API agents, tools, memory, File Search, Code Interpreter, MCP, or SQL Search | `oci/enterprise-ai/SKILL.md` |
@@ -85,6 +91,7 @@ oci/
 - `oci/functions/oci-functions-troubleshoot/SKILL.md`
 - `oci/functions/oci-functions-deploy/references/oci-functions-quickstart.md`
 - `oci/functions/oci-functions-troubleshoot/references/error-patterns.md`
+- `oci/oci-landing-zone-terraform-module/terraform-oci-modules-networking-skill/SKILL.md`
 - `oci/iot-platform/SKILL.md`
 - `oci/iot-platform/references/cli-workflows.md`
 - `oci/iot-platform/references/mcp-optional-use.md`
@@ -116,6 +123,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 | Deploy a local function | `functions/oci-functions-deploy/SKILL.md` -> preflight -> Fn context validation -> OCIR auth check -> app selection -> scaffold -> deploy |
 | Troubleshoot a failed function deploy | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/error-patterns.md` -> `functions/oci-functions-troubleshoot/references/deploy.md` |
 | Troubleshoot function invocation failures | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/invoke.md` -> logs, traces, metrics, and limits |
+| Generate OCI networking Terraform configuration | `oci-landing-zone-terraform-module/terraform-oci-modules-networking-skill/SKILL.md` -> determine support -> collect and validate inputs -> generate a compatible configuration change without running Terraform |
 | Explore or update OCI IoT digital twin resources | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/references/resilience-guidance.md` |
 | Publish test telemetry to an OCI IoT twin | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/templates/publish-curl.template.sh` |
 | Build a governed enterprise assistant | `enterprise-ai/SKILL.md` -> `enterprise-ai/agent-workflows/agent-tools.md` -> `enterprise-ai/data/rag-and-search.md` -> `enterprise-ai/governance/private-endpoints-and-governance.md` |
@@ -123,6 +131,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 ## Scope Boundaries
 
 - Keep OCI service, networking, IAM, agent hosting, and cost-estimation guidance in this domain.
+- Route OCI networking Terraform configuration to `oci/oci-landing-zone-terraform-module/terraform-oci-modules-networking-skill/`; it supports only `oci-landing-zones/terraform-oci-modules-networking` and does not manage ZPR policies.
 - Route OCI IoT domain, digital twin, adapter, device publish, raw command, and Data API workflows to `oci/iot-platform/`.
 - Route Oracle Database-owned implementation details to `db/features/`.
 - Route APEX artifact generation to `apex/apexlang/`.
@@ -134,6 +143,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 - https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengAttaching_Multiple_VNICs.htm
 - https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contenggrantingworkloadaccesstoresources.htm
 - https://github.com/oracle-terraform-modules/terraform-oci-oke
+- https://github.com/oci-landing-zones/terraform-oci-modules-networking
 - https://docs.oracle.com/en-us/iaas/Content/internet-of-things/home.htm
 - https://github.com/oracle-samples/oci-iot-samples
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/overview.htm
