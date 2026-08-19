@@ -1,0 +1,129 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "primaryAuthoringMode": "generate_fresh",
+    "authoringModes": {
+        "generate_fresh": {
+            "description": "Primary management-directed workflow. Regenerate full workbook JSON from intent and metadata."
+        },
+        "modify_existing": {
+            "description": "Additive developer workflow for deterministic limited edits on an existing workbook JSON."
+        }
+    },
+    "supportedModifyOperations": [
+        "edit_filter_values_or_operator",
+        "add_filter_bar_filter",
+        "edit_titles"
+    ],
+    "operationDefinitions": {
+        "edit_filter_values_or_operator": {
+            "name": "edit_filter_values_or_operator",
+            "selectorPrecedence": [
+                "filterID",
+                "columnID",
+                "displayName"
+            ],
+            "allowedMutations": [
+                "filterOperator.op",
+                "filterControlDefaultValues",
+                "filterControlSource"
+            ],
+            "failureCodes": [
+                "MODIFY_FILTER_SELECTOR_NOT_FOUND",
+                "MODIFY_FILTER_SELECTOR_AMBIGUOUS",
+                "MODIFY_FILTER_MISSING_UPDATE_PAYLOAD"
+            ]
+        },
+        "add_filter_bar_filter": {
+            "name": "add_filter_bar_filter",
+            "columnScope": "existing_criteria_columns_only",
+            "defaultCanvasScope": "all_canvases",
+            "requiredNodes": [
+                "/filterControlCollections",
+                "/filterControlCollectionRef",
+                "/filterControlCollections/children/*/filterControls/children/*/filterControlConfig",
+                "/filterControlCollections/children/*/filterControls/children/*/filterControlSource",
+                "/filterControlCollections/children/*/filterControls/children/*/filterControlDefaultValues"
+            ],
+            "failureCodes": [
+                "MODIFY_FILTER_ADD_COLUMN_MISSING",
+                "MODIFY_FILTER_ADD_CRITERIA_COLUMN_MISSING"
+            ]
+        },
+        "edit_titles": {
+            "name": "edit_titles",
+            "supportsWorkbookSaveNameOverride": true,
+            "existingPathOnly": false,
+            "allowCreateAtDefaultPath": true,
+            "defaultCanvasTitlePath": "viewCaption.caption.text",
+            "defaultViewTitlePath": "viewCaption.caption.text",
+            "canvasTitlePathCandidates": [
+                "viewCaption.caption.text",
+                "canvasConfig.title",
+                "title",
+                "displayName"
+            ],
+            "viewTitlePathCandidates": [
+                "viewCaption.caption.text",
+                "viewConfig.title",
+                "title",
+                "displayName"
+            ],
+            "failureCodes": [
+                "MODIFY_TITLE_PATH_MISSING",
+                "MODIFY_VIEW_NOT_FOUND"
+            ]
+        }
+    },
+    "sourceAcquisitionPolicy": {
+        "defaultSourceMode": "catalog_read",
+        "allowedSourceModes": [
+            "catalog_read",
+            "session_fast_path"
+        ],
+        "sessionFastPathRequirements": [
+            "sessionArtifactPath exists",
+            "sessionArtifactWorkbookId is non-empty",
+            "resolvedWorkbookTarget.id equals sessionArtifactWorkbookId"
+        ],
+        "onFastPathConflict": "fail_immediately"
+    },
+    "confirmationPolicy": {
+        "requireExplicitConfirmationEveryWrite": true,
+        "requiredConfirmationState": "confirmed"
+    },
+    "traceContract": {
+        "path": "/modifyTrace",
+        "requiredOutputFields": [
+            "requestedOperation",
+            "resolvedWorkbookTarget",
+            "sourceMode",
+            "confirmationState",
+            "mutationsApplied",
+            "pathsChanged",
+            "fallbackUsed",
+            "fallbackReason"
+        ],
+        "resolvedWorkbookTargetFields": [
+            "id",
+            "name",
+            "path"
+        ]
+    },
+    "errorCodes": [
+        "MODIFY_UNSUPPORTED_OPERATION",
+        "MODIFY_CONFIRMATION_REQUIRED",
+        "MODIFY_SOURCE_MODE_INVALID",
+        "MODIFY_FAST_PATH_MISSING_SESSION_ARTIFACT",
+        "MODIFY_FAST_PATH_TARGET_MISMATCH",
+        "MODIFY_TARGET_REQUIRED",
+        "MODIFY_FILTER_SELECTOR_NOT_FOUND",
+        "MODIFY_FILTER_SELECTOR_AMBIGUOUS",
+        "MODIFY_FILTER_MISSING_UPDATE_PAYLOAD",
+        "MODIFY_FILTER_ADD_COLUMN_MISSING",
+        "MODIFY_FILTER_ADD_CRITERIA_COLUMN_MISSING",
+        "MODIFY_TITLE_PATH_MISSING",
+        "MODIFY_VIEW_NOT_FOUND",
+        "MODIFY_INVALID_SPEC"
+    ]
+}

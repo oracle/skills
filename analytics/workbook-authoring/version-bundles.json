@@ -1,0 +1,16 @@
+{
+    "manifestVersion": 2,
+    "deprecated": true,
+    "compatibilityProfilesManifest": "compatibility-profiles.json",
+    "defaultTargetVersion": "26.07",
+    "defaultTargetVersionByCapability": {
+        "saveCatalogAvailable": "26.07",
+        "saveCatalogUnavailable": "26.05"
+    },
+    "installedVersions": [
+        "26.05",
+        "26.07",
+        "26.09",
+        "26.10"
+    ]
+}

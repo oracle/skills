@@ -1,0 +1,710 @@
+{
+    "manifestVersion": 1,
+    "defaultTemplate": "bar_basic",
+    "runtimeContractVersion": "v1",
+    "semanticValidationRules": "../model/semantic-validation-rules.v1.json",
+    "runtimeProfileContracts": "../model/runtime-profile-contracts.v1.json",
+    "calculationContracts": "../model/calculation-contracts.v1.json",
+    "calculationSupport": {
+        "scope": "workbook_local_only",
+        "defaultMode": "auto_gap_fill",
+        "supportedTypes": [
+            "EXPRESSION",
+            "TEXT_GROUP",
+            "TIME_SERIES"
+        ]
+    },
+    "remediationPolicy": {
+        "strategy": "deterministic_patch_then_single_retry",
+        "maxRetries": 1
+    },
+    "templates": [
+        {
+            "id": "table_basic",
+            "file": "table_basic.json",
+            "pluginType": "oracle.bi.tech.table",
+            "runtimeContractFamily": "table",
+            "runtimeDialects": {
+                "default": "table_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary",
+                "measure.secondary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "measure.primary": "mea_revenue"
+            },
+            "topologyManagedRoles": [
+                "measure.secondary"
+            ],
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "TABLE_COLUMN_EDGE_EMPTY",
+                "TABLE_ROW_EDGE_HAS_DIMENSION_AND_MEASURE",
+                "TABLE_LOGICAL_COLUMN_EDGE_EMPTY"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Runtime-valid table baseline with no column-edge layers."
+        },
+        {
+            "id": "bar_basic",
+            "file": "bar_basic.json",
+            "pluginType": "oracle.bi.tech.chart.bar",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Autoviz runtime contract scaffold with nested measure view."
+        },
+        {
+            "id": "scatter_basic",
+            "file": "scatter_basic.json",
+            "pluginType": "oracle.bi.tech.chart.scatter",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "measure.primary": "mea_revenue",
+                "measure.secondary": "mea_profit"
+            },
+            "topologyManagedRoles": [
+                "dimension.secondary"
+            ],
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+                "SCATTER_SINGLE_NESTED_MARKING_VIEW",
+                "SCATTER_MEASURE_VIEW_SINGLE_REFERENCE",
+                "SCATTER_MEASURE_XY_TAGS_REQUIRED",
+                "SCATTER_NESTED_MEASURE_PROPERTY_ADDITIONS",
+                "SCATTER_CATEGORICAL_COLOR_EXECUTION_BINDING",
+                "SCATTER_MEASURE_DIMENSION_EXECUTION_BINDING"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Scatter runtime contract scaffold with a single MeasureView_0 and source-backed x/y measure tag contract."
+        },
+        {
+            "id": "line_time",
+            "file": "line_time.json",
+            "pluginType": "oracle.bi.tech.chart.line",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "temporal.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "temporal.primary": "time_month",
+                "measure.primary": "mea_revenue",
+                "measure.secondary": "mea_profit"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Autoviz line chart starter with two source-supported measures in one runtime-safe nested view."
+        },
+        {
+            "id": "area_time",
+            "file": "area_time.json",
+            "pluginType": "oracle.bi.tech.chart.area",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "temporal.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "temporal.primary": "time_month",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Autoviz area chart starter with runtime-safe nested view contract."
+        },
+        {
+            "id": "donut_basic",
+            "file": "donut_basic.json",
+            "pluginType": "oracle.bi.tech.chart.donut",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_category",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Autoviz donut chart starter with runtime-safe nested view contract."
+        },
+        {
+            "id": "pivot_basic",
+            "file": "pivot_basic.json",
+            "pluginType": "oracle.bi.tech.pivot",
+            "runtimeContractFamily": "pivot",
+            "runtimeDialects": {
+                "default": "pivot_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "temporal.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "temporal.primary": "time_month",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "PIVOT_HAS_ROW_EDGE_BINDING",
+                "PIVOT_HAS_COLUMN_EDGE_BINDING",
+                "PIVOT_HAS_MEASURES_BINDING",
+                "PIVOT_ROW_EDGE_PARITY",
+                "PIVOT_COLUMN_EDGE_PARITY",
+                "PIVOT_MEASURES_LIST_PARITY"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Pivot runtime baseline with ordered row/column/measure bindings and logical-to-execution parity."
+        },
+        {
+            "id": "combo_basic",
+            "file": "combo_basic.json",
+            "pluginType": "oracle.bi.tech.chart.comboMultiLayerChart",
+            "runtimeContractFamily": "chart_combo_multilayer",
+            "runtimeDialects": {
+                "default": "combo_multilayer_v1",
+                "fallback": "autoviz_v2"
+            },
+            "requiredMetadata": [
+                "temporal.primary",
+                "measure.primary",
+                "measure.secondary"
+            ],
+            "bindingSlots": {
+                "temporal.primary": "time_month",
+                "measure.primary": "mea_revenue",
+                "measure.secondary": "mea_profit"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "COMBO_HAS_PLUGIN_DATALAYERS_INFO",
+                "COMBO_HAS_LDM_DATALAYERS_INFO",
+                "COMBO_ACTIVE_LAYER_IS_VALID",
+                "COMBO_NESTED_LAYER_MODELS_MATCH_DECLARED_LAYERS",
+                "COMBO_LAYER_MEASURE_BINDING_NON_EMPTY",
+                "COMBO_LOGICAL_EDGE_TO_LAYER_MAPPING_NON_EMPTY",
+                "COMBO_MEASURE_INFOS_ALLOWED_BY_PROFILE"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Combo multilayer baseline with explicit dataLayersInfo and per-layer nested model bindings."
+        },
+        {
+            "id": "performance_tile_basic",
+            "file": "performance_tile_basic.json",
+            "pluginType": "oracle.bi.tech.ngperformancetile",
+            "runtimeContractFamily": "performance_tile",
+            "runtimeDialects": {
+                "default": "performance_tile_v1"
+            },
+            "requiredMetadata": [
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "PERFORMANCE_TILE_HAS_LOGICAL_MEASURES_BINDING",
+                "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Performance tile baseline with explicit measure binding."
+        },
+        {
+            "id": "waterfall_basic",
+            "file": "waterfall_basic.json",
+            "pluginType": "oracle.bi.tech.chart.waterfall",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_category",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Autoviz waterfall starter with runtime-safe nested view contract."
+        },
+        {
+            "id": "gantt_basic",
+            "file": "gantt_basic.json",
+            "pluginType": "oracle.bi.tech.ganttchart",
+            "runtimeContractFamily": "gantt",
+            "runtimeDialects": {
+                "default": "gantt_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "temporal.start",
+                "temporal.end"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_product",
+                "temporal.start": "time_start",
+                "temporal.end": "time_end"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "GANTT_HAS_CATEGORY_ROW_BINDING",
+                "GANTT_HAS_ITEM_EDGE_WITH_START_END_TAGS"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Gantt baseline with dimension + start/end temporal edge bindings."
+        },
+        {
+            "id": "parallel_coordinates_basic",
+            "file": "parallel_coordinates_basic.json",
+            "pluginType": "oracle.bi.tech.parallelcoordinates",
+            "runtimeContractFamily": "parallel_coordinates",
+            "runtimeDialects": {
+                "default": "parallel_coordinates_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary",
+                "measure.secondary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_category",
+                "measure.primary": "mea_revenue",
+                "measure.secondary": "mea_profit"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES",
+                "PARALLEL_COORDINATES_HAS_MULTI_MEASURE_COLUMN_BINDING"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Parallel coordinates baseline with dimension + dual-measure bindings."
+        },
+        {
+            "id": "map_basic",
+            "file": "map_basic.json",
+            "pluginType": "oracle.bi.tech.map",
+            "runtimeContractFamily": "map",
+            "runtimeDialects": {
+                "default": "map_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "MAP_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "MAP_HAS_DETAIL_EDGE_BINDING",
+                "MAP_EXECUTION_ROW_EDGE_DETAIL_BINDING",
+                "MAP_NO_MEASURE_ON_UNUSED_EDGE",
+                "MAP_VIZ_MAP_SETTINGS_OBJECT",
+                "MAP_HAS_DATA_LAYERS_INFO",
+                "MAP_RENDER_TYPE_INVALID_EDGE_COMBINATION"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Map baseline with viz_map settings namespace and detail edge binding."
+        },
+        {
+            "id": "network_basic",
+            "file": "network_basic.json",
+            "pluginType": "oracle.bi.tech.network",
+            "runtimeContractFamily": "network_graph",
+            "runtimeDialects": {
+                "default": "network_graph_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "dimension.secondary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "dimension.secondary": "dim_category",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "NETWORK_HAS_DETAIL_EDGE_BINDING",
+                "NETWORK_MIN_DETAIL_LAYER_COUNT"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Network baseline with autoviz inner-plugin parity and two-column detail binding."
+        },
+        {
+            "id": "sankey_basic",
+            "file": "sankey_basic.json",
+            "pluginType": "oracle.bi.tech.sankey",
+            "runtimeContractFamily": "network_graph",
+            "runtimeDialects": {
+                "default": "network_graph_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "dimension.secondary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "dimension.secondary": "dim_category",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources"
+            ],
+            "requiredSemanticChecks": [
+                "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "NETWORK_HAS_DETAIL_EDGE_BINDING",
+                "NETWORK_MIN_DETAIL_LAYER_COUNT",
+                "SANKEY_HAS_SANKEY_SETTINGS_NAMESPACE"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Sankey baseline with required viz:sankeychart settings namespace and network detail bindings."
+        },
+        {
+            "id": "bar_with_canvas_filter_control",
+            "file": "bar_with_canvas_filter_control.json",
+            "pluginType": "oracle.bi.tech.chart.bar",
+            "runtimeContractFamily": "chart_autoviz",
+            "runtimeDialects": {
+                "default": "autoviz_v2",
+                "fallback": "autoviz_v1"
+            },
+            "requiredMetadata": [
+                "dimension.primary",
+                "measure.primary"
+            ],
+            "bindingSlots": {
+                "dimension.primary": "dim_region",
+                "measure.primary": "mea_revenue"
+            },
+            "requiredJsonNodes": [
+                "criteria",
+                "layouts",
+                "views",
+                "reportConfig",
+                "datasources",
+                "filterControlCollections",
+                "filterControlCollectionRef"
+            ],
+            "requiredSemanticChecks": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "GLOBAL_CRITERIA_DATASOURCE_ALIGNMENT"
+            ],
+            "versionCompatibility": {
+                "profiles": [
+                    "latest",
+                    "full"
+                ],
+                "projectVersions": [
+                    1155
+                ]
+            },
+            "notes": "Autoviz baseline plus canonical canvas and filter-bar filter-control wiring."
+        }
+    ],
+    "projectVersion": 1155
+}

@@ -12,6 +12,7 @@ Install a domain by appending the root-level domain directory to the repository 
 npx skills add oracle/skills/db
 npx skills add oracle/skills/oci
 npx skills add oracle/skills/graal
+npx skills add oracle/skills/analytics
 ...
 ```
 
@@ -47,6 +48,7 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 
 ## Domains
 
+- `analytics/` contains Oracle Analytics skills.
 - `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
 - `oci/` contains Oracle Cloud Infrastructure skills, including OCI Functions deployment and troubleshooting, OCI Kubernetes Engine cluster design and troubleshooting, OCI IoT Platform digital twin workflows, plus Enterprise AI guidance for OCI Generative AI, agents, RAG, governance, model endpoints, Autonomous Database, APEX, and integrations.
 - `fusion/` is the root for future Oracle Fusion skills.
@@ -63,6 +65,8 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 
 ```text
 .
+├── analytics/
+│   └── SKILL.md
 ├── db/
 │   ├── SKILL.md
 │   ├── admin/

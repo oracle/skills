@@ -1,0 +1,921 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "defaultProfile": "support_window_default",
+    "generationOrder": [
+        "selectTemplate",
+        "discoverMetadata",
+        "profileFilterCandidatesWithAvailableSqlTool",
+        "resolveVizResolutionProfile",
+        "resolvePluginTypeAliasCompatibility",
+        "selectRuntimeProfileAndDialect",
+        "bindDatasource",
+        "bindCriteriaColumns",
+        "evaluateMetricFitAndDetectGap",
+        "synthesizeWorkbookLocalCalculationsWhenNeeded",
+        "bindCalculationColumnsAndCriteriaConfig",
+        "bindPluginFamilyDataModel",
+        "bindLogicalDataModel",
+        "bindNestedViewsIfRequired",
+        "applyVersionDefaults",
+        "runSchemaValidationCheck",
+        "runSemanticValidationCheck",
+        "saveLocally",
+        "attemptMcpSave",
+        "publishViewUrlImmediately",
+        "runExportRuntimeCheckWhenRequested",
+        "applyDeterministicPatchAndRetryOnceWhenKnown"
+    ],
+    "authoringModes": {
+        "primaryMode": "generate_fresh",
+        "modes": {
+            "generate_fresh": {
+                "description": "Primary management-directed path. Regenerate full workbook JSON from intent and metadata."
+            },
+            "modify_existing": {
+                "description": "Additive limited-edit path for edit_filter_values_or_operator/add_filter_bar_filter/edit_titles against an existing workbook JSON target."
+            }
+        },
+        "modifyModeRouter": {
+            "intentTriggers": [
+                "update existing workbook",
+                "change filter settings",
+                "add filter-bar control",
+                "rename workbook/canvas/view title"
+            ],
+            "unsupportedBehavior": "fail_not_supported_in_modify_v1"
+        }
+    },
+    "supportWindowContract": {
+        "source": "model/support-window.v1.json",
+        "defaultSelectionPolicy": "always_use_default_track",
+        "defaultTrackSelection": "widely",
+        "promotionPolicy": [
+            "user explicitly requests a newer target version",
+            "requested viz/runtime contract requires a newer supported version"
+        ]
+    },
+    "modifyExistingContract": {
+        "source": "model/edit-operation-contracts.v1.json",
+        "supportedOperations": [
+            "edit_filter_values_or_operator",
+            "add_filter_bar_filter",
+            "edit_titles"
+        ],
+        "targetResolutionPolicy": [
+            "resolve catalog target by id/path/name",
+            "if target is ambiguous, fail with candidates and no write",
+            "require explicit confirmation before every modify write"
+        ],
+        "sourceAcquisitionPolicy": [
+            "default source mode is catalog_read (content:// workbook JSON)",
+            "session_fast_path is allowed only with same-session artifact and exact resolved workbook id match",
+            "if session_fast_path hits version/concurrency conflict, fail immediately (no auto read fallback)"
+        ],
+        "operationPolicies": {
+            "edit_filter_values_or_operator": "edit existing filter operator/default/source values using selector precedence filterID -> columnID -> displayName",
+            "add_filter_bar_filter": "add filter_bar filter only for columns already present in criteria.columns.children; default canvas scope is all canvases",
+            "edit_titles": "edit workbook/canvas/view titles; create missing title path at canonical defaults (`viewCaption.caption.text`) when absent"
+        },
+        "validationSequence": [
+            "apply deterministic mutator (modify-workbook.mjs)",
+            "run runtime-validation-check in authoringMode=modify_existing",
+            "save replace-by-id with wrapped payload content.json"
+        ],
+        "requiredTraceFields": [
+            "requestedOperation",
+            "resolvedWorkbookTarget",
+            "sourceMode",
+            "confirmationState",
+            "mutationsApplied",
+            "pathsChanged",
+            "fallbackUsed",
+            "fallbackReason"
+        ]
+    },
+    "metadataDiscoveryContract": {
+        "requiredTools": [
+            "oracle_analytics-describe_data"
+        ],
+        "requiredToolCapabilities": [
+            {
+                "id": "sql_query_execution",
+                "when": "connected profiling is performed",
+                "preferredTool": "oracle_analytics_execute_oac_ansi_sql",
+                "fallbackTool": "oracle_analytics_execute_logical_sql",
+                "availabilitySource": "mcp_tool_inventory"
+            }
+        ],
+        "discoveryMethodPreference": [
+            "oracle_analytics-search_catalog",
+            "oracle_analytics-discover_data"
+        ],
+        "discoveryMethodFallback": "oracle_analytics-discover_data",
+        "requiredDiscoverySteps": [
+            "search_catalog on datasets and subjectAreas when search tool exists, else discover_data",
+            "describe_data tablesOnly=true",
+            "describe_data targeted tableName/tableNames",
+            "execute filter profiling probes from filter-profiling-contracts.v1.json using ANSI SQL when available, with Logical SQL as the availability and semantic fallback"
+        ],
+        "normalizedFieldMap": {
+            "dimensions": "attributes and non-aggregated text/categorical fields",
+            "measures": "numeric fields and model measures with default aggregations",
+            "temporal": "date/timestamp fields",
+            "technical": "nullable, precision, scale, type"
+        }
+    },
+    "saveExportCapabilityContract": {
+        "saveTool": "oracle_analytics-save_catalog_content",
+        "exportTool": "oracle_analytics-export_workbook",
+        "exportDefaultPolicy": "run_only_when_user_explicitly_requests_export",
+        "whenUnavailable": [
+            "skip save/export",
+            "emit disk-only outcome in trace",
+            "for modify intent, regenerate full workbook JSON and return local artifact only"
+        ]
+    },
+    "filterProfilingContract": {
+        "source": "model/filter-profiling-contracts.v1.json",
+        "required": true,
+        "executionStage": "after metadata discovery and before template bind",
+        "defaultFilterMode": "filter_bar",
+        "selectionPolicy": "moderate_auto_filter_selection",
+        "queryExecutionPolicy": [
+            "run deterministic dimension/measure/temporal probes for filter candidates",
+            "enforce max rows, timeout, deterministic ORDER BY + FETCH limits per contract",
+            "if a probe fails, continue with conservative fallback defaults and emit trace fallback reason"
+        ],
+        "decisionOutputs": [
+            "selected filter mode (filter_bar/filter_viz/mixed/none)",
+            "filter operator defaults by column class",
+            "filter default values/ranges based on successful probes",
+            "high-cardinality suppression/de-prioritization unless explicitly requested",
+            "filter decision trace with query intents, probe outcomes, and fallback reasons"
+        ]
+    },
+    "analysisRequirementsMaterializationContract": {
+        "source": "model/regenerate-workbook-contract.v1.json#/requestContract/analysisRequirements",
+        "policy": [
+            "normalize reusable field aliases before compose preflight",
+            "persist source-matching/default/none aggregation on matching logical and physical column layers; reject conflicting direct-source overrides until derived criteria-column and aggregationColumnMap synthesis is implemented",
+            "route structured field formats through number-format normalization and strict schema validation",
+            "materialize applied global, canvas, and view filters into filterControlCollections with matching expression, operator, defaults, and scope",
+            "persist direct per-view sorts as logical edge-layer columnSort metadata",
+            "persist requested view titles through the canonical caption path",
+            "fail before save when any applied planning item is absent from generated workbook JSON"
+        ],
+        "unsupportedPolicy": [
+            "do not truncate compact measure arrays beyond the selected scaffold's role capacity",
+            "do not accept non-empty per-view interactions until a source-backed materializer exists; use top-level actions/dataActions for supported navigation"
+        ],
+        "trace": "planningConsumptionSummary"
+    },
+    "profileHandshake": {
+        "supportWindowSource": "model/support-window.v1.json",
+        "projectVersionSource": "model/support-window.v1.json#/tracks/<defaultTrack>/projectVersion",
+        "targetVersionSource": "model/support-window.v1.json#/tracks/<defaultTrack>/displayVersion",
+        "compatibilitySource": "model/support-window.v1.json#/tracks",
+        "runtimeContractSource": "model/runtime-profile-contracts.v1.json",
+        "selectionSteps": [
+            "resolve default track from support-window contract",
+            "set projectVersion from default track regardless of detected server version",
+            "promote to newer supported track only on explicit user request or required newer viz/schema runtime contract behavior",
+            "resolve runtime tool capabilities independently from projectVersion targeting",
+            "resolve runtime profile by projectVersion range",
+            "resolve plugin profile (pluginType -> runtime family + canonical scaffold) from viz-resolution-profiles.v1.json",
+            "resolve plugin type alias as compatibility fallback from plugin-type-aliases.v1.json only when profile entry is missing",
+            "use family default dialect",
+            "if known runtime error signature occurs, switch to configured fallback dialect once"
+        ],
+        "pluginAliasSource": "model/plugin-type-aliases.v1.json",
+        "vizResolutionProfileSource": "model/viz-resolution-profiles.v1.json"
+    },
+    "publicOutputContract": {
+        "defaultOutputMode": "concise",
+        "traceOutputMode": "explicit_request_only",
+        "traceRequestSignals": [
+            "trace",
+            "debug",
+            "diagnostics",
+            "traceRequested=true"
+        ],
+        "conciseFields": [
+            "localJsonPath",
+            "savedWorkbookTarget",
+            "viewUrl",
+            "executionMode",
+            "semanticValidationResult",
+            "exportSummaryWhenRequested"
+        ],
+        "requiredFields": [
+            "targetVersion",
+            "executionMode",
+            "reasonForVersionSelection",
+            "capabilitySource",
+            "saveToolDetected",
+            "exportToolDetected",
+            "discoveryMethod",
+            "saveAvailable",
+            "exportAvailable",
+            "exportRequested"
+        ],
+        "forbiddenFields": [
+            "track",
+            "defaultTrack",
+            "projectVersion"
+        ]
+    },
+    "calculationContract": {
+        "source": "model/calculation-contracts.v1.json",
+        "scope": "workbook_local_only",
+        "autoGapFillDefault": true,
+        "selectionFlow": [
+            "compare requested metric intent vs discovered base measures",
+            "if a base measure fully satisfies intent, use base measure binding",
+            "otherwise synthesize workbook-local calc using calculation-contracts.v1.json selection rules",
+            "bind calc columnID to measure edges in place of base measure columnID for selected viz"
+        ]
+    },
+    "mappings": {
+        "datasource": {
+            "set": [
+                {
+                    "jsonPath": "/datasources/children/0/subjectArea",
+                    "value": "<metadata.datasource.subjectAreaOrXsaExpr>"
+                },
+                {
+                    "jsonPath": "/criteria/subjectArea",
+                    "value": "<metadata.datasource.subjectAreaOrXsaExpr>"
+                }
+            ]
+        },
+        "criteriaColumns": {
+            "targetPath": "/criteria/columns/children",
+            "columnShape": {
+                "type": "saw:regularColumn",
+                "columnID": "<mapped.columnId>",
+                "columnFormula": {
+                    "expr": {
+                        "type": "sawx:sqlExpression",
+                        "expression": "<mapped.expression>",
+                        "children": []
+                    }
+                }
+            },
+            "columnIdRules": {
+                "dimension": "dim_<stableName>",
+                "measure": "mea_<stableName>",
+                "temporal": "time_<stableName>"
+            },
+            "aggregationRules": {
+                "dimension": "none",
+                "measure": "default_or_sum",
+                "temporal": "none"
+            }
+        },
+        "baseViews": {
+            "canvas": {
+                "jsonPath": "/views/children/0",
+                "required": true,
+                "shape": {
+                    "type": "saw:canvas",
+                    "viewName": "canvas!1",
+                    "rootLayoutName": "layout1"
+                }
+            },
+            "primaryPlugin": {
+                "jsonPath": "/views/children/1",
+                "required": true,
+                "shape": {
+                    "type": "saw:pluginView",
+                    "viewName": "view!1",
+                    "pluginType": "<template.pluginType>"
+                }
+            }
+        },
+        "pluginResolution": {
+            "resolutionProfilesPath": "/model/viz-resolution-profiles.v1.json",
+            "aliasMapPath": "/model/plugin-type-aliases.v1.json",
+            "resolutionFlow": [
+                "requested viz pluginType or semantic alias",
+                "viz-resolution-profiles lookup",
+                "plugin-type-aliases compatibility lookup (fallback only)",
+                "runtimeContractFamily selection",
+                "canonicalScaffoldTemplateId selection",
+                "finalPluginType lock validation",
+                "runtime dialect selection from runtime-profile-contracts"
+            ],
+            "vizLockPolicy": "requested_plugin_type_preserved_by_default",
+            "fallbackOverrideRequirements": [
+                "explicit fallback plugin type",
+                "explicit fallback reason"
+            ]
+        },
+        "calculations": {
+            "metricGapDetection": {
+                "defaultBehavior": "auto_gap_fill_enabled",
+                "candidateCalcTypes": [
+                    "EXPRESSION",
+                    "TEXT_GROUP",
+                    "TIME_SERIES"
+                ]
+            },
+            "criteriaColumnShape": {
+                "type": "saw:regularColumn",
+                "columnID": "<generated.calcColumnId>",
+                "userExpression": true,
+                "columnFormula": {
+                    "expr": {
+                        "type": "sawx:sqlExpression",
+                        "expression": "<generated.calcExpression>",
+                        "children": []
+                    }
+                },
+                "columnHeading": {
+                    "caption": {
+                        "text": "<generated.calcDisplayName>"
+                    }
+                },
+                "columnDescription": {
+                    "caption": {
+                        "text": "<generated.calcDescription>"
+                    }
+                }
+            },
+            "columnIdRules": {
+                "EXPRESSION": "calc_expr_<stableName>",
+                "TEXT_GROUP": "calc_text_group_<stableName>",
+                "TIME_SERIES": "calc_time_series_<stableName>"
+            },
+            "criteriaConfigColumnPropertyMapPath": "/criteria/criteriaConfig/settings/columnPropertyMap",
+            "typedCriteriaConfigShape": {
+                "type": "<generated.calcType>",
+                "parentExpression": "<generated.parentExpression>",
+                "options": "<generated.typeSpecificOptions>"
+            },
+            "formulaDialectGuardrails": [
+                "persist formulas in OAC Logical SQL, not Tableau or other source-workbook dialects",
+                "replace Tableau COUNTD(...) with governed measures or OAC COUNT(DISTINCT ...)",
+                "POSITION(expr1 IN expr2) is valid OAC syntax and must not be rejected"
+            ],
+            "nestedReferenceSyntax": "@calculation(\"<calcColumnID>\")",
+            "orderingRule": "referenced calculation columns must appear before referencing columns in criteria.columns.children",
+            "derivedFormulaPolicy": "non-direct derived formulas must be persisted as userExpression=true (never plain non-userExpression formula columns)",
+            "vizBindingPrecedence": [
+                "bind base metadata columns",
+                "inject synthesized calc columns",
+                "bind plugin logical/data measure edges to selected calc columnIDs"
+            ]
+        }
+    },
+    "pluginFamilyMappings": {
+        "table": {
+            "family": "table",
+            "dataModelRules": [
+                "row edge contains every requested table field in order as column layers",
+                "row edge accepts mixed dimension, temporal, and measure fields with a maximum of 50 columns",
+                "column edge contains no layers",
+                "page and section edges may remain empty"
+            ],
+            "logicalEdgeRules": [
+                "logicalEdges.row contains the same ordered column layers as the execution row edge",
+                "logicalEdges.column must be absent"
+            ],
+            "runtimeInvariants": [
+                "TABLE_COLUMN_EDGE_EMPTY",
+                "TABLE_ROW_EDGE_HAS_BINDING",
+                "TABLE_ROW_EDGE_PARITY",
+                "TABLE_LOGICAL_COLUMN_EDGE_EMPTY"
+            ]
+        },
+        "chart_autoviz": {
+            "family": "chart_autoviz",
+            "viewConfigRules": [
+                "set viewConfig.settings['obitech-autoviz/autoviz'].innerPluginType = pluginType",
+                "preserve viewConfig.settings['oracle.bi.tech.table'] scaffold for autoviz runtime compatibility"
+            ],
+            "dataModelRules": [
+                "logicalEdges.measures uses the ordered measures requested for this view",
+                "logicalEdges.detail uses primary dimension or primary temporal field",
+                "logicalEdges.color includes measure layer plus hidden measure layer",
+                "main data model includes measuresList child of type=view named MeasureView_0",
+                "the outer MeasureView_0 columnID equals the first nested measure columnID and belongs to the ordered logical measure set",
+                "known-patch repair preserves each view's existing source-backed logical and nested bindings instead of selecting workbook-global criteria defaults"
+            ],
+            "nestedViewRules": [
+                "nestedViews contains embedded plugin view MeasureView_0",
+                "nested view row edge binds detail field",
+                "nested view column edge contains hidden measure layer",
+                "nested view measuresList/propertyAdditions entries set colorMin/colorMax/color with valueColumnID, aggRule, stacked=false, grainEdge='none', acrossMeasures='single', and placement first_cell/first_cell/all",
+                "for oracle.bi.tech.chart.scatter, keep a single embedded MeasureView_0; do not emit MeasureView_1 or multiple nested measure views without a verified runtime fixture"
+            ],
+            "runtimeInvariants": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS",
+                "SCATTER_SINGLE_NESTED_MARKING_VIEW",
+                "SCATTER_MEASURE_VIEW_SINGLE_REFERENCE",
+                "SCATTER_MEASURE_XY_TAGS_REQUIRED",
+                "SCATTER_CATEGORICAL_COLOR_EXECUTION_BINDING",
+                "SCATTER_MEASURE_DIMENSION_EXECUTION_BINDING"
+            ],
+            "pluginTypeOverrides": [
+                {
+                    "pluginType": "oracle.bi.tech.chart.scatter",
+                    "rules": [
+                        "logicalEdges.measures measure layers must be tagged with obitech-scatterchart#x / obitech-scatterchart#y",
+                        "two-measure scatter uses exactly one x-tagged and one y-tagged measure layer",
+                        "main measuresList references only MeasureView_0 and the nested MeasureView_0 carries all scatter measure bindings",
+                        "nested MeasureView_0 execution column edge always preserves one hidden Measure Dimension layer; categorical color adds its column layer without replacing the marker"
+                    ]
+                }
+            ]
+        },
+        "chart_combo_multilayer": {
+            "family": "chart_combo_multilayer",
+            "viewConfigRules": [
+                "set viewConfig.settings['obitech-autoviz/autoviz'].innerPluginType = pluginType",
+                "set viewConfig.settings['oracle.bi.tech.chart.comboMultiLayerChart'].settings.dataLayersInfo with named layers (for example ndm2/ndm3)",
+                "do not emit measureInfos when runtime profile capability allowMeasureInfos=false"
+            ],
+            "dataModelRules": [
+                "logicalDataModel.settings.logicalDataModel.dataLayersInfo must include activeDataLayer + dataLayers map",
+                "each data layer entry must set dataModelName == layer key and include logicalEdges.measures binding",
+                "main logicalEdges.detail binds primary temporal/dimension and logicalEdges.measures binds active layer measure",
+                "main logicalEdges.color includes hidden measure layer"
+            ],
+            "nestedViewRules": [
+                "nested MeasureView_0 must contain one data model per declared data layer",
+                "each nested layer model binds detail field on row edge and hidden measure on column edge",
+                "each nested layer model measuresList binds its layer measure with min/max/colorMin/colorMax/color propertyAdditions"
+            ],
+            "runtimeInvariants": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "COMBO_HAS_PLUGIN_DATALAYERS_INFO",
+                "COMBO_HAS_LDM_DATALAYERS_INFO",
+                "COMBO_ACTIVE_LAYER_IS_VALID",
+                "COMBO_NESTED_LAYER_MODELS_MATCH_DECLARED_LAYERS",
+                "COMBO_LAYER_MEASURE_BINDING_NON_EMPTY",
+                "COMBO_LOGICAL_EDGE_TO_LAYER_MAPPING_NON_EMPTY",
+                "COMBO_MEASURE_INFOS_ALLOWED_BY_PROFILE"
+            ]
+        },
+        "pivot": {
+            "family": "pivot",
+            "dataModelRules": [
+                "ordered pivot rows bind logicalEdges.row and execution row in the same order",
+                "ordered pivot columns bind logicalEdges.col and execution column in the same order before the measure marker",
+                "ordered pivot measures bind logicalEdges.measures and measuresList in the same order"
+            ],
+            "runtimeInvariants": [
+                "PIVOT_HAS_ROW_EDGE_BINDING",
+                "PIVOT_HAS_COLUMN_EDGE_BINDING",
+                "PIVOT_HAS_MEASURES_BINDING",
+                "PIVOT_ROW_EDGE_PARITY",
+                "PIVOT_COLUMN_EDGE_PARITY",
+                "PIVOT_MEASURES_LIST_PARITY"
+            ]
+        },
+        "gantt": {
+            "family": "gantt",
+            "dataModelRules": [
+                "row edge binds primary dimension",
+                "logical item edge binds start/end temporal fields",
+                "start/end item layers tagged as obitech-gantt#start and obitech-gantt#end"
+            ],
+            "runtimeInvariants": [
+                "GANTT_HAS_CATEGORY_ROW_BINDING",
+                "GANTT_HAS_ITEM_EDGE_WITH_START_END_TAGS",
+                "GANTT_HAS_DATA_LAYERS_INFO",
+                "GANTT_REJECTS_LEGACY_LOGICAL_COLUMN_KEY"
+            ]
+        },
+        "performance_tile": {
+            "family": "performance_tile",
+            "dataModelRules": [
+                "bind primary measure in row or column edge",
+                "ensure logical measures edge has active measure binding"
+            ],
+            "runtimeInvariants": [
+                "PERFORMANCE_TILE_NO_DERIVED_LAYOUT_OVERRIDES",
+                "PERFORMANCE_TILE_HAS_LOGICAL_MEASURES_BINDING",
+                "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+            ]
+        },
+        "parallel_coordinates": {
+            "family": "parallel_coordinates",
+            "dataModelRules": [
+                "row edge binds primary dimension",
+                "logical col edge binds at least two measures"
+            ],
+            "runtimeInvariants": [
+                "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES",
+                "PARALLEL_COORDINATES_HAS_MULTI_MEASURE_COLUMN_BINDING",
+                "PARALLEL_COORDINATES_HAS_DATA_LAYERS_INFO",
+                "PARALLEL_COORDINATES_REJECTS_LEGACY_LOGICAL_COLUMN_KEY"
+            ]
+        },
+        "network_graph": {
+            "family": "network_graph",
+            "dataModelRules": [
+                "row and column logical edges should remain present for source/target hierarchy roles",
+                "preserve detail/color/size bindings when provided by metadata",
+                "avoid autoviz nested MeasureView injection unless required by selected template contract"
+            ],
+            "runtimeInvariants": [
+                "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES",
+                "NETWORK_HAS_DATA_LAYERS_INFO"
+            ]
+        },
+        "map": {
+            "family": "map",
+            "dataModelRules": [
+                "bind geography/category fields through logicalEdges.detail and execution row for geography context",
+                "do not bind measures to execution column because OAC renders that map role as Unused",
+                "bind metrics only through map-specific measure/color/size/layer contracts supported by the selected map render type",
+                "preserve map-specific viewConfig settings and avoid autoviz-only nested contracts"
+            ],
+            "runtimeInvariants": [
+                "MAP_HAS_DETAIL_EDGE_BINDING",
+                "MAP_EXECUTION_ROW_EDGE_DETAIL_BINDING",
+                "MAP_NO_MEASURE_ON_UNUSED_EDGE",
+                "MAP_HAS_DATA_LAYERS_INFO"
+            ]
+        },
+        "list_narrative": {
+            "family": "list_narrative",
+            "dataModelRules": [
+                "bind row/column logical edges based on discovered dimensions/measures",
+                "preserve list/narrative/timeline viewConfig settings without chart-only autoviz scaffolding",
+                "allow measure-optional shapes when only categorical storytelling layout is requested"
+            ],
+            "runtimeInvariants": [
+                "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES"
+            ]
+        },
+        "gauge": {
+            "family": "gauge",
+            "dataModelRules": [
+                "bind a primary measure for gauge value",
+                "bind optional comparative dimension or threshold measures only when metadata supports them",
+                "preserve gauge viewConfig without autoviz nested MeasureView wiring"
+            ],
+            "runtimeInvariants": [
+                "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+            ]
+        },
+        "filter_control_viz": {
+            "family": "filter_control_viz",
+            "dataModelRules": [
+                "bind filter-control row edge to selected filter dimension or parameter target",
+                "keep filterControlCollections linkage synchronized with filter plugin view",
+                "avoid chart/table data-model assumptions for filter-only views"
+            ],
+            "runtimeInvariants": []
+        },
+        "ui_control": {
+            "family": "ui_control",
+            "dataModelRules": [
+                "no measure or logical-edge binding is required by default",
+                "preserve pluginType and viewConfig shell for control rendering",
+                "do not inject chart/table-specific data-model scaffolding"
+            ],
+            "runtimeInvariants": [
+                "UI_CONTROL_VALID_PLUGIN_TYPE"
+            ]
+        }
+    },
+    "scaffoldBindingSlotContract": {
+        "source": "templates/template-index.json#/templates/*/bindingSlots",
+        "policy": [
+            "Resolve each semantic role against the selected scaffold template rather than assuming one workbook-global canonical column ID.",
+            "A binding slot must reference a concrete columnID/valueColumnID/sColumnID present in that template's plugin view.",
+            "Different generated views may bind different criteria expressions to the same semantic role by allocating independent criteria columns and rewriting each cloned view separately.",
+            "Fail with UNRESOLVED_SCAFFOLD_BINDING_SLOT when neither a verified template slot nor a verified explicit binding columnID can materialize the requested role."
+        ]
+    },
+    "axisRoleMapping": {
+        "table_basic": {
+            "pluginFamily": "table",
+            "roles": {
+                "row": [
+                    "tableTopology.columns[] (ordered mixed fields)"
+                ],
+                "column": [],
+                "page": [],
+                "section": []
+            }
+        },
+        "bar_basic": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "dimension.primary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "scatter_basic": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "dimension.primary"
+                ],
+                "color": [
+                    "dimension.secondary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ],
+                "x": [
+                    "measure.primary"
+                ],
+                "y": [
+                    "measure.secondary"
+                ]
+            }
+        },
+        "line_time": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "temporal.primary"
+                ],
+                "measure": [
+                    "measure.primary",
+                    "measure.secondary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "area_time": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "temporal.primary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "donut_basic": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "dimension.primary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "pivot_basic": {
+            "pluginFamily": "pivot",
+            "roles": {
+                "row": [
+                    "dimension.primary"
+                ],
+                "column": [
+                    "temporal.primary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "combo_basic": {
+            "pluginFamily": "chart_combo_multilayer",
+            "roles": {
+                "detail": [
+                    "temporal.primary"
+                ],
+                "measure": [
+                    "measure.primary",
+                    "measure.secondary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "performance_tile_basic": {
+            "pluginFamily": "performance_tile",
+            "roles": {
+                "measure": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "waterfall_basic": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "dimension.primary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            }
+        },
+        "gantt_basic": {
+            "pluginFamily": "gantt",
+            "roles": {
+                "row": [
+                    "dimension.primary"
+                ],
+                "item": [
+                    "temporal.start",
+                    "temporal.end"
+                ],
+                "col": [
+                    "temporal.start",
+                    "temporal.end"
+                ]
+            }
+        },
+        "parallel_coordinates_basic": {
+            "pluginFamily": "parallel_coordinates",
+            "roles": {
+                "row": [
+                    "dimension.primary"
+                ],
+                "column": [
+                    "measure.primary",
+                    "measure.secondary"
+                ]
+            }
+        },
+        "bar_with_canvas_filter_control": {
+            "pluginFamily": "chart_autoviz",
+            "roles": {
+                "detail": [
+                    "dimension.primary"
+                ],
+                "measure": [
+                    "measure.primary"
+                ],
+                "color": [
+                    "measure.primary"
+                ]
+            },
+            "filterRoles": [
+                "dimension.primary"
+            ]
+        }
+    },
+    "filterControlContract": {
+        "requiredJsonPaths": [
+            "/filterControlCollections",
+            "/filterControlCollectionRef",
+            "/filterControlCollections/children/*/filterControls/children/*/filterControlConfig",
+            "/filterControlCollections/children/*/filterControls/children/*/filterControlSource",
+            "/filterControlCollections/children/*/filterControls/children/*/filterControlDefaultValues"
+        ],
+        "requiredLinkages": [
+            "filter columnID exists in criteria.columns.children",
+            "canvas filterControlCollectionRef.name resolves to filterControlCollections.children[].name",
+            "filterControlConfig.settings.filterViz resolves to existing filter view when location is filter_viz",
+            "filter-viz viewConfig.settings['viz:filter'] filterIDMap/parameterIDMap keys align with row logicalEdgeLayers",
+            "filter-viz map values resolve to existing filter controls linked to the same filter view",
+            "filterControlDefaultValues.*ParameterBinding resolves to parameters.settings[].name",
+            "listParameterBinding resolves to a multi-value parameter; generated shared listbox parameters default to dataType=text and isMultiValue=true"
+        ],
+        "modeSelectionDefaults": [
+            "default to filter_bar when filter mode is not explicitly requested",
+            "use filter_viz only when explicitly requested",
+            "do not infer filter_viz from profiling output alone"
+        ],
+        "profilingDrivenDefaults": [
+            "dimension filters default to operator 'in' with top values derived from profiling probes",
+            "measure filters default to bounded/range operator using profiled min/max values",
+            "temporal filters default to bounded date range using profiled min/max timestamps"
+        ]
+    },
+    "dataActionContract": {
+        "targetPath": "/dataActions",
+        "containerShape": "top_level_array",
+        "supportedKinds": [
+            "obitech-report/dataaction.BINavigationDataAction",
+            "obitech-report/dataaction.AbstractHTTPDataAction"
+        ],
+        "requiredSourceSchemaRules": [
+            "each entry includes obitech-report/dataaction.AbstractDataAction",
+            "aContextColumns and aAnchorToColumns are arrays of oColumn payloads whose sColumnID resolves to criteria.columns.children",
+            "BI navigation actions include sTargetItemType, sTargetCanvasID, eBIPParameterMappingType, aBIPParameterMap, and _sNSVersion",
+            "URL/HTTP actions include obitech-report/dataaction.AbstractHTTPDataAction.sURL"
+        ]
+    },
+    "deterministicRemediation": {
+        "retryPolicy": {
+            "maxRetries": 1,
+            "strategy": "patch_then_retry_once"
+        },
+        "knownPatches": [
+            {
+                "id": "PATCH_CANONICAL_RUNTIME_DEFAULTS",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/runtime_ui_canonical_defaults_missing",
+                "actions": [
+                    "ensure parameters._version matches runtime parameter schema version",
+                    "declare missing parameters.settings entries for filterControlDefaultValues.*ParameterBinding names using multi-value text defaults",
+                    "ensure color/shape service domain defaults exist and seed measure mappings for bound measures"
+                ]
+            },
+            {
+                "id": "PATCH_TABLE_MOVE_COLUMN_EDGE_LAYERS_TO_ROW",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/table_column_edge_layer_error",
+                "actions": [
+                    "move column edge layers to row edge",
+                    "remove logicalEdges.column"
+                ]
+            },
+            {
+                "id": "PATCH_PIVOT_LOGICAL_EDGE_COLUMN_TO_COL",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/pivot_logical_column_not_defined_schema_error",
+                "actions": [
+                    "move logicalEdges.column layers to logicalEdges.col",
+                    "remove logicalEdges.column"
+                ]
+            },
+            {
+                "id": "PATCH_PARALLEL_COORDINATES_LOGICAL_EDGE_COLUMN_TO_COL",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/parallel_coordinates_logical_column_not_defined_schema_error",
+                "actions": [
+                    "move logicalEdges.column layers to logicalEdges.col for parallel coordinates",
+                    "remove logicalEdges.column"
+                ]
+            },
+            {
+                "id": "PATCH_GANTT_LOGICAL_EDGE_COLUMN_TO_COL",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/gantt_logical_column_not_defined_schema_error",
+                "actions": [
+                    "move logicalEdges.column layers to logicalEdges.col for gantt",
+                    "remove logicalEdges.column"
+                ]
+            },
+            {
+                "id": "PATCH_ENSURE_SINGLE_LAYER_DATA_LAYERS_INFO",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/runtime_datalayers_info_null_error",
+                "actions": [
+                    "ensure activeDataLayer and matching dataLayers entry for map/network/parallel/gantt runtime families"
+                ]
+            },
+            {
+                "id": "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/autoviz_contract_missing_error",
+                "actions": [
+                    "inject missing measuresList/nestedViews scaffold",
+                    "add hidden measure color layer",
+                    "add nested measure propertyAdditions with stacked/placement/grainEdge/acrossMeasures contract fields"
+                ]
+            },
+            {
+                "id": "PATCH_REMOVE_WORKBOOK_AUTHORING_TRACE",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/workbook_authoring_trace_schema_rejection",
+                "actions": [
+                    "remove reportConfig.settings.oracle.bi.tech.workbookAuthoringTrace"
+                ]
+            },
+            {
+                "id": "PATCH_REPORT_CONFIG_DEFAULTS",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/report_config_missing_error",
+                "actions": [
+                    "ensure reportConfig and projectSettings defaults from selected profile"
+                ]
+            },
+            {
+                "id": "PATCH_CALCULATION_CONTRACT_SCAFFOLD",
+                "trigger": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures/calculation_contract_missing_error",
+                "actions": [
+                    "ensure calc columns include required userExpression + columnFormula + heading fields",
+                    "ensure typed calc entries exist at criteriaConfig.settings.columnPropertyMap",
+                    "repair calc reference ordering and stale calc references when deterministic match exists"
+                ]
+            }
+        ]
+    }
+}

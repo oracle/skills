@@ -1,0 +1,38 @@
+{
+  "manifestVersion": 1,
+  "defaultCompatibilityTarget": "standard",
+  "profileRoot": "compatibility-profiles",
+  "profiles": [
+    {
+      "id": "pv-1155",
+      "target": "legacy",
+      "authoredProjectVersion": 1155,
+      "minimumServerProjectVersion": 1155,
+      "maximumServerProjectVersion": 1161,
+      "releaseAliases": [
+        "26.05"
+      ]
+    },
+    {
+      "id": "pv-1162",
+      "target": "standard",
+      "authoredProjectVersion": 1162,
+      "minimumServerProjectVersion": 1162,
+      "maximumServerProjectVersion": 1167,
+      "releaseAliases": [
+        "26.07"
+      ]
+    },
+    {
+      "id": "pv-1168",
+      "target": "current",
+      "authoredProjectVersion": 1168,
+      "minimumServerProjectVersion": 1168,
+      "maximumServerProjectVersion": 1177,
+      "releaseAliases": [
+        "26.09",
+        "26.10"
+      ]
+    }
+  ]
+}

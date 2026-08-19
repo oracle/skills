@@ -1,0 +1,175 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "scope": {
+        "lifecycle": "workbook_local_only",
+        "sharedReusableObjects": false
+    },
+    "defaults": {
+        "autoGapFillEnabled": true,
+        "maxNestedReferenceDepth": 10
+    },
+    "supportedCalculationTypes": [
+        "EXPRESSION",
+        "TEXT_GROUP",
+        "TIME_SERIES"
+    ],
+    "idGenerationRules": {
+        "EXPRESSION": "calc_expr_<stableName>",
+        "TEXT_GROUP": "calc_text_group_<stableName>",
+        "TIME_SERIES": "calc_time_series_<stableName>"
+    },
+    "metricGapDetection": {
+        "whenToCreateCalculation": [
+            "requested metric intent cannot be satisfied by any single discovered base measure",
+            "requested metric requires ratio/rate/variance/growth/normalization",
+            "requested segmentation requires deterministic grouping derived from category values"
+        ],
+        "selectionRules": [
+            {
+                "calcType": "TEXT_GROUP",
+                "intentSignalsAny": [
+                    "group",
+                    "bucket",
+                    "band",
+                    "segment labels"
+                ]
+            },
+            {
+                "calcType": "TIME_SERIES",
+                "intentSignalsAny": [
+                    "previous period",
+                    "variance",
+                    "growth",
+                    "period over period",
+                    "ago"
+                ]
+            },
+            {
+                "calcType": "EXPRESSION",
+                "intentSignalsAny": [
+                    "ratio",
+                    "rate",
+                    "margin",
+                    "index",
+                    "composite metric"
+                ]
+            }
+        ]
+    },
+    "criteriaColumnContract": {
+        "requiredFields": [
+            "columnID",
+            "userExpression",
+            "columnFormula.expr.type",
+            "columnFormula.expr.expression",
+            "columnFormula.expr.children",
+            "columnHeading.caption.text"
+        ],
+        "defaults": {
+            "userExpression": true,
+            "columnFormula.expr.type": "sawx:sqlExpression",
+            "columnFormula.expr.children": []
+        },
+        "optionalFields": [
+            "columnDescription.caption.text",
+            "folderID",
+            "forceGroupBy"
+        ],
+        "derivedFormulaRule": {
+            "description": "Any synthesized formula that is not a direct source column reference must be persisted as userExpression=true so it appears and remains editable in My Calculations.",
+            "directReferenceExamples": [
+                "\"SA\".\"Table\".\"Column\"",
+                "XSA('namespace'.'dataset').\"Table\".\"Column\""
+            ],
+            "foreignDialectGuardrails": [
+                "Translate source-workbook formula dialects to OAC Logical SQL before persisting criteria columns.",
+                "Do not emit Tableau COUNTD(...); use governed measures when available or OAC COUNT(DISTINCT ...).",
+                "Do not reject OAC-supported POSITION(expr1 IN expr2) syntax."
+            ]
+        }
+    },
+    "columnPropertyMapContract": {
+        "path": "/criteria/criteriaConfig/settings/columnPropertyMap",
+        "typedCalculationRequiredTypes": [
+            "TEXT_GROUP",
+            "TIME_SERIES"
+        ],
+        "typeContracts": {
+            "EXPRESSION": {
+                "requiredTopLevel": [
+                    "type",
+                    "parentExpression",
+                    "options"
+                ],
+                "requiredOptions": []
+            },
+            "TEXT_GROUP": {
+                "requiredTopLevel": [
+                    "type",
+                    "parentExpression",
+                    "options"
+                ],
+                "requiredOptions": [
+                    "groups",
+                    "includeOthers",
+                    "othersName"
+                ],
+                "defaults": {
+                    "options": {
+                        "groups": [],
+                        "includeOthers": [
+                            "false"
+                        ],
+                        "othersName": "Others"
+                    }
+                }
+            },
+            "TIME_SERIES": {
+                "requiredTopLevel": [
+                    "type",
+                    "parentExpression",
+                    "options"
+                ],
+                "requiredOptions": [
+                    "timeSeriesCalcID",
+                    "measureFormula",
+                    "timeLevel",
+                    "autoName"
+                ],
+                "defaults": {
+                    "options": {
+                        "timeSeriesCalcID": "PREVIOUS_PERIOD",
+                        "measureFormula": "",
+                        "timeLevel": null,
+                        "autoName": true
+                    }
+                }
+            }
+        }
+    },
+    "nestedReferenceContract": {
+        "syntax": "@calculation(\"<columnID>\")",
+        "regex": "@calculation\\(\"([^\"]+)\"\\)",
+        "rules": [
+            "every referenced calculation column ID must exist in criteria.columns.children",
+            "references must target calculation columns (userExpression=true)",
+            "calculation dependency graph must be acyclic",
+            "referenced calculation columns must appear before referencing columns"
+        ]
+    },
+    "bindingPrecedence": {
+        "order": [
+            "bind base metadata columns",
+            "synthesize workbook-local calculations from metric gaps",
+            "append calculation columns to criteria",
+            "bind visualization logical/data edges to calculation column IDs when selected"
+        ],
+        "edgeBindingRule": "when a calculation is selected as measure output, bind calc columnID in all plugin logical/data measure edges instead of base measure columnID"
+    },
+    "deterministicRemediationDefaults": {
+        "missingColumnMetadata": "fill required criteria column fields from defaults",
+        "missingTypedColumnPropertyMap": "create type payload at criteriaConfig.settings.columnPropertyMap[columnID] using calc defaults",
+        "brokenNestedCalculationReference": "repair to uniquely matched existing calc columnID or leave unchanged with explicit error"
+    }
+}

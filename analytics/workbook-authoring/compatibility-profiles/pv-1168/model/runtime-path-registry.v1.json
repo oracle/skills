@@ -1,0 +1,63 @@
+{
+  "contractVersion": "v1",
+  "defaults": {
+    "profileByTargetVersion": {
+      "default": "core_v1",
+      "26.05": "core_v1",
+      "26.07": "core_v1"
+    }
+  },
+  "profiles": {
+    "core_v1": {
+      "signals": {
+        "textbox_runtime_text": {
+          "canonical": {
+            "id": "TEXTBOX_RUNTIME_TEXT_CANONICAL",
+            "jsonPointer": "/viewConfig/settings/viz:chart/textContents/caption/text",
+            "pathSegments": [
+              "viewConfig",
+              "settings",
+              "viz:chart",
+              "textContents",
+              "caption",
+              "text"
+            ]
+          },
+          "legacyInputsAllowedForMigration": [
+            {
+              "id": "TEXTBOX_RUNTIME_TEXT_LEGACY_VIEWCONFIG_TEXTCONTENTS",
+              "jsonPointer": "/viewConfig/textContents/caption/text",
+              "pathSegments": [
+                "viewConfig",
+                "textContents",
+                "caption",
+                "text"
+              ]
+            },
+            {
+              "id": "TEXTBOX_RUNTIME_TEXT_LEGACY_PLUGIN_SETTINGS",
+              "jsonPointer": "/viewConfig/settings/oracle.bi.tech.textbox/settings/text",
+              "pathSegments": [
+                "viewConfig",
+                "settings",
+                "oracle.bi.tech.textbox",
+                "settings",
+                "text"
+              ]
+            },
+            {
+              "id": "TEXTBOX_RUNTIME_TEXT_LEGACY_VIEWCAPTION",
+              "jsonPointer": "/viewCaption/caption/text",
+              "pathSegments": [
+                "viewCaption",
+                "caption",
+                "text"
+              ]
+            }
+          ],
+          "strictRequiresCanonical": true
+        }
+      }
+    }
+  }
+}

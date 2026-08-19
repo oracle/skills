@@ -1,0 +1,95 @@
+{
+    "manifestVersion": 1,
+    "schemaType": "workbook",
+    "versionFieldName": "projectVersion",
+    "latestSchemaVersion": 1134,
+    "latestRootSchemaId": "http://oracle.com/bi/workbook/1134/",
+    "requiredTopLevelFields": [
+        "projectVersion",
+        "criteria",
+        "layouts"
+    ],
+    "recommendedTopLevelFields": [
+        "aiAgents",
+        "annotations",
+        "criteria",
+        "dataActions",
+        "datasources",
+        "eventWiring",
+        "filterControlCollectionRef",
+        "filterControlCollections",
+        "folders",
+        "layouts",
+        "nonDataActions",
+        "parameters",
+        "projectVersion",
+        "reportConfig",
+        "requestVariableParameterBindings",
+        "snapshots",
+        "stories",
+        "views"
+    ],
+    "additionalPropertiesAllowed": false,
+    "topLevelPropertyTypeHints": {
+        "projectVersion": {
+            "type": "integer"
+        },
+        "criteria": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/criteria"
+        },
+        "layouts": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/layouts"
+        },
+        "datasources": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/datasources"
+        },
+        "eventWiring": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/eventWiring"
+        },
+        "dataActions": {
+            "type": "array"
+        },
+        "nonDataActions": {
+            "type": "array"
+        },
+        "views": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/views"
+        },
+        "reportConfig": {
+            "type": "object"
+        },
+        "parameters": {
+            "type": "object"
+        },
+        "filterControlCollections": {
+            "type": "object"
+        },
+        "filterControlCollectionRef": {
+            "ref": "http://oracle.com/bi/filterControlCollectionRef/0.0.0/"
+        },
+        "snapshots": {
+            "type": "object"
+        },
+        "stories": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/stories"
+        },
+        "annotations": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/annotations"
+        },
+        "folders": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/folders"
+        },
+        "aiAgents": {
+            "ref": "http://oracle.com/bi/workbook/0.0.0/aiagents"
+        },
+        "requestVariableParameterBindings": {
+            "ref": "http://oracle.com/bi/workbook/1.0.0/requestVariableParameterBindings"
+        }
+    },
+    "guardrails": [
+        "Set projectVersion to a compatible version from workbook-model-index.json.",
+        "Always include required top-level fields before save attempts.",
+        "Do not emit unknown top-level properties when additionalProperties is false.",
+        "Maintain reference consistency across criteria/layouts/views/filter controls."
+    ]
+}

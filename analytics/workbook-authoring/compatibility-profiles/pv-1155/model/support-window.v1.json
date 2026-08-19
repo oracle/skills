@@ -1,0 +1,63 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "defaultTrack": "profile",
+    "tracks": {
+        "profile": {
+            "displayVersion": "legacy",
+            "projectVersion": 1155,
+            "rootSchemaVersion": 1134
+        }
+    },
+    "versionSelectionPolicy": {
+        "defaultBehavior": "require_explicit_target_when_multiple_bundles_installed",
+        "allowNewerTargetWhen": [
+            
+        ]
+    },
+    "capabilityRoutingPolicy": {
+        "discoveryRoutingOrder": [
+            "search_catalog_if_available",
+            "discover_data_fallback"
+        ],
+        "saveExportRouting": "tool_capability_based",
+        "exportExecutionDefault": "explicit_user_request_required",
+        "saveExportUnavailableBehavior": "disk_only_non_fatal"
+    },
+    "publicOutputContract": {
+        "defaultOutputMode": "concise",
+        "traceOutputMode": "explicit_request_only",
+        "traceRequestSignals": [
+            "trace",
+            "debug",
+            "diagnostics",
+            "traceRequested=true"
+        ],
+        "conciseFields": [
+            "localJsonPath",
+            "savedWorkbookTarget",
+            "viewUrl",
+            "executionMode",
+            "semanticValidationResult",
+            "exportSummaryWhenRequested"
+        ],
+        "exposeFields": [
+            "targetVersion",
+            "executionMode",
+            "reasonForVersionSelection",
+            "capabilitySource",
+            "saveToolDetected",
+            "exportToolDetected",
+            "discoveryMethod",
+            "saveAvailable",
+            "exportAvailable",
+            "exportRequested"
+        ],
+        "hideFields": [
+            "defaultTrack",
+            "tracks",
+            "projectVersion",
+            "rootSchemaVersion"
+        ]
+    }
+}
