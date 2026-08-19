@@ -1,0 +1,4 @@
+interface:
+  display_name: "ExaDB-XS"
+  short_description: "Manage ExaDB-XS through OCI MCP"
+  default_prompt: "Use $exadb-xs to manage an OCI ExaDB-XS resource through the OCI API MCP server."
