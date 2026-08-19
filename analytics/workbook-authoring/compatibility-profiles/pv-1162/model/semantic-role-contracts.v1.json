@@ -1,0 +1,197 @@
+{
+  "manifestVersion": 1,
+  "contractVersion": "v1",
+  "purpose": "Domain-neutral semantic role binding contract for compose_ootb criteria rebinding and scaffold compatibility checks.",
+  "roleClassByRole": {
+    "dimension.primary": "dimension",
+    "dimension.secondary": "dimension",
+    "measure.primary": "measure",
+    "measure.secondary": "measure",
+    "temporal.primary": "temporal",
+    "temporal.start": "temporal",
+    "temporal.end": "temporal"
+  },
+  "legacyColumnIdRoleMap": {
+    "dim_region": "dimension.primary",
+    "dim_category": "dimension.secondary",
+    "time_month": "temporal.primary",
+    "time_start": "temporal.start",
+    "time_end": "temporal.end",
+    "mea_revenue": "measure.primary",
+    "mea_profit": "measure.secondary",
+    "dim_primary": "dimension.primary",
+    "dim_secondary": "dimension.secondary",
+    "time_primary": "temporal.primary",
+    "mea_primary": "measure.primary",
+    "mea_secondary": "measure.secondary"
+  },
+  "roleTokenHints": {
+    "dimension.primary": [
+      "segment",
+      "category",
+      "group",
+      "type",
+      "class",
+      "region",
+      "country",
+      "state"
+    ],
+    "dimension.secondary": [
+      "subcategory",
+      "channel",
+      "cohort",
+      "sex",
+      "gender",
+      "department"
+    ],
+    "measure.primary": [
+      "value",
+      "amount",
+      "total",
+      "count",
+      "score",
+      "revenue",
+      "sales"
+    ],
+    "measure.secondary": [
+      "delta",
+      "variance",
+      "margin",
+      "profit",
+      "rate",
+      "ratio"
+    ],
+    "temporal.primary": [
+      "date",
+      "day",
+      "week",
+      "month",
+      "quarter",
+      "year",
+      "time"
+    ],
+    "temporal.start": [
+      "start",
+      "begin",
+      "from"
+    ],
+    "temporal.end": [
+      "end",
+      "finish",
+      "to"
+    ]
+  },
+  "familyRoleRequirements": {
+    "chart_autoviz": {
+      "required": [
+        "dimension.primary",
+        "measure.primary"
+      ],
+      "optional": [
+        "temporal.primary",
+        "measure.secondary",
+        "dimension.secondary"
+      ]
+    },
+    "chart_combo_multilayer": {
+      "required": [
+        "temporal.primary",
+        "measure.primary",
+        "measure.secondary"
+      ],
+      "optional": []
+    },
+    "table": {
+      "required": [
+        "dimension.primary",
+        "measure.primary"
+      ],
+      "optional": [
+        "dimension.secondary",
+        "temporal.primary",
+        "measure.secondary"
+      ]
+    },
+    "pivot": {
+      "required": [
+        "dimension.primary",
+        "temporal.primary",
+        "measure.primary"
+      ],
+      "optional": [
+        "dimension.secondary",
+        "measure.secondary"
+      ]
+    },
+    "performance_tile": {
+      "required": [
+        "measure.primary"
+      ],
+      "optional": [
+        "measure.secondary"
+      ]
+    },
+    "map": {
+      "required": [
+        "dimension.primary"
+      ],
+      "optional": [
+        "measure.primary",
+        "measure.secondary"
+      ]
+    },
+    "network_graph": {
+      "required": [
+        "dimension.primary",
+        "dimension.secondary"
+      ],
+      "optional": [
+        "measure.primary"
+      ]
+    },
+    "parallel_coordinates": {
+      "required": [
+        "dimension.primary",
+        "measure.primary",
+        "measure.secondary"
+      ],
+      "optional": []
+    },
+    "gantt": {
+      "required": [
+        "dimension.primary",
+        "temporal.start",
+        "temporal.end"
+      ],
+      "optional": [
+        "measure.primary"
+      ]
+    }
+  },
+  "temporalPolicy": {
+    "default": "optional_if_family_allows",
+    "alwaysRequiredFamilies": [
+      "chart_combo_multilayer",
+      "pivot",
+      "gantt"
+    ]
+  },
+  "templateCompatibilityPolicy": {
+    "enabled": true,
+    "compatibilitySource": "templates/template-index.json#/templates/*/requiredMetadata",
+    "bindingSlotSource": "templates/template-index.json#/templates/*/bindingSlots",
+    "bindingSlotPolicy": "Resolve semantic roles against the selected scaffold's verified column slots before using legacy global column-ID fallbacks.",
+    "fallbackSelection": "same_runtime_family_first"
+  },
+  "explicitMappingContract": {
+    "field": "adapterPayload.semanticRoleMap",
+    "acceptedKeyTypes": [
+      "semantic_role",
+      "criteria_column_id"
+    ],
+    "valueShape": {
+      "expression": "direct_column_expression",
+      "reason": "optional"
+    }
+  }
+}

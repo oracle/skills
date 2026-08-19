@@ -1,0 +1,93 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "generatedBy": "scripts/workbook-authoring/generate.gradle#generateWorkbookAuthoringMapNetworkAllowlists",
+    "map": {
+        "viewConfigNamespaces": {
+            "autoviz": "obitech-autoviz/autoviz",
+            "chart": "viz:chart",
+            "map": "viz_map"
+        },
+        "vizMapAllowedProperties": [
+            "_defaultTileBackground",
+            "_settingsVersion",
+            "_useMaxBoundsForMapboxViewport",
+            "autoFocusOnData",
+            "backgroundMapsConfig",
+            "detectLatLongForTextColumns",
+            "forceLegacyMapviewerRenderer",
+            "mouseWheelZoomingEnabled",
+            "repeatBackground",
+            "scaleBarUnit",
+            "tileLayerType",
+            "viewport",
+            "zoomControlEnabled"
+        ],
+        "layerRenderTypes": [
+            "polygon",
+            "line",
+            "point",
+            "heatmap",
+            "cluster",
+            "dynamic_line"
+        ],
+        "renderTypeInvalidLogicalEdges": {
+            "polygon": [
+                "size",
+                "glyph"
+            ],
+            "line": [
+                "glyph"
+            ],
+            "point": [
+                
+            ],
+            "dynamic_line": [
+                "glyph"
+            ],
+            "heatmap": [
+                "size",
+                "tooltip",
+                "glyph"
+            ],
+            "cluster": [
+                "color",
+                "size",
+                "glyph"
+            ]
+        }
+    },
+    "networkGraph": {
+        "viewConfigNamespaces": {
+            "autoviz": "obitech-autoviz/autoviz",
+            "network": "viz:networkchart"
+        },
+        "networkAllowedProperties": [
+            
+        ]
+    },
+    "sankey": {
+        "viewConfigNamespaces": {
+            "sankey": "viz:sankeychart"
+        },
+        "sankeyAllowedProperties": [
+            "dataLabelPosition",
+            "lineTransparency",
+            "lineTransparencyType",
+            "nodeGap",
+            "nodeGapType",
+            "nodeGroupByType",
+            "nodeHeightType",
+            "nodeWidthSize",
+            "nodeWidthType",
+            "sortColumnNodes"
+        ],
+        "defaultSettings": {
+            "nodeHeightType": "condense",
+            "nodeWidthType": "auto",
+            "nodeGapType": "auto",
+            "lineTransparencyType": "auto",
+            "dataLabelPosition": "insideNode"
+        }
+    }
+}

@@ -1,0 +1,1710 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "sourceRule": {
+        "includeVisualizationExtensionsWithCategory": true,
+        "commentStrippingEnabled": true
+    },
+    "totalProductVisiblePlugins": 56,
+    "plugins": [
+        {
+            "pluginType": "oracle.bi.tech.butterfly",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 35,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.butterfly.visualizationDatamodelHandler",
+                    "module": "obitech-butterfly/butterflydatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.butterfly.visualizationViewConfigHandler",
+                "module": "obitech-butterfly/butterflyviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.buttonbar",
+            "category": "Dashboard Controls",
+            "categoryOrder": 40,
+            "orderInCategory": 15,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.buttonbar.visualizationViewConfigHandler",
+                "module": "obitech-buttonbar/buttonbarviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.canvasfilterviz.listbox",
+            "category": "Dashboard Controls",
+            "categoryOrder": 40,
+            "orderInCategory": 10,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.canvasfilterviz.dashboard.visualizationDatamodelHandler",
+                    "module": "obitech-canvasfilterviz/dashboardfiltervizdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "glyph",
+                        "row",
+                        "size"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.canvasfilterviz.listbox.visualizationViewConfigHandler",
+                "module": "obitech-canvasfilterviz/dashboardfiltervizviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.area",
+            "category": "Area Chart",
+            "categoryOrder": 10,
+            "orderInCategory": 11,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.area.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.area100",
+            "category": "Line",
+            "categoryOrder": 10,
+            "orderInCategory": 12,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.area.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.bar",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 10,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.bar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.boxplot",
+            "category": "More",
+            "categoryOrder": 5,
+            "orderInCategory": 45,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.boxplot.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/boxplotDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.combo",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 30,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.combo.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.comboMultiLayerChart",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 30,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.comboMultiLayerChart.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/overlayChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.correlationmatrix",
+            "category": "Grid",
+            "categoryOrder": 25,
+            "orderInCategory": 15,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.correlationmatrix.visualizationDatamodelHandler",
+                    "module": "obitech-correlationmatrix/correlationmatrixdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionSquare",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "row",
+                        "size",
+                        "tile"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.donut",
+            "category": "Pie (+Treemap)",
+            "categoryOrder": 20,
+            "orderInCategory": 10,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.donut.visualizationDatamodelHandler",
+                    "module": "obitech-donut/donutdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionCircular",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "measures",
+                        "related",
+                        "row",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.gridheatmap",
+            "category": "Grid",
+            "categoryOrder": 25,
+            "orderInCategory": 20,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.gridheatmap.visualizationDatamodelHandler",
+                    "module": "obitech-gridheatmap/gridheatmapdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionSquare",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalBoxplot",
+            "category": "More",
+            "categoryOrder": 5,
+            "orderInCategory": 50,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.horizontalboxplot.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/boxplotDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalbar",
+            "category": "Horizontal Bar Chart",
+            "categoryOrder": 5,
+            "orderInCategory": 20,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.horizontalbar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalstackbar",
+            "category": "Horizontal Stacked Bar Chart",
+            "categoryOrder": 5,
+            "orderInCategory": 21,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.horizontalstackbar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalstackbar100",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 22,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.stackbar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.line",
+            "category": "Line Chart",
+            "categoryOrder": 10,
+            "orderInCategory": 10,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.line.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.marker",
+            "category": "Scatter",
+            "categoryOrder": 15,
+            "orderInCategory": 10,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.marker.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/categoricalScatterDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.nonstackedarea",
+            "category": "Area Chart",
+            "categoryOrder": 10,
+            "orderInCategory": 11,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.area.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.picto",
+            "category": "Grid",
+            "categoryOrder": 25,
+            "orderInCategory": 25,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.picto.visualizationDatamodelHandler",
+                    "module": "obitech-picto/pictodatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionSquare",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.pie",
+            "category": "Pie (+Treemap)",
+            "categoryOrder": 20,
+            "orderInCategory": 5,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.pie.visualizationDatamodelHandler",
+                    "module": "obitech-piechart/piedatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionCircular",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "measures",
+                        "related",
+                        "row",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.polarbar",
+            "category": "Line",
+            "categoryOrder": 10,
+            "orderInCategory": 30,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.polarbar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.radar",
+            "category": "Line",
+            "categoryOrder": 10,
+            "orderInCategory": 25,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.radar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.range",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 13,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.range.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/rangeChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.rangeArea",
+            "category": "Area Chart",
+            "categoryOrder": 10,
+            "orderInCategory": 13,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.range.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/rangeChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.rangeHorizontal",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 23,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.range.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/rangeChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.scatter",
+            "category": "Scatter",
+            "categoryOrder": 15,
+            "orderInCategory": 5,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.scatter.visualizationDatamodelHandler",
+                    "module": "obitech-scatterchart/scatterChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "two",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.spiderweb",
+            "category": "Line",
+            "categoryOrder": 10,
+            "orderInCategory": 20,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.spiderweb.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.stackbar",
+            "category": "Stacked Bar Chart",
+            "categoryOrder": 5,
+            "orderInCategory": 11,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.stackbar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.stackbar100",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 12,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.stackbar.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/barLineAreaChartDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.stackedmarker",
+            "category": "Scatter",
+            "categoryOrder": 15,
+            "orderInCategory": 15,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.marker.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/categoricalScatterDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.standaloneLegend",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 28,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.standaloneLegend.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/standaloneLegendDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "size"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.standaloneLegendViewConfigHandler",
+                "module": "obitech-dvtchart/standaloneLegendViewConfigHandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.sunburst",
+            "category": "Pie (+Treemap)",
+            "categoryOrder": 20,
+            "orderInCategory": 15,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.sunburst.visualizationDatamodelHandler",
+                    "module": "obitech-sunburst/sunburstdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionSquare",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.treemap",
+            "category": "Pie (+Treemap)",
+            "categoryOrder": 20,
+            "orderInCategory": 20,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.treemap.visualizationDatamodelHandler",
+                    "module": "obitech-treemap/treemapdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "partitionSquare",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.waterfall",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 40,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.waterfall.visualizationDatamodelHandler",
+                    "module": "obitech-dvtchart/waterfallDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "one",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.chorddiagram",
+            "category": "Network",
+            "categoryOrder": 30,
+            "orderInCategory": 25,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chord.visualizationDatamodelHandler",
+                    "module": "obitech-network/chorddiagramdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.networkbase.visualizationViewConfigHandler",
+                "module": "obitech-network/networkbaseviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.circularnetwork",
+            "category": "Network",
+            "categoryOrder": 30,
+            "orderInCategory": 10,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.network.visualizationDatamodelHandler",
+                    "module": "obitech-network/networkdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.networkbase.visualizationViewConfigHandler",
+                "module": "obitech-network/networkbaseviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.ganttchart",
+            "category": "Bar",
+            "categoryOrder": 5,
+            "orderInCategory": 60,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.ganttchart.visualizationDatamodelHandler",
+                    "module": "obitech-gantt/ganttchartdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.ganttchart.visualizationViewConfigHandler",
+                "module": "obitech-gantt/ganttviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.gauge",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 11,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.gauge.visualizationDatamodelHandler",
+                    "module": "obitech-gauge/gaugedatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.gauge.visualizationViewConfigHandler",
+                "module": "obitech-gauge/gaugeviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.iframe",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 35,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.iframe.visualizationViewConfigHandler",
+                "module": "obitech-iframe/iframeviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.image",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 40,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.image.visualizationViewConfigHandler",
+                "module": "obitech-image/imageviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.list",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 15,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.list.visualizationDatamodelHandler",
+                    "module": "obitech-list/listdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "row",
+                        "size",
+                        "tile"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.list.visualizationViewConfigHandler",
+                "module": "obitech-list/listviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.map",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 10,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.map.visualizationDatamodelHandler",
+                    "module": "obitech-map/mapdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.map.visualizationViewConfigHandler",
+                "module": "obitech-map/mapviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.narrative",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 12,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.narrative.visualizationDatamodelHandler",
+                    "module": "obitech-narrative/narrativedatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": null,
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "row",
+                        "size",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.narrative.visualizationViewConfigHandler",
+                "module": "obitech-narrative/narrativeviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.network",
+            "category": "Network",
+            "categoryOrder": 30,
+            "orderInCategory": 5,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.network.visualizationDatamodelHandler",
+                    "module": "obitech-network/networkdatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.networkbase.visualizationViewConfigHandler",
+                "module": "obitech-network/networkbaseviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.ngperformancetile",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 5,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.ngperformancetile.discovery.visualizationDatamodelHandler",
+                    "module": "obitech-ngperformancetile/ngperformancetiledatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "row",
+                        "size",
+                        "tooltip"
+                    ]
+                },
+                {
+                    "id": "oracle.bi.tech.chart.ngperformancetile.reporting.visualizationDatamodelHandler",
+                    "module": "obitech-ngperformancetile/ngperformancetiledatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "row",
+                        "size",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.ngperformancetile.visualizationViewConfigHandler",
+                "module": "obitech-ngperformancetile/ngperformancetileviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.parallelcoordinates",
+            "category": "Network",
+            "categoryOrder": 30,
+            "orderInCategory": 30,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.parallelcoordinates.visualizationDatamodelHandler",
+                    "module": "obitech-parallelcoordinates/parallelcoordinatesDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": null,
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "row",
+                        "size"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.parallelcoordinates.visualizationViewConfigHandler",
+                "module": "obitech-parallelcoordinates/parallelcoordinatesviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.performancetile",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 6,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.chart.performancetile.discovery.visualizationDatamodelHandler",
+                    "module": "obitech-performancetile/performancetiledatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "row",
+                        "size",
+                        "tooltip"
+                    ]
+                },
+                {
+                    "id": "oracle.bi.tech.chart.performancetile.reporting.visualizationDatamodelHandler",
+                    "module": "obitech-performancetile/performancetiledatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "row",
+                        "size",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.performancetile.visualizationViewConfigHandler",
+                "module": "obitech-performancetile/performancetileviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.pivot",
+            "category": "Grid",
+            "categoryOrder": 25,
+            "orderInCategory": 5,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.pivot.visualizationDatamodelHandler",
+                    "module": "obitech-pivot/pivotDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "glyph",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.pivot.visualizationViewConfigHandler",
+                "module": "obitech-pivot/pivotviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.sankey",
+            "category": "Network",
+            "categoryOrder": 30,
+            "orderInCategory": 15,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.sankey.visualizationDatamodelHandler",
+                    "module": "obitech-network/sankeydatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.networkbase.visualizationViewConfigHandler",
+                "module": "obitech-network/networkbaseviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.spacer",
+            "category": "Dashboard Controls",
+            "categoryOrder": 40,
+            "orderInCategory": 15,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.spacer.visualizationViewConfigHandler",
+                "module": "obitech-spacer/spacerviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.table",
+            "category": "Grid",
+            "categoryOrder": 25,
+            "orderInCategory": 10,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.table.visualizationDatamodelHandler",
+                    "module": "obitech-table/tableDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "color",
+                        "glyph",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.table.visualizationViewConfigHandler",
+                "module": "obitech-table/tableviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.tagcloud",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 12,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.tagcloud.visualizationDatamodelHandler",
+                    "module": "obitech-tagcloud/tagclouddatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.textbox",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 35,
+            "isEmbeddable": null,
+            "dataModelHandlers": [
+                
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.textbox.visualizationViewConfigHandler",
+                "module": "obitech-textbox/textboxviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.tidytree",
+            "category": "Network",
+            "categoryOrder": 30,
+            "orderInCategory": 20,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.tree.visualizationDatamodelHandler",
+                    "module": "obitech-network/treedatamodelhandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.networkbase.visualizationViewConfigHandler",
+                "module": "obitech-network/networkbaseviewconfighandler",
+                "method": "createInstance"
+            }
+        },
+        {
+            "pluginType": "oracle.bi.tech.timeline",
+            "category": "More",
+            "categoryOrder": 50,
+            "orderInCategory": 15,
+            "isEmbeddable": true,
+            "dataModelHandlers": [
+                {
+                    "id": "oracle.bi.tech.timeline.visualizationDatamodelHandler",
+                    "module": "obitech-timeline/timelineDataModelHandler",
+                    "method": "getHandler",
+                    "axisType": "none",
+                    "edgeConfigKeys": [
+                        "col",
+                        "color",
+                        "detail",
+                        "glyph",
+                        "item",
+                        "measures",
+                        "related",
+                        "row",
+                        "size",
+                        "tile",
+                        "tooltip"
+                    ]
+                }
+            ],
+            "viewConfigHandler": {
+                "id": "oracle.bi.tech.dvtchart.visualizationViewConfigHandler",
+                "module": "obitech-dvtchart/dvtchartviewconfighandler",
+                "method": "createInstance"
+            }
+        }
+    ]
+}

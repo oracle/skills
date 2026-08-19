@@ -1,0 +1,115 @@
+{
+    "manifestVersion": 1,
+    "defaultProfile": "latest",
+    "rootVersion": {
+        "jsonPath": "/projectVersion",
+        "versionField": "projectVersion",
+        "defaultByProfile": {
+            "latest": 1168,
+            "full": 1168
+        },
+        "compatibleProjectVersions": [
+            1168
+        ],
+        "defaultByTrack": {
+            "profile": 1168
+        }
+    },
+    "versionedNodes": [
+        {
+            "id": "criteriaConfig",
+            "jsonPathPattern": "^/criteria/criteriaConfig$",
+            "versionField": "_version",
+            "defaultValue": "1.0.2",
+            "allowedValues": [
+                "1.0.1",
+                "1.0.2"
+            ]
+        },
+        {
+            "id": "reportConfig",
+            "jsonPathPattern": "^/reportConfig$",
+            "versionField": "_version",
+            "defaultValue": "1.0.9"
+        },
+        {
+            "id": "canvasConfig",
+            "jsonPathPattern": "^/views/children/\\d+/canvasConfig$",
+            "versionField": "_version",
+            "defaultValue": "1.0.6"
+        },
+        {
+            "id": "viewConfig",
+            "jsonPathPattern": "^/views/children/\\d+/viewConfig$",
+            "versionField": "_version",
+            "defaultValue": "1.1.84"
+        },
+        {
+            "id": "logicalDataModel",
+            "jsonPathPattern": "^/views/children/\\d+/dataModels/children/\\d+/logicalDataModel$",
+            "versionField": "_version",
+            "defaultValue": "1.0.0",
+            "allowedValues": [
+                "1.0.0",
+                "2.0.1"
+            ]
+        },
+        {
+            "id": "logicalDataModelSettings",
+            "jsonPathPattern": "^/views/children/\\d+/dataModels/children/\\d+/logicalDataModel/settings/logicalDataModel$",
+            "versionField": "_settingsVersion",
+            "defaultValue": "2.0.0",
+            "allowedValues": [
+                "2.0.0",
+                "2.0.1"
+            ]
+        },
+        {
+            "id": "filterControlConfig",
+            "jsonPathPattern": "^/filterControlCollections/children/\\d+/filterControls/children/\\d+/filterControlConfig$",
+            "versionField": "_version",
+            "defaultValue": "1.0.11",
+            "fallbackTo": "1.0.10"
+        },
+        {
+            "id": "requestVariableParameterBindings",
+            "jsonPathPattern": "^/requestVariableParameterBindings$",
+            "versionField": "_version",
+            "defaultValue": "1.0.0"
+        }
+    ],
+    "defaults": {
+        "logicalDataModel": "1.0.0",
+        "logicalDataModelSettings": "2.0.0",
+        "viewConfig": "1.1.84",
+        "canvasConfig": "1.0.6",
+        "criteriaConfig": "1.0.2",
+        "reportConfig": "1.0.9",
+        "filterControlConfig": "1.0.11"
+    },
+    "fallbackPolicy": {
+        "onUnknownNodeVersion": "useExplicitDefault",
+        "onUnknownProjectVersion": "mapWithManifestVersionMappings",
+        "onSchemaMissingAfterMapping": "failValidation"
+    },
+    "pluginFamilyDefaults": {
+        "table": {
+            "logicalDataModelSettings": "2.0.0"
+        },
+        "chart_autoviz": {
+            "logicalDataModelSettings": "2.0.1"
+        },
+        "pivot": {
+            "logicalDataModelSettings": "2.0.0"
+        },
+        "gantt": {
+            "logicalDataModelSettings": "2.0.0"
+        },
+        "parallel_coordinates": {
+            "logicalDataModelSettings": "2.0.0"
+        },
+        "performance_tile": {
+            "logicalDataModelSettings": "2.0.0"
+        }
+    }
+}

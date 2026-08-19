@@ -1,0 +1,683 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "selection": {
+        "strategy": "version_based_with_single_error_fallback",
+        "defaultProfile": "latest",
+        "projectVersionSource": "model/version-field-catalog.json#/rootVersion",
+        "profileIndexSource": "model/workbook-model-index.json",
+        "dialectSelectionOrder": [
+            "projectVersionProfileMatch",
+            "pluginResolutionProfileRuntimeFamily",
+            "pluginAliasRuntimeFamilyFallback",
+            "pluginFamilyDefaultDialect",
+            "knownRuntimeErrorFallbackDialect"
+        ],
+        "maxDialectFallbacks": 1,
+        "pluginResolutionProfileSource": "model/viz-resolution-profiles.v1.json",
+        "pluginAliasSource": "model/plugin-type-aliases.v1.json"
+    },
+    "projectVersionProfiles": [
+        {
+            "id": "profile_1161_1162",
+            "projectVersionRange": {
+                "min": 1162,
+                "max": 1177
+            },
+            "dialectOverrides": {
+                "table": "table_v1",
+                "chart_autoviz": "autoviz_v2",
+                "chart_combo_multilayer": "combo_multilayer_v1",
+                "pivot": "pivot_v1",
+                "gantt": "gantt_v1",
+                "performance_tile": "performance_tile_v1",
+                "parallel_coordinates": "parallel_coordinates_v1",
+                "filter_control_viz": "filter_control_viz_v1",
+                "network_graph": "network_graph_v1",
+                "map": "map_v1",
+                "list_narrative": "list_narrative_v1",
+                "gauge": "gauge_v1",
+                "ui_control": "ui_control_v1"
+            },
+            "schemaCapabilities": {
+                "chart_combo_multilayer": {
+                    "requireDataLayersInfo": true,
+                    "allowMeasureInfos": false
+                }
+            },
+            "reportConfigRequirements": {
+                "requiredJsonPaths": [
+                    "/reportConfig",
+                    "/reportConfig/settings",
+                    "/reportConfig/settings/oracle.bi.tech.shapeSchemeService",
+                    "/reportConfig/settings/oracle.bi.tech.colorSchemeService",
+                    "/reportConfig/settings/projectSettings",
+                    "/reportConfig/settings/projectSettings/settings"
+                ],
+                "defaults": {
+                    "/reportConfig/_version": "1.0.9",
+                    "/reportConfig/settings/oracle.bi.tech.shapeSchemeService/_version": "1.0.0",
+                    "/reportConfig/settings/oracle.bi.tech.shapeSchemeService/settings/version": "1.0.3",
+                    "/reportConfig/settings/oracle.bi.tech.shapeSchemeService/settings/generation": 0,
+                    "/reportConfig/settings/oracle.bi.tech.shapeSchemeService/settings/domains": {
+                        
+                    },
+                    "/reportConfig/settings/oracle.bi.tech.colorSchemeService/_version": "1.0.0",
+                    "/reportConfig/settings/oracle.bi.tech.colorSchemeService/settings/version": "1.0.3",
+                    "/reportConfig/settings/oracle.bi.tech.colorSchemeService/settings/generation": 0,
+                    "/reportConfig/settings/oracle.bi.tech.colorSchemeService/settings/colorDomains": {
+                        
+                    },
+                    "/reportConfig/settings/oracle.bi.tech.colorSchemeService/settings/defaults/rangeLuminosity": "hslblend",
+                    "/reportConfig/settings/projectSettings/_version": "1.0.0",
+                    "/reportConfig/settings/projectSettings/settings/autoSaveEnabled": false
+                }
+            }
+        }
+    ],
+    "pluginFamilies": {
+        "table": {
+            "pluginTypes": [
+                "oracle.bi.tech.table"
+            ],
+            "defaultDialect": "table_v1",
+            "invariants": [
+                "TABLE_COLUMN_EDGE_EMPTY",
+                "TABLE_ROW_EDGE_HAS_BINDING",
+                "TABLE_ROW_EDGE_PARITY",
+                "TABLE_LOGICAL_COLUMN_EDGE_EMPTY"
+            ]
+        },
+        "chart_autoviz": {
+            "pluginTypes": [
+                "oracle.bi.tech.butterfly",
+                "oracle.bi.tech.chart.area",
+                "oracle.bi.tech.chart.area100",
+                "oracle.bi.tech.chart.bar",
+                "oracle.bi.tech.chart.boxplot",
+                "oracle.bi.tech.chart.combo",
+                "oracle.bi.tech.chart.correlationmatrix",
+                "oracle.bi.tech.chart.donut",
+                "oracle.bi.tech.chart.gridheatmap",
+                "oracle.bi.tech.chart.horizontalBoxplot",
+                "oracle.bi.tech.chart.horizontalbar",
+                "oracle.bi.tech.chart.horizontalstackbar",
+                "oracle.bi.tech.chart.horizontalstackbar100",
+                "oracle.bi.tech.chart.line",
+                "oracle.bi.tech.chart.marker",
+                "oracle.bi.tech.chart.nonstackedarea",
+                "oracle.bi.tech.chart.picto",
+                "oracle.bi.tech.chart.pie",
+                "oracle.bi.tech.chart.polarbar",
+                "oracle.bi.tech.chart.radar",
+                "oracle.bi.tech.chart.range",
+                "oracle.bi.tech.chart.rangeArea",
+                "oracle.bi.tech.chart.rangeHorizontal",
+                "oracle.bi.tech.chart.scatter",
+                "oracle.bi.tech.chart.spiderweb",
+                "oracle.bi.tech.chart.stackbar",
+                "oracle.bi.tech.chart.stackbar100",
+                "oracle.bi.tech.chart.stackedmarker",
+                "oracle.bi.tech.chart.standaloneLegend",
+                "oracle.bi.tech.chart.sunburst",
+                "oracle.bi.tech.chart.treemap",
+                "oracle.bi.tech.chart.waterfall",
+                "oracle.bi.tech.tagcloud"
+            ],
+            "defaultDialect": "autoviz_v2",
+            "fallbackDialects": [
+                "autoviz_v1"
+            ],
+            "invariants": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+            ]
+        },
+        "chart_combo_multilayer": {
+            "pluginTypes": [
+                "oracle.bi.tech.chart.comboMultiLayerChart"
+            ],
+            "defaultDialect": "combo_multilayer_v1",
+            "fallbackDialects": [
+                "autoviz_v2"
+            ],
+            "invariants": [
+                "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "COMBO_HAS_PLUGIN_DATALAYERS_INFO",
+                "COMBO_HAS_LDM_DATALAYERS_INFO",
+                "COMBO_ACTIVE_LAYER_IS_VALID",
+                "COMBO_NESTED_LAYER_MODELS_MATCH_DECLARED_LAYERS",
+                "COMBO_LAYER_MEASURE_BINDING_NON_EMPTY",
+                "COMBO_LOGICAL_EDGE_TO_LAYER_MAPPING_NON_EMPTY",
+                "COMBO_MEASURE_INFOS_ALLOWED_BY_PROFILE"
+            ]
+        },
+        "pivot": {
+            "pluginTypes": [
+                "oracle.bi.tech.pivot"
+            ],
+            "defaultDialect": "pivot_v1",
+            "invariants": [
+                "PIVOT_HAS_ROW_EDGE_BINDING",
+                "PIVOT_HAS_COLUMN_EDGE_BINDING",
+                "PIVOT_HAS_MEASURES_BINDING",
+                "PIVOT_ROW_EDGE_PARITY",
+                "PIVOT_COLUMN_EDGE_PARITY",
+                "PIVOT_MEASURES_LIST_PARITY"
+            ]
+        },
+        "gantt": {
+            "pluginTypes": [
+                "oracle.bi.tech.ganttchart"
+            ],
+            "defaultDialect": "gantt_v1",
+            "invariants": [
+                "GANTT_HAS_CATEGORY_ROW_BINDING",
+                "GANTT_HAS_ITEM_EDGE_WITH_START_END_TAGS",
+                "GANTT_HAS_DETAIL_EDGE_BINDING",
+                "GANTT_DURATION_NON_ZERO_BASELINE",
+                "GANTT_EXECUTION_TRELLIS_MINIMIZED",
+                "GANTT_HAS_DATA_LAYERS_INFO",
+                "GANTT_REJECTS_LEGACY_LOGICAL_COLUMN_KEY"
+            ]
+        },
+        "performance_tile": {
+            "pluginTypes": [
+                "oracle.bi.tech.ngperformancetile",
+                "oracle.bi.tech.performancetile"
+            ],
+            "defaultDialect": "performance_tile_v1",
+            "invariants": [
+                "PERFORMANCE_TILE_NO_DERIVED_LAYOUT_OVERRIDES",
+                "PERFORMANCE_TILE_HAS_LOGICAL_MEASURES_BINDING",
+                "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+            ]
+        },
+        "parallel_coordinates": {
+            "pluginTypes": [
+                "oracle.bi.tech.parallelcoordinates"
+            ],
+            "defaultDialect": "parallel_coordinates_v1",
+            "invariants": [
+                "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES",
+                "PARALLEL_COORDINATES_HAS_MULTI_MEASURE_COLUMN_BINDING",
+                "PARALLEL_COORDINATES_HAS_DETAIL_EDGE_BINDING",
+                "PARALLEL_COORDINATES_EXECUTION_TRELLIS_MINIMIZED",
+                "PARALLEL_COORDINATES_HAS_DATA_LAYERS_INFO",
+                "PARALLEL_COORDINATES_REJECTS_LEGACY_LOGICAL_COLUMN_KEY"
+            ]
+        },
+        "filter_control_viz": {
+            "pluginTypes": [
+                "oracle.bi.tech.canvasfilterviz.listbox"
+            ],
+            "defaultDialect": "filter_control_viz_v1",
+            "invariants": [
+                "FILTER_CONTROL_HAS_CONTROL_COLLECTION",
+                "FILTER_CONTROL_HAS_SOURCE_COLUMN",
+                "FILTER_CONTROL_HAS_DEFAULT_VALUES_NODE"
+            ]
+        },
+        "network_graph": {
+            "pluginTypes": [
+                "oracle.bi.tech.chorddiagram",
+                "oracle.bi.tech.circularnetwork",
+                "oracle.bi.tech.network",
+                "oracle.bi.tech.sankey",
+                "oracle.bi.tech.tidytree"
+            ],
+            "defaultDialect": "network_graph_v1",
+            "invariants": [
+                "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "NETWORK_HAS_DETAIL_EDGE_BINDING",
+                "NETWORK_MIN_DETAIL_LAYER_COUNT",
+                "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+                "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+                "NETWORK_HAS_DATA_LAYERS_INFO"
+            ]
+        },
+        "map": {
+            "pluginTypes": [
+                "oracle.bi.tech.map"
+            ],
+            "defaultDialect": "map_v1",
+            "invariants": [
+                "MAP_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "MAP_HAS_DETAIL_EDGE_BINDING",
+                "MAP_DETAIL_EDGE_GEO_COMPATIBLE",
+                "MAP_VIZ_MAP_SETTINGS_OBJECT",
+                "MAP_EXECUTION_ROW_EDGE_DETAIL_BINDING",
+                "MAP_NO_MEASURE_ON_UNUSED_EDGE",
+                "MAP_HAS_DATA_LAYERS_INFO",
+                "MAP_RENDER_TYPE_INVALID_EDGE_COMBINATION"
+            ]
+        },
+        "list_narrative": {
+            "pluginTypes": [
+                "oracle.bi.tech.list",
+                "oracle.bi.tech.narrative",
+                "oracle.bi.tech.timeline"
+            ],
+            "defaultDialect": "list_narrative_v1",
+            "invariants": [
+                "PLUGIN_HAS_ANY_LOGICAL_EDGE_BINDING"
+            ]
+        },
+        "gauge": {
+            "pluginTypes": [
+                "oracle.bi.tech.gauge"
+            ],
+            "defaultDialect": "gauge_v1",
+            "invariants": [
+                "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+            ]
+        },
+        "ui_control": {
+            "pluginTypes": [
+                "oracle.bi.tech.buttonbar",
+                "oracle.bi.tech.iframe",
+                "oracle.bi.tech.image",
+                "oracle.bi.tech.spacer",
+                "oracle.bi.tech.textbox"
+            ],
+            "defaultDialect": "ui_control_v1",
+            "invariants": [
+                "UI_CONTROL_VALID_PLUGIN_TYPE"
+            ]
+        }
+    },
+    "runtimeErrorSignatures": [
+        {
+            "id": "table_column_edge_layer_error",
+            "matchAll": [
+                "Tabular view can't have a layer on COLUMN EDGE"
+            ],
+            "patchAction": "PATCH_TABLE_MOVE_COLUMN_EDGE_LAYERS_TO_ROW"
+        },
+        {
+            "id": "table_logical_column_not_defined_schema_error",
+            "matchAny": [
+                "logicalEdges: property 'column' is not defined in the schema",
+                "logicalEdges: property \"column\" is not defined in the schema"
+            ],
+            "patchAction": "PATCH_TABLE_MOVE_COLUMN_EDGE_LAYERS_TO_ROW"
+        },
+        {
+            "id": "pivot_logical_column_not_defined_schema_error",
+            "matchAny": [
+                "logicalEdges: property 'column' is not defined in the schema",
+                "logicalEdges: property \"column\" is not defined in the schema"
+            ],
+            "patchAction": "PATCH_PIVOT_LOGICAL_EDGE_COLUMN_TO_COL"
+        },
+        {
+            "id": "parallel_coordinates_logical_column_not_defined_schema_error",
+            "matchAny": [
+                "logicalEdges: property 'column' is not defined in the schema",
+                "logicalEdges: property \"column\" is not defined in the schema"
+            ],
+            "patchAction": "PATCH_PARALLEL_COORDINATES_LOGICAL_EDGE_COLUMN_TO_COL"
+        },
+        {
+            "id": "gantt_logical_column_not_defined_schema_error",
+            "matchAny": [
+                "logicalEdges: property 'column' is not defined in the schema",
+                "logicalEdges: property \"column\" is not defined in the schema"
+            ],
+            "patchAction": "PATCH_GANTT_LOGICAL_EDGE_COLUMN_TO_COL"
+        },
+        {
+            "id": "runtime_datalayers_info_null_error",
+            "matchAny": [
+                "getDataLayersInfo() is null",
+                "getActiveDataLayer",
+                "getOrderedDataLayers"
+            ],
+            "patchAction": "PATCH_ENSURE_SINGLE_LAYER_DATA_LAYERS_INFO"
+        },
+        {
+            "id": "runtime_datalayer_lookup_error",
+            "matchAll": [
+                "getDataLayer",
+                "is undefined"
+            ],
+            "patchAction": "PATCH_ENSURE_SINGLE_LAYER_DATA_LAYERS_INFO"
+        },
+        {
+            "id": "scatter_marking_multiple_nested_view_error",
+            "matchAny": [
+                "Logic error - marking expects a single nested view at this time",
+                "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+                "SCATTER_SINGLE_NESTED_MARKING_VIEW",
+                "SCATTER_MEASURE_VIEW_SINGLE_REFERENCE",
+                "SCATTER_MEASURE_XY_TAGS_REQUIRED",
+                "SCATTER_CATEGORICAL_COLOR_EXECUTION_BINDING",
+                "SCATTER_MEASURE_DIMENSION_EXECUTION_BINDING",
+                "Measure Dimension required"
+            ],
+            "patchAction": "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "map_autoviz_inner_plugin_mismatch_error",
+            "matchAny": [
+                "MAP_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "innerPluginType must match pluginType for map views"
+            ],
+            "patchAction": "PATCH_MAP_ENSURE_AUTOVIZ_AND_VIZ_MAP_SCAFFOLD"
+        },
+        {
+            "id": "map_execution_column_lookup_error",
+            "matchAny": [
+                "Argument sColumnId must be a string, was: undefined",
+                "Failed to render map: can't access property \"type\", l is undefined",
+                "MAP_NO_MEASURE_ON_UNUSED_EDGE",
+                "MAP_EXECUTION_ROW_EDGE_DETAIL_BINDING",
+                "MAP_DETAIL_EDGE_GEO_COMPATIBLE"
+            ],
+            "patchAction": "PATCH_MAP_ENSURE_AUTOVIZ_AND_VIZ_MAP_SCAFFOLD"
+        },
+        {
+            "id": "map_render_type_invalid_edge_combination_error",
+            "matchAny": [
+                "MAP_RENDER_TYPE_INVALID_EDGE_COMBINATION",
+                "disallowed by render type"
+            ],
+            "patchAction": "PATCH_MAP_DROP_RENDER_TYPE_INVALID_EDGES"
+        },
+        {
+            "id": "network_autoviz_inner_plugin_mismatch_error",
+            "matchAny": [
+                "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "innerPluginType must match pluginType for network-family views"
+            ],
+            "patchAction": "PATCH_NETWORK_ENSURE_AUTOVIZ_INNER_PLUGIN"
+        },
+        {
+            "id": "network_execution_layer_error",
+            "matchAny": [
+                "Argument nLayer must be a number between 0 and 0 got: 1",
+                "Argument sColumnId must be a string, was: undefined",
+                "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+                "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING"
+            ],
+            "patchAction": "PATCH_NETWORK_ENSURE_AUTOVIZ_INNER_PLUGIN"
+        },
+        {
+            "id": "sankey_missing_settings_namespace_error",
+            "matchAny": [
+                "SANKEY_HAS_SANKEY_SETTINGS_NAMESPACE",
+                "viz:sankeychart"
+            ],
+            "patchAction": "PATCH_SANKEY_ENSURE_DEFAULT_SETTINGS"
+        },
+        {
+            "id": "autoviz_contract_missing_error",
+            "matchAny": [
+                "MeasureView_0",
+                "nestedViews",
+                "measuresList",
+                "propertyAdditions"
+            ],
+            "patchAction": "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "autoviz_property_additions_missing_stacked",
+            "matchAny": [
+                "required property 'stacked' not found"
+            ],
+            "patchAction": "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "autoviz_property_additions_missing_placement",
+            "matchAny": [
+                "required property 'placement' not found"
+            ],
+            "patchAction": "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "autoviz_property_additions_missing_grain_edge",
+            "matchAny": [
+                "required property 'grainEdge' not found"
+            ],
+            "patchAction": "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "combo_runtime_get_ordered_data_layers_error",
+            "matchAny": [
+                "getOrderedDataLayers"
+            ],
+            "patchAction": "PATCH_COMBO_MULTILAYER_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "combo_runtime_data_layer_name_empty_error",
+            "matchAny": [
+                "sDataLayerName must not be empty string",
+                "sDataLayerName must not be empty"
+            ],
+            "patchAction": "PATCH_COMBO_MULTILAYER_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "combo_measure_infos_not_allowed_error",
+            "matchAny": [
+                "property 'measureInfos' is not defined in the schema",
+                "measureInfos"
+            ],
+            "patchAction": "PATCH_COMBO_MULTILAYER_CONTRACT_SCAFFOLD"
+        },
+        {
+            "id": "report_config_missing_error",
+            "matchAny": [
+                "reportConfig",
+                "projectSettings"
+            ],
+            "patchAction": "PATCH_REPORT_CONFIG_DEFAULTS"
+        },
+        {
+            "id": "runtime_ui_canonical_defaults_missing",
+            "matchAny": [
+                "Empty string passed to getElementById()."
+            ],
+            "patchAction": "PATCH_CANONICAL_RUNTIME_DEFAULTS"
+        },
+        {
+            "id": "workbook_authoring_trace_schema_rejection",
+            "matchAll": [
+                "reportConfig/settings",
+                "workbookAuthoringTrace",
+                "is not defined in the schema"
+            ],
+            "patchAction": "PATCH_REMOVE_WORKBOOK_AUTHORING_TRACE"
+        },
+        {
+            "id": "calculation_contract_missing_error",
+            "matchAny": [
+                "columnPropertyMap",
+                "@calculation(",
+                "calculation dependency cycle",
+                "GLOBAL_TYPED_CALC_COLUMN_PROPERTY_MAP",
+                "GLOBAL_CALC_REFERENCES_RESOLVE",
+                "GLOBAL_CALC_REFERENCE_ORDERING",
+                "GLOBAL_DERIVED_FORMULA_MARKED_USER_EXPRESSION"
+            ],
+            "patchAction": "PATCH_CALCULATION_CONTRACT_SCAFFOLD"
+        }
+    ],
+    "patchActions": {
+        "PATCH_CANONICAL_RUNTIME_DEFAULTS": {
+            "description": "Ensure runtime-canonical defaults for parameters, filter parameter bindings, color/shape domain mappings, and persisted performance-tile presentation used by UI services.",
+            "operations": [
+                "ensure_parameters_version",
+                "ensure_filter_parameter_binding_definitions",
+                "ensure_color_measure_domain_mappings",
+                "ensure_shape_domain_mapping",
+                "remove_performance_tile_derived_layout_overrides"
+            ]
+        },
+        "PATCH_TABLE_MOVE_COLUMN_EDGE_LAYERS_TO_ROW": {
+            "description": "Move table measure layers from column edge to row edge, then remove logicalEdges.column.",
+            "operations": [
+                "move_data_model_column_edge_layers_to_row",
+                "clear_data_model_column_edge_layers",
+                "append_missing_row_logical_layers",
+                "remove_column_logical_edge"
+            ]
+        },
+        "PATCH_PIVOT_LOGICAL_EDGE_COLUMN_TO_COL": {
+            "description": "Normalize pivot logical edge key from logicalEdges.column to logicalEdges.col.",
+            "operations": [
+                "ensure_pivot_logical_col_edge_exists",
+                "move_missing_column_layers_to_col",
+                "remove_pivot_logical_column_edge"
+            ]
+        },
+        "PATCH_PARALLEL_COORDINATES_LOGICAL_EDGE_COLUMN_TO_COL": {
+            "description": "Normalize parallel coordinates logical edge key from logicalEdges.column to logicalEdges.col.",
+            "operations": [
+                "ensure_parallel_coordinates_logical_col_edge_exists",
+                "move_missing_column_layers_to_col",
+                "remove_parallel_coordinates_logical_column_edge"
+            ]
+        },
+        "PATCH_PARALLEL_COORDINATES_ENSURE_DETAIL_EDGE": {
+            "description": "Ensure parallel coordinates has logicalEdges.detail populated from row/col context columns.",
+            "operations": [
+                "ensure_parallel_coordinates_detail_edge_exists",
+                "seed_parallel_coordinates_detail_layers_from_row_and_col"
+            ]
+        },
+        "PATCH_PARALLEL_COORDINATES_NORMALIZE_EXECUTION_TRELLIS": {
+            "description": "Normalize parallel coordinates execution row/column edges to a minimal non-fragmented trellis footprint.",
+            "operations": [
+                "select_parallel_row_column_from_logical_row",
+                "select_parallel_measure_column_from_logical_col",
+                "rewrite_parallel_execution_row_column_edges"
+            ]
+        },
+        "PATCH_GANTT_LOGICAL_EDGE_COLUMN_TO_COL": {
+            "description": "Normalize gantt logical edge key from logicalEdges.column to logicalEdges.col.",
+            "operations": [
+                "ensure_gantt_logical_col_edge_exists",
+                "move_missing_column_layers_to_col",
+                "remove_gantt_logical_column_edge"
+            ]
+        },
+        "PATCH_GANTT_ENSURE_DURATION_AND_DETAIL": {
+            "description": "Ensure gantt detail edge exists and normalize start/end so end uses a non-zero derived duration baseline.",
+            "operations": [
+                "ensure_gantt_detail_edge_exists",
+                "seed_gantt_detail_layers_from_row",
+                "normalize_gantt_end_expression_with_timestampadd_offset",
+                "mark_derived_gantt_end_user_expression"
+            ]
+        },
+        "PATCH_GANTT_NORMALIZE_EXECUTION_TRELLIS": {
+            "description": "Normalize gantt execution row/column edges to minimize trellis pane explosion from start/end temporal edges.",
+            "operations": [
+                "select_gantt_row_column_from_logical_row",
+                "select_gantt_execution_column_not_in_start_end",
+                "rewrite_gantt_execution_row_column_edges"
+            ]
+        },
+        "PATCH_ENSURE_SINGLE_LAYER_DATA_LAYERS_INFO": {
+            "description": "Ensure single-layer dataLayersInfo scaffold exists for map/network/parallel/gantt families.",
+            "operations": [
+                "ensure_plugin_data_model_logical_model",
+                "ensure_single_layer_data_layers_info"
+            ]
+        },
+        "PATCH_MAP_ENSURE_AUTOVIZ_AND_VIZ_MAP_SCAFFOLD": {
+            "description": "Ensure map plugin has autoviz inner plugin parity, viz:chart.viz_map settings scaffold, geo-compatible detail baseline, stable primary/nested execution row edges, and no metric on the OAC Unused column edge.",
+            "operations": [
+                "ensure_map_autoviz_inner_plugin_type",
+                "ensure_map_viz_chart_settings",
+                "ensure_map_detail_logical_edge",
+                "prefer_map_geo_compatible_detail_column",
+                "normalize_map_execution_row_edge",
+                "clear_map_execution_unused_column_edge"
+            ]
+        },
+        "PATCH_MAP_DROP_RENDER_TYPE_INVALID_EDGES": {
+            "description": "Drop map logical edge layers that are disallowed by the active layer render type matrix.",
+            "operations": [
+                "resolve_map_render_type_from_layer_or_view_settings",
+                "drop_disallowed_map_logical_edges_by_render_type"
+            ]
+        },
+        "PATCH_NETWORK_ENSURE_AUTOVIZ_INNER_PLUGIN": {
+            "description": "Ensure network-family plugin view autoviz inner plugin matches pluginType and normalize primary/nested execution row/column edges.",
+            "operations": [
+                "ensure_network_autoviz_inner_plugin_type",
+                "ensure_network_two_column_detail_pair",
+                "normalize_network_execution_edges"
+            ]
+        },
+        "PATCH_SANKEY_ENSURE_DEFAULT_SETTINGS": {
+            "description": "Ensure sankey plugin includes required viz:sankeychart settings namespace with safe defaults.",
+            "operations": [
+                "ensure_sankey_settings_namespace",
+                "seed_sankey_default_settings"
+            ]
+        },
+        "PATCH_AUTOVIZ_CONTRACT_SCAFFOLD": {
+            "description": "Ensure autoviz measure-view contract nodes exist while preserving each view's source-backed bindings and outer/logical/nested measure parity; scatter is normalized to one MeasureView_0 with source-backed x/y measure tags and one hidden execution Measure Dimension.",
+            "operations": [
+                "ensure_autoviz_view_config",
+                "ensure_main_measure_view_reference_matches_nested_primary_measure",
+                "ensure_nested_measure_view",
+                "preserve_per_view_logical_and_nested_bindings",
+                "ensure_color_edge_hidden_measure",
+                "ensure_nested_measure_property_additions",
+                "normalize_scatter_single_measure_view",
+                "tag_scatter_measures_x_y",
+                "preserve_scatter_execution_measure_dimension"
+            ]
+        },
+        "PATCH_COMBO_MULTILAYER_CONTRACT_SCAFFOLD": {
+            "description": "Ensure combo multilayer datalayer configuration and nested per-layer model wiring.",
+            "operations": [
+                "ensure_combo_view_config_datalayers_info",
+                "ensure_combo_ldm_datalayers_info",
+                "ensure_combo_active_datalayer",
+                "ensure_combo_nested_datalayer_models",
+                "ensure_combo_layer_measure_bindings",
+                "remove_combo_measure_infos_when_not_supported"
+            ]
+        },
+        "PATCH_REPORT_CONFIG_DEFAULTS": {
+            "description": "Ensure profile-required reportConfig service nodes and defaults.",
+            "operations": [
+                "ensure_report_config",
+                "ensure_project_settings"
+            ]
+        },
+        "PATCH_REMOVE_WORKBOOK_AUTHORING_TRACE": {
+            "description": "Remove internal workbook authoring trace metadata from reportConfig.settings before save.",
+            "operations": [
+                "remove_report_config_settings_workbook_authoring_trace"
+            ]
+        },
+        "PATCH_CALCULATION_CONTRACT_SCAFFOLD": {
+            "description": "Ensure workbook-local calculation columns, typed criteriaConfig payloads, and nested calc references satisfy calc contracts.",
+            "operations": [
+                "ensure_calc_column_required_fields",
+                "promote_non_direct_derived_formulas_to_user_expression",
+                "ensure_typed_calc_column_property_map_entries",
+                "repair_calc_references_when_unique_match_exists",
+                "reorder_calc_columns_topologically"
+            ]
+        }
+    },
+    "retryPolicy": {
+        "maxRetries": 1,
+        "strategy": "single_deterministic_patch_then_retry",
+        "onSecondFailure": "return_diagnostics_and_contract_gap_report"
+    }
+}

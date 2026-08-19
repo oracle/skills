@@ -1,0 +1,1174 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "defaultProfile": "latest",
+    "sources": {
+        "runtimeProfiles": "model/runtime-profile-contracts.v1.json",
+        "mapping": "model/metadata-to-json-mapping.v1.json",
+        "editOperationContracts": "model/edit-operation-contracts.v1.json",
+        "versionCatalog": "model/version-field-catalog.json",
+        "pluginAliases": "model/plugin-type-aliases.v1.json",
+        "vizResolutionProfiles": "model/viz-resolution-profiles.v1.json"
+    },
+    "globalChecks": [
+        {
+            "id": "GLOBAL_REQUIRED_TOP_LEVEL_NODES",
+            "severity": "error",
+            "requiredJsonPaths": [
+                "/projectVersion",
+                "/criteria",
+                "/criteria/columns/children",
+                "/layouts",
+                "/views",
+                "/reportConfig",
+                "/datasources"
+            ],
+            "fixHint": "Start from a canonical template and preserve all required top-level nodes."
+        },
+        {
+            "id": "GLOBAL_LAYOUT_VIEW_REFERENTIAL_INTEGRITY",
+            "severity": "error",
+            "rules": [
+                "layouts.children[].children[].content.viewName must resolve to views.children[].viewName",
+                "views.currentView must reference an existing canvas"
+            ],
+            "fixHint": "Regenerate layouts/views together to remove dangling references."
+        },
+        {
+            "id": "GLOBAL_CRITERIA_DATASOURCE_ALIGNMENT",
+            "severity": "error",
+            "rules": [
+                "criteria.subjectArea == datasources.children[0].subjectArea",
+                "criteria.subjectArea and datasources.children[0].subjectArea must be canonical tokens (quoted subject area name or XSA(...) expression)",
+                "direct criteria column expressions (\"SA\".\"Table\".\"Column\" or XSA(...).\"Table\".\"Column\") must use criteria.subjectArea token",
+                "all columnID references in data models/logical edges/filter controls must exist in criteria.columns.children"
+            ],
+            "fixHint": "Rebind datasource and regenerate criteria/data model references from mapping contract."
+        },
+        {
+            "id": "GLOBAL_CALC_REFERENCES_RESOLVE",
+            "severity": "error",
+            "rules": [
+                "every @calculation(\"<columnID>\") token in userExpression formulas must resolve to an existing criteria column",
+                "resolved @calculation references must target userExpression columns"
+            ],
+            "fixHint": "Repair stale calc references or regenerate calculation columns via PATCH_CALCULATION_CONTRACT_SCAFFOLD."
+        },
+        {
+            "id": "GLOBAL_CALC_REFERENCE_NO_CYCLES",
+            "severity": "error",
+            "rules": [
+                "calculation dependency graph derived from @calculation references must be acyclic"
+            ],
+            "fixHint": "Remove circular calc references and enforce topological dependency order."
+        },
+        {
+            "id": "GLOBAL_TYPED_CALC_COLUMN_PROPERTY_MAP",
+            "severity": "error",
+            "rules": [
+                "typed calculations (TEXT_GROUP/TIME_SERIES) must include criteriaConfig.settings.columnPropertyMap[columnID]",
+                "typed calc columnPropertyMap entries must include type,parentExpression,options and required type-specific options"
+            ],
+            "fixHint": "Ensure typed calculation payload exists in criteriaConfig.settings.columnPropertyMap using calculation-contracts.v1 defaults."
+        },
+        {
+            "id": "GLOBAL_CALC_REFERENCE_ORDERING",
+            "severity": "error",
+            "rules": [
+                "referenced calc columns must appear before referencing calc columns in criteria.columns.children"
+            ],
+            "fixHint": "Reorder calc columns topologically before save."
+        },
+        {
+            "id": "GLOBAL_DERIVED_FORMULA_MARKED_USER_EXPRESSION",
+            "severity": "error",
+            "rules": [
+                "any non-direct formula column in criteria.columns.children must be persisted as userExpression=true",
+                "only direct source column references may remain non-userExpression"
+            ],
+            "fixHint": "Promote derived formulas to userExpression columns and add deterministic calc heading metadata."
+        },
+        {
+            "id": "GLOBAL_UNSUPPORTED_FOREIGN_FORMULA_DIALECT",
+            "severity": "error",
+            "rules": [
+                "criteria column formulas must use OAC Logical SQL syntax, not source-workbook dialect functions",
+                "Tableau COUNTD(...) syntax is not valid OAC syntax; use governed measures or COUNT(DISTINCT ...)",
+                "POSITION(expr1 IN expr2) is valid OAC syntax and must not be rejected by this rule"
+            ],
+            "fixHint": "Translate foreign formula syntax to OAC Logical SQL before save."
+        },
+        {
+            "id": "GLOBAL_FILTER_PARAMETER_BINDINGS_RESOLVE",
+            "severity": "error",
+            "rules": [
+                "every filterControlDefaultValues.*ParameterBinding value must resolve to parameters.settings[].name",
+                "listParameterBinding must resolve to a multi-value parameter"
+            ],
+            "fixHint": "Declare each shared dashboard filter parameter in parameters.settings with _version 1.0.5; use multi-value text defaults for generated listbox shared filters."
+        },
+        {
+            "id": "GLOBAL_FILTER_CHOICE_VALUES_OBJECT_SHAPE",
+            "severity": "error",
+            "rules": [
+                "filterControlDefaultValues.children[] entries must be object values, not scalar strings",
+                "filterControlSource.filterControlChoices.children[].value must be an object value, not a scalar string",
+                "generated scalar filter defaults and specific choices must be persisted as {\"text\":\"<value>\"} before save"
+            ],
+            "fixHint": "Canonicalize specific filter defaults and choices to object-valued entries such as {\"text\":\"Central\"} and {\"value\":{\"text\":\"Central\"}}."
+        },
+        {
+            "id": "GLOBAL_DATA_ACTIONS_SOURCE_SCHEMA",
+            "severity": "error",
+            "rules": [
+                "dataActions must be a top-level array, not a children container",
+                "each data action must include obitech-report/dataaction.AbstractDataAction with required source-schema fields",
+                "BI navigation data actions must include required target item, target canvas, parameter mapping, and namespace version fields",
+                "data action context and anchor columns must resolve to criteria.columns.children"
+            ],
+            "fixHint": "Author data actions using the Oracle Analytics Cloud TypeSpec workbook/dataActions_0_0_0 shape and bind context/anchor columns to criteria columns."
+        },
+        {
+            "id": "GLOBAL_NUMBER_FORMAT_SAVE_SCHEMA_COMPATIBLE",
+            "severity": "error",
+            "rules": [
+                "persisted number-format payloads under viewConfig settings must use Oracle Analytics Cloud save-compatible enum values",
+                "abbreviationScale must be one of off,on,thousand,million,billion,trillion; use on for automatic abbreviation",
+                "negativeValuesStyle must be one of default,accounting,red,red_accounting; use default for minus-sign negatives",
+                "do not persist unsupported aliases such as abbreviationScale=auto or negativeValuesStyle=minus"
+            ],
+            "fixHint": "Normalize chart/table/map/network number-format payloads before save: abbreviationScale auto -> on, negativeValuesStyle minus -> default."
+        },
+        {
+            "id": "GLOBAL_LAYOUT_CUSTOM_PROPS_JSON_PARSEABLE",
+            "severity": "error",
+            "rules": [
+                "layouts.children[].layoutProps.customProps.text is parsed by Oracle Analytics Cloud LayoutProps.getCustomProps() and must be a valid JSON-encoded object string",
+                "split layouts must include oracle.bi.tech.layout.split.layoutMinSize in the parsed custom props object",
+                "generation must serialize custom props with JSON.stringify rather than hand-assembled JSON text"
+            ],
+            "fixHint": "Regenerate layoutProps.customProps.text from an object with JSON.stringify; do not persist truncated or manually concatenated JSON strings."
+        },
+        {
+            "id": "GLOBAL_SENTINEL_DEFAULT_FILTER_PREDICATE",
+            "severity": "warning",
+            "rules": [
+                "criteria.filter should persist only real runtime query defaults",
+                "placeholder literals such as None or All are warning-level diagnostics because they often represent unselected UI state"
+            ],
+            "fixHint": "Remove sentinel placeholder predicates unless the literal is an intentional data value."
+        },
+        {
+            "id": "GLOBAL_PROFILE_REPORTCONFIG_REQUIREMENTS",
+            "severity": "error",
+            "rulesFromRuntimeProfile": "projectVersionProfiles[].reportConfigRequirements",
+            "fixHint": "Apply PATCH_REPORT_CONFIG_DEFAULTS before save retry."
+        },
+        {
+            "id": "GLOBAL_SCHEMA_ACCEPTANCE_GATE",
+            "severity": "error",
+            "rules": [
+                "workbook payload must pass local schema acceptance for selected projectVersion root schema",
+                "all schema-registry relative/path schema rules must pass",
+                "unknown keys under strict schema objects are rejected before save"
+            ],
+            "fixHint": "Remove schema-invalid payload keys or apply deterministic known-safe sanitization before save."
+        },
+        {
+            "id": "GLOBAL_FILTER_DECISION_TRACE_PRESENT",
+            "severity": "error",
+            "rules": [
+                "validation check output must include filterDecisionTrace with all required fields from filter-profiling-contracts.v1.json",
+                "when fallbackUsed=true, fallbackReason must be non-empty",
+                "when workbook has filter controls, filterDecisionTrace.derivedDecisions must be non-empty"
+            ],
+            "fixHint": "Run the required profiling stage with execute_oac_ansi_sql when available or execute_logical_sql as fallback, then emit a complete filter decision trace before save."
+        },
+        {
+            "id": "GLOBAL_PLANNING_CONSUMPTION_COMPLETE",
+            "severity": "error",
+            "rules": [
+                "compose_ootb output must report planningConsumptionSummary.valid=true and unconsumedCount=0",
+                "every applied analysisRequirements binding, aggregation, structured format, filter, sort, and title must be represented in generated workbook JSON",
+                "missing secondary bindings and requested titles are blocking mismatches, not advisory warnings",
+                "direct-source aggregation must match describe_data aggregation or use default/none; conflicting overrides require derived criteria-column and aggregationColumnMap synthesis and must fail until that shape is implemented"
+            ],
+            "fixHint": "Materialize every applied planning field or fail generation with an actionable unsupported-shape diagnostic before runtime validation and save."
+        },
+        {
+            "id": "GLOBAL_COMPACT_MEASURE_CARDINALITY_SUPPORTED",
+            "severity": "error",
+            "rules": [
+                "compact chart measure shorthand must not silently truncate requested measures",
+                "requests beyond the selected scaffold's source-backed measure-role capacity must fail before workbook generation"
+            ],
+            "fixHint": "Reduce compact shorthand to supported primary/secondary measures or use explicit advanced planning backed by a verified runtime fixture."
+        },
+        {
+            "id": "GLOBAL_COMPOSE_INTERACTIONS_MATERIALIZED",
+            "severity": "error",
+            "rules": [
+                "compose_ootb must reject non-empty per-view interactions until a source-backed materializer exists",
+                "supported BI Navigation and URL Navigation intent belongs in top-level analysisRequirements.actions/dataActions"
+            ],
+            "fixHint": "Move supported navigation intent to analysisRequirements.actions/dataActions; do not accept and ignore per-view interactions."
+        },
+        {
+            "id": "GLOBAL_MODIFY_TRACE_PRESENT",
+            "severity": "error",
+            "rules": [
+                "when authoringMode=modify_existing, validation check output must include modifyTrace",
+                "modifyTrace must include required fields from edit-operation-contracts.v1.json traceContract.requiredOutputFields",
+                "modifyTrace.resolvedWorkbookTarget must include id/name/path fields",
+                "when modifyTrace.fallbackUsed=true, modifyTrace.fallbackReason must be non-empty",
+                "if modify context args are provided, modifyTrace requestedOperation/sourceMode/resolvedWorkbookTarget.id must match"
+            ],
+            "fixHint": "Run modify-workbook.mjs before validation check and emit complete modifyTrace in tool output."
+        },
+        {
+            "id": "GLOBAL_VIZ_LOCK_REQUESTED_PLUGIN_TYPE_MATCH",
+            "severity": "error",
+            "rules": [
+                "when requestedPluginType is provided, primary plugin view pluginType must match requestedPluginType unless explicit fallback override is provided",
+                "requested plugin types must be mapped by model/viz-resolution-profiles.v1.json before generation"
+            ],
+            "fixHint": "Regenerate with the requested plugin type, or provide explicit fallback override with target plugin type and reason."
+        },
+        {
+            "id": "GLOBAL_VIZ_LOCK_FALLBACK_OVERRIDE_REQUIRES_REASON",
+            "severity": "error",
+            "rules": [
+                "when fallback override is used, fallbackPluginType must equal generated primary pluginType",
+                "fallback override requires non-empty fallbackReason"
+            ],
+            "fixHint": "Provide fallbackPluginType and fallbackReason when intentionally overriding requested plugin type."
+        }
+    ],
+    "pluginFamilyChecks": {
+        "table": [
+            {
+                "id": "TABLE_COLUMN_EDGE_EMPTY",
+                "severity": "error",
+                "rule": "dataModels.edges.column.edgeLayers.children must be empty or absent",
+                "fixHint": "Move all table measure layers to row edge and clear column edge layers."
+            },
+            {
+                "id": "TABLE_ROW_EDGE_HAS_BINDING",
+                "severity": "error",
+                "rule": "dataModels.edges.row.edgeLayers.children must contain between 1 and 50 column layers",
+                "fixHint": "Bind every requested table field to the execution row edge in requested order."
+            },
+            {
+                "id": "TABLE_ROW_EDGE_PARITY",
+                "severity": "error",
+                "rule": "logicalEdges.row.logicalEdgeLayers column bindings must equal execution row edge column bindings in order",
+                "fixHint": "Make logical and execution table row bindings contain the same ordered column IDs."
+            },
+            {
+                "id": "TABLE_LOGICAL_COLUMN_EDGE_EMPTY",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.logicalEdges.column must be absent for table views",
+                "fixHint": "Remove logicalEdges.column for table views."
+            }
+        ],
+        "chart_autoviz": [
+            {
+                "id": "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "severity": "error",
+                "rule": "viewConfig.settings['obitech-autoviz/autoviz'].innerPluginType == pluginType",
+                "fixHint": "Set autoviz innerPluginType to plugin view pluginType."
+            },
+            {
+                "id": "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "severity": "error",
+                "rule": "dataModels.children[0].measuresList.children contains {type:'view', name:'MeasureView_0'}",
+                "fixHint": "Add measure-view entry in main data model measuresList."
+            },
+            {
+                "id": "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "severity": "error",
+                "rule": "nestedViews.children includes embedded pluginView named MeasureView_0",
+                "fixHint": "Add embedded nested MeasureView_0 and align references."
+            },
+            {
+                "id": "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+                "severity": "error",
+                "rule": "the outer MeasureView_0 view reference columnID must equal the first nested MeasureView_0 measure columnID, and ordered concrete column IDs on logicalEdges.measures must match ordered nested MeasureView_0 measuresList column IDs",
+                "fixHint": "Keep the outer MeasureView_0 reference, logical measures, and nested MeasureView_0 measures in parity; preserve every logical measure in order."
+            },
+            {
+                "id": "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "severity": "error",
+                "rule": "logicalEdges.color.logicalEdgeLayers includes hidden {type:'measure', visibility:'hidden'} layer",
+                "fixHint": "Add hidden measure layer to autoviz color logical edge."
+            },
+            {
+                "id": "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "severity": "error",
+                "rule": "nested measure layer/propertyAdditions include colorMin,colorMax,color and each entry sets valueColumnID, aggRule, stacked=false, grainEdge='none', acrossMeasures='single', placement='first_cell' for colorMin/colorMax and placement='all' for color",
+                "fixHint": "Populate nested measure propertyAdditions with required field/value contract for autoviz rendering."
+            },
+            {
+                "id": "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS",
+                "severity": "error",
+                "rule": "for oracle.bi.tech.chart.donut nested measure/propertyAdditions must also include min.<measureColumnID> and max.<measureColumnID> entries with valueColumnID, aggRule(min/max), stacked=false, grainEdge='none', acrossMeasures='single', placement='first_cell'",
+                "fixHint": "Add donut min/max nested propertyAdditions entries alongside colorMin/colorMax/color."
+            }
+        ],
+        "chart_scatter": [
+            {
+                "id": "SCATTER_SINGLE_NESTED_MARKING_VIEW",
+                "severity": "error",
+                "rule": "oracle.bi.tech.chart.scatter must use exactly one embedded nested plugin view named MeasureView_0; multiple nested MeasureView_* entries trigger marking runtime failure",
+                "fixHint": "Collapse scatter measure scaffolding to one embedded MeasureView_0; do not emit MeasureView_1 unless backed by a verified runtime fixture."
+            },
+            {
+                "id": "SCATTER_MEASURE_VIEW_SINGLE_REFERENCE",
+                "severity": "error",
+                "rule": "scatter main dataModels.children[0].measuresList.children may reference only the single MeasureView_0 nested view",
+                "fixHint": "Remove MeasureView_1 and other nested-view references from scatter measuresList; keep only MeasureView_0."
+            },
+            {
+                "id": "SCATTER_MEASURE_XY_TAGS_REQUIRED",
+                "severity": "error",
+                "rule": "scatter logicalEdges.measures must include exactly one measure layer tagged obitech-scatterchart#x and exactly one measure layer tagged obitech-scatterchart#y; x-only, y-only, duplicate-tag, or tagless measure bindings are invalid",
+                "fixHint": "Tag scatter measure layers with obitech-scatterchart#x and obitech-scatterchart#y; use exactly one layer for each tag."
+            },
+            {
+                "id": "SCATTER_NESTED_MEASURE_PROPERTY_ADDITIONS",
+                "severity": "error",
+                "rule": "scatter nested MeasureView_0 must carry matching obitech-scatterchart#x/#y measure tags and min/max/median propertyAdditions for x and y; continuous measure color additionally requires colorMin/colorMax/color additions, while categorical color is placed on the nested execution column edge",
+                "fixHint": "Populate scatter MeasureView_0 from the source runtime shape and use property additions only for continuous measure color."
+            },
+            {
+                "id": "SCATTER_CATEGORICAL_COLOR_EXECUTION_BINDING",
+                "severity": "error",
+                "rule": "a scatter categorical logical color column without continuous color property additions must appear on the nested MeasureView_0 execution column edge",
+                "fixHint": "Place the categorical color column on logicalEdges.color and the nested MeasureView_0 axis:'column' edge."
+            },
+            {
+                "id": "SCATTER_MEASURE_DIMENSION_EXECUTION_BINDING",
+                "severity": "error",
+                "rule": "the scatter nested MeasureView_0 execution axis:'column' edge must contain exactly one hidden {type:'measure', visibility:'hidden'} Measure Dimension layer, including when a categorical color column shares that edge",
+                "fixHint": "Preserve exactly one hidden Measure Dimension layer on the scatter nested execution column edge; append categorical color without replacing it."
+            }
+        ],
+        "chart_combo_multilayer": [
+            {
+                "id": "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+                "severity": "error",
+                "rule": "viewConfig.settings['obitech-autoviz/autoviz'].innerPluginType == pluginType",
+                "fixHint": "Set autoviz innerPluginType to plugin view pluginType."
+            },
+            {
+                "id": "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+                "severity": "error",
+                "rule": "dataModels.children[0].measuresList.children contains {type:'view', name:'MeasureView_0'}",
+                "fixHint": "Add measure-view entry in main data model measuresList."
+            },
+            {
+                "id": "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+                "severity": "error",
+                "rule": "nestedViews.children includes embedded pluginView named MeasureView_0",
+                "fixHint": "Add embedded nested MeasureView_0 and align references."
+            },
+            {
+                "id": "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+                "severity": "error",
+                "rule": "logicalEdges.color.logicalEdgeLayers includes hidden {type:'measure', visibility:'hidden'} layer",
+                "fixHint": "Add hidden measure layer to combo color logical edge."
+            },
+            {
+                "id": "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+                "severity": "error",
+                "rule": "nested layer measuresList/propertyAdditions include colorMin,colorMax,color and each entry sets valueColumnID, aggRule, stacked=false, grainEdge='none', acrossMeasures='single', and placement='first_cell' for colorMin/colorMax and placement='all' for color",
+                "fixHint": "Populate nested layer propertyAdditions with required field/value contract."
+            },
+            {
+                "id": "COMBO_HAS_PLUGIN_DATALAYERS_INFO",
+                "severity": "error",
+                "rule": "viewConfig.settings['oracle.bi.tech.chart.comboMultiLayerChart'].settings.dataLayersInfo exists and has non-empty layer-name keys",
+                "fixHint": "Add combo viewConfig dataLayersInfo map, for example {ndm2:'bar', ndm3:'line'}."
+            },
+            {
+                "id": "COMBO_HAS_LDM_DATALAYERS_INFO",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.dataLayersInfo contains dataLayers object with at least one named layer",
+                "fixHint": "Add logicalDataModel.dataLayersInfo with dataLayers metadata for each combo layer."
+            },
+            {
+                "id": "COMBO_ACTIVE_LAYER_IS_VALID",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.dataLayersInfo.activeDataLayer is a non-empty string and matches a declared layer",
+                "fixHint": "Set activeDataLayer to one of the declared dataLayers keys."
+            },
+            {
+                "id": "COMBO_NESTED_LAYER_MODELS_MATCH_DECLARED_LAYERS",
+                "severity": "error",
+                "rule": "nested MeasureView_0 dataModels children names include every declared dataLayersInfo layer key",
+                "fixHint": "Create nested data model entries for each declared combo data layer."
+            },
+            {
+                "id": "COMBO_LAYER_MEASURE_BINDING_NON_EMPTY",
+                "severity": "error",
+                "rule": "each declared layer has non-empty measure bindings and propertyAdditions in nested MeasureView_0",
+                "fixHint": "Bind each declared layer to at least one measure column with populated propertyAdditions."
+            },
+            {
+                "id": "COMBO_LOGICAL_EDGE_TO_LAYER_MAPPING_NON_EMPTY",
+                "severity": "error",
+                "rule": "each declared layer maps to non-empty data-layer names across combo viewConfig dataLayersInfo and logicalDataModel.dataLayersInfo.dataLayers[].dataModelName, with layer logicalEdges.measures bound",
+                "fixHint": "Align layer names and ensure per-layer logical measure bindings are present."
+            },
+            {
+                "id": "COMBO_MEASURE_INFOS_ALLOWED_BY_PROFILE",
+                "severity": "error",
+                "rule": "emit measureInfos only when current profile capability allows it",
+                "fixHint": "Remove combo measureInfos for profiles that do not allow it; use dataLayersInfo as portable minimum contract."
+            }
+        ],
+        "pivot": [
+            {
+                "id": "PIVOT_HAS_ROW_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.row.logicalEdgeLayers includes at least one categorical layer",
+                "fixHint": "Bind at least one dimension to pivot row edge."
+            },
+            {
+                "id": "PIVOT_HAS_COLUMN_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.col.logicalEdgeLayers includes at least one categorical/temporal layer; logicalEdges.column is schema-invalid for pivot and must be normalized to logicalEdges.col",
+                "fixHint": "Bind at least one dimension/temporal field to pivot logicalEdges.col and remove logicalEdges.column."
+            },
+            {
+                "id": "PIVOT_HAS_MEASURES_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.measures.logicalEdgeLayers includes at least one measure layer",
+                "fixHint": "Bind at least one measure to pivot measures edge."
+            },
+            {
+                "id": "PIVOT_ROW_EDGE_PARITY",
+                "severity": "error",
+                "rule": "pivot logicalEdges.row column layers match the execution axis=row column layers in order",
+                "fixHint": "Mirror every pivot logical row binding to the execution row edge in the same order."
+            },
+            {
+                "id": "PIVOT_COLUMN_EDGE_PARITY",
+                "severity": "error",
+                "rule": "pivot logicalEdges.col column layers match the execution axis=column column layers in order, excluding the measure marker",
+                "fixHint": "Mirror every pivot logical column binding to the execution column edge before its measure marker."
+            },
+            {
+                "id": "PIVOT_MEASURES_LIST_PARITY",
+                "severity": "error",
+                "rule": "pivot logicalEdges.measures column layers match measuresList.children column entries in order",
+                "fixHint": "Mirror every pivot logical measure binding to measuresList.children in the same order."
+            }
+        ],
+        "gantt": [
+            {
+                "id": "GANTT_HAS_CATEGORY_ROW_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.row.logicalEdgeLayers includes at least one categorical layer for task grouping",
+                "fixHint": "Bind at least one category/dimension to gantt row edge."
+            },
+            {
+                "id": "GANTT_HAS_ITEM_EDGE_WITH_START_END_TAGS",
+                "severity": "error",
+                "rule": "logicalEdges.item.logicalEdgeLayers includes at least two time layers tagged obitech-gantt#start and obitech-gantt#end",
+                "fixHint": "Bind gantt primary range start/end columns on logical item edge with required start/end tags."
+            },
+            {
+                "id": "GANTT_HAS_DETAIL_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.detail.logicalEdgeLayers includes at least one categorical layer",
+                "fixHint": "Bind at least one category/dimension to gantt logicalEdges.detail."
+            },
+            {
+                "id": "GANTT_DURATION_NON_ZERO_BASELINE",
+                "severity": "error",
+                "rule": "gantt start/end tagged item layers must not resolve to the same criteria column expression; end must be distinct or derived from start with a positive offset",
+                "fixHint": "Use distinct start/end expressions (for example TIMESTAMPADD(SQL_TSI_DAY, 1, <startExpr>) for end) and persist derived end as userExpression=true."
+            },
+            {
+                "id": "GANTT_EXECUTION_TRELLIS_MINIMIZED",
+                "severity": "error",
+                "rule": "primary and nested execution row/column edges must be normalized to a minimal trellis footprint: one row column, one non-start/end column edge column, and no duplicated pane-splitting assignments",
+                "fixHint": "Normalize gantt execution row/column edgeLayers to a minimal single-row + single-column binding that avoids start/end pane splitting."
+            },
+            {
+                "id": "GANTT_HAS_DATA_LAYERS_INFO",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.dataLayersInfo defines non-empty activeDataLayer and dataLayers entry for that layer",
+                "fixHint": "Ensure gantt logicalDataModel.dataLayersInfo has activeDataLayer and matching dataLayers entry."
+            },
+            {
+                "id": "GANTT_REJECTS_LEGACY_LOGICAL_COLUMN_KEY",
+                "severity": "error",
+                "rule": "logicalEdges.column must be absent; use logicalEdges.col",
+                "fixHint": "Move layers from logicalEdges.column to logicalEdges.col and remove logicalEdges.column."
+            }
+        ],
+        "performance_tile": [
+            {
+                "id": "PERFORMANCE_TILE_NO_DERIVED_LAYOUT_OVERRIDES",
+                "severity": "error",
+                "rule": "viz:ngperformancetile omits derived verticalLayout and primaryAlignment settings; tileStyle supplies the runtime layout and alignment",
+                "fixHint": "Remove verticalLayout and primaryAlignment from viz:ngperformancetile and use tileStyle plus primaryLabelAlignment for persisted tile presentation."
+            },
+            {
+                "id": "PERFORMANCE_TILE_HAS_LOGICAL_MEASURES_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.measures.logicalEdgeLayers includes at least one measure layer",
+                "fixHint": "Bind the KPI metric to performance tile logical measures edge."
+            },
+            {
+                "id": "PLUGIN_HAS_PRIMARY_MEASURE_BINDING",
+                "severity": "error",
+                "rule": "plugin data model/logical model contains at least one measure column binding",
+                "fixHint": "Bind a primary measure in criteria and data model."
+            }
+        ],
+        "parallel_coordinates": [
+            {
+                "id": "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES",
+                "severity": "error",
+                "rule": "logicalEdges.row and logicalEdges.col each include at least one layer",
+                "fixHint": "Bind one dimension and one or more measures in row/col edges."
+            },
+            {
+                "id": "PARALLEL_COORDINATES_HAS_MULTI_MEASURE_COLUMN_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.col.logicalEdgeLayers contains at least two measure layers",
+                "fixHint": "Bind at least two measures to parallel coordinates logical col edge."
+            },
+            {
+                "id": "PARALLEL_COORDINATES_HAS_DETAIL_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.detail.logicalEdgeLayers contains at least one layer",
+                "fixHint": "Bind detail edge layers for parallel coordinates (at minimum include row+measure context columns)."
+            },
+            {
+                "id": "PARALLEL_COORDINATES_EXECUTION_TRELLIS_MINIMIZED",
+                "severity": "error",
+                "rule": "primary and nested execution row/column edges must be normalized to a minimal trellis footprint: one row column and one measure column",
+                "fixHint": "Normalize parallel coordinates execution row/column edgeLayers to one row dimension and one measure column."
+            },
+            {
+                "id": "PARALLEL_COORDINATES_REJECTS_LEGACY_LOGICAL_COLUMN_KEY",
+                "severity": "error",
+                "rule": "logicalEdges.column must be absent; use logicalEdges.col",
+                "fixHint": "Move layers from logicalEdges.column to logicalEdges.col and remove logicalEdges.column."
+            },
+            {
+                "id": "PARALLEL_COORDINATES_HAS_DATA_LAYERS_INFO",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.dataLayersInfo defines non-empty activeDataLayer and dataLayers entry for that layer",
+                "fixHint": "Ensure parallel coordinates logicalDataModel.dataLayersInfo has activeDataLayer and matching dataLayers entry."
+            }
+        ],
+        "network_graph": [
+            {
+                "id": "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "severity": "error",
+                "rule": "viewConfig.settings['obitech-autoviz/autoviz'].innerPluginType must match pluginType for network-family views",
+                "fixHint": "Set obitech-autoviz/autoviz.innerPluginType to the exact network-family pluginType."
+            },
+            {
+                "id": "NETWORK_HAS_DETAIL_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.detail.logicalEdgeLayers must contain at least one column layer",
+                "fixHint": "Bind at least one dimension to logicalEdges.detail."
+            },
+            {
+                "id": "NETWORK_MIN_DETAIL_LAYER_COUNT",
+                "severity": "error",
+                "rule": "logicalEdges.detail.logicalEdgeLayers must contain at least two layers for link/source-target semantics",
+                "fixHint": "Bind at least two columns to logicalEdges.detail (for example source and target/category)."
+            },
+            {
+                "id": "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+                "severity": "error",
+                "rule": "primary and nested execution dataModel row edgeLayers must include a stable two-column source-target pairing aligned to logicalEdges.detail",
+                "fixHint": "Normalize row edgeLayers in primary + nested network-family views to the same two detail columns used in logicalEdges.detail."
+            },
+            {
+                "id": "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+                "severity": "error",
+                "rule": "primary and nested execution dataModel column edgeLayers must include a concrete measure columnID (hidden-measure-only is invalid)",
+                "fixHint": "Bind a concrete measure column to column edgeLayers in primary + nested network-family views."
+            },
+            {
+                "id": "NETWORK_HAS_DATA_LAYERS_INFO",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.dataLayersInfo defines non-empty activeDataLayer and dataLayers entry for that layer",
+                "fixHint": "Ensure network-family logicalDataModel.dataLayersInfo has activeDataLayer and matching dataLayers entry."
+            },
+            {
+                "id": "SANKEY_HAS_SANKEY_SETTINGS_NAMESPACE",
+                "severity": "error",
+                "rule": "sankey plugin viewConfig.settings must include viz:sankeychart object",
+                "fixHint": "Ensure viewConfig.settings['viz:sankeychart'] exists for oracle.bi.tech.sankey."
+            }
+        ],
+        "map": [
+            {
+                "id": "MAP_AUTOVIZ_INNER_PLUGIN_MATCH",
+                "severity": "error",
+                "rule": "viewConfig.settings['obitech-autoviz/autoviz'].innerPluginType must match pluginType for map views",
+                "fixHint": "Set obitech-autoviz/autoviz.innerPluginType to oracle.bi.tech.map."
+            },
+            {
+                "id": "MAP_HAS_DETAIL_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges.detail.logicalEdgeLayers must contain at least one geography/category column layer",
+                "fixHint": "Bind at least one geography/category column to logicalEdges.detail."
+            },
+            {
+                "id": "MAP_DETAIL_EDGE_GEO_COMPATIBLE",
+                "severity": "error",
+                "rule": "logicalEdges.detail.logicalEdgeLayers must include at least one geography-compatible column expression/token",
+                "fixHint": "Bind map detail to a geography-compatible column (for example geo country/state/city/lat/long)."
+            },
+            {
+                "id": "MAP_VIZ_MAP_SETTINGS_OBJECT",
+                "severity": "error",
+                "rule": "viewConfig.settings['viz:chart'].viz_map must exist as an object",
+                "fixHint": "Ensure viewConfig.settings includes viz:chart.viz_map object."
+            },
+            {
+                "id": "MAP_EXECUTION_ROW_EDGE_DETAIL_BINDING",
+                "severity": "error",
+                "rule": "map execution dataModel row edgeLayers must include at least one column from logicalEdges.detail; when an embedded MeasureView_0 exists, the nested execution row edge is authoritative and the primary wrapper row edge may remain unbound",
+                "fixHint": "Bind the nested map MeasureView_0 row edge to the selected map detail column; primary wrapper row/column edges may remain unbound for UI-compatible embedded map scaffolds."
+            },
+            {
+                "id": "MAP_NO_MEASURE_ON_UNUSED_EDGE",
+                "severity": "error",
+                "rule": "primary and nested oracle.bi.tech.map execution dataModel axis:\"column\" edgeLayers must not contain concrete measure bindings because OAC renders this edge as Unused",
+                "fixHint": "Remove measures from execution axis=column for map views. Bind geography/category detail to logicalEdges.detail and execution row, and bind metrics through map-specific measure/color/size/layer roles."
+            },
+            {
+                "id": "MAP_HAS_DATA_LAYERS_INFO",
+                "severity": "error",
+                "rule": "logicalDataModel.settings.logicalDataModel.dataLayersInfo defines non-empty activeDataLayer and dataLayers entry for that layer",
+                "fixHint": "Ensure map logicalDataModel.dataLayersInfo has activeDataLayer and matching dataLayers entry."
+            },
+            {
+                "id": "MAP_RENDER_TYPE_INVALID_EDGE_COMBINATION",
+                "severity": "error",
+                "rule": "when map render type is known, logicalEdges must not contain layers for edges disallowed by that render type",
+                "fixHint": "Drop disallowed logical edge layers for the selected map render type or change render type."
+            }
+        ],
+        "list_narrative": [
+            {
+                "id": "PLUGIN_HAS_ANY_LOGICAL_EDGE_BINDING",
+                "severity": "error",
+                "rule": "logicalEdges includes at least one non-empty edge layer array among supported edges (for example row/col/detail/glyph/color/size/measures/item/tooltip)",
+                "fixHint": "Bind at least one field to a supported list/narrative/timeline logical edge."
+            }
+        ],
+        "gauge": [
+            {
+                "id": "PLUGIN_HAS_PRIMARY_MEASURE_BINDING",
+                "severity": "error",
+                "rule": "plugin data model/logical model contains at least one measure column binding",
+                "fixHint": "Bind a primary measure for gauge rendering."
+            }
+        ],
+        "filter_control_viz": [
+            {
+                "id": "FILTER_CONTROL_HAS_CONTROL_COLLECTION",
+                "severity": "error",
+                "rule": "filterControlCollections.children must contain at least one filter control definition",
+                "fixHint": "Use filter control scaffold wiring and ensure filterControlCollections contains at least one control."
+            },
+            {
+                "id": "FILTER_CONTROL_HAS_SOURCE_COLUMN",
+                "severity": "error",
+                "rule": "column filter controls must include source column wiring: non-empty columnID + formula.expr.expression",
+                "fixHint": "Set both columnID and formula.expr.expression for each saw:columnFilterControl."
+            },
+            {
+                "id": "FILTER_CONTROL_HAS_DEFAULT_VALUES_NODE",
+                "severity": "error",
+                "rule": "column filter controls must include filterControlDefaultValues node",
+                "fixHint": "Persist filterControlDefaultValues for each saw:columnFilterControl."
+            },
+            {
+                "id": "FILTER_CONTROL_TYPE_REQUIRED_FIELDS",
+                "severity": "error",
+                "rule": "filter controls must satisfy required fields by type (column/parameter/expression/group)",
+                "fixHint": "Populate required fields per control type: columnID/formula for column, parameter for parameter, expr.expression for expression, groupOperator + filterControlCollectionRef for group."
+            },
+            {
+                "id": "FILTER_VIZ_FILTERCONTROL_LINKAGE_CONSISTENT",
+                "severity": "error",
+                "rule": "every filter control with location=filter_viz must reference an existing canvasfilterviz plugin view via filterControlConfig.settings.filterViz",
+                "fixHint": "Set location=filter_viz controls to a valid filter view name and ensure referenced filter view exists."
+            },
+            {
+                "id": "FILTER_VIZ_CANVAS_COLLECTION_CONTEXT_CONSISTENT",
+                "severity": "error",
+                "rule": "each layout hosting a filter_viz view must provide filterControlCollectionName and every canvas bound to that layout (via rootLayoutName) must reference the same collection through filterControlCollectionRef.name",
+                "fixHint": "Set layout filterControlCollectionName, keep canvas.rootLayoutName aligned, and set canvas.filterControlCollectionRef.name to the same collection used by the filter_viz layout item."
+            },
+            {
+                "id": "FILTER_VIZ_HAS_REQUIRED_MAPS",
+                "severity": "error",
+                "rule": "filter_viz views require viz:filter.filterIDMap/parameterIDMap when row bindings or linked controls include column/parameter entries",
+                "fixHint": "Populate viewConfig.settings[\"viz:filter\"].filterIDMap and parameterIDMap for linked filter_viz controls."
+            },
+            {
+                "id": "FILTER_VIZ_MAP_KEYS_MATCH_LDM_ROW_BINDINGS",
+                "severity": "error",
+                "rule": "filter_viz map keys must match logicalDataModel row bindings for corresponding column/parameter layers",
+                "fixHint": "Align viz:filter map keys with dataModels[].logicalDataModel.settings.logicalDataModel.logicalEdges.row.logicalEdgeLayers."
+            },
+            {
+                "id": "FILTER_VIZ_MAP_VALUES_MATCH_EXISTING_FILTER_CONTROLS",
+                "severity": "error",
+                "rule": "each filter_viz map value must resolve to a real filter control ID linked to the same filter view",
+                "fixHint": "Map each key to an existing filter control ID whose location=filter_viz and filterViz points to the same view."
+            }
+        ],
+        "ui_control": [
+            {
+                "id": "UI_CONTROL_VALID_PLUGIN_TYPE",
+                "severity": "error",
+                "rule": "plugin view pluginType must be non-empty and mapped through plugin-type-aliases",
+                "fixHint": "Set pluginType to a mapped ui_control plugin and avoid chart-specific data-model assumptions."
+            },
+            {
+                "id": "TEXTBOX_HAS_RUNTIME_TEXT_CONTENTS",
+                "severity": "error",
+                "rule": "textbox text content must be persisted at canonical runtime path viewConfig.settings['viz:chart'].textContents.caption.text whenever caption or legacy textbox text is present",
+                "fixHint": "Set textbox content at viewConfig.settings[\"viz:chart\"].textContents.caption.text; legacy textbox paths are migration inputs only."
+            }
+        ]
+    },
+    "knownRuntimeErrorRemediation": {
+        "matchSource": "runtime-profile-contracts.v1.json#/runtimeErrorSignatures",
+        "defaultRetryPolicy": {
+            "maxRetries": 1,
+            "strategy": "apply_patch_set_then_retry_once"
+        }
+    },
+    "pluginTypeChecks": {
+        "oracle.bi.tech.butterfly": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.buttonbar": [
+            "UI_CONTROL_VALID_PLUGIN_TYPE"
+        ],
+        "oracle.bi.tech.canvasfilterviz.listbox": [
+            "FILTER_CONTROL_HAS_CONTROL_COLLECTION",
+            "FILTER_CONTROL_HAS_SOURCE_COLUMN",
+            "FILTER_CONTROL_HAS_DEFAULT_VALUES_NODE",
+            "FILTER_CONTROL_TYPE_REQUIRED_FIELDS",
+            "FILTER_VIZ_FILTERCONTROL_LINKAGE_CONSISTENT",
+            "FILTER_VIZ_CANVAS_COLLECTION_CONTEXT_CONSISTENT",
+            "FILTER_VIZ_HAS_REQUIRED_MAPS",
+            "FILTER_VIZ_MAP_KEYS_MATCH_LDM_ROW_BINDINGS",
+            "FILTER_VIZ_MAP_VALUES_MATCH_EXISTING_FILTER_CONTROLS"
+        ],
+        "oracle.bi.tech.chart.area": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.area100": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.bar": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.boxplot": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.combo": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.comboMultiLayerChart": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "COMBO_HAS_PLUGIN_DATALAYERS_INFO",
+            "COMBO_HAS_LDM_DATALAYERS_INFO",
+            "COMBO_ACTIVE_LAYER_IS_VALID",
+            "COMBO_NESTED_LAYER_MODELS_MATCH_DECLARED_LAYERS",
+            "COMBO_LAYER_MEASURE_BINDING_NON_EMPTY",
+            "COMBO_LOGICAL_EDGE_TO_LAYER_MAPPING_NON_EMPTY",
+            "COMBO_MEASURE_INFOS_ALLOWED_BY_PROFILE"
+        ],
+        "oracle.bi.tech.chart.correlationmatrix": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.donut": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.gridheatmap": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.horizontalbar": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.horizontalBoxplot": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.horizontalstackbar": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.horizontalstackbar100": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.line": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.marker": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.nonstackedarea": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.picto": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.pie": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.polarbar": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.radar": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.range": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.rangeArea": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.rangeHorizontal": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.scatter": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_LOGICAL_NESTED_MEASURE_PARITY",
+            "SCATTER_SINGLE_NESTED_MARKING_VIEW",
+            "SCATTER_MEASURE_VIEW_SINGLE_REFERENCE",
+            "SCATTER_MEASURE_XY_TAGS_REQUIRED",
+            "SCATTER_NESTED_MEASURE_PROPERTY_ADDITIONS",
+            "SCATTER_CATEGORICAL_COLOR_EXECUTION_BINDING",
+            "SCATTER_MEASURE_DIMENSION_EXECUTION_BINDING"
+        ],
+        "oracle.bi.tech.chart.spiderweb": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.stackbar": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.stackbar100": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.stackedmarker": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.standaloneLegend": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.sunburst": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.treemap": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chart.waterfall": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.chorddiagram": [
+            "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+            "NETWORK_HAS_DETAIL_EDGE_BINDING",
+            "NETWORK_MIN_DETAIL_LAYER_COUNT",
+            "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+            "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+            "NETWORK_HAS_DATA_LAYERS_INFO"
+        ],
+        "oracle.bi.tech.circularnetwork": [
+            "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+            "NETWORK_HAS_DETAIL_EDGE_BINDING",
+            "NETWORK_MIN_DETAIL_LAYER_COUNT",
+            "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+            "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+            "NETWORK_HAS_DATA_LAYERS_INFO"
+        ],
+        "oracle.bi.tech.ganttchart": [
+            "GANTT_HAS_CATEGORY_ROW_BINDING",
+            "GANTT_HAS_ITEM_EDGE_WITH_START_END_TAGS",
+            "GANTT_HAS_DETAIL_EDGE_BINDING",
+            "GANTT_DURATION_NON_ZERO_BASELINE",
+            "GANTT_EXECUTION_TRELLIS_MINIMIZED",
+            "GANTT_HAS_DATA_LAYERS_INFO",
+            "GANTT_REJECTS_LEGACY_LOGICAL_COLUMN_KEY"
+        ],
+        "oracle.bi.tech.gauge": [
+            "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+        ],
+        "oracle.bi.tech.iframe": [
+            "UI_CONTROL_VALID_PLUGIN_TYPE"
+        ],
+        "oracle.bi.tech.image": [
+            "UI_CONTROL_VALID_PLUGIN_TYPE"
+        ],
+        "oracle.bi.tech.list": [
+            "PLUGIN_HAS_ANY_LOGICAL_EDGE_BINDING"
+        ],
+        "oracle.bi.tech.map": [
+            "MAP_AUTOVIZ_INNER_PLUGIN_MATCH",
+            "MAP_HAS_DETAIL_EDGE_BINDING",
+            "MAP_DETAIL_EDGE_GEO_COMPATIBLE",
+            "MAP_VIZ_MAP_SETTINGS_OBJECT",
+            "MAP_EXECUTION_ROW_EDGE_DETAIL_BINDING",
+            "MAP_NO_MEASURE_ON_UNUSED_EDGE",
+            "MAP_HAS_DATA_LAYERS_INFO",
+            "MAP_RENDER_TYPE_INVALID_EDGE_COMBINATION"
+        ],
+        "oracle.bi.tech.narrative": [
+            "PLUGIN_HAS_ANY_LOGICAL_EDGE_BINDING"
+        ],
+        "oracle.bi.tech.network": [
+            "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+            "NETWORK_HAS_DETAIL_EDGE_BINDING",
+            "NETWORK_MIN_DETAIL_LAYER_COUNT",
+            "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+            "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+            "NETWORK_HAS_DATA_LAYERS_INFO"
+        ],
+        "oracle.bi.tech.ngperformancetile": [
+            "PERFORMANCE_TILE_NO_DERIVED_LAYOUT_OVERRIDES",
+            "PERFORMANCE_TILE_HAS_LOGICAL_MEASURES_BINDING",
+            "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+        ],
+        "oracle.bi.tech.parallelcoordinates": [
+            "PLUGIN_HAS_LOGICAL_ROW_AND_COLUMN_EDGES",
+            "PARALLEL_COORDINATES_HAS_MULTI_MEASURE_COLUMN_BINDING",
+            "PARALLEL_COORDINATES_HAS_DETAIL_EDGE_BINDING",
+            "PARALLEL_COORDINATES_EXECUTION_TRELLIS_MINIMIZED",
+            "PARALLEL_COORDINATES_HAS_DATA_LAYERS_INFO",
+            "PARALLEL_COORDINATES_REJECTS_LEGACY_LOGICAL_COLUMN_KEY"
+        ],
+        "oracle.bi.tech.performancetile": [
+            "PERFORMANCE_TILE_NO_DERIVED_LAYOUT_OVERRIDES",
+            "PERFORMANCE_TILE_HAS_LOGICAL_MEASURES_BINDING",
+            "PLUGIN_HAS_PRIMARY_MEASURE_BINDING"
+        ],
+        "oracle.bi.tech.pivot": [
+            "PIVOT_HAS_ROW_EDGE_BINDING",
+            "PIVOT_HAS_COLUMN_EDGE_BINDING",
+            "PIVOT_HAS_MEASURES_BINDING",
+            "PIVOT_ROW_EDGE_PARITY",
+            "PIVOT_COLUMN_EDGE_PARITY",
+            "PIVOT_MEASURES_LIST_PARITY"
+        ],
+        "oracle.bi.tech.sankey": [
+            "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+            "NETWORK_HAS_DETAIL_EDGE_BINDING",
+            "NETWORK_MIN_DETAIL_LAYER_COUNT",
+            "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+            "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+            "NETWORK_HAS_DATA_LAYERS_INFO",
+            "SANKEY_HAS_SANKEY_SETTINGS_NAMESPACE"
+        ],
+        "oracle.bi.tech.spacer": [
+            "UI_CONTROL_VALID_PLUGIN_TYPE"
+        ],
+        "oracle.bi.tech.table": [
+            "TABLE_COLUMN_EDGE_EMPTY",
+            "TABLE_ROW_EDGE_HAS_BINDING",
+            "TABLE_ROW_EDGE_PARITY",
+            "TABLE_LOGICAL_COLUMN_EDGE_EMPTY"
+        ],
+        "oracle.bi.tech.tagcloud": [
+            "AUTOVIZ_HAS_INNER_PLUGIN_TYPE",
+            "AUTOVIZ_HAS_MEASURES_LIST_VIEW_ENTRY",
+            "AUTOVIZ_HAS_NESTED_MEASURE_VIEW",
+            "AUTOVIZ_HAS_COLOR_EDGE_WITH_HIDDEN_MEASURE",
+            "AUTOVIZ_HAS_NESTED_PROPERTY_ADDITIONS",
+            "AUTOVIZ_DONUT_HAS_MIN_MAX_PROPERTY_ADDITIONS"
+        ],
+        "oracle.bi.tech.textbox": [
+            "UI_CONTROL_VALID_PLUGIN_TYPE",
+            "TEXTBOX_HAS_RUNTIME_TEXT_CONTENTS"
+        ],
+        "oracle.bi.tech.tidytree": [
+            "NETWORK_AUTOVIZ_INNER_PLUGIN_MATCH",
+            "NETWORK_HAS_DETAIL_EDGE_BINDING",
+            "NETWORK_MIN_DETAIL_LAYER_COUNT",
+            "NETWORK_EXECUTION_ROW_EDGE_STABLE",
+            "NETWORK_EXECUTION_COLUMN_EDGE_MEASURE_BINDING",
+            "NETWORK_HAS_DATA_LAYERS_INFO"
+        ],
+        "oracle.bi.tech.timeline": [
+            "PLUGIN_HAS_ANY_LOGICAL_EDGE_BINDING"
+        ]
+    }
+}

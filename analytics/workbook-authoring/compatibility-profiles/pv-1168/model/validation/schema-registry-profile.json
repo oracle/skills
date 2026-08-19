@@ -1,0 +1,209 @@
+{
+    "manifestVersion": 1,
+    "schemaType": "workbook",
+    "schemaIdPattern": "http://oracle.com/bi/workbook/{VERSION}/",
+    "versionFieldName": "projectVersion",
+    "supportedSchemaVersions": [
+        1162
+    ],
+    "latestSchemaVersion": 1162,
+    "versionMappings": {
+        "1162": 1162
+    },
+    "profiles": {
+        "full": {
+            "rootSchemaIds": [
+                "http://oracle.com/bi/workbook/1162/"
+            ],
+            "schemaFiles": [
+                "_common_schemas_10_.js",
+                "_common_schemas_11_.js",
+                "_common_schemas_12_.js",
+                "_common_schemas_1_.js",
+                "_common_schemas_2_.js",
+                "_common_schemas_3_.js",
+                "_common_schemas_4_.js",
+                "_common_schemas_5_.js",
+                "_common_schemas_6_.js",
+                "_common_schemas_7_.js",
+                "_common_schemas_8_.js",
+                "_common_schemas_9_.js",
+                "workbook_1.0.0_requestVariableParameterBindings.js",
+                "workbook_1.0.0_sharedDataActions.js",
+                "workbook_1.0.0_sharedDataActions_sharedDataAction.js",
+                "workbook_1162_.js"
+            ]
+        },
+        "latest": {
+            "rootSchemaIds": [
+                "http://oracle.com/bi/workbook/1162/"
+            ],
+            "schemaFiles": [
+                "_common_schemas_10_.js",
+                "_common_schemas_11_.js",
+                "_common_schemas_12_.js",
+                "_common_schemas_1_.js",
+                "_common_schemas_2_.js",
+                "_common_schemas_3_.js",
+                "_common_schemas_4_.js",
+                "_common_schemas_5_.js",
+                "_common_schemas_6_.js",
+                "_common_schemas_7_.js",
+                "_common_schemas_8_.js",
+                "_common_schemas_9_.js",
+                "workbook_1.0.0_requestVariableParameterBindings.js",
+                "workbook_1.0.0_sharedDataActions.js",
+                "workbook_1.0.0_sharedDataActions_sharedDataAction.js",
+                "workbook_1162_.js"
+            ]
+        },
+        "window": {
+            "rootSchemaIds": [
+                "http://oracle.com/bi/workbook/1162/"
+            ],
+            "schemaFiles": [
+                "_common_schemas_10_.js",
+                "_common_schemas_11_.js",
+                "_common_schemas_12_.js",
+                "_common_schemas_1_.js",
+                "_common_schemas_2_.js",
+                "_common_schemas_3_.js",
+                "_common_schemas_4_.js",
+                "_common_schemas_5_.js",
+                "_common_schemas_6_.js",
+                "_common_schemas_7_.js",
+                "_common_schemas_8_.js",
+                "_common_schemas_9_.js",
+                "workbook_1.0.0_requestVariableParameterBindings.js",
+                "workbook_1.0.0_sharedDataActions.js",
+                "workbook_1.0.0_sharedDataActions_sharedDataAction.js",
+                "workbook_1162_.js"
+            ]
+        }
+    },
+    "relativeSchemaRules": [
+        {
+            "id": "filterControlCollectionsRoot",
+            "path": "/filterControlCollections",
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/",
+            "schemaType": "filterControlCollections"
+        },
+        {
+            "id": "reportConfigRoot",
+            "path": "/reportConfig",
+            "schemaIdPattern": "http://oracle.com/bi/reportConfig/{VERSION}/",
+            "versionFieldName": "_version",
+            "schemaType": "reportConfig"
+        },
+        {
+            "id": "parametersRoot",
+            "path": "/parameters",
+            "schemaIdPattern": "http://oracle.com/bi/parameters/{VERSION}/",
+            "versionFieldName": "_version",
+            "schemaType": "parameters"
+        },
+        {
+            "id": "requestVariableParameterBindings",
+            "path": "/requestVariableParameterBindings",
+            "schemaId": "http://oracle.com/bi/workbook/1.0.0/requestVariableParameterBindings"
+        }
+    ],
+    "pathSchemaRules": [
+        {
+            "id": "criteria",
+            "path": "/criteria",
+            "schemaId": "http://oracle.com/bi/workbook/0.0.0/criteria"
+        },
+        {
+            "id": "layouts",
+            "path": "/layouts",
+            "schemaId": "http://oracle.com/bi/workbook/0.0.0/layouts"
+        },
+        {
+            "id": "views",
+            "path": "/views",
+            "schemaId": "http://oracle.com/bi/workbook/0.0.0/views"
+        },
+        {
+            "id": "datasources",
+            "path": "/datasources",
+            "schemaId": "http://oracle.com/bi/workbook/0.0.0/datasources"
+        },
+        {
+            "id": "pluginView",
+            "pathRegex": "^/views/children/\\d+$",
+            "when": {
+                "field": "type",
+                "equals": "saw:pluginView"
+            },
+            "schemaId": "http://oracle.com/bi/workbook/0.0.0/pluginView"
+        },
+        {
+            "id": "canvasView",
+            "pathRegex": "^/views/children/\\d+$",
+            "when": {
+                "field": "type",
+                "equals": "saw:canvas"
+            },
+            "schemaId": "http://oracle.com/bi/workbook/0.0.0/canvasView"
+        },
+        {
+            "id": "topFilterControlCollectionRef",
+            "path": "/filterControlCollectionRef",
+            "schemaId": "http://oracle.com/bi/filterControlCollectionRef/0.0.0/"
+        },
+        {
+            "id": "filterControlCollectionsRootByPath",
+            "path": "/filterControlCollections",
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/"
+        },
+        {
+            "id": "filterControlCollectionChild",
+            "pathRegex": "^/filterControlCollections/children/\\d+$",
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/filterControlCollectionsChild"
+        },
+        {
+            "id": "columnFilterControl",
+            "pathRegex": "^/filterControlCollections/children/\\d+/filterControls/children/\\d+$",
+            "when": {
+                "field": "type",
+                "equals": "saw:columnFilterControl"
+            },
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/columnFilterControl"
+        },
+        {
+            "id": "expressionFilterControl",
+            "pathRegex": "^/filterControlCollections/children/\\d+/filterControls/children/\\d+$",
+            "when": {
+                "field": "type",
+                "equals": "saw:expressionFilterControl"
+            },
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/expressionFilterControl"
+        },
+        {
+            "id": "parameterFilterControl",
+            "pathRegex": "^/filterControlCollections/children/\\d+/filterControls/children/\\d+$",
+            "when": {
+                "field": "type",
+                "equals": "saw:parameterFilterControl"
+            },
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/parameterFilterControl"
+        },
+        {
+            "id": "groupFilterControl",
+            "pathRegex": "^/filterControlCollections/children/\\d+/filterControls/children/\\d+$",
+            "when": {
+                "field": "type",
+                "equals": "saw:groupFilterControl"
+            },
+            "schemaId": "http://oracle.com/bi/filterControlCollections/0.0.0/groupFilterControl"
+        },
+        {
+            "id": "filterControlConfig",
+            "pathRegex": "^/filterControlCollections/children/\\d+/filterControls/children/\\d+/filterControlConfig$",
+            "schemaIdPattern": "http://oracle.com/bi/filterControlCollections/{VERSION}/filterControlConfig",
+            "versionFieldName": "_version",
+            "defaultVersion": "1.0.11"
+        }
+    ]
+}

@@ -1,0 +1,265 @@
+{
+  "manifestVersion": 1,
+  "contractVersion": "v1",
+  "source": {
+    "description": "Source-backed OAC system layout templates used as geometry slots for workbook authoring."
+  },
+  "defaults": {
+    "autoApply": false,
+    "defaultBehavior": "registered system templates are used only when explicitly requested by analysisRequirements canvas layout intent or presentationPolish registered-template hints",
+    "applyDefaultOnlyWhenAnyRole": [
+      "filter"
+    ]
+  },
+  "templates": {
+    "bitech.layoutTemplate.filterLeft": {
+      "id": "bitech.layoutTemplate.filterLeft",
+      "name": "Filter Left",
+      "type": "shared",
+      "width": 1242,
+      "height": 1185,
+      "isAutofit": true,
+      "slotCount": 9,
+      "slots": [
+        {
+          "slotID": "filter_left_rail",
+          "role": "filter",
+          "acceptedRoles": [
+            "filter"
+          ],
+          "left": 0,
+          "top": 0,
+          "width": 288,
+          "height": 1185
+        },
+        {
+          "slotID": "kpi_1",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 298,
+          "top": 0,
+          "width": 229,
+          "height": 229
+        },
+        {
+          "slotID": "kpi_2",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 537,
+          "top": 0,
+          "width": 228,
+          "height": 229
+        },
+        {
+          "slotID": "kpi_3",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 775,
+          "top": 0,
+          "width": 229,
+          "height": 229
+        },
+        {
+          "slotID": "kpi_4",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 1014,
+          "top": 0,
+          "width": 228,
+          "height": 229
+        },
+        {
+          "slotID": "primary_wide",
+          "role": "primaryTrend",
+          "acceptedRoles": [
+            "primaryTrend",
+            "primaryComparison",
+            "primaryDetail"
+          ],
+          "left": 298,
+          "top": 239,
+          "width": 944,
+          "height": 468
+        },
+        {
+          "slotID": "supporting_1",
+          "role": "supportingVisual",
+          "acceptedRoles": [
+            "supportingVisual",
+            "primaryComparison",
+            "primaryTrend"
+          ],
+          "left": 298,
+          "top": 717,
+          "width": 308,
+          "height": 468
+        },
+        {
+          "slotID": "supporting_2",
+          "role": "supportingVisual",
+          "acceptedRoles": [
+            "supportingVisual",
+            "primaryComparison",
+            "primaryTrend"
+          ],
+          "left": 616,
+          "top": 717,
+          "width": 308,
+          "height": 468
+        },
+        {
+          "slotID": "supporting_3",
+          "role": "supportingVisual",
+          "acceptedRoles": [
+            "supportingVisual",
+            "primaryComparison",
+            "primaryTrend"
+          ],
+          "left": 934,
+          "top": 717,
+          "width": 308,
+          "height": 468
+        }
+      ]
+    },
+    "bitech.layoutTemplate.filterTop": {
+      "id": "bitech.layoutTemplate.filterTop",
+      "name": "Filter Top",
+      "type": "shared",
+      "width": 1242,
+      "height": 1185,
+      "isAutofit": true,
+      "slotCount": 10,
+      "slots": [
+        {
+          "slotID": "filter_top_bar",
+          "role": "filter",
+          "acceptedRoles": [
+            "filter"
+          ],
+          "left": 0,
+          "top": 0,
+          "width": 1242,
+          "height": 131
+        },
+        {
+          "slotID": "kpi_1",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 0,
+          "top": 141,
+          "width": 304,
+          "height": 224
+        },
+        {
+          "slotID": "kpi_2",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 314,
+          "top": 141,
+          "width": 302,
+          "height": 224
+        },
+        {
+          "slotID": "kpi_3",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 626,
+          "top": 141,
+          "width": 304,
+          "height": 224
+        },
+        {
+          "slotID": "kpi_4",
+          "role": "kpi",
+          "acceptedRoles": [
+            "kpi"
+          ],
+          "left": 940,
+          "top": 141,
+          "width": 302,
+          "height": 224
+        },
+        {
+          "slotID": "primary_left",
+          "role": "primaryComparison",
+          "acceptedRoles": [
+            "primaryComparison",
+            "primaryTrend",
+            "primaryDetail"
+          ],
+          "left": 0,
+          "top": 375,
+          "width": 407,
+          "height": 459
+        },
+        {
+          "slotID": "primary_center",
+          "role": "primaryComparison",
+          "acceptedRoles": [
+            "primaryComparison",
+            "primaryTrend",
+            "primaryDetail"
+          ],
+          "left": 417,
+          "top": 375,
+          "width": 408,
+          "height": 459
+        },
+        {
+          "slotID": "primary_right",
+          "role": "primaryComparison",
+          "acceptedRoles": [
+            "primaryComparison",
+            "primaryTrend",
+            "primaryDetail"
+          ],
+          "left": 835,
+          "top": 375,
+          "width": 407,
+          "height": 459
+        },
+        {
+          "slotID": "supporting_left",
+          "role": "supportingVisual",
+          "acceptedRoles": [
+            "supportingVisual",
+            "primaryComparison",
+            "primaryTrend"
+          ],
+          "left": 0,
+          "top": 844,
+          "width": 616,
+          "height": 341
+        },
+        {
+          "slotID": "supporting_right",
+          "role": "supportingVisual",
+          "acceptedRoles": [
+            "supportingVisual",
+            "primaryComparison",
+            "primaryTrend"
+          ],
+          "left": 626,
+          "top": 844,
+          "width": 616,
+          "height": 341
+        }
+      ]
+    }
+  }
+}

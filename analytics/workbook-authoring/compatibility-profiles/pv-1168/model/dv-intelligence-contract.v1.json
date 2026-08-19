@@ -1,0 +1,240 @@
+{
+  "manifestVersion": 1,
+  "contractVersion": "v1",
+  "modes": [
+    "auto",
+    "off"
+  ],
+  "defaults": {
+    "mode": "auto",
+    "profileByTargetVersion": {
+      "default": "balanced_v1",
+      "26.05": "balanced_v1",
+      "26.07": "balanced_v1"
+    },
+    "defaultAudienceProfile": {
+      "role": "general_analyst",
+      "targetLevel": "intermediate"
+    }
+  },
+  "documentation": {
+    "references": [
+      {
+        "id": "oracle_ai_dv_intelligence",
+        "title": "AI-assisted Data Visualization Intelligence",
+        "url": "https://blogs.oracle.com/analytics/ai-assisted-data-visualization-intelligence"
+      }
+    ]
+  },
+  "profiles": {
+    "balanced_v1": {
+      "dimensions": [
+        {
+          "id": "data_preparation",
+          "label": "Data Preparation",
+          "weight": 0.16,
+          "featureWeights": {
+            "runtime_valid": 0.3,
+            "requirements_trace_valid": 0.35,
+            "number_formatting_enabled": 0.2,
+            "filter_plan_quality": 0.15
+          }
+        },
+        {
+          "id": "analytical_depth",
+          "label": "Analytical Depth",
+          "weight": 0.19,
+          "featureWeights": {
+            "calculation_signal": 0.5,
+            "measure_coverage": 0.25,
+            "analysis_traceability": 0.25
+          }
+        },
+        {
+          "id": "visualization_quality",
+          "label": "Visualization Quality",
+          "weight": 0.2,
+          "featureWeights": {
+            "runtime_valid": 0.35,
+            "visualization_diversity": 0.3,
+            "presentation_quality": 0.35
+          }
+        },
+        {
+          "id": "storytelling",
+          "label": "Storytelling",
+          "weight": 0.14,
+          "featureWeights": {
+            "narrative_coverage": 0.45,
+            "canvas_title_coverage": 0.25,
+            "analysis_traceability": 0.3
+          }
+        },
+        {
+          "id": "interaction_filtering",
+          "label": "Interaction and Filtering",
+          "weight": 0.16,
+          "featureWeights": {
+            "filter_control_coverage": 0.4,
+            "interaction_signal": 0.35,
+            "filter_plan_quality": 0.25
+          }
+        },
+        {
+          "id": "dashboard_usability",
+          "label": "Dashboard Usability",
+          "weight": 0.15,
+          "featureWeights": {
+            "presentation_quality": 0.4,
+            "layout_severity_penalty_inverted": 0.35,
+            "view_density_balance": 0.25
+          }
+        }
+      ],
+      "audienceBands": [
+        {
+          "id": "novice_ready",
+          "label": "Novice Ready",
+          "minScore": 0,
+          "maxScore": 49,
+          "description": "Exploratory quality; core analytical intent still needs reinforcement."
+        },
+        {
+          "id": "analyst_ready",
+          "label": "Analyst Ready",
+          "minScore": 50,
+          "maxScore": 69,
+          "description": "Suitable for analyst workflows with targeted improvements recommended."
+        },
+        {
+          "id": "manager_ready",
+          "label": "Manager Ready",
+          "minScore": 70,
+          "maxScore": 84,
+          "description": "Broadly presentation-ready for management reviews."
+        },
+        {
+          "id": "executive_ready",
+          "label": "Executive Ready",
+          "minScore": 85,
+          "maxScore": 100,
+          "description": "High readiness for executive communication."
+        }
+      ],
+      "recommendationRules": [
+        {
+          "id": "RUNTIME_VALIDATION_FIX",
+          "priority": "critical",
+          "dimensionID": "visualization_quality",
+          "conditions": [
+            {
+              "feature": "runtime_valid",
+              "operator": "lte",
+              "value": 0
+            }
+          ],
+          "message": "Resolve runtime validation issues before relying on downstream scoring recommendations.",
+          "action": "Use strict runtime-validation-check findings as the first remediation pass."
+        },
+        {
+          "id": "TRACEABILITY_GAP",
+          "priority": "high",
+          "dimensionID": "analytical_depth",
+          "conditions": [
+            {
+              "feature": "requirements_trace_valid",
+              "operator": "lt",
+              "value": 1
+            }
+          ],
+          "message": "Requirement-to-workbook traceability is incomplete.",
+          "action": "Strengthen approved analysis requirements and re-run requirements-trace validation."
+        },
+        {
+          "id": "FILTER_COVERAGE_GAP",
+          "priority": "high",
+          "dimensionID": "interaction_filtering",
+          "conditions": [
+            {
+              "feature": "filter_control_coverage",
+              "operator": "lt",
+              "value": 0.45
+            }
+          ],
+          "message": "Filter coverage is weak for interactive analysis.",
+          "action": "Prefer a global filter bar for key dimensions and add default filters grounded in profiling."
+        },
+        {
+          "id": "INTERACTION_GAP",
+          "priority": "medium",
+          "dimensionID": "interaction_filtering",
+          "conditions": [
+            {
+              "feature": "interaction_signal",
+              "operator": "lt",
+              "value": 0.35
+            }
+          ],
+          "message": "Dashboard interactions are limited.",
+          "action": "Add deterministic interactions (cross-filtering or linked actions) between major visuals."
+        },
+        {
+          "id": "NARRATIVE_GAP",
+          "priority": "medium",
+          "dimensionID": "storytelling",
+          "conditions": [
+            {
+              "feature": "narrative_coverage",
+              "operator": "lt",
+              "value": 0.25
+            }
+          ],
+          "message": "Narrative guidance is sparse.",
+          "action": "Add concise textbox callouts for KPI context, caveats, or interpretation guidance."
+        },
+        {
+          "id": "DIVERSITY_GAP",
+          "priority": "medium",
+          "dimensionID": "visualization_quality",
+          "conditions": [
+            {
+              "feature": "visualization_diversity",
+              "operator": "lt",
+              "value": 0.45
+            }
+          ],
+          "message": "Visualization variety is low for the requested analysis scope.",
+          "action": "Introduce complementary visual forms (for example trend + breakdown + detail table)."
+        },
+        {
+          "id": "CALCULATION_GAP",
+          "priority": "medium",
+          "dimensionID": "analytical_depth",
+          "conditions": [
+            {
+              "feature": "calculation_signal",
+              "operator": "lt",
+              "value": 0.35
+            }
+          ],
+          "message": "Derived metric depth is limited.",
+          "action": "Add governed derived metrics (for example ratios, period-over-period, or contribution metrics)."
+        },
+        {
+          "id": "USABILITY_GAP",
+          "priority": "medium",
+          "dimensionID": "dashboard_usability",
+          "conditions": [
+            {
+              "feature": "presentation_quality",
+              "operator": "lt",
+              "value": 0.6
+            }
+          ],
+          "message": "Presentation quality can be improved.",
+          "action": "Review polish and lint outcomes and apply deterministic layout/style remediations."
+        }
+      ]
+    }
+  }
+}

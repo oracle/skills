@@ -1,0 +1,343 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "defaultTemplateId": "bar_basic",
+    "aliases": [
+        {
+            "pluginType": "oracle.bi.tech.butterfly",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.buttonbar",
+            "runtimeContractFamily": "ui_control",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Dashboard Controls"
+        },
+        {
+            "pluginType": "oracle.bi.tech.canvasfilterviz.listbox",
+            "runtimeContractFamily": "filter_control_viz",
+            "defaultTemplateId": "bar_with_canvas_filter_control",
+            "sourceCategory": "Dashboard Controls"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.area",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "area_time",
+            "sourceCategory": "Area Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.area100",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "line_time",
+            "sourceCategory": "Line"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.bar",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.boxplot",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.combo",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.comboMultiLayerChart",
+            "runtimeContractFamily": "chart_combo_multilayer",
+            "defaultTemplateId": "combo_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.correlationmatrix",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Grid"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.donut",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "donut_basic",
+            "sourceCategory": "Pie (+Treemap)"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.gridheatmap",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Grid"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalbar",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Horizontal Bar Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalBoxplot",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalstackbar",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Horizontal Stacked Bar Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.horizontalstackbar100",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.line",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "line_time",
+            "sourceCategory": "Line Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.marker",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Scatter"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.nonstackedarea",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "area_time",
+            "sourceCategory": "Area Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.picto",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Grid"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.pie",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "donut_basic",
+            "sourceCategory": "Pie (+Treemap)"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.polarbar",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "line_time",
+            "sourceCategory": "Line"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.radar",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "line_time",
+            "sourceCategory": "Line"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.range",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.rangeArea",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "area_time",
+            "sourceCategory": "Area Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.rangeHorizontal",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.scatter",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "scatter_basic",
+            "sourceCategory": "Scatter"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.spiderweb",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "line_time",
+            "sourceCategory": "Line"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.stackbar",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Stacked Bar Chart"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.stackbar100",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.stackedmarker",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Scatter"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.standaloneLegend",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.sunburst",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "donut_basic",
+            "sourceCategory": "Pie (+Treemap)"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.treemap",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "donut_basic",
+            "sourceCategory": "Pie (+Treemap)"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chart.waterfall",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "waterfall_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.chorddiagram",
+            "runtimeContractFamily": "network_graph",
+            "defaultTemplateId": "network_basic",
+            "sourceCategory": "Network"
+        },
+        {
+            "pluginType": "oracle.bi.tech.circularnetwork",
+            "runtimeContractFamily": "network_graph",
+            "defaultTemplateId": "network_basic",
+            "sourceCategory": "Network"
+        },
+        {
+            "pluginType": "oracle.bi.tech.ganttchart",
+            "runtimeContractFamily": "gantt",
+            "defaultTemplateId": "gantt_basic",
+            "sourceCategory": "Bar"
+        },
+        {
+            "pluginType": "oracle.bi.tech.gauge",
+            "runtimeContractFamily": "gauge",
+            "defaultTemplateId": "performance_tile_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.iframe",
+            "runtimeContractFamily": "ui_control",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.image",
+            "runtimeContractFamily": "ui_control",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.list",
+            "runtimeContractFamily": "list_narrative",
+            "defaultTemplateId": "table_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.map",
+            "runtimeContractFamily": "map",
+            "defaultTemplateId": "map_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.narrative",
+            "runtimeContractFamily": "list_narrative",
+            "defaultTemplateId": "table_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.network",
+            "runtimeContractFamily": "network_graph",
+            "defaultTemplateId": "network_basic",
+            "sourceCategory": "Network"
+        },
+        {
+            "pluginType": "oracle.bi.tech.ngperformancetile",
+            "runtimeContractFamily": "performance_tile",
+            "defaultTemplateId": "performance_tile_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.parallelcoordinates",
+            "runtimeContractFamily": "parallel_coordinates",
+            "defaultTemplateId": "parallel_coordinates_basic",
+            "sourceCategory": "Network"
+        },
+        {
+            "pluginType": "oracle.bi.tech.performancetile",
+            "runtimeContractFamily": "performance_tile",
+            "defaultTemplateId": "performance_tile_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.pivot",
+            "runtimeContractFamily": "pivot",
+            "defaultTemplateId": "pivot_basic",
+            "sourceCategory": "Grid"
+        },
+        {
+            "pluginType": "oracle.bi.tech.sankey",
+            "runtimeContractFamily": "network_graph",
+            "defaultTemplateId": "sankey_basic",
+            "sourceCategory": "Network"
+        },
+        {
+            "pluginType": "oracle.bi.tech.spacer",
+            "runtimeContractFamily": "ui_control",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "Dashboard Controls"
+        },
+        {
+            "pluginType": "oracle.bi.tech.table",
+            "runtimeContractFamily": "table",
+            "defaultTemplateId": "table_basic",
+            "sourceCategory": "Grid"
+        },
+        {
+            "pluginType": "oracle.bi.tech.tagcloud",
+            "runtimeContractFamily": "chart_autoviz",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.textbox",
+            "runtimeContractFamily": "ui_control",
+            "defaultTemplateId": "bar_basic",
+            "sourceCategory": "More"
+        },
+        {
+            "pluginType": "oracle.bi.tech.tidytree",
+            "runtimeContractFamily": "network_graph",
+            "defaultTemplateId": "network_basic",
+            "sourceCategory": "Network"
+        },
+        {
+            "pluginType": "oracle.bi.tech.timeline",
+            "runtimeContractFamily": "list_narrative",
+            "defaultTemplateId": "table_basic",
+            "sourceCategory": "More"
+        }
+    ]
+}

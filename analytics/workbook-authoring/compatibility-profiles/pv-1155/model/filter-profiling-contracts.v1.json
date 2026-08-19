@@ -1,0 +1,123 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "profilingPolicy": {
+        "requiredCapability": "sql_query_execution",
+        "preferredTool": "oracle_analytics_execute_oac_ansi_sql",
+        "fallbackTool": "oracle_analytics_execute_logical_sql",
+        "toolAvailabilitySource": "mcp_tool_inventory",
+        "disallowVersionBasedToolInference": true,
+        "selectionOrder": [
+            "use fallbackTool directly when the probe requires Logical SQL semantics",
+            "otherwise use preferredTool when it is present in the MCP tool inventory",
+            "otherwise use fallbackTool when it is present in the MCP tool inventory",
+            "otherwise continue with conservative defaults and record the unavailable capability in filterDecisionTrace"
+        ],
+        "preferredToolFailurePolicy": "retry_once_with_fallback_tool_for_unsupported_grammar_or_semantics",
+        "noQueryToolPolicy": "continue_with_fallback_and_trace",
+        "requiredStage": "before_template_bind_and_validation_check",
+        "onProbeFailure": "continue_with_fallback_and_trace",
+        "maxProbeRetries": 1
+    },
+    "measureAggregationPolicy": {
+        "metadataSource": "oracle_analytics_describe_data",
+        "unconfiguredAggregation": "use_preferred_tool",
+        "configuredNonComplexAggregation": "use_fallback_tool_with_overrideaggr_for_measure_statistics",
+        "complexAggregation": "skip_unsafe_statistics_with_fallback_and_trace"
+    },
+    "queryGuardrails": {
+        "defaultMaxRows": 100,
+        "maxRowsCeiling": 250,
+        "defaultTimeoutMillis": 15000,
+        "requireDeterministicOrderBy": true,
+        "requireFetchLimit": true,
+        "disallowCrossDatasourceJoinInference": true
+    },
+    "probeTemplates": {
+        "dimension": [
+            {
+                "id": "dimension_top_values",
+                "intent": "discover_filter_choices",
+                "maxRows": 50,
+                "sqlTemplate": "SELECT <columnExpr> AS llm_0, COUNT(*) AS llm_1 FROM <fromExpr> WHERE <columnExpr> IS NOT NULL ORDER BY llm_1 DESC, llm_0 FETCH FIRST <fetchRows> ROWS ONLY"
+            },
+            {
+                "id": "dimension_distinct_count",
+                "intent": "estimate_cardinality",
+                "maxRows": 1,
+                "sqlTemplate": "SELECT COUNT(DISTINCT <columnExpr>) AS llm_0 FROM <fromExpr> FETCH FIRST 1 ROWS ONLY"
+            }
+        ],
+        "measure": [
+            {
+                "id": "measure_range",
+                "intent": "derive_range_defaults",
+                "maxRows": 1,
+                "sqlTemplate": "SELECT MIN(<columnExpr>) AS llm_0, MAX(<columnExpr>) AS llm_1 FROM <fromExpr> FETCH FIRST 1 ROWS ONLY",
+                "logicalSqlOverrideTemplate": "SELECT MIN(OVERRIDEAGGR(<columnExpr>)) AS llm_0, MAX(OVERRIDEAGGR(<columnExpr>)) AS llm_1 FROM <fromExpr> FETCH FIRST 1 ROWS ONLY",
+                "toolPolicy": "use_fallback_tool_with_logicalSqlOverrideTemplate_when_describe_data_reports_configured_non_complex_aggregation"
+            },
+            {
+                "id": "measure_distribution_sample",
+                "intent": "derive_distribution_hint",
+                "maxRows": 20,
+                "sqlTemplate": "SELECT <columnExpr> AS llm_0 FROM <fromExpr> WHERE <columnExpr> IS NOT NULL ORDER BY <columnExpr> DESC FETCH FIRST <fetchRows> ROWS ONLY"
+            }
+        ],
+        "temporal": [
+            {
+                "id": "temporal_range",
+                "intent": "derive_time_bounds",
+                "maxRows": 1,
+                "sqlTemplate": "SELECT MIN(<columnExpr>) AS llm_0, MAX(<columnExpr>) AS llm_1 FROM <fromExpr> FETCH FIRST 1 ROWS ONLY"
+            },
+            {
+                "id": "temporal_recent_values",
+                "intent": "detect_granularity_hint",
+                "maxRows": 20,
+                "sqlTemplate": "SELECT <columnExpr> AS llm_0 FROM <fromExpr> WHERE <columnExpr> IS NOT NULL ORDER BY <columnExpr> DESC FETCH FIRST <fetchRows> ROWS ONLY"
+            }
+        ]
+    },
+    "decisionRules": {
+        "defaultFilterMode": "filter_bar",
+        "autoFilterSelectionStrength": "moderate",
+        "highCardinalityThreshold": 1000,
+        "highCardinalityAction": "deprioritize_unless_explicit",
+        "operatorDefaults": {
+            "dimension": "in",
+            "measure": "between",
+            "temporal": "between"
+        },
+        "defaultValuePolicy": {
+            "dimension": "use_top_values",
+            "measure": "use_profiled_min_max",
+            "temporal": "use_profiled_time_bounds"
+        }
+    },
+    "traceContract": {
+        "requiredOutputFields": [
+            "required",
+            "contractVersion",
+            "selectedFilterMode",
+            "fallbackUsed",
+            "fallbackReason",
+            "queryIntents",
+            "probeResults",
+            "derivedDecisions"
+        ],
+        "probeResultFields": [
+            "probeId",
+            "intent",
+            "status",
+            "columnID"
+        ],
+        "decisionEntryFields": [
+            "filterID",
+            "columnID",
+            "location",
+            "operator"
+        ],
+        "fallbackReasonRequiredWhenProbeFails": true
+    }
+}

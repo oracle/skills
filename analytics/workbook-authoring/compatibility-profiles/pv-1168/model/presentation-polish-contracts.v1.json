@@ -1,0 +1,392 @@
+{
+  "manifestVersion": 1,
+  "contractVersion": "v2",
+  "modes": [
+    "auto",
+    "off",
+    "strict"
+  ],
+  "defaults": {
+    "modeByGenerationStrategy": {
+      "compose_ootb": "auto",
+      "passthrough_bound": "auto"
+    },
+    "titlePolicy": "question_oriented",
+    "styleTokenSetId": "neutral_v2",
+    "layoutArchetypeByFilterMode": {
+      "filter_bar": "filter_bar",
+      "filter_viz": "filter_rail"
+    },
+    "fallbackLayoutArchetype": "content_grid"
+  },
+  "titlePolicies": [
+    "question_oriented",
+    "preserve_input"
+  ],
+  "neutralTheme": {
+    "tokenSetId": "neutral_v2",
+    "canvas": {
+      "backgroundColor": "#F8FAFC",
+      "titleColor": "#0F172A"
+    },
+    "panel": {
+      "backgroundColor": "#FFFFFF",
+      "borderColor": "#D0D7DE"
+    },
+    "text": {
+      "titleStyle": "question_oriented"
+    },
+    "filter": {
+      "preferredPresentation": "filter_bar"
+    },
+    "table": {
+      "preferredViewportHeightPx": 420
+    }
+  },
+  "layoutArchetypes": {
+    "executive_dashboard": {
+      "canvasWidthPx": 1200,
+      "viewportHeightPx": 780,
+      "topOffsetPx": 84,
+      "leftPaddingPx": 24,
+      "rightPaddingPx": 24,
+      "bottomPaddingPx": 24,
+      "gutterXPx": 24,
+      "gutterYPx": 24,
+      "maxColumns": 2,
+      "minCellHeightPx": 260,
+      "minCellWidthPx": 260,
+      "primaryDataRowWeight": 1.35,
+      "roleOrder": [
+        "kpi",
+        "filter",
+        "primaryComparison",
+        "primaryTrend",
+        "primaryDetail",
+        "supportingVisual"
+      ]
+    },
+    "filter_bar": {
+      "canvasWidthPx": 1200,
+      "viewportHeightPx": 780,
+      "topOffsetPx": 84,
+      "leftPaddingPx": 24,
+      "rightPaddingPx": 24,
+      "bottomPaddingPx": 24,
+      "gutterXPx": 24,
+      "gutterYPx": 24,
+      "maxColumns": 2,
+      "minCellHeightPx": 240,
+      "minCellWidthPx": 260,
+      "primaryDataRowWeight": 1.45,
+      "roleOrder": [
+        "filter",
+        "kpi",
+        "primaryComparison",
+        "primaryTrend",
+        "primaryDetail",
+        "supportingVisual"
+      ]
+    },
+    "filter_rail": {
+      "canvasWidthPx": 1200,
+      "viewportHeightPx": 780,
+      "topOffsetPx": 24,
+      "leftPaddingPx": 24,
+      "rightPaddingPx": 24,
+      "bottomPaddingPx": 24,
+      "gutterXPx": 20,
+      "gutterYPx": 20,
+      "maxColumns": 2,
+      "minCellHeightPx": 240,
+      "minCellWidthPx": 260,
+      "railWidthPx": 260,
+      "primaryDataRowWeight": 1.45,
+      "roleOrder": [
+        "filter",
+        "kpi",
+        "primaryComparison",
+        "primaryTrend",
+        "primaryDetail",
+        "supportingVisual"
+      ]
+    },
+    "content_grid": {
+      "canvasWidthPx": 1200,
+      "viewportHeightPx": 760,
+      "topOffsetPx": 24,
+      "leftPaddingPx": 24,
+      "rightPaddingPx": 24,
+      "bottomPaddingPx": 24,
+      "gutterXPx": 24,
+      "gutterYPx": 24,
+      "maxColumns": 2,
+      "minCellHeightPx": 220,
+      "minCellWidthPx": 240,
+      "primaryDataRowWeight": 1.35,
+      "roleOrder": [
+        "kpi",
+        "filter",
+        "primaryComparison",
+        "primaryTrend",
+        "primaryDetail",
+        "supportingVisual"
+      ]
+    },
+    "cover": {
+      "canvasWidthPx": 1200,
+      "viewportHeightPx": 740,
+      "topOffsetPx": 24,
+      "leftPaddingPx": 24,
+      "rightPaddingPx": 24,
+      "bottomPaddingPx": 24,
+      "gutterXPx": 24,
+      "gutterYPx": 24,
+      "maxColumns": 1,
+      "minCellHeightPx": 520,
+      "minCellWidthPx": 900,
+      "primaryDataRowWeight": 1.0
+    }
+  },
+  "layoutRoles": {
+    "defaultRoleOrder": [
+      "kpi",
+      "filter",
+      "primaryComparison",
+      "primaryTrend",
+      "primaryDetail",
+      "supportingVisual"
+    ],
+    "roles": {
+      "kpi": {
+        "rowGroup": "summary",
+        "minHeightPx": 96,
+        "maxColumns": 4,
+        "rowWeight": 0.35,
+        "pluginTypes": [
+          "oracle.bi.tech.ngperformancetile"
+        ],
+        "runtimeFamilies": [
+          "performance_tile"
+        ]
+      },
+      "filter": {
+        "rowGroup": "filters",
+        "minHeightPx": 160,
+        "maxColumns": 2,
+        "rowWeight": 0.65,
+        "pluginTypes": [
+          "oracle.bi.tech.canvasfilterviz.listbox"
+        ]
+      },
+      "primaryComparison": {
+        "rowGroup": "primary",
+        "minHeightPx": 320,
+        "maxColumns": 2,
+        "rowWeight": 1.25,
+        "pluginTypes": [
+          "oracle.bi.tech.chart.bar",
+          "oracle.bi.tech.chart.hbar",
+          "oracle.bi.tech.chart.stackbar",
+          "oracle.bi.tech.chart.hstackbar"
+        ]
+      },
+      "primaryTrend": {
+        "rowGroup": "primary",
+        "minHeightPx": 320,
+        "maxColumns": 2,
+        "rowWeight": 1.25,
+        "pluginTypes": [
+          "oracle.bi.tech.chart.line",
+          "oracle.bi.tech.chart.area",
+          "oracle.bi.tech.chart.combo"
+        ]
+      },
+      "primaryDetail": {
+        "rowGroup": "detail",
+        "minHeightPx": 400,
+        "maxColumns": 1,
+        "rowWeight": 1.45,
+        "runtimeFamilies": [
+          "table",
+          "pivot"
+        ]
+      },
+      "supportingVisual": {
+        "rowGroup": "supporting",
+        "minHeightPx": 260,
+        "maxColumns": 2,
+        "rowWeight": 1.0
+      }
+    }
+  },
+  "layoutPolicies": {
+    "primaryDataFamilies": [
+      "table",
+      "pivot"
+    ],
+    "primaryDataMinHeightPx": 400,
+    "primaryVisualMinHeightPx": 300,
+    "primaryDataRowWeight": 1.45,
+    "minCellWidthPx": 240,
+    "compactDashboardMaxViewCount": 4,
+    "compactDashboardTargetHeightPx": 760,
+    "compactRegisteredTemplateGutterPx": 16,
+    "compactPerformanceTileHeightPx": 96,
+    "maxCompactPerformanceTileHeightPx": 128,
+    "maxFirstVisualTopPx": 260,
+    "maxCompactDashboardScrollHeightPx": 820,
+    "compactValueTableMaxHeightPx": 240,
+    "duplicateTitleVerticalGapMaxPx": 96,
+    "duplicateTitleMinHorizontalOverlapRatio": 0.45
+  },
+  "styleOverlaysByRuntimeFamily": {
+    "chart_autoviz": [
+      {
+        "path": "viewConfig.settings.viz:chart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": true,
+            "negativeValuesStyle": "default"
+          }
+        }
+      }
+    ],
+    "chart_combo_multilayer": [
+      {
+        "path": "viewConfig.settings.viz:chart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": true,
+            "negativeValuesStyle": "default"
+          }
+        }
+      }
+    ],
+    "table": [
+      {
+        "path": "viewConfig.settings.viz:chart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": false,
+            "negativeValuesStyle": "default"
+          }
+        }
+      }
+    ],
+    "pivot": [
+      {
+        "path": "viewConfig.settings.viz:chart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": false,
+            "negativeValuesStyle": "default"
+          }
+        }
+      }
+    ],
+    "map": [
+      {
+        "path": "viewConfig.settings.viz:chart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": true,
+            "negativeValuesStyle": "default"
+          }
+        }
+      }
+    ],
+    "network_graph": [
+      {
+        "path": "viewConfig.settings.viz:networkchart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": true,
+            "negativeValuesStyle": "default"
+          }
+        }
+      }
+    ],
+    "performance_tile": [
+      {
+        "path": "viewConfig.settings.viz:common",
+        "createPathIfMissing": false,
+        "overlay": {
+          "isAutoViewSuggestEnabled": "true"
+        }
+      },
+      {
+        "path": "viewConfig.settings.viz:chart",
+        "createPathIfMissing": false,
+        "overlay": {
+          "numberFormat": {
+            "useGrouping": true,
+            "useAbbreviation": true,
+            "negativeValuesStyle": "default"
+          }
+        }
+      },
+      {
+        "path": "viewConfig.settings.viz:ngperformancetile",
+        "createPathIfMissing": true,
+        "overlay": {
+          "tileStyle": "top_start",
+          "primaryLabelPosition": "rowAbove",
+          "primaryLabelAlignment": "start",
+          "primaryLabelStyle": {
+            "font": {
+              "fontSize": "12px"
+            }
+          },
+          "primaryValueStyle": {
+            "font": {
+              "fontSize": "22px"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "uxLint": {
+    "warningRuleIDs": [
+      "UX_GUTTER_INCONSISTENT",
+      "UX_CANVAS_TITLE_MISSING",
+      "UX_PALETTE_RUNTIME_MIX",
+      "UX_PRIMARY_VISUAL_VIEWPORT_TOO_SMALL",
+      "UX_PERFORMANCE_TILE_TOO_TALL",
+      "UX_LAYOUT_EXCESSIVE_TOP_WHITESPACE",
+      "UX_LAYOUT_UNNECESSARY_SCROLL_HEIGHT"
+    ],
+    "severeRuleIDs": [
+      "UX_FILTER_RAIL_TOO_NARROW",
+      "UX_PRIMARY_TABLE_VIEWPORT_TOO_SMALL",
+      "UX_LAYOUT_CELL_OVERLAP",
+      "UX_LAYOUT_MIN_SIZE_BELOW_CONTENT",
+      "UX_LAYOUT_CELL_VIEW_MISSING"
+    ],
+    "thresholds": {
+      "gutterTolerancePx": 6,
+      "layoutOverlapTolerancePx": 1,
+      "minRailWidthPx": 220,
+      "minPrimaryTableHeightPx": 400,
+      "minPrimaryVisualHeightPx": 300,
+      "maxCompactPerformanceTileHeightPx": 128,
+      "maxFirstVisualTopPx": 260,
+      "maxCompactDashboardScrollHeightPx": 820,
+      "compactDashboardMaxViewCount": 4,
+      "paletteFamilyWarningThreshold": 4
+    }
+  }
+}

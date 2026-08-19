@@ -1,0 +1,119 @@
+{
+    "manifestVersion": 1,
+    "contractVersion": "v1",
+    "purpose": "Standardized adapter payload contract for deterministic regenerate_workbook driver inputs sourced from MCP orchestration.",
+    "requiredSections": [
+        "discovery",
+        "describe",
+        "profiling"
+    ],
+    "discoverySection": {
+        "requiredFields": [
+            "method",
+            "selectedDataModel"
+        ],
+        "allowedMethods": [
+            "search_catalog",
+            "discover_data"
+        ],
+        "optionalFields": [
+            "candidateDataModels",
+            "datasource"
+        ],
+        "validationPolicy": [
+            "selectedDataModel must match an entry in candidateDataModels when candidateDataModels contains canonicalizable tokens",
+            "datasource subjectArea token (when provided) must match selectedDataModel"
+        ]
+    },
+    "describeSection": {
+        "requiredFields": [
+            "tables",
+            "columns"
+        ],
+        "tablesFieldType": "array",
+        "columnsFieldType": "array",
+        "composeOotbRequirement": "For compose_ootb generation, columns must include usable target expressions/metadata rows so criteria formulas can be rebound to the selected subject area.",
+        "validationPolicy": [
+            "when columns include direct expressions, their subject-area token must match selectedDataModel"
+        ]
+    },
+    "semanticRoleMapSection": {
+        "optional": true,
+        "field": "semanticRoleMap",
+        "description": "Optional agent-supplied semantic role mapping override for compose_ootb rebinding.",
+        "acceptedKeyTypes": [
+            "semantic_role",
+            "criteria_column_id"
+        ],
+        "valueShapes": [
+            "direct expression string",
+            "object with required expression and optional reason"
+        ],
+        "validationPolicy": [
+            "mapped expression must parse as direct subjectArea.table.column expression",
+            "mapped expression must belong to selectedDataModel",
+            "mapped expression must exist in adapterPayload.describe.columns normalized descriptors"
+        ]
+    },
+    "profilingSection": {
+        "requiredFields": [
+            "filterDecisionTrace"
+        ],
+        "traceContractSource": "filter-profiling-contracts.v1.json#/traceContract/requiredOutputFields"
+    },
+    "requirementsResolutionEvidenceSection": {
+        "optional": true,
+        "field": "requirementsResolutionEvidence",
+        "requiredFieldsWhenPresent": [
+            "resolvedExpressions",
+            "profileGrounding",
+            "rejectedAlternatives"
+        ],
+        "resolvedExpressionsFieldType": "array",
+        "profileGroundingFieldType": "array",
+        "rejectedAlternativesFieldType": "array",
+        "notes": [
+            "compose_ootb should provide requirement-resolution evidence for deterministic auditability.",
+            "Each resolved expression should map requirement references to concrete selectedDataModel expressions when available.",
+            "Rejected alternatives should include a deterministic reason code."
+        ]
+    },
+    "bindingSection": {
+        "optional": true,
+        "fields": [
+            "boundWorkbookJson",
+            "boundWorkbookPath",
+            "templateBindings"
+        ],
+        "multiCanvasRecommendation": "Provide boundWorkbookJson or boundWorkbookPath for complex multi-canvas/multi-viz topology reuse.",
+        "passthroughEscapeHatchPolicy": "boundWorkbookJson or boundWorkbookPath are first-class passthrough inputs for advanced/custom topology. Regenerate driver still runs canonicalization + strict validation check and does not constrain topology beyond base contract + validation check in passthrough mode."
+    },
+    "saveSection": {
+        "requiredWhenCapabilityTrue": "saveAvailable",
+        "successOutcomesRequiringViewUrl": [
+            "success",
+            "saved"
+        ],
+        "optionalFields": [
+            "attempted",
+            "outcome",
+            "viewUrl",
+            "savedWorkbookTarget",
+            "targetVersionAttempted",
+            "validationError"
+        ]
+    },
+    "exportSection": {
+        "requiredWhenRequestedAndCapabilityTrue": "exportRequested + exportAvailable",
+        "optionalFields": [
+            "attempted",
+            "outcome",
+            "artifact"
+        ]
+    },
+    "deterministicValidationPolicy": {
+        "failOnMissingRequiredSection": true,
+        "failOnEnumViolation": true,
+        "failOnTypeMismatch": true
+    }
+}

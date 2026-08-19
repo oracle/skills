@@ -1,0 +1,33 @@
+{
+    "manifestVersion": 1,
+    "packageProfile": "support-window",
+    "schemaType": "workbook",
+    "schemaIdPattern": "http://oracle.com/bi/workbook/{VERSION}/",
+    "versionFieldName": "projectVersion",
+    "supportedSchemaVersions": [
+        1162
+    ],
+    "defaultProjectVersion": 1168,
+    "compatibleProjectVersions": [
+        1168
+    ],
+    "schemaFilePattern": "*.js (resolved closure)",
+    "schemaFiles": [
+        "_common_schemas_10_.js",
+        "_common_schemas_11_.js",
+        "_common_schemas_12_.js",
+        "_common_schemas_1_.js",
+        "_common_schemas_2_.js",
+        "_common_schemas_3_.js",
+        "_common_schemas_4_.js",
+        "_common_schemas_5_.js",
+        "_common_schemas_6_.js",
+        "_common_schemas_7_.js",
+        "_common_schemas_8_.js",
+        "_common_schemas_9_.js",
+        "workbook_1.0.0_requestVariableParameterBindings.js",
+        "workbook_1.0.0_sharedDataActions.js",
+        "workbook_1.0.0_sharedDataActions_sharedDataAction.js",
+        "workbook_1162_.js"
+    ]
+}

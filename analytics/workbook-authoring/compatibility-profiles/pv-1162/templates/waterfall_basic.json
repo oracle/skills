@@ -1,0 +1,367 @@
+{
+    "projectVersion": 1162,
+    "criteria": {
+        "type": "saw:simpleCriteria",
+        "subjectArea": "\"Sample Sales\"",
+        "columns": {
+            "children": [
+                {
+                    "columnID": "dim_region",
+                    "type": "saw:regularColumn",
+                    "columnFormula": {
+                        "expr": {
+                            "type": "sawx:sqlExpression",
+                            "expression": "\"Sample Sales\".\"Products\".\"Region\"",
+                            "children": [
+                                
+                            ]
+                        }
+                    }
+                },
+                {
+                    "columnID": "dim_category",
+                    "type": "saw:regularColumn",
+                    "columnFormula": {
+                        "expr": {
+                            "type": "sawx:sqlExpression",
+                            "expression": "\"Sample Sales\".\"Products\".\"Category\"",
+                            "children": [
+                                
+                            ]
+                        }
+                    }
+                },
+                {
+                    "columnID": "time_month",
+                    "type": "saw:regularColumn",
+                    "columnFormula": {
+                        "expr": {
+                            "type": "sawx:sqlExpression",
+                            "expression": "\"Sample Sales\".\"Time\".\"Month\"",
+                            "children": [
+                                
+                            ]
+                        }
+                    }
+                },
+                {
+                    "columnID": "mea_revenue",
+                    "type": "saw:regularColumn",
+                    "columnFormula": {
+                        "expr": {
+                            "type": "sawx:sqlExpression",
+                            "expression": "\"Sample Sales\".\"Base Facts\".\"Revenue\"",
+                            "children": [
+                                
+                            ]
+                        }
+                    }
+                },
+                {
+                    "columnID": "mea_profit",
+                    "type": "saw:regularColumn",
+                    "columnFormula": {
+                        "expr": {
+                            "type": "sawx:sqlExpression",
+                            "expression": "\"Sample Sales\".\"Base Facts\".\"Profit\"",
+                            "children": [
+                                
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "criteriaConfig": {
+            "_version": "1.0.2",
+            "settings": {
+                
+            }
+        },
+        "children": [
+            
+        ]
+    },
+    "datasources": {
+        "children": [
+            {
+                "subjectArea": "\"Sample Sales\""
+            }
+        ]
+    },
+    "layouts": {
+        "children": [
+            {
+                "name": "layout1",
+                "type": "oracle.bi.tech.layout.split",
+                "layoutProps": {
+                    "customProps": {
+                        "text": "{\"_version\":\"1.0.1\",\"oracle.bi.tech.layout.split\":{\"layoutMinSize\":{\"width\":\"100%\",\"height\":720},\"_version\":\"1.0.0\"}}"
+                    }
+                },
+                "children": [
+                    {
+                        "content": {
+                            "viewName": "view!1",
+                            "type": "view"
+                        },
+                        "left": "0",
+                        "top": "0",
+                        "zIndex": 1,
+                        "displayFormat": {
+                            "formatSpec": {
+                                "width": "1200px",
+                                "height": "680px"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "views": {
+        "currentView": 0,
+        "children": [
+            {
+                "type": "saw:canvas",
+                "viewName": "canvas!1",
+                "rootLayoutName": "layout1",
+                "canvasConfig": {
+                    "_version": "1.0.6",
+                    "settings": {
+                        
+                    }
+                }
+            },
+            {
+                "type": "saw:pluginView",
+                "pluginType": "oracle.bi.tech.chart.waterfall",
+                "viewName": "view!1",
+                "viewConfig": {
+                    "_version": "1.1.80",
+                    "settings": {
+                        "oracle.bi.tech.table": {
+                            "_version": "1.0.1",
+                            "settings": {
+                                
+                            }
+                        },
+                        "obitech-autoviz/autoviz": {
+                            "innerPluginType": "oracle.bi.tech.chart.waterfall"
+                        }
+                    }
+                },
+                "dataModels": {
+                    "children": [
+                        {
+                            "name": "dm1",
+                            "logicalDataModel": {
+                                "_version": "1.0.0",
+                                "settings": {
+                                    "logicalDataModel": {
+                                        "logicalEdges": {
+                                            "measures": {
+                                                "logicalEdgeLayers": [
+                                                    {
+                                                        "columnID": "mea_revenue",
+                                                        "type": "column",
+                                                        "isUsed": true
+                                                    }
+                                                ]
+                                            },
+                                            "detail": {
+                                                "logicalEdgeLayers": [
+                                                    {
+                                                        "columnID": "dim_category",
+                                                        "type": "column",
+                                                        "isUsed": true
+                                                    }
+                                                ]
+                                            },
+                                            "color": {
+                                                "logicalEdgeLayers": [
+                                                    {
+                                                        "columnID": "mea_revenue",
+                                                        "type": "column",
+                                                        "isUsed": true
+                                                    },
+                                                    {
+                                                        "type": "measure",
+                                                        "visibility": "hidden",
+                                                        "userAdded": false,
+                                                        "isUsed": true
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "_settingsVersion": "2.0.1"
+                                    },
+                                    "ldm_generation": 1
+                                }
+                            },
+                            "edges": {
+                                "children": [
+                                    {
+                                        "axis": "row",
+                                        "showColumnHeader": "rollover"
+                                    },
+                                    {
+                                        "axis": "column",
+                                        "showColumnHeader": "rollover",
+                                        "dependent": true
+                                    },
+                                    {
+                                        "axis": "page"
+                                    },
+                                    {
+                                        "axis": "section"
+                                    }
+                                ]
+                            },
+                            "measuresList": {
+                                "children": [
+                                    {
+                                        "columnID": "mea_revenue",
+                                        "type": "view",
+                                        "name": "MeasureView_0",
+                                        "aggRule": "none"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "physicalDataModelVersion": "2.5",
+                "nestedViews": {
+                    "children": [
+                        {
+                            "position": "embedded",
+                            "view": {
+                                "type": "saw:pluginView",
+                                "pluginType": "oracle.bi.tech.chart.waterfall",
+                                "viewName": "MeasureView_0",
+                                "dataModels": {
+                                    "children": [
+                                        {
+                                            "name": "dm1",
+                                            "edges": {
+                                                "children": [
+                                                    {
+                                                        "axis": "row",
+                                                        "showColumnHeader": "rollover",
+                                                        "edgeLayers": {
+                                                            "children": [
+                                                                {
+                                                                    "type": "column",
+                                                                    "columnID": "dim_category"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "axis": "column",
+                                                        "showColumnHeader": "rollover",
+                                                        "dependent": true,
+                                                        "edgeLayers": {
+                                                            "children": [
+                                                                {
+                                                                    "type": "measure",
+                                                                    "visibility": "hidden"
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "axis": "page"
+                                                    },
+                                                    {
+                                                        "axis": "section"
+                                                    }
+                                                ]
+                                            },
+                                            "measuresList": {
+                                                "children": [
+                                                    {
+                                                        "columnID": "mea_revenue",
+                                                        "type": "column",
+                                                        "isUsed": true,
+                                                        "propertyAdditions": {
+                                                            "children": [
+                                                                {
+                                                                    "id": "colorMin",
+                                                                    "valueColumnID": "mea_revenue",
+                                                                    "aggRule": "min",
+                                                                    "stacked": false,
+                                                                    "placement": "first_cell",
+                                                                    "grainEdge": "none",
+                                                                    "acrossMeasures": "single"
+                                                                },
+                                                                {
+                                                                    "id": "colorMax",
+                                                                    "valueColumnID": "mea_revenue",
+                                                                    "aggRule": "max",
+                                                                    "stacked": false,
+                                                                    "placement": "first_cell",
+                                                                    "grainEdge": "none",
+                                                                    "acrossMeasures": "single"
+                                                                },
+                                                                {
+                                                                    "id": "color",
+                                                                    "valueColumnID": "mea_revenue",
+                                                                    "aggRule": "default",
+                                                                    "stacked": false,
+                                                                    "placement": "all",
+                                                                    "grainEdge": "none",
+                                                                    "acrossMeasures": "single"
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "physicalDataModelVersion": "2.5"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "reportConfig": {
+        "_version": "1.0.9",
+        "settings": {
+            "oracle.bi.tech.shapeSchemeService": {
+                "_version": "1.0.0",
+                "settings": {
+                    "version": "1.0.3",
+                    "generation": 0,
+                    "domains": {
+                        
+                    }
+                }
+            },
+            "oracle.bi.tech.colorSchemeService": {
+                "_version": "1.0.0",
+                "settings": {
+                    "version": "1.0.3",
+                    "generation": 0,
+                    "colorDomains": {
+                        
+                    },
+                    "defaults": {
+                        "rangeLuminosity": "hslblend"
+                    }
+                }
+            },
+            "projectSettings": {
+                "_version": "1.0.0",
+                "settings": {
+                    "autoSaveEnabled": false
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "manifestVersion": 1,
+    "schemaType": "workbook",
+    "packageProfile": "support-window",
+    "versionFieldName": "projectVersion",
+    "schemaIdPattern": "http://oracle.com/bi/workbook/{VERSION}/",
+    "supportedSchemaVersions": [
+        1134
+    ],
+    "defaultProjectVersion": 1155,
+    "compatibleProjectVersions": [
+        1155
+    ],
+    "rootSchemas": [
+        {
+            "projectVersion": 1134,
+            "schemaId": "http://oracle.com/bi/workbook/1134/",
+            "rootSchemaFile": "roots/workbook_root_1134.json",
+            "requiredTopLevelFields": [
+                "projectVersion",
+                "criteria",
+                "layouts"
+            ],
+            "topLevelProperties": [
+                "aiAgents",
+                "annotations",
+                "criteria",
+                "dataActions",
+                "datasources",
+                "eventWiring",
+                "filterControlCollectionRef",
+                "filterControlCollections",
+                "folders",
+                "layouts",
+                "nonDataActions",
+                "parameters",
+                "projectVersion",
+                "reportConfig",
+                "requestVariableParameterBindings",
+                "snapshots",
+                "stories",
+                "views"
+            ],
+            "additionalProperties": false
+        }
+    ],
+    "schemaFileCount": 14,
+    "supportWindow": {
+        "defaultTrack": "profile",
+        "tracks": {
+            "profile": {
+                "displayVersion": "legacy",
+                "projectVersion": 1155,
+                "rootVersion": 1134
+            }
+        }
+    }
+}
