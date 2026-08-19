@@ -13,19 +13,34 @@ This guide is for users who want to create or update Oracle Analytics workbooks 
 
 ## Prerequisites
 
-1. Your AI client must be configured with an Oracle Analytics Cloud MCP connection.
-2. OAC MCP setup guide:
-3. <https://docs.oracle.com/en/cloud/paas/analytics-cloud/acsdv/add-oracle-analytics-cloud-mcp-server-your-ai-client-preview.html>
+1. Install Node.js and npm so the `npx` command is available.
+2. Use a supported AI coding agent. The public package currently supports Codex.
+3. Configure an authenticated Oracle Analytics Cloud MCP connection for connected catalog discovery, workbook save, and export.
+4. Without OAC MCP, the skill can still produce a local workbook JSON artifact when sufficient datasource metadata is available.
+5. OAC MCP setup guide:
+6. <https://docs.oracle.com/en/cloud/paas/analytics-cloud/acsdv/add-oracle-analytics-cloud-mcp-server-your-ai-client-preview.html>
 
-## Installation model
+## Install and update
 
-1. Install one workbook-authoring skill bundle (`workbook-authoring-skills-<buildVersion>.zip`).
-2. The bundle includes shared skill files plus all supported project-version compatibility profiles.
-3. Installed profiles are listed in `.workbook-authoring/compatibility-profiles.json`.
-4. For local `npx skills` installs, unzip `workbook-authoring-skills-installable-<buildVersion>.zip`, then run:
-5. `npx skills add ./workbook-authoring`
-6. For future plugin-publish workflows, use `workbook-authoring-plugin-<buildVersion>.zip`.
-7. No manual asset copy is required; installable/plugin packages are self-contained.
+From the project where you want to use the skill, install it from the public Oracle Skills repository:
+
+```bash
+npx skills add oracle/skills/analytics/workbook-authoring -a codex -y
+```
+
+To install the Analytics router, which can route requests to workbook authoring and future Analytics skills, run:
+
+```bash
+npx skills add oracle/skills/analytics -a codex -y
+```
+
+Update a project-scoped installation with:
+
+```bash
+npx skills update workbook-authoring -p -y
+```
+
+If the installation predates automatic skill-path tracking or cannot be updated automatically, rerun the `npx skills add` command. The installed skill includes its tools and compatibility profiles; no ZIP extraction or manual asset copy is required.
 
 ## Choosing compatibility
 

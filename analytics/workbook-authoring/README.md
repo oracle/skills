@@ -1,6 +1,6 @@
-# Workbook Authoring Skill Bundle (v1.3)
+# Workbook Authoring Skill (v1.3)
 
-This directory contains shared assets used by workbook-authoring skills/workflows.
+This directory contains the workbook-authoring skill and its runtime assets.
 End users should start with `USERGUIDE.md` for outcome-focused usage instructions.
 
 ## What the skill does
@@ -12,30 +12,40 @@ End users should start with `USERGUIDE.md` for outcome-focused usage instruction
 5. edit workbook/canvas/view titles
 6. Runs strict runtime validation check before save and performs deterministic patch+retry for known signatures.
 7. Saves disk-first and optionally saves/exports through OAC MCP tools when available.
-8. Supports project-version compatibility profiles under `.workbook-authoring/compatibility-profiles/`.
+8. Supports project-version compatibility profiles under `compatibility-profiles/`.
 9. Enforces requirements-first compose flow (`analysisRequirements` approval gate + requirements-trace validation) before runtime validation/save.
 10. Emits advisory DV Intelligence scoring (`dvIntelligenceSummary`) using deterministic workbook evidence and weighted dimension scoring.
 
 ## Prerequisites
 
-1. OAC MCP connection must be configured in the client environment.
-2. OAC MCP setup guide:
-3. <https://docs.oracle.com/en/cloud/paas/analytics-cloud/acsdv/add-oracle-analytics-cloud-mcp-server-your-ai-client-preview.html>
+1. Node.js and npm, including `npx`.
+2. A supported AI coding agent. The public package currently supports Codex.
+3. An authenticated OAC MCP connection for connected catalog discovery, workbook save, and export.
+4. Without OAC MCP, the skill can still produce a local workbook JSON artifact when sufficient datasource metadata is available.
+5. OAC MCP setup guide:
+6. <https://docs.oracle.com/en/cloud/paas/analytics-cloud/acsdv/add-oracle-analytics-cloud-mcp-server-your-ai-client-preview.html>
 
 ## Installation
 
-Install one bundle into the target root so these directories are siblings:
-1. `.agents/`
-2. `.claude/`
-3. `.workbook-authoring/`
+From the project where you want to use the skill, install it from the public Oracle Skills repository:
 
-1. Install `workbook-authoring-skills-<buildVersion>.zip`.
-2. This installs shared skill files plus all supported project-version compatibility profiles.
-3. Profiles and deprecated release aliases are listed in `.workbook-authoring/compatibility-profiles.json`.
-4. Installable `npx skills` option: unzip `workbook-authoring-skills-installable-<buildVersion>.zip`, then run:
-5. `npx skills add ./workbook-authoring`
-6. Unified plugin option (future publish workflows): unzip `workbook-authoring-plugin-<buildVersion>.zip` and use the contained plugin manifests.
-7. Installable and plugin packages are self-contained under `workbook-authoring/skills/workbook-authoring/.workbook-authoring`, so no manual copy step is required.
+```bash
+npx skills add oracle/skills/analytics/workbook-authoring -a codex -y
+```
+
+To install the Analytics router, which can route requests to workbook authoring and future Analytics skills, run:
+
+```bash
+npx skills add oracle/skills/analytics -a codex -y
+```
+
+Update a project-scoped installation with:
+
+```bash
+npx skills update workbook-authoring -p -y
+```
+
+If the installation predates automatic skill-path tracking or cannot be updated automatically, rerun the `npx skills add` command. The installed skill is self-contained and includes `tools/`, `compatibility-profiles.json`, and every supported profile under `compatibility-profiles/`; no ZIP extraction or manual asset copy is required.
 
 ### Selecting compatibility after install
 
@@ -55,13 +65,6 @@ Install one bundle into the target root so these directories are siblings:
 4. MCP save + optional export loop (export runs only on explicit user request).
 5. Public API/token flows remain out of scope.
 6. Save-target mode is independent: update intent replaces existing workbook by default.
-
-## Package Profiles
-
-1. Skills package: `workbook-authoring-skills-<buildVersion>.zip` (shared assets + all supported compatibility profiles).
-2. Installable package: `workbook-authoring-skills-installable-<buildVersion>.zip` (local `npx skills add ./workbook-authoring` flow).
-3. Unified plugin package: `workbook-authoring-plugin-<buildVersion>.zip` (single package containing Codex + Claude manifests).
-4. Internal release maintenance may still generate an intermediate add-on artifact, but it is not part of end-user installation.
 
 ## Schema Bundle
 
@@ -100,15 +103,17 @@ Install one bundle into the target root so these directories are siblings:
 `tools/score-dv-intelligence.mjs` computes advisory DV Intelligence scoring (`dvIntelligenceSummary`) from workbook evidence and profile-based weighted dimensions.
 Runtime validation check includes a schema-acceptance gate and strips known-safe internal trace keys from workbook payload before save.
 
+The following command examples assume the current directory is the installed workbook-authoring skill root.
+
 Canonical regenerate command:
 
 ```bash
-node .workbook-authoring/tools/regenerate-workbook.mjs --request <request.json> [--compatibility-target "<auto|legacy|standard|current|pv-N>"] [--server-project-version "<N>"] [--target-version "<deprecated YY.MM alias>"] [--output <workbook.json>]
+node tools/regenerate-workbook.mjs --request <request.json> [--compatibility-target "<auto|legacy|standard|current|pv-N>"] [--server-project-version "<N>"] [--target-version "<deprecated YY.MM alias>"] [--output <workbook.json>]
 ```
 
 Driver contract files:
-1. `.workbook-authoring/compatibility-profiles/<PROFILE_ID>/model/regenerate-workbook-contract.v1.json`
-2. `.workbook-authoring/compatibility-profiles/<PROFILE_ID>/model/regenerate-workbook-adapter-contract.v1.json`
+1. `compatibility-profiles/<PROFILE_ID>/model/regenerate-workbook-contract.v1.json`
+2. `compatibility-profiles/<PROFILE_ID>/model/regenerate-workbook-adapter-contract.v1.json`
 
 The regenerate driver expects standardized adapter payload sections for discovery/describe/profiling inputs and then runs canonicalization + strict semantic validation check automatically.
 For `compose_ootb`, the request must include approved `analysisRequirements` aligned with `analysisShape`; compose views must provide `purpose`, `grain`, `bindings`, `labels`, `filters`, `calculations`, and `sort`.
@@ -144,13 +149,13 @@ Recommend providing `analysisShape.canvases[].name` during initial generation wh
 Canonicalization + semantic validation check sequence:
 
 ```bash
-node .workbook-authoring/tools/runtime-validation-check.mjs --input <workbook.json> [--compatibility-target "<auto|legacy|standard|current|pv-N>"] [--server-project-version "<N>"] [--target-version "<deprecated YY.MM alias>"] --requested-plugin-type "<pluginType>" --discovery-method "<search_catalog|discover_data>" --save-available "<true|false>" --export-available "<true|false>" [--export-requested "<true|false>"] --apply-known-patches --in-place
+node tools/runtime-validation-check.mjs --input <workbook.json> [--compatibility-target "<auto|legacy|standard|current|pv-N>"] [--server-project-version "<N>"] [--target-version "<deprecated YY.MM alias>"] --requested-plugin-type "<pluginType>" --discovery-method "<search_catalog|discover_data>" --save-available "<true|false>" --export-available "<true|false>" [--export-requested "<true|false>"] --apply-known-patches --in-place
 ```
 
 Then run strict semantic validation:
 
 ```bash
-node .workbook-authoring/tools/runtime-validation-check.mjs --input <workbook.json> [--compatibility-target "<auto|legacy|standard|current|pv-N>"] [--server-project-version "<N>"] [--target-version "<deprecated YY.MM alias>"] --requested-plugin-type "<pluginType>" --discovery-method "<search_catalog|discover_data>" --save-available "<true|false>" --export-available "<true|false>" [--export-requested "<true|false>"]
+node tools/runtime-validation-check.mjs --input <workbook.json> [--compatibility-target "<auto|legacy|standard|current|pv-N>"] [--server-project-version "<N>"] [--target-version "<deprecated YY.MM alias>"] --requested-plugin-type "<pluginType>" --discovery-method "<search_catalog|discover_data>" --save-available "<true|false>" --export-available "<true|false>" [--export-requested "<true|false>"]
 ```
 
 If validation check returns `INPUT_ARTIFACT_NOT_READY`, generation/check ordering was violated or the file was still incomplete. Rerun the validation check after generation completes.
@@ -160,7 +165,7 @@ Pass `--compatibility-target` only for explicit user intent and `--server-projec
 Patch + retry preparation:
 
 ```bash
-node .workbook-authoring/tools/runtime-validation-check.mjs \
+node tools/runtime-validation-check.mjs \
   --input <workbook.json> \
   --target-version "<YY.MM>" \
   --discovery-method "<search_catalog|discover_data>" \
@@ -176,7 +181,7 @@ node .workbook-authoring/tools/runtime-validation-check.mjs \
 Modify-mode deterministic mutation:
 
 ```bash
-node .workbook-authoring/tools/modify-workbook.mjs \
+node tools/modify-workbook.mjs \
   --input <workbook.json> \
   --authoring-mode modify_existing \
   --operation add_filter_bar_filter \
@@ -205,7 +210,7 @@ node .workbook-authoring/tools/modify-workbook.mjs \
 5. Alias mapping is compatibility metadata only; resolution profiles are the primary plugin contract.
 6. Mapping includes metric-fit evaluation and workbook-local calc auto gap fill using `calculation-contracts.v1.json`.
 7. Viz-lock policy is strict by default: requested plugin type must match final plugin type unless explicit fallback override provides target plugin type + reason.
-8. Runtime resolves contracts/templates/schemas from `.workbook-authoring/compatibility-profiles/<PROFILE_ID>/...`.
+8. Runtime resolves contracts/templates/schemas from `<WB_SKILL_ROOT>/compatibility-profiles/<PROFILE_ID>/...`.
 9. Runtime selects compatibility by explicit target, deprecated release alias, existing workbook project version, detected server project version, capability fallback, then manifest offline default.
 10. Capability routing drives behavior: discovery uses `find_matching_datasources` first when available, then `search_catalog` for authoritative catalog resolution, with `discover_data` only as compatibility fallback when newer discovery tools are unavailable; save/export tool absence is non-fatal and yields disk-only outcome.
 11. `generate -> check -> save -> optional_export` must run sequentially (no parallel orchestration between these steps).
