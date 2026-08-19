@@ -1,6 +1,6 @@
 ---
 name: exadb-xs
-description: Manage Oracle ExaDB-XS (Exadata Database Service on Exascale Infrastructure) exclusively through the oracle/mcp oci-api-mcp-server. Use when a user asks to list, inspect, create, update, scale, patch, move, or delete Exascale storage vaults, ExaDB VM clusters, DB homes, databases/CDBs, or PDBs.
+description: Perform read-only Oracle ExaDB-XS (Exadata Database Service on Exascale Infrastructure) operations exclusively through the oracle/mcp oci-api-mcp-server. Use when a user asks to list, show, inspect, get, or inventory Exascale storage vaults, ExaDB VM clusters, DB homes, databases/CDBs, or PDBs.
 ---
 
 # ExaDB-XS
@@ -29,29 +29,32 @@ compartment
           -> pluggable database / PDB
 ```
 
-Never skip a required parent decision. Resolve parents from the top down for every create, update, scale, patch, move, or delete workflow.
+For read-only workflows, resolve existing parents from the top down. Do not collect inputs for creating or changing resources.
 
 ## Routing Workflow
 
 1. Identify the resource family and action.
 2. Read `references/oci-api-mcp-server.md`.
 3. Collect the required parameters.
-4. Show a pre-flight summary for impactful actions.
-5. Execute the operation through the OCI API MCP server.
+4. Execute the read-only operation through the OCI API MCP server.
 
 ### Step 1: Identify the action
 
 Common action families:
 
 - list, show, get, inspect, inventory
-- create, provision, build, add
-- update, patch, scale, move
-- delete, remove
+
+### Denied mutation actions
+
+This skill is read-only. Explicitly deny requests for `create`, `provision`, `build`, `add`, `update`, `patch`, `scale`, `move`, `change-compartment`, `delete`, `remove`, `upgrade`, `clone`, `start`, or `stop` operations.
+
+For a denied request, respond that ExaDB-XS mutation operations are currently disabled and that this skill supports read-only OCI API MCP operations only. Do not read mutation instructions, collect mutation inputs, call `get_oci_command_help`, or call `run_oci_command` for the denied operation.
 
 ### Step 2: Use OCI API MCP execution
 
 - Execute every ExaDB-XS operation through `oracle/mcp oci-api-mcp-server` only.
 - Do not run `oci ...` commands in a shell for this skill.
+- Apply the denied-mutation rule before reading the reference or collecting inputs.
 - If the user asks for Terraform or HCL, state that this skill supports only direct OCI API MCP operations; do not generate files or invoke Terraform.
 
 ### Step 3: Read the correct reference
@@ -63,38 +66,28 @@ Common action families:
 Apply these collection rules:
 
 - Never invent OCIDs, region names, availability domains, Grid image IDs, DB versions, shapes, subnet IDs, NSG IDs, passwords, or display names.
-- Never ask child-layer questions before the parent-layer decision is settled.
-- For every parent choice, ask whether to use an existing resource or create a new one.
-- If the user chooses an existing resource, ask whether they have:
-  - the specific OCID
-  - the specific display name or resource name
-  - or want the available resources listed first
-- If the user chooses a new resource, collect all required inputs for that layer before descending.
+- Resolve existing resources by specific OCID, exact display name, or an inventory list.
+- Never ask child-layer questions before the existing parent is resolved.
 - Use RSA SSH keys; do not request or recommend Ed25519 keys.
 - Never echo admin passwords, SSH private keys, API private keys, wallet secrets, or session tokens back to the user.
 
-### Step 5: Confirm impactful actions
+### Step 5: Execute read-only operations
 
-For create, update, patch, scale, move, and delete:
-
-- show the resolved scope and planned action
-- show whether each layer is existing or new
-- require an explicit `yes` before execution
-- do not poll or wait for completion unless the user explicitly asks
+- Execute only after the read-only scope is resolved.
+- Do not request mutation confirmation because mutation operations are denied.
+- Do not poll or wait for completion unless the user explicitly asks.
 
 ## Reference Map
 
 ### `references/oci-api-mcp-server.md`
 
-Read for direct MCP operations, compartment resolution, ExaDB-XS inventory, mutations, command help, and error handling. It is the source of truth for MCP-only execution.
+Read for direct MCP operations, compartment resolution, ExaDB-XS inventory, command help, and error handling. It is the source of truth for read-only MCP execution.
 
 ## Required Behaviors
 
-### When the user says "create database"
+### When the user asks for a mutation
 
-1. Confirm it is ExaDB-XS; otherwise ask which OCI database service is intended.
-2. Read [references/oci-api-mcp-server.md](references/oci-api-mcp-server.md) and collect the required parent-to-child inputs.
-3. Execute through OCI API MCP only after the appropriate confirmation.
+Explicitly deny the request because ExaDB-XS mutation operations are currently disabled. Do not collect inputs or call an MCP tool for the denied operation.
 
 ### When the user says "make Terraform code"
 
