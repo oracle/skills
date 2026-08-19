@@ -134,7 +134,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 | Deploy a local function | `functions/oci-functions-deploy/SKILL.md` -> preflight -> Fn context validation -> OCIR auth check -> app selection -> scaffold -> deploy |
 | Troubleshoot a failed function deploy | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/error-patterns.md` -> `functions/oci-functions-troubleshoot/references/deploy.md` |
 | Troubleshoot function invocation failures | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/invoke.md` -> logs, traces, metrics, and limits |
-| Create, list, or manage a BaseDB resource | Identify BaseDB -> read only `database-cloud-services/basedb/SKILL.md` -> follow the BaseDB workflow |
+| Inspect or list a BaseDB resource | Identify BaseDB -> read only `database-cloud-services/basedb/SKILL.md` -> follow the BaseDB workflow |
 | Explore or update OCI IoT digital twin resources | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/references/resilience-guidance.md` |
 | Publish test telemetry to an OCI IoT twin | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/templates/publish-curl.template.sh` |
 | Build a governed enterprise assistant | `enterprise-ai/SKILL.md` -> `enterprise-ai/agent-workflows/agent-tools.md` -> `enterprise-ai/data/rag-and-search.md` -> `enterprise-ai/governance/private-endpoints-and-governance.md` |

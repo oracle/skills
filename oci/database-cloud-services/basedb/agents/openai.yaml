@@ -1,4 +1,4 @@
 interface:
   display_name: "BaseDB"
-  short_description: "Manage BaseDB through OCI API MCP"
-  default_prompt: "Use $basedb to manage an OCI BaseDB resource through OCI API MCP."
+  short_description: "Inspect BaseDB through OCI API MCP"
+  default_prompt: "Use $basedb to inspect OCI BaseDB resources through OCI API MCP."

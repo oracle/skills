@@ -1,6 +1,6 @@
 ---
 name: basedb
-description: Manage Oracle Base Database Service virtual machine DB systems through oracle/mcp oci-api-mcp-server. Use for BaseDB, Base Database Service, VM DB systems, dbsystems, ocid1.dbsystem OCIDs, DB homes, databases/CDBs, PDBs, backups, Data Guard, patches, upgrades, compartment moves, subscription changes, and termination. Also use for generic OCI database or DB-system requests unless the user explicitly names another database service.
+description: Inspect Oracle Base Database Service virtual machine DB systems through oracle/mcp oci-api-mcp-server. Use for BaseDB, Base Database Service, VM DB systems, dbsystems, ocid1.dbsystem OCIDs, DB homes, databases/CDBs, PDBs, backups, and Data Guard inventory. Also use for generic OCI database or DB-system inspection requests unless the user explicitly names another database service.
 ---
 
 # BaseDB
@@ -8,7 +8,11 @@ description: Manage Oracle Base Database Service virtual machine DB systems thro
 ## Overview
 
 `BaseDB` means Oracle Base Database Service on virtual machine DB systems throughout this skill.
-Execute every BaseDB operation directly through `oracle/mcp oci-api-mcp-server`.
+Use `oracle/mcp oci-api-mcp-server` for read-only BaseDB operations only.
+
+## Temporary Mutation Denial
+
+Before any MCP call, identify whether the request is read-only. Deny create, launch, restore, clone, add, update, patch, upgrade, move, subscription change, Data Guard role change, delete, and terminate requests because this MCP server does not currently support BaseDB mutations. Do not collect mutation inputs, call MCP command help, or execute an MCP command for a denied request.
 
 ## Service Defaults
 
@@ -31,29 +35,24 @@ compartment
               -> backups and Data Guard associations
 ```
 
-Never skip a required parent decision. Resolve parents from the top down for every create, update, patch, upgrade, move, Data Guard, or delete workflow.
+Never skip a required parent decision. Resolve parents from the top down for read-only workflows.
 
 ## Routing Workflow
 
 1. Identify the resource family and action.
 2. Read the MCP reference.
 3. Collect required parameters.
-4. Show a pre-flight summary for impactful actions.
-5. Execute through MCP.
+4. Execute the read-only MCP command.
 
 ### Step 1: Identify the action
 
 Common action families:
 
 - list, show, get, inspect, inventory
-- create, launch, restore, clone, add
-- update, patch, upgrade, move, change subscription
-- enable, switchover, failover, reinstate
-- terminate, delete, remove
 
 ### Step 2: Read the MCP reference
 
-Read [references/oci-api-mcp-server.md](references/oci-api-mcp-server.md) for every direct BaseDB operation, compartment and network discovery, inventory, lifecycle mutation, DB home, database/CDB, PDB, backup, and Data Guard request.
+Read [references/oci-api-mcp-server.md](references/oci-api-mcp-server.md) for read-only BaseDB operations, compartment and network discovery, inventory, DB home, database/CDB, PDB, backup, and Data Guard requests.
 
 ### Step 3: Collect parameters in the correct order
 
@@ -67,33 +66,16 @@ Apply these collection rules:
   - the specific OCID
   - the specific display name or resource name
   - or want the available resources listed first
-- Collect every required DB-system input before constructing a launch command.
 - Never echo admin passwords, SSH private keys, API private keys, wallet secrets, TDE passwords, or session tokens back to the user.
-
-### Step 4: Confirm impactful actions
-
-For OCI MCP create, update, patch, upgrade, move, subscription change, Data Guard role change, delete, and terminate:
-
-- show the resolved scope and planned action
-- show the current target state when the resource already exists
-- show material replacement, downtime, billing, storage, backup, and Data Guard implications
-- require an explicit `yes` before execution
-- do not poll or wait for completion unless the user explicitly asks
 
 ## Reference Map
 
 ### `references/oci-api-mcp-server.md`
 
-Read for direct MCP operations, compartment and network discovery, BaseDB inventory, launch variants, DB-system lifecycle mutations, DB homes, databases/CDBs, PDBs, backups, Data Guard, command help, and error handling. It is the source of truth for MCP-only execution.
+Read for direct read-only MCP operations, compartment and network discovery, BaseDB inventory, DB homes, databases/CDBs, PDBs, backups, Data Guard, command help, and error handling.
 
 ## Required Behaviors
 
-### When the user says "create database"
-
-1. Default to BaseDB unless another database service is explicit.
-2. Read [references/oci-api-mcp-server.md](references/oci-api-mcp-server.md) and collect parent-to-child inputs.
-3. Execute only after the appropriate confirmation.
-
 ### When the user says "run the OCI CLI command using MCP server"
 
-Read [references/oci-api-mcp-server.md](references/oci-api-mcp-server.md), collect runtime scope, and execute only through MCP.
+If the command is read-only, read [references/oci-api-mcp-server.md](references/oci-api-mcp-server.md), collect runtime scope, and execute only through MCP. Otherwise deny it before any MCP call.

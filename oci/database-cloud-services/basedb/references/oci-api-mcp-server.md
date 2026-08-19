@@ -16,8 +16,6 @@
 - [Region Handling](#region-handling)
 - [Resource Resolution Patterns](#resource-resolution-patterns)
 - [List And Read Operations Usually Need Scope](#list-and-read-operations-usually-need-scope)
-- [Create Workflows](#create-workflows)
-- [Impactful Operations](#impactful-operations)
 - [Error Handling](#error-handling)
 - [Common Pitfalls](#common-pitfalls)
 - [Correct And Incorrect Tool Calls](#correct-and-incorrect-tool-calls)
@@ -25,18 +23,22 @@
 
 ## Purpose
 
-Read this file for direct BaseDB virtual machine DB-system list, get, launch, restore, update, patch, upgrade, move, subscription, terminate, DB home, database/CDB, PDB, backup, and Data Guard workflows through `oracle/mcp oci-api-mcp-server`.
+Read this file for direct read-only BaseDB virtual machine DB-system list/get, DB home, database/CDB, PDB, backup, and Data Guard workflows through `oracle/mcp oci-api-mcp-server`.
 
 Every OCI call must use this MCP server. Never run `oci ...` in a shell on this path.
 
 Treat generic OCI database, databases, DB-system, dbsystem, DB home, CDB, PDB, backup, and Data Guard requests as BaseDB unless the user explicitly names another database service.
+
+## Temporary Mutation Denial
+
+Before any MCP call, deny create, launch, restore, clone, add, update, patch, upgrade, move, subscription change, Data Guard role change, delete, and terminate requests. This MCP server does not currently support BaseDB mutations. Do not collect mutation inputs, call `get_oci_command_help`, or use `run_oci_command` for a denied request.
 
 ## About oci-api-mcp-server
 
 `oracle.oci-api-mcp-server` exposes OCI CLI access through MCP.
 
 - Use `run_oci_command` to execute OCI command text.
-- Use `get_oci_command_help` to inspect current syntax before fragile commands.
+- Use `get_oci_command_help` to inspect current read-only command syntax.
 - Use `resource://oci-api-commands` for command-family discovery.
 - Pass only text after `oci`; never send `oci`, `--profile`, or `--auth`.
 
@@ -46,15 +48,13 @@ Assume the active MCP server session already uses the intended OCI authenticatio
 
 - Default generic OCI database and DB-system requests to BaseDB unless another database service is named.
 - Scope this reference to BaseDB virtual machine DB systems; reject bare metal and other service-specific command families.
+- Deny mutations before any MCP call.
 - For list/read, resolve a direct OCID or compartment and region first.
-- Ask for a compartment before launch unless it can be derived from a known parent.
 - Ask for a region for regional workflows; never silently use a remembered region.
 - For `all regions`, list subscribed regions and consolidate regional results.
 - Resolve hierarchy top-down: compartment → VCN → subnet → VM DB system → DB home → CDB → PDB.
 - Use existing compartments, VCNs, subnets, and NSGs; do not create infrastructure.
 - For BaseDB database inventory, list VM DB systems first, then DB homes and databases; list PDBs, backups, and Data Guard only when requested.
-- Require a pre-flight summary and explicit `yes` for launch, restore, update, patch apply, upgrade, move, subscription change, Data Guard role operations, and termination.
-- Do not poll unless asked.
 
 ## Server Surfaces
 
@@ -70,22 +70,17 @@ Assume the active MCP server session already uses the intended OCI authenticatio
 2. Never include `oci`, `--profile`, or `--auth` in a command string.
 3. Use `db system` for BaseDB VM DB-system operations.
 4. Never substitute another OCI database service's command family for `db system`.
-5. Resolve names to OCIDs before mutation.
-6. Resolve regional scope before any regional BaseDB command.
-7. Follow the hierarchy top-down.
-8. Use existing compartments and networking; never create compartments, VCNs, subnets, gateways, route tables, security lists, NSGs, or IAM policies.
-9. Require an explicit `yes` for impactful actions.
-10. Do not use `oci search` or Resource Search for BaseDB resolution.
-11. When a DB-system OCID is known, use it directly for `db system get`; do not require compartment resolution first.
-12. Always include `--db-system-id` when listing DB homes in a known VM DB system.
-13. Always include `--db-home-id` when listing databases in a known DB home.
-14. Scope PDB, backup, and Data Guard lists with the database OCID.
-15. Use `--compartment-id-in-subtree true` only with `iam compartment list`, never a `db` command.
-16. If a mutation is denied by MCP server policy, report the policy mismatch and stop; never fall back to direct shell execution.
-17. Call `get_oci_command_help` before launch, restore, update, patch, upgrade, move, subscription, Data Guard, or termination commands whose flags are uncertain.
-18. Never echo passwords, private keys, wallet secrets, TDE passwords, or session tokens.
-19. Never use implicit wait flags or repeated polling unless the user asks to monitor.
-20. Require RSA SSH public keys with at least 2048-bit strength. Never use ED25519 keys for BaseDB.
+5. Resolve regional scope before any regional BaseDB command.
+6. Follow the hierarchy top-down.
+7. Use existing compartments and networking; never create compartments, VCNs, subnets, gateways, route tables, security lists, NSGs, or IAM policies.
+8. Do not use `oci search` or Resource Search for BaseDB resolution.
+9. When a DB-system OCID is known, use it directly for `db system get`; do not require compartment resolution first.
+10. Always include `--db-system-id` when listing DB homes in a known VM DB system.
+11. Always include `--db-home-id` when listing databases in a known DB home.
+12. Scope PDB, backup, and Data Guard lists with the database OCID.
+13. Use `--compartment-id-in-subtree true` only with `iam compartment list`, never a `db` command.
+14. Never echo passwords, private keys, wallet secrets, TDE passwords, or session tokens.
+15. Require RSA SSH public keys with at least 2048-bit strength. Never use ED25519 keys for BaseDB.
 
 ## MCP Server Contract
 
@@ -127,13 +122,10 @@ Resolution rules:
 
 1. Resolve tenancy root or target compartment.
 2. Resolve the user-supplied region for regional work.
-3. Resolve availability domain for launch workflows.
-4. Resolve existing VCN, subnet, and optional NSGs.
-5. Resolve VM DB system, DB home, database/CDB, and PDB parents in order.
-6. Get live command help before fragile syntax.
-7. Show pre-flight for impactful actions.
-8. Execute through `run_oci_command`.
-9. Stop after the initial response unless monitoring was requested.
+3. Resolve existing VCN, subnet, and optional NSGs when requested.
+4. Resolve VM DB system, DB home, database/CDB, and PDB parents in order.
+5. Get live command help before read-only command syntax that is uncertain.
+6. Execute through `run_oci_command`.
 
 ## Service Defaulting Rules
 
@@ -160,7 +152,6 @@ For every parent choice, accept an OCID, resolve an exact name, or list choices.
 
 - The compartment owns the DB system and existing network resources.
 - The VCN contains the selected subnet and optional NSGs.
-- The subnet is required for DB-system launch.
 - The VM DB system contains compute, storage, and the initial DB home/database.
 - A DB home is an Oracle software home inside the DB system.
 - A database/CDB belongs to a DB home.
@@ -251,7 +242,7 @@ List databases only after resolving a DB home:
 db database list --compartment-id <COMPARTMENT_OCID> --db-home-id <DB_HOME_OCID> --region <REGION> --all
 ```
 
-Get a database by its OCID and inspect command help before create, update, patch, upgrade, move, or delete.
+Get a database by its OCID when supported by live help.
 
 ### Pluggable Database
 
@@ -261,7 +252,6 @@ List PDBs only under a resolved database:
 db pluggable-database list --database-id <DATABASE_OCID> --region <REGION> --all
 ```
 
-Get help before create, clone, relocate, update, start, stop, or delete.
 
 ### Backup
 
@@ -271,7 +261,6 @@ List backups under a resolved database:
 db backup list --database-id <DATABASE_OCID> --region <REGION> --all
 ```
 
-Use current help to resolve on-demand backup creation, get, delete, and restore syntax.
 
 ### Data Guard Association
 
@@ -281,7 +270,6 @@ List associations under a resolved database:
 db data-guard-association list --database-id <DATABASE_OCID> --region <REGION> --all
 ```
 
-Always get live help before enable, failover, switchover, reinstate, or role-conversion operations.
 
 ## List And Read Operations Usually Need Scope
 
@@ -303,127 +291,7 @@ For a known DB-system OCID, skip compartment discovery and get it directly.
 
 Read-only list/get operations do not require a mutation confirmation.
 
-## Create Workflows
-
-### Launch VM DB System
-
-#### Step 1: Resolve Compartment And Region
-
-Collect or resolve:
-
-- target compartment OCID
-- target region
-- availability domain
-
-Resolve availability domains with:
-
-```text
-iam availability-domain list --compartment-id <TENANCY_OCID>
-```
-
-Never invent an availability-domain name.
-
-#### Step 2: Resolve Existing Network
-
-Ask whether the user has a subnet OCID, exact subnet name, or wants VCNs/subnets listed.
-
-1. Resolve an existing VCN.
-2. Resolve an existing subnet within that VCN.
-3. Resolve optional existing NSGs.
-4. Validate VCN membership and region.
-
-Do not create any network resource.
-
-#### Step 3: Resolve Shape And Database Version
-
-Use live help and supported discovery commands:
-
-```text
-db system-shape list --compartment-id <COMPARTMENT_OCID> --availability-domain <AD_NAME> --region <REGION>
-```
-
-```text
-db version list --compartment-id <COMPARTMENT_OCID> --db-system-shape <SHAPE> --region <REGION>
-```
-
-Show supported BaseDB results and let the user choose. Do not reuse shapes or images from another service.
-
-#### Step 4: Collect Required Parameters
-
-Call `get_oci_command_help("db system launch")` before constructing the command.
-
-At minimum confirm:
-
-- compartment OCID
-- region and availability domain
-- subnet OCID
-- VM shape
-- hostname and display name
-- database edition and version
-- initial database name
-- admin password without echoing it
-- SSH authorized keys file or supported key input containing RSA-2048-or-stronger public keys
-- node count
-- compute model/count
-- initial storage and performance
-- license model
-- optional PDB, NSGs, backups, maintenance, time zone, encryption, and tags
-
-Use generated JSON input for complex nested arguments if supported by the MCP server command surface. Never invent JSON shapes.
-
-#### Step 5: Pre-flight Summary And Launch
-
-Show:
-
-- resolved compartment, region, and availability domain
-- VCN, subnet, and NSGs
-- shape, node count, and compute sizing
-- storage and license settings
-- DB-system display name and hostname
-- database edition, version, CDB name, and optional PDB name
-- backup/encryption selections
-- expected billing and availability impact
-
-Require explicit `yes`, then run `db system launch`. Do not poll for `AVAILABLE` unless asked.
-
-### Launch From Backup
-
-Resolve and inspect the source backup first:
-
-```text
-db backup get --backup-id <BACKUP_OCID> --region <REGION>
-```
-
-Then:
-
-1. call `get_oci_command_help("db system launch-from-backup")`
-2. resolve target compartment, region, AD, VCN, subnet, shape, keys, storage, and license settings
-3. confirm source backup OCID and source database metadata
-4. collect any required admin or TDE password securely
-5. show pre-flight and require `yes`
-6. execute once and stop unless monitoring was requested
-
-### Launch From Database
-
-Resolve and inspect the source database first. Then:
-
-1. call `get_oci_command_help("db system launch-from-database")`
-2. generate or inspect the required DB-home JSON schema through command help
-3. resolve target compartment, region, AD, subnet, shape, hostname, storage, and SSH keys
-4. show source-to-target mapping
-5. require `yes`
-6. execute once without implicit polling
-
-### Launch From DB System
-
-Use this only when the user explicitly requests a launch from another DB system.
-
-1. get both source DB-system state and current command help
-2. resolve every target prerequisite
-3. use the command's generated JSON schema for complex details
-4. show source and target OCIDs, region, network, shape, storage, DB-home/database settings, downtime, and billing impact
-5. require `yes`
-6. execute once and stop unless asked to monitor
+## List And Read Workflows
 
 ### List VM DB Systems
 
@@ -435,66 +303,6 @@ Resolve compartment and region first; accept one region or `all regions`.
 
 For `all regions`, list subscribed regions first and label each result.
 
-### Update VM DB System
-
-1. Resolve the target by OCID, exact name, or list.
-2. Show current state with `db system get`.
-3. Call `get_oci_command_help("db system update")`.
-4. Collect only requested supported changes.
-5. Use dry-run or precheck capability when current help exposes it.
-6. Reject storage decreases.
-7. Explain replacement, downtime, or billing risk.
-8. Require `yes`.
-9. Execute and stop unless monitoring was requested.
-
-### Patch VM DB System
-
-1. Resolve the DB system and patch ID.
-2. Show current state and available/applicable patch details.
-3. Call `get_oci_command_help("db system patch")`.
-4. Run `PRECHECK` before `APPLY` unless the user supplies evidence of a current successful precheck.
-5. Report precheck response and stop unless the user explicitly asks to continue.
-6. Before `APPLY`, show the patch ID and expected impact and require `yes`.
-7. Do not poll after submission unless asked.
-
-### Upgrade VM DB System
-
-1. Resolve the DB system and target GI or OS version.
-2. Show current state and current version.
-3. Call `get_oci_command_help("db system upgrade")`.
-4. Run the supported precheck before upgrade.
-5. Require `yes` before `UPGRADE` or `ROLLBACK`.
-6. Execute only the requested action.
-7. Do not wait for completion unless asked.
-
-### Change Compartment
-
-1. Resolve the DB system and target compartment OCID.
-2. Show current and target compartments.
-3. Call `get_oci_command_help("db system change-compartment")`.
-4. Explain policy and visibility implications.
-5. Require `yes`.
-6. Execute once and stop unless asked to monitor.
-
-### Change Cloud DB System Subscription
-
-1. Resolve the DB system and requested subscription.
-2. Show current state and subscription-related fields.
-3. Call `get_oci_command_help("db system change-cloud-db-system-subscription")`.
-4. Explain billing and entitlement implications.
-5. Require `yes`.
-6. Execute once without implicit polling.
-
-### Terminate VM DB System
-
-1. Get the target DB system by OCID.
-2. Show display name, OCID, lifecycle state, compartment, region, shape, database version, and available backup/retention settings.
-3. Call `get_oci_command_help("db system terminate")`.
-4. Explain deletion and data-retention implications.
-5. Require explicit `yes`.
-6. Use force only if current help requires it and confirmation already exists.
-7. Execute once and do not poll unless asked.
-
 ### List DB Homes
 
 Resolve the VM DB system first:
@@ -504,19 +312,6 @@ Resolve the VM DB system first:
 ```
 
 Do not use scoping flags from another database service.
-
-### Create Database
-
-For a BaseDB VM DB system:
-
-1. resolve the DB system and DB home
-2. inspect `db database create` help
-3. confirm that the live command supports the requested VM DB-system operation
-4. collect database name, admin password, DB home or DB-system identifier, optional PDB, backup, encryption, and tags
-5. show pre-flight and require `yes`
-6. execute once without implicit polling
-
-If the live command surface does not support an additional database for the selected VM configuration, report the limitation instead of substituting another service's workflow.
 
 ### List Databases
 
@@ -528,14 +323,6 @@ Resolve a DB system, then a DB home. List with the DB-home scope:
 
 Preserve DB-system and DB-home context in the returned inventory.
 
-### Create Pluggable Database
-
-1. Resolve the parent database/CDB.
-2. Call `get_oci_command_help("db pluggable-database create")`.
-3. Collect the container database ID, PDB name, PDB admin password, and any supported TDE/wallet password and tags.
-4. Show pre-flight and require `yes`.
-5. Execute once without implicit polling.
-
 ### List Pluggable Databases
 
 Resolve the parent database/CDB, then:
@@ -544,50 +331,9 @@ Resolve the parent database/CDB, then:
 {"command":"db pluggable-database list --database-id <DATABASE_OCID> --region <REGION> --all --query \"data[*].{ID:id,Name:\\\"pdb-name\\\",OpenMode:\\\"open-mode\\\",State:\\\"lifecycle-state\\\"}\" --output table"}
 ```
 
-### Backup Operations
+### List Backups And Data Guard Associations
 
-For list/get, resolve the parent database and execute without confirmation.
-
-For create, delete, or restore:
-
-1. resolve database and backup OCIDs
-2. inspect exact command help
-3. show source, target, retention, replacement, and data-loss implications
-4. require `yes`
-5. execute once and stop unless monitoring was requested
-
-Never delete a backup as an implied part of DB-system cleanup.
-
-### Data Guard Operations
-
-For list/get, resolve the parent database and association.
-
-For enable, failover, switchover, reinstate, or role conversion:
-
-1. get primary database and association state
-2. get peer database state when available
-3. inspect exact command help
-4. show current and requested roles, regions/ADs, lag or health fields, expected downtime, and data-loss risk
-5. require explicit `yes`
-6. execute only the selected operation
-7. do not poll unless asked
-
-Never infer that failover and switchover are interchangeable.
-
-## Impactful Operations
-
-Before any mutation, show:
-
-- action and exact command family
-- target display name and OCID
-- compartment and region
-- current lifecycle state
-- requested changes
-- replacement, downtime, billing, storage, backup, and Data Guard implications
-
-Require the user to reply `yes`. Return the initial response and work-request OCID if present. Do not wait or poll unless requested.
-
-Read-only list/get operations do not need a mutation confirmation.
+Resolve the parent database, then use the `db backup list` or `db data-guard-association list` command shown above. Do not modify the returned resources.
 
 ## Error Handling
 
@@ -598,8 +344,6 @@ Read-only list/get operations do not need a mutation confirmation.
 - **Ambiguous name:** show matching OCIDs and ask the user to select one.
 - **Region/service unavailable:** report the failing region and continue remaining requested regions unless asked to stop.
 - **MCP server denies a command:** report that server policy does not match the skill and stop; do not fall back to shell.
-- **Complex JSON rejected:** regenerate the parameter or full-command JSON schema from current help; never guess the shape.
-- **Long-running operation:** return the work request or initial resource state and stop unless monitoring was requested.
 
 ## Common Pitfalls
 
@@ -615,8 +359,6 @@ Read-only list/get operations do not need a mutation confirmation.
 - Polling by default.
 - Passing `oci`, `--profile`, `--auth`, or `--help` in MCP tool input.
 - Echoing passwords or secret material.
-- Running patch apply or upgrade before a successful precheck.
-- Treating Data Guard failover and switchover as equivalent.
 - Falling back to local OCI CLI after an MCP denial.
 
 ## Correct And Incorrect Tool Calls
@@ -624,7 +366,7 @@ Read-only list/get operations do not need a mutation confirmation.
 Correct:
 
 ```json
-{"tool":"get_oci_command_help","arguments":{"command":"db system launch"}}
+{"tool":"get_oci_command_help","arguments":{"command":"db system list"}}
 ```
 
 ```json
@@ -648,7 +390,7 @@ Incorrect:
 This incorrectly includes the executable and per-call profile.
 
 ```json
-{"tool":"get_oci_command_help","arguments":{"command":"db system launch --help"}}
+{"tool":"get_oci_command_help","arguments":{"command":"db system list --help"}}
 ```
 
 The help tool receives the command group without `--help`.
