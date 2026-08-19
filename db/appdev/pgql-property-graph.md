@@ -4,10 +4,10 @@
 
 PGQL (Property Graph Query Language) is an SQL-like query language for the property graph data model — vertices (nodes) and edges (relationships), each with zero or more labels and zero or more properties (arbitrary key-value pairs). It lets you "specify high-level graph patterns which are matched against vertices and edges in a graph." PGQL exists in two syntaxes:
 
-- **Custom syntax** — uses `MATCH ... ON graph`, `FROM MATCH`, colon label expressions (`:Label`), developed before SQL:2023 was finalized.
-- **SQL Standard syntax** — uses the `GRAPH_TABLE` operator, `IS Label` expressions, conforms to SQL:2023 Part 16 (SQL/PGQ). This is the syntax used by Oracle's `GRAPH_TABLE` operator on SQL Property Graphs — see `sql-property-graph.md` for the DDL side (`CREATE PROPERTY GRAPH`) and the base `GRAPH_TABLE` mechanics.
+- **Custom syntax** — uses `FROM MATCH ... ON <graph>` for graph pattern matching, and `IS <label>` for label expressions to filter vertex or edge types. The colon label expression `:<label>` is legacy syntax.
+- **SQL Standard syntax** — uses the `GRAPH_TABLE` operator, `IS <label>` expressions, conforms to SQL:2023 Part 16 (SQL/PGQ). This is the syntax used by Oracle's `GRAPH_TABLE` operator on SQL Property Graphs — see `sql-property-graph.md` for the DDL side (`CREATE PROPERTY GRAPH`) and the base `GRAPH_TABLE` mechanics.
 
-The two syntaxes are largely equivalent for pattern matching, but some features (cheapest-path search, `OPTIONAL MATCH`, `PREFIX`, graph modification, a few functions) exist only in custom syntax. Always check the unsupported-features list before translating a query from custom to SQL Standard syntax.
+The two syntaxes are largely equivalent for pattern matching, but some features (cheapest-path search, `OPTIONAL MATCH`, `PREFIX`, graph modification, a few functions) exist only in custom syntax. Always check the list of unsupported features before translating a pattern-matching query from custom to SQL Standard syntax.
 
 ### Background
 
@@ -29,31 +29,37 @@ The two syntaxes are largely equivalent for pattern matching, but some features 
 
 ```sql
 SELECT <expressions>
-FROM MATCH <path_mode>? <graph_pattern> ON graph_name
-     <ONE ROW PER ...>?
-WHERE <filter>?
+FROM
+  MATCH <path_mode> <graph_pattern> ON <graph_name>
+    <ONE ROW PER ...>
+WHERE <filter>
 ORDER BY ...
 ```
 
 ```sql
 -- Example: shortest path, one row per vertex
-SELECT v.number AS account_nr, ELEMENT_NUMBER(v) AS elem_nr
-FROM MATCH ANY SHORTEST (a1:Account) -[:transaction]->* (a2:Account)
-       ON financial_transactions
-       ONE ROW PER VERTEX ( v )
-WHERE a1.number = 1001 AND a2.number = 8021
-ORDER BY ELEMENT_NUMBER(v)
+SELECT
+  v.number AS account_nr,
+  ELEMENT_NUMBER(v) AS elem_nr
+FROM
+  MATCH ANY SHORTEST (a1:Account) -[:transaction]->* (a2:Account) ON financial_transactions
+    ONE ROW PER VERTEX ( v )
+WHERE
+  a1.number = 1001
+  AND a2.number = 8021
+ORDER BY
+  ELEMENT_NUMBER(v)
 ```
 
 **SQL Standard syntax** — the correct clause ordering inside `GRAPH_TABLE` is mandatory:
 
 ```sql
 SELECT ...
-FROM GRAPH_TABLE ( graph_name
+FROM GRAPH_TABLE ( <graph_name>
   MATCH <graph_pattern>
-  KEEP <path_mode>?        -- per SQL:2023 / PGQL 2.1 spec; NOT implemented by Oracle AI Database as of 26ai
-  WHERE <filter>?
-  <ONE ROW PER ...>?
+  KEEP <path_mode>
+  WHERE <filter>
+  <ONE ROW PER ...>
   COLUMNS ( <expressions> )
 )
 ORDER BY ...
@@ -61,13 +67,20 @@ ORDER BY ...
 
 ```sql
 -- Same query translated to SQL Standard syntax
-SELECT account_nr, elem_nr
-FROM GRAPH_TABLE (financial_transactions
-  MATCH (a1 IS Account) -[IS transaction]->* (a2 IS Account)
-  KEEP ANY SHORTEST PATH   -- not valid in Oracle AI Database — omit this line
-  WHERE a1.number = 1001 AND a2.number = 8021
-  ONE ROW PER VERTEX ( v )
-  COLUMNS (v.number AS account_nr, ELEMENT_NUMBER(v) AS elem_nr)
+SELECT
+  account_nr,
+  elem_nr
+FROM
+  GRAPH_TABLE (
+    financial_transactions
+    MATCH (a1 IS Account) -[IS transaction]->* (a2 IS Account)
+    KEEP ANY SHORTEST PATH   -- not valid in Oracle AI Database — omit this line
+    WHERE a1.number = 1001 AND a2.number = 8021
+    ONE ROW PER VERTEX ( v )
+    COLUMNS (
+      v.number AS account_nr,
+      ELEMENT_NUMBER(v) AS elem_nr
+    )
 )
 ORDER BY elem_nr
 ```
@@ -76,7 +89,7 @@ ORDER BY elem_nr
 
 | Custom syntax | SQL Standard syntax |
 |---|---|
-| `ON graph_name` | First arg of `GRAPH_TABLE(graph_name ...)` |
+| `ON <graph_name>` | First arg of `GRAPH_TABLE(<graph_name> ...)` |
 | `:Label` | `IS Label` (only `IS` allowed in `GRAPH_TABLE`) |
 | `MATCH ANY ...` | `MATCH ... KEEP ANY` |
 | `MATCH ALL SHORTEST ...` | `MATCH ... KEEP ALL SHORTEST` |
@@ -103,6 +116,7 @@ Vertices are written in parentheses, edges as arrows:
 ```
 
 Variable names and label expressions are both optional:
+
 - `()` — anonymous vertex
 - `(n)` — named vertex, any label
 - `(IS Person)` — anonymous vertex with label
@@ -134,7 +148,9 @@ Path modes control which paths are retained when multiple exist. Per the SQL:202
 | Any cheapest | `MATCH ANY CHEAPEST` | Not supported |
 | k cheapest | `MATCH CHEAPEST k PATHS` | Not supported |
 
-> **Oracle AI Database:** None of the `KEEP`-based path modes above are implemented in Oracle AI Database's `GRAPH_TABLE`, in any release through Oracle AI Database 26ai (26.3). Oracle's own documentation states plainly: *"Variable-length pattern matching goals (such as ANY, ALL, ALL SHORTEST, ANY CHEAPEST, and so on) are not supported."* Every row in the table above — including the ones marked as spec-supported — currently errors in Oracle AI Database. See [Oracle AI Database GRAPH_TABLE Implementation Notes](#oracle-ai-database-graph_table-implementation-notes-26ai--release-263).
+> **Oracle AI Database:** None of the `KEEP`-based path modes above are implemented in Oracle AI Database's `GRAPH_TABLE`, in any release through Oracle AI Database 26ai (26.3). *"Variable-length pattern matching goals (such as ANY, ALL, ALL SHORTEST, ANY CHEAPEST, and so on) are not supported."*
+
+Every row in the table above — including the ones marked as spec-supported — currently errors in Oracle AI Database. See [Oracle AI Database GRAPH_TABLE Implementation Notes](#oracle-ai-database-graph_table-implementation-notes-26ai--release-263).
 
 ### Quantifiers
 
@@ -167,6 +183,7 @@ MATCH (src) (-[e IS transaction]->)* (dst)
 ```
 
 The `COST` clause (for cheapest paths) is inside the repeating unit, and is custom-syntax only:
+
 ```sql
 -- Custom syntax only
 MATCH ANY CHEAPEST (a) (-[e:transaction]-> COST e.amount)* (b)
@@ -176,10 +193,14 @@ Oracle AI Database's own examples for bounded variable-length paths use a slight
 
 ```sql
 -- Oracle AI Database GRAPH_TABLE (bounded quantifier, confirmed in Oracle docs)
-SELECT *
-FROM GRAPH_TABLE ( g
-  MATCH (v1) (-[e]->(v2)){1,2}
-  COLUMNS (LISTAGG(v2.id, ',') AS id_list)
+SELECT ...
+FROM
+  GRAPH_TABLE (
+    g
+    MATCH (v1) (-[e]->(v2)){1,2}
+    COLUMNS (
+      LISTAGG(v2.id, ',') AS id_list
+    )
 )
 ```
 
@@ -196,12 +217,20 @@ Controls how many result rows are produced per matched path.
 In SQL Standard syntax, these appear after `WHERE` and before `COLUMNS`:
 
 ```sql
-FROM GRAPH_TABLE (my_graph
-  MATCH (a IS Account) -[e IS transaction]->* (b IS Account)
-  KEEP ANY SHORTEST PATH   -- spec syntax; NOT valid in Oracle AI Database, see note below
-  WHERE a.number = 1001 AND b.number = 8021
-  ONE ROW PER VERTEX ( v )
-  COLUMNS (v.number AS account_nr, ELEMENT_NUMBER(v) AS elem_nr)
+SELECT ...
+FROM
+  GRAPH_TABLE (
+    my_graph
+    MATCH (a IS Account) -[e IS transaction]->* (b IS Account)
+    KEEP ANY SHORTEST PATH   -- spec syntax; NOT valid in Oracle AI Database, see note below
+    WHERE
+      a.number = 1001
+      AND b.number = 8021
+    ONE ROW PER VERTEX ( v )
+    COLUMNS (
+      v.number AS account_nr,
+      ELEMENT_NUMBER(v) AS elem_nr
+    )
 )
 ```
 
@@ -213,16 +242,23 @@ When using `ONE ROW PER MATCH` with variable-length paths, aggregations over edg
 
 ```sql
 -- Horizontal aggregation: COUNT, SUM, ARRAY_AGG, LISTAGG over path edges
-SELECT COUNT(EDGE_ID(e)) AS num_hops,
-       SUM(e.amount) AS total_amount,
-       ARRAY_AGG(e.amount) AS amounts
-FROM GRAPH_TABLE (financial_transactions
-  MATCH (a IS Account) -[e IS transaction]->* (b IS Account)
-  KEEP ANY SHORTEST PATH   -- spec syntax; drop this line for Oracle AI Database (see note below)
-  WHERE a.number = 10039 AND b.number = 2090
-  COLUMNS (COUNT(EDGE_ID(e)) AS num_hops,
-           SUM(e.amount) AS total_amount,
-           ARRAY_AGG(e.amount) AS amounts)
+SELECT
+  COUNT(EDGE_ID(e)) AS num_hops,
+  SUM(e.amount) AS total_amount,
+  ARRAY_AGG(e.amount) AS amounts
+FROM
+  GRAPH_TABLE (
+    financial_transactions
+    MATCH (a IS Account) -[e IS transaction]->* (b IS Account)
+    KEEP ANY SHORTEST PATH   -- spec syntax; drop this line for Oracle AI Database (see note below)
+    WHERE
+      a.number = 10039
+      AND b.number = 2090
+    COLUMNS (
+      COUNT(EDGE_ID(e)) AS num_hops,
+      SUM(e.amount) AS total_amount,
+      ARRAY_AGG(e.amount) AS amounts
+    )
 )
 ```
 
@@ -233,10 +269,13 @@ Aggregate functions themselves (both built-in and user-defined) over path elemen
 `OPTIONAL MATCH` is like a left outer join — if no match is found, the newly declared variables are unbound (NULL). There is no SQL Standard equivalent.
 
 ```sql
--- Custom syntax only
-SELECT p.name, c.name AS company
-FROM MATCH (p:Person),
-     OPTIONAL MATCH (p) -[:worksFor]-> (c:Company)
+-- Custom syntax
+SELECT
+  p.name,
+  c.name AS company
+FROM
+  MATCH (p:Person),
+  OPTIONAL MATCH (p) -[:worksFor]-> (c:Company)
 ORDER BY p.name
 ```
 
@@ -245,11 +284,15 @@ ORDER BY p.name
 Multiple comma-separated path patterns produce a Cartesian product when the patterns are not connected through shared variables:
 
 ```sql
--- SQL Standard: disconnected patterns
-FROM GRAPH_TABLE(my_graph
-  MATCH (n1) -> (m1),
-        (n2) -> (m2)   -- disconnected: Cartesian product
-  COLUMNS (1 AS dummy)
+-- SQL Standard syntax: disconnected patterns
+SELECT ...
+FROM
+  GRAPH_TABLE(
+    my_graph
+    MATCH
+      (n1) -> (m1),
+      (n2) -> (m2)   -- disconnected: Cartesian product
+    COLUMNS (1 AS dummy)
 )
 ```
 
@@ -258,15 +301,21 @@ FROM GRAPH_TABLE(my_graph
 In custom syntax, the same variable name in multiple `MATCH` clauses refers to the same vertex. In SQL Standard syntax, use comma-separated patterns inside a single `MATCH`:
 
 ```sql
--- Custom: same variable across MATCH clauses
-FROM MATCH (p:Person) -[:knows]-> (q:Person) ON g
-   , MATCH (p) -[:worksAt]-> (c:Company) ON g
+-- Custom syntax: same variable across MATCH clauses
+SELECT ...
+FROM
+  MATCH (p:Person) -[:knows]-> (q:Person) ON g,
+  MATCH (p) -[:worksAt]-> (c:Company) ON g
 
--- SQL Standard: comma-separated patterns in one MATCH
-FROM GRAPH_TABLE(g
-  MATCH (p IS Person) -[IS knows]-> (q IS Person),
-        (p) -[IS worksAt]-> (c IS Company)
-  COLUMNS (...)
+-- SQL Standard syntax: comma-separated patterns in one MATCH
+SELECT ...
+FROM
+  GRAPH_TABLE(
+    g
+    MATCH
+      (p IS Person) -[IS knows]-> (q IS Person),
+      (p) -[IS worksAt]-> (c IS Company)
+    COLUMNS (...)
 )
 ```
 
@@ -278,21 +327,21 @@ FROM GRAPH_TABLE(g
 
 **`VERTEX_ID(v)` / `EDGE_ID(e)`** — Returns the scalar identifier of a vertex or edge. Use these whenever a scalar key is needed — for example when joining across `GRAPH_TABLE` operators or when using `COUNT(DISTINCT ...)`.
 
-- **SQL Standard:** `VERTEX_ID(v)`, `EDGE_ID(e)` — supported
-- **Custom alias:** `ID(element)` — not allowed in SQL Standard syntax
+- **SQL Standard syntax:** `VERTEX_ID(v)`, `EDGE_ID(e)`
+- **Custom syntax:** `ID(element)`
 
 ```sql
 -- Joining two GRAPH_TABLE operators on a shared vertex
-WHERE mid_vid1 = mid_vid2   -- where mid_vid1 = VERTEX_ID(mid) from first GT
+WHERE VERTEX_ID(v1) = VERTEX_ID(v2)
 
--- Counting distinct edges
+-- Counting distinct edges using GRAPH_TABLE
 COUNT(DISTINCT EDGE_ID(e))
 ```
 
 ### Label Functions and Predicates
 
-- **`LABEL(element)`** — Returns the label of a vertex or edge as a string value. Custom syntax only; not allowed in SQL Standard syntax. Alternative: use `IS Label` in the pattern or `IS [NOT] LABELED`.
-- **`LABELS(element)`** — Returns the set of labels of a vertex or edge. Custom syntax only; not allowed in SQL Standard syntax.
+- **`LABEL(element)`** — Returns the label of a vertex or edge as a string value. Custom syntax only; not supported in SQL Standard syntax. Alternative: use `IS Label` in the pattern or `IS [NOT] LABELED`.
+- **`LABELS(element)`** — Returns the set of labels of a vertex or edge. Custom syntax only; not supported in SQL Standard syntax.
 - **`IS [NOT] LABELED` predicate** — Tests whether a vertex or edge has a specific label. Supported in both syntaxes; confirmed in Oracle AI Database. Oracle's implementation accepts only a **simple label name** — label disjunction (`IS LABELED Person|Company`) is not supported in the predicate. Returns `TRUE`/`FALSE` if the element is bound, `NULL` if the element variable is unbound.
 
 ```sql
@@ -324,8 +373,9 @@ COLUMNS (n.name, PROPERTY_EXISTS(n, name) AS name_exists)
 ### Source / Destination Predicates
 
 **`IS [NOT] SOURCE OF` / `IS [NOT] DESTINATION OF`** — Tests whether a vertex is the source or destination of an edge. Confirmed in Oracle AI Database, "mainly useful for determining the direction of edges that are matched through any-directed edge patterns" (`<-[]->` or `-[]-`). Evaluates to `NULL` if either referenced variable is unbound.
-- SQL Standard: `v IS [NOT] SOURCE OF e`, `v IS [NOT] DESTINATION OF e`
-- Custom alias: `is_source_of(e, v)` / `is_destination_of(e, v)` — custom only
+
+- SQL Standard syntax: `v IS [NOT] SOURCE OF e`, `v IS [NOT] DESTINATION OF e`
+- Custom syntax: `is_source_of(e, v)` / `is_destination_of(e, v)`
 
 ### String Functions
 
@@ -385,7 +435,7 @@ UDFs can be called in both syntaxes with `function_name(args)`.
 -- Custom syntax: package prefix allowed
 SELECT mypackage.myfunction(n.amount) FROM MATCH (n) ON g
 
--- SQL Standard: no package prefix
+-- SQL Standard syntax: no package prefix
 SELECT myfunction(n.amount) FROM GRAPH_TABLE(g MATCH (n) COLUMNS(...))
 ```
 
@@ -401,11 +451,12 @@ Always check the "Features Not Supported in SQL Standard Syntax" section below B
 **SQL Standard:** Graph name becomes the first argument of `GRAPH_TABLE(...)`.
 
 ```sql
--- Custom
+-- Custom syntax
 FROM MATCH (n:Person) ON financial_transactions
 
--- SQL Standard
-FROM GRAPH_TABLE (financial_transactions
+-- SQL Standard syntax
+FROM GRAPH_TABLE (
+  financial_transactions
   MATCH (n IS Person)
   COLUMNS (...)
 )
@@ -417,16 +468,17 @@ FROM GRAPH_TABLE (financial_transactions
 **SQL Standard:** `IS Label`. Only `IS` is permitted inside `GRAPH_TABLE`; colons are not allowed.
 
 ```sql
--- Custom
+-- Custom syntax
 (a:Account) -[:transaction]-> (b:Account)
 
--- SQL Standard
+-- SQL Standard syntax
 (a IS Account) -[IS transaction]-> (b IS Account)
 ```
 
 Label disjunction uses the bar operator in both syntaxes:
-- Custom: `:Person|Company`
-- SQL Standard: `IS Person|Company`
+
+- Custom syntax: `:Person|Company`
+- SQL Standard syntax: `IS Person|Company`
 
 ### Rule 3: Path Mode → KEEP Clause
 
@@ -450,27 +502,39 @@ Note: `ANY SHORTEST` becomes `ANY SHORTEST PATH` (explicit `PATH` keyword).
 When two `MATCH` clauses have **different** path modes, split into separate `GRAPH_TABLE` operators — one per `MATCH` — each with its own `KEEP` clause. Join the results in the outer query using `VERTEX_ID()` or `EDGE_ID()`.
 
 ```sql
--- Custom
-SELECT e1_weights, e2_weights
-FROM MATCH SHORTEST 3 PATHS (src) (-[e1]->)* (mid) ON my_graph
-   , MATCH ANY SHORTEST (mid) (-[e2]->)* (dst) ON my_graph
-
--- SQL Standard
-SELECT e1_weights, e2_weights
+-- Custom syntax
+SELECT
+  e1_weights,
+  e2_weights
 FROM
-  GRAPH_TABLE(my_graph
+  MATCH SHORTEST 3 PATHS (src) (-[e1]->)* (mid) ON my_graph,
+  MATCH ANY SHORTEST (mid) (-[e2]->)* (dst) ON my_graph
+
+-- SQL Standard syntax
+SELECT
+  e1_weights,
+  e2_weights
+FROM
+  GRAPH_TABLE(
+    my_graph
     MATCH (src) (-[e1]->)* (mid)
     KEEP SHORTEST 3 PATHS
-    COLUMNS (VERTEX_ID(mid) AS mid_vid1,
-             LISTAGG(e1.weight, ', ') AS e1_weights)
+    COLUMNS (
+      VERTEX_ID(mid) AS mid_vid1,
+      LISTAGG(e1.weight, ', ') AS e1_weights
+    )
   ),
-  GRAPH_TABLE(my_graph
+  GRAPH_TABLE(
+    my_graph
     MATCH (mid) (-[e2]->)* (dst)
     KEEP ANY SHORTEST PATH
-    COLUMNS (VERTEX_ID(mid) AS mid_vid2,
-             LISTAGG(e2.weight, ', ') AS e2_weights)
+    COLUMNS (
+      VERTEX_ID(mid) AS mid_vid2,
+      LISTAGG(e2.weight, ', ') AS e2_weights
+    )
   )
-WHERE mid_vid1 = mid_vid2
+WHERE
+  mid_vid1 = mid_vid2
 ```
 
 Graph objects (vertices, edges) cannot be passed out of `GRAPH_TABLE`, so the shared vertex `mid` is exposed as a scalar via `VERTEX_ID(mid)` for joining.
@@ -493,11 +557,11 @@ Graph objects (vertices, edges) cannot be passed out of `GRAPH_TABLE`, so the sh
 
 `ONE ROW PER MATCH` is the default in SQL Standard syntax and can be omitted. Other variants (`ONE ROW PER VERTEX`, `ONE ROW PER STEP`) must be stated explicitly and are placed **after** `WHERE` and **before** `COLUMNS`:
 
-```
+```pgql
 MATCH ...
-KEEP ...?
-WHERE ...?
-ONE ROW PER VERTEX ( v )   ← here
+KEEP ...
+WHERE ...
+ONE ROW PER VERTEX ( v )
 COLUMNS (...)
 ```
 
@@ -507,20 +571,32 @@ COLUMNS (...)
 **SQL Standard:** `COLUMNS(...)` inside `GRAPH_TABLE` replaces the projection. All expressions, aggregations, and aliases go here. The outer `SELECT` then references only the alias names exposed by `COLUMNS`.
 
 ```sql
--- Custom
-SELECT COUNT(e) AS num_hops, SUM(e.amount) AS total
-FROM MATCH SHORTEST (a:Account) -[e:transaction]->* (b:Account)
-       ON financial_transactions
-WHERE a.number = 1 AND b.number = 2
+-- Custom syntax
+SELECT
+  COUNT(e) AS num_hops,
+  SUM(e.amount) AS total
+FROM
+  MATCH SHORTEST (a:Account) -[e:transaction]->* (b:Account) ON financial_transactions
+WHERE
+  a.number = 1
+  AND b.number = 2
 
--- SQL Standard
-SELECT num_hops, total
-FROM GRAPH_TABLE (financial_transactions
-  MATCH (a IS Account) -[e IS transaction]->* (b IS Account)
-  KEEP ANY SHORTEST PATH   -- spec syntax; not valid in Oracle AI Database
-  WHERE a.number = 1 AND b.number = 2
-  COLUMNS (COUNT(EDGE_ID(e)) AS num_hops,
-           SUM(e.amount) AS total)
+-- SQL Standard syntax
+SELECT
+  num_hops,
+  total
+FROM
+  GRAPH_TABLE (
+    financial_transactions
+    MATCH (a IS Account) -[e IS transaction]->* (b IS Account)
+    KEEP ANY SHORTEST PATH   -- spec syntax; not valid in Oracle AI Database
+    WHERE
+      a.number = 1
+      AND b.number = 2
+    COLUMNS (
+      COUNT(EDGE_ID(e)) AS num_hops,
+      SUM(e.amount) AS total
+    )
 )
 ```
 
@@ -536,21 +612,35 @@ Custom syntax uses `ONE ROW PER MATCH` explicitly. In SQL Standard syntax this i
 
 ```sql
 -- Custom syntax
-SELECT v.number AS account_nr, ELEMENT_NUMBER(v) AS elem_nr
-FROM MATCH ANY (a1:Account) -[:transaction]->* (a2:Account)
-       ON financial_transactions
-       ONE ROW PER VERTEX ( v )
-WHERE a1.number = 1001 AND a2.number = 8021
-ORDER BY ELEMENT_NUMBER(v)
+SELECT
+  v.number AS account_nr,
+  ELEMENT_NUMBER(v) AS elem_nr
+FROM
+  MATCH ANY (a1:Account) -[:transaction]->* (a2:Account) ON financial_transactions
+    ONE ROW PER VERTEX ( v )
+WHERE
+  a1.number = 1001
+  AND a2.number = 8021
+ORDER BY
+  ELEMENT_NUMBER(v)
 
 -- SQL Standard syntax
-SELECT account_nr, elem_nr
-FROM GRAPH_TABLE (financial_transactions
-  MATCH (a1 IS Account) -[IS transaction]->* (a2 IS Account)
-  KEEP ANY   -- spec syntax; Oracle AI Database does not accept this line (see caveat above)
-  WHERE a1.number = 1001 AND a2.number = 8021
-  ONE ROW PER VERTEX ( v )
-  COLUMNS (v.number AS account_nr, ELEMENT_NUMBER(v) AS elem_nr)
+SELECT
+  account_nr,
+  elem_nr
+FROM
+  GRAPH_TABLE (
+    financial_transactions
+    MATCH (a1 IS Account) -[IS transaction]->* (a2 IS Account)
+    KEEP ANY   -- spec syntax; Oracle AI Database does not accept this line (see caveat above)
+    WHERE
+      a1.number = 1001
+      AND a2.number = 8021
+    ONE ROW PER VERTEX ( v )
+    COLUMNS (
+      v.number AS account_nr,
+      ELEMENT_NUMBER(v) AS elem_nr
+    )
 )
 ORDER BY elem_nr
 ```
@@ -568,6 +658,7 @@ Always check this section BEFORE attempting a translation. If the query uses any
 > *"Use PGQL with custom syntax since cheapest path finding support has not yet been added to the SQL Standard."*
 
 This applies to:
+
 - `ANY CHEAPEST` path mode
 - `CHEAPEST k PATHS` (counted cheapest) path mode
 - The `COST` clause used inside variable-length path patterns
@@ -576,10 +667,14 @@ Queries using these must remain in custom syntax.
 
 ```sql
 -- Custom syntax only — cannot be translated
-SELECT COUNT(e) AS num_hops, SUM(e.amount) AS total_amount
-FROM MATCH ANY CHEAPEST (a:Account) (-[e:transaction]-> COST e.amount)* (b:Account)
-       ON financial_transactions
-WHERE a.number = 10039 AND b.number = 2090
+SELECT
+  COUNT(e) AS num_hops,
+  SUM(e.amount) AS total_amount
+FROM
+  MATCH ANY CHEAPEST (a:Account) (-[e:transaction]-> COST e.amount)* (b:Account) ON financial_transactions
+WHERE
+  a.number = 10039
+  AND b.number = 2090
 ```
 
 ### OPTIONAL MATCH Clause
@@ -588,10 +683,14 @@ WHERE a.number = 10039 AND b.number = 2090
 
 ```sql
 -- Custom syntax only — cannot be translated
-SELECT p.name AS person, c.name AS company
-FROM MATCH (p:Person),
-     OPTIONAL MATCH (p) -[:worksFor]-> (c:Company)
-ORDER BY p.name
+SELECT
+  p.name AS person,
+  c.name AS company
+FROM
+  MATCH (p:Person) ON my_graph,
+  OPTIONAL MATCH (p) -[:worksFor]-> (c:Company) ON my_graph
+ORDER BY
+  p.name
 ```
 
 ### SELECT * Returning Graph Objects
@@ -626,9 +725,14 @@ FROM MATCH (n:Account) -[e:transaction]-> (m:Account) ON financial_transactions
 
   ```sql
   -- Custom syntax only
-  SELECT label(n) AS lbl, COUNT(*) FROM MATCH (n) ON hr GROUP BY lbl
-
-  -- SQL Standard alternative: use label expressions in MATCH pattern
+  SELECT
+    label(n) AS lbl,
+    COUNT(*)
+  FROM
+    MATCH (n) ON hr
+  GROUP BY
+    lbl
+  -- SQL Standard syntax alternative: use label expressions in MATCH pattern
   -- There is no direct equivalent for retrieving the label as a value
   ```
 
@@ -645,7 +749,7 @@ FROM MATCH (n:Account) -[e:transaction]-> (m:Account) ON financial_transactions
 SELECT mypackage.myfunction(n.amount) AS result
 FROM MATCH (n:Account) ON my_graph
 
--- SQL Standard: call function without package prefix
+-- SQL Standard syntax: call function without package prefix
 ```
 
 ### Summary Table
