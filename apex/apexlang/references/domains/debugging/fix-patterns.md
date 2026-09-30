@@ -58,6 +58,19 @@ Apply the fix pattern that matches the failure bucket. Do not spread one defect 
 - Fix the owning layer that the snapshot evidence points to: shared components, page composition, templates, or runtime rendering.
 - Re-run the same runtime page and interaction path after the fix; do not accept validate/import success alone as proof.
 
+## Runtime Page-Protection Or Submit Violation
+- These defects validate and import cleanly; fix the page/item design, not the `.apx` compile shape or the import packages.
+- Do not let a display-only or protected item post a value on a full-page submit: render its value as static region content or a **Value Protected** hidden item (validate any client-set value server-side), or submit only mutable items via AJAX (see `references/domains/debugging/runtime-error-catalog.md`).
+- For an SSP rejection surfacing as `ORA-20987`, set user-editable AJAX-submitted items to Session State Protection = Unrestricted; do not restructure the artifact to compensate.
+- For `ORA-22816` on an editable grid, replace the native grid DML with a region-bound custom PL/SQL process that avoids the RETURNING clause (the grid can keep its view source).
+- For the editable-IG `HTTP 400`, set the page Reload on Submit to Only for Success.
+
+## Runtime Data-Write And Error-Path Verification
+- Do not accept `apex validate`/`apex import` success, a passing mechanism test, or a green success message as proof that a submit persisted correct data.
+- Verify the actual row change directly in the database and reproduce the same effect live in the browser; track mechanism-level and end-to-end proof separately (see `references/domains/debugging/runtime-verification-methodology.md`).
+- Route genuine failures through `apex_error.add_error` (added before the final validation/process) so they render as errors and stop the page before the success reload; never signal a failure through the success-message channel.
+- Re-verify each static or multi-agent review finding against the live app and DB before changing anything.
+
 ## Cross-Layer Alignment Rules
 - Do not change only one surface when the contract spans metadata declarations, Builder emitters, and import or export behavior.
 - Do not use upgrade logic as a shortcut for import-path compatibility.
