@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build OCI Security Zones Terraform"
+  short_description: "Generate OCI Security Zones Terraform safely"
+  default_prompt: "Use $build-oci-security-zones-main-tf to create a Terraform Security Zone configuration."
