@@ -1,0 +1,4 @@
+interface:
+  display_name: "ExaCC"
+  short_description: "Inspect ExaCC through OCI API MCP"
+  default_prompt: "Use $exacc to list ExaCC VM clusters in a compartment through OCI API MCP."
