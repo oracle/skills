@@ -1,6 +1,6 @@
 ---
 name: enterprise-ai
-description: Oracle Enterprise AI guidance for building, deploying, securing, estimating cost for, and integrating AI models, agents, RAG, Responses API workflows, custom or imported models, fine-tuning, model endpoints, private endpoints, vector stores, File Search, Code Interpreter, MCP tools, SQL Search, hosted agentic applications, and Oracle platform integrations. Use when the user asks for OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, OCI Generative AI pricing or cost estimator inputs, or a simplified path across OCI, Autonomous Database, APEX, and other Oracle services.
+description: Oracle Enterprise AI guidance for building, deploying, securing, estimating cost for, and integrating AI models, agents, RAG, Responses API workflows, custom or imported models, fine-tuning, model discovery, routing profiles, hardware unit shapes, model endpoints, private endpoints, vector stores, File Search, Code Interpreter, MCP tools, SQL Search, hosted agentic applications, and Oracle platform integrations. Use when the user asks for OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, OCI Generative AI pricing or cost estimator inputs, or a simplified path across OCI, Autonomous Database, APEX, and other Oracle services.
 ---
 
 # OCI Enterprise AI Skills
@@ -32,6 +32,7 @@ oci/enterprise-ai/
 | User Goal | Start With |
 |-----------|------------|
 | Choose or invoke OCI-hosted models, embeddings, rerank, endpoints, or dedicated serving | `models/enterprise-ai-models.md` |
+| Discover models, select regional hardware, or route on-demand inference across approved regions | `models/enterprise-ai-models.md` |
 | Import, fine-tune, host, or lifecycle-manage a custom model | `models/custom-and-imported-models.md` |
 | Build an API-first agent with OpenAI-compatible OCI APIs | `agent-workflows/responses-api-agents.md` |
 | Deploy a packaged agent runtime on OCI-managed infrastructure | `agent-workflows/hosted-applications.md` |
@@ -58,6 +59,7 @@ oci/enterprise-ai/
 |------|----------------------|
 | Build a governed enterprise assistant | `responses-api-agents` -> `agent-tools` -> `rag-and-search` -> `cost-estimation` -> `private-endpoints-and-governance` |
 | Move from model experimentation to production serving | `enterprise-ai-models` -> `cost-estimation` -> `private-endpoints-and-governance` |
+| Route on-demand requests across approved regions | `enterprise-ai-models` -> `private-endpoints-and-governance` -> `cost-estimation` |
 | Bring a custom model into OCI serving | `custom-and-imported-models` -> `enterprise-ai-models` -> `cost-estimation` -> `private-endpoints-and-governance` |
 | Deploy a packaged agent runtime | `responses-api-agents` -> `hosted-applications` -> `cost-estimation` -> `private-endpoints-and-governance` |
 | Build RAG over files | `rag-and-search` -> `agent-tools` -> `cost-estimation` -> `responses-api-agents` |
@@ -72,11 +74,21 @@ oci/enterprise-ai/
 - Use `apex/apexlang/` for APEX application artifact generation and APEX AI agent component templates.
 - Prefer official Oracle documentation for model availability, supported tools, IAM verbs, endpoint formats, and service limits because Enterprise AI services change frequently.
 
+## Documentation Currency
+
+Reviewed Oracle's Generative AI documentation and linked release notes on 2026-10-09; the latest listed release was Grok 4.7 on 2026-09-25. Topic files cover discovery, routing profiles, hardware sizing, imported-model capabilities and billing, asynchronous Responses and NL2SQL workflows, model-level IAM, and hosted application IAM authentication.
+
+Recheck the release notes, model cards, regional tables, and retirement dates when making a current recommendation. Availability for native inference, OpenAI-compatible APIs, tools, and project memory differs. Where an older overview conflicts with a newer feature-specific release or model page, use the specific current source and state any unresolved discrepancy.
+
 ## Sources
 
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/overview.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/models.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/model-discovery.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/hardware-unit-shapes-by-region.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/routing-profile.htm
+- https://docs.oracle.com/en-us/iaas/releasenotes/services/generative-ai/
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/fine-tune-models.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/imported-models.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/agents.htm
