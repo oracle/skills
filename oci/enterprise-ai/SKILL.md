@@ -36,6 +36,7 @@ oci/enterprise-ai/
 | Build an API-first agent with OpenAI-compatible OCI APIs | `agent-workflows/responses-api-agents.md` |
 | Deploy a packaged agent runtime on OCI-managed infrastructure | `agent-workflows/hosted-applications.md` |
 | Choose the right tool pattern: File Search, Code Interpreter, Function Calling, MCP, or SQL Search | `agent-workflows/agent-tools.md` |
+| Set up an NL2SQL Semantic Store and validate prerequisites | `agent-workflows/nl2sql-semantic-store-setup.md` |
 | Ground answers in documents, vector stores, SQL, or Oracle Database vector search | `data/rag-and-search.md` |
 | Estimate OCI Generative AI or OCI Generative AI Agents cost drivers | `cost/cost-estimation.md` |
 | Secure model or agent access with IAM, private networking, OAuth, guardrails, or audit controls | `governance/private-endpoints-and-governance.md` |
@@ -48,6 +49,7 @@ oci/enterprise-ai/
 - `oci/enterprise-ai/agent-workflows/responses-api-agents.md`
 - `oci/enterprise-ai/agent-workflows/hosted-applications.md`
 - `oci/enterprise-ai/agent-workflows/agent-tools.md`
+- `oci/enterprise-ai/agent-workflows/nl2sql-semantic-store-setup.md`
 - `oci/enterprise-ai/data/rag-and-search.md`
 - `oci/enterprise-ai/cost/cost-estimation.md`
 - `oci/enterprise-ai/governance/private-endpoints-and-governance.md`
