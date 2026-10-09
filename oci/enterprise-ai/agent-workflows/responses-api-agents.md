@@ -23,7 +23,7 @@ The OCI Responses API is OpenAI-compatible, but it is still an OCI service:
 
 - The base URL points to an OCI Generative AI regional endpoint.
 - Authentication uses OCI Generative AI credentials or IAM-supported flows.
-- Requests are processed through OCI Generative AI in OCI regions.
+- Requests enter through OCI Generative AI regional endpoints. Hosted inference runs in OCI; proxy models can invoke external providers. Check model-specific External Calls notes before asserting processing residency.
 - Tool support is declared through the Responses API request for supported OpenAI-compatible tools.
 - OCI Generative AI projects provide the project OCID and lifecycle settings for agent-related API calls.
 - The OpenAI SDK can be used against the OCI OpenAI-compatible base URL, but authentication remains OCI API key or IAM based.
@@ -35,6 +35,8 @@ https://inference.generativeai.${region}.oci.oraclecloud.com/openai/v1
 ```
 
 Verify the region, model, and supported tools before generating client code.
+
+Use `agentic-regions.htm` for Responses, tools, and project memory eligibility; native inference availability alone is insufficient. Imported Qwen3.6-35B-A3B and Gemma 4 31B IT have a documented Responses path after import, cluster creation, and endpoint creation. Follow `models/custom-and-imported-models.md` for setup.
 
 ## SDK and Authentication Choices
 
@@ -77,6 +79,7 @@ Use these endpoint paths when orienting code:
 | API | Path | Default Use |
 |-----|------|-------------|
 | Responses | `/responses` | New agentic workflows |
+| Retrieve/cancel a response | `/responses/{id}` and `/responses/{id}/cancel` | Track or stop background work |
 | Chat Completions | `/chat/completions` | Existing stateless chat code |
 | Conversations | `/conversations` | OCI-managed multi-turn state |
 | Files | `/files` | Upload reusable workflow files |
@@ -99,6 +102,14 @@ Use these endpoint paths when orienting code:
 | Manage searchable file indexes | Vector Stores API |
 | Manage sandbox execution resources | Containers API and Container Files API |
 | Deploy a custom hosted runtime | Generative AI applications and deployments |
+
+## Background Responses
+
+For long-running work, set `background=true`, retain the response ID, and retrieve it while status is `queued` or `in_progress`. Use the result only after `completed`; handle other terminal statuses. Support cancellation through `POST /responses/{id}/cancel`.
+
+To resume streaming, create the response with both `background=true` and `stream=true`, record event `sequence_number`, and retrieve with `stream=true&starting_after={sequence_number}`. An initially non-streaming response cannot acquire resumable streaming later.
+
+Background execution needs temporary response storage even with `store=false`. Include that requirement in retention decisions. Background Responses return response IDs; direct NL2SQL background calls return separate job IDs.
 
 ## Responses API vs Chat Completions
 
@@ -123,6 +134,10 @@ Ask for explicit choices when memory matters:
 - Whether long-term memory is allowed.
 - Whether short-term memory compaction is enabled to reduce context size, latency, and token usage in long conversations.
 - Whether project deletion should also delete associated artifacts.
+
+Project response and conversation retention can be configured up to 720 hours. Compaction and long-term memory model choices are made at project creation and cannot be changed; enabled memory features cannot be disabled without deleting the project. Check region-specific memory model availability before enabling them.
+
+Use project-scoped `memory_subject_id` to share long-term memory across conversations for the same authorized subject. Set `memory_access_policy` to `recall_and_store`, `recall_only`, `store_only`, or `none` according to the workflow; the default is recall and store. Keep application authorization responsible for assigning subject IDs.
 
 ## Implementation Guardrails
 
@@ -155,6 +170,11 @@ Ask for explicit choices when memory matters:
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-stores.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/containers-api.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/projects.htm
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/memory.htm
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/agent-building-blocks.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/agentic-regions.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/create-project.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/enable-short-term-memory.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/use-short-term-memory.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/share-memory.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/memory-access.htm
+- https://docs.oracle.com/en-us/iaas/releasenotes/generative-ai/responses-api-background-mode.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/get-started-agents.htm
