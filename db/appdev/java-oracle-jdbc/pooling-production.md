@@ -48,11 +48,14 @@ spring:
 
 Use the Oracle production POM when you intentionally want Oracle's production dependency bundle:
 
+This assumes `oracle.jdbc.version` is set to the exact version from the
+[JDBC dependency version rule](dependencies.md#dependency-versions).
+
 ```xml
 <dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ojdbc17-production</artifactId>
-    <version>23.26.2.0.0</version>
+    <version>${oracle.jdbc.version}</version>
     <type>pom</type>
 </dependency>
 ```
