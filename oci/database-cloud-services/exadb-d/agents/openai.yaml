@@ -1,0 +1,4 @@
+interface:
+  display_name: "ExaDB-D"
+  short_description: "Manage dedicated OCI Exadata through OCI MCP"
+  default_prompt: "Use $exadb-d to manage an OCI ExaDB-D resource through OCI MCP."
