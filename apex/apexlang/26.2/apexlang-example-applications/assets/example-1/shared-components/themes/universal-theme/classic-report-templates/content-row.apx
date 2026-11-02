@@ -1,0 +1,189 @@
+classicReportTemplate content-row (
+    name: Content Row
+    templateClass: standard
+    type: namedColumn
+    reportTemplate {
+        top: <ul class="t-ContentRow #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">
+        bottom:
+            ```html
+            </ul>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    rowTemplate1 {
+        template:
+            ```html
+            <li class="t-ContentRow-item #ITEM_CLASSES#">
+              <div class="t-ContentRow-wrap">
+                <div class="t-ContentRow-selection">#SELECTION#</div>
+                <div class="t-ContentRow-iconWrap">
+                  <span class="t-ContentRow-icon #ICON_CLASS#">#ICON_HTML#</span>
+                </div>
+                <div class="t-ContentRow-body">
+                  <div class="t-ContentRow-content">
+                    <h3 class="t-ContentRow-title">#TITLE#</h3>
+                    <div class="t-ContentRow-description">#DESCRIPTION#</div>
+                  </div>
+                  <div class="t-ContentRow-misc">#MISC#</div>
+                  <div class="t-ContentRow-actions">#ACTIONS#</div>
+                </div>
+              </div>
+            </li>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: CONTENT_ROW
+    }
+    subscription {
+        master: @content-row
+    }
+
+    templateOption actions-hidden (
+        name: Hidden
+        group: @report/col-actions
+        sequence: 60
+        appearance {
+            cssClasses: t-ContentRow--hideActions
+        }
+        help {
+            helpText: Hides the Actions column from being rendered on the screen.
+        }
+        advanced {
+            identifier: ACTIONS_HIDDEN
+        }
+    )
+
+    templateOption description-hidden (
+        name: Hidden
+        group: @report/col-content-description
+        sequence: 40
+        appearance {
+            cssClasses: t-ContentRow--hideDescription
+        }
+        help {
+            helpText: Hides the Description from being rendered on the screen.
+        }
+        advanced {
+            identifier: DESCRIPTION_HIDDEN
+        }
+    )
+
+    templateOption title-hidden (
+        name: Hidden
+        group: @report/col-content-title
+        sequence: 30
+        appearance {
+            cssClasses: t-ContentRow--hideTitle
+        }
+        help {
+            helpText: Hides the Title from being rendered on the screen.
+        }
+        advanced {
+            identifier: TITLE_HIDDEN
+        }
+    )
+
+    templateOption icon-hidden (
+        name: Hidden
+        group: @report/col-icon
+        sequence: 20
+        appearance {
+            cssClasses: t-ContentRow--hideIcon
+        }
+        help {
+            helpText: Hides the Icon from being rendered on the screen.
+        }
+        advanced {
+            identifier: ICON_HIDDEN
+        }
+    )
+
+    templateOption misc-hidden (
+        name: Hidden
+        group: @report/col-misc
+        sequence: 50
+        appearance {
+            cssClasses: t-ContentRow--hideMisc
+        }
+        help {
+            helpText: Hides the Misc column from being rendered on the screen.
+        }
+        advanced {
+            identifier: MISC_HIDDEN
+        }
+    )
+
+    templateOption selection-hidden (
+        name: Hidden
+        group: @report/col-selection
+        sequence: 10
+        appearance {
+            cssClasses: t-ContentRow--hideSelection
+        }
+        help {
+            helpText: Hides the Selection column from being rendered on the screen.
+        }
+        advanced {
+            identifier: SELECTION_HIDDEN
+        }
+    )
+
+    templateOption alignment-top (
+        name: Top
+        group: @report/content-alignment
+        sequence: 100
+        appearance {
+            cssClasses: t-ContentRow--alignTop
+        }
+        help {
+            helpText: Aligns the content to the top of the row. This is useful when you expect that yours rows will vary in height (e.g. some rows will have longer descriptions than others).
+        }
+        advanced {
+            identifier: ALIGNMENT_TOP
+        }
+    )
+
+    templateOption style-compact (
+        name: Compact
+        group: @report/style
+        sequence: 1
+        appearance {
+            cssClasses: t-ContentRow--styleCompact
+        }
+        help {
+            helpText: This option reduces the padding and font sizes to present a compact display of the same information.
+        }
+        advanced {
+            identifier: STYLE_COMPACT
+        }
+    )
+
+)
+

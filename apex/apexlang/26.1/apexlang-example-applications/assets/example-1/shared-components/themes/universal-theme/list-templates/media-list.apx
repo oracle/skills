@@ -1,0 +1,245 @@
+listTemplate media-list (
+    name: Media List
+    templateClass: verticalImagesList
+    templateOptions {
+        default: [
+            t-MediaList--showIcons
+            t-MediaList--showDesc
+        ]
+    }
+    list {
+        beforeEntries: <ul class="t-MediaList #COMPONENT_CSS_CLASSES#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-MediaList-item is-active #A04#">
+              <a href="#LINK#" class="t-MediaList-itemWrap #A05#" #A03#>
+                <div class="t-MediaList-iconWrap" aria-hidden="true">
+                  <span class="t-MediaList-icon u-color #A06#"><span class="t-Icon #ICON_CSS_CLASSES#" #IMAGE_ATTR#></span></span>
+                </div>
+                <div class="t-MediaList-body">
+                  <h3 class="t-MediaList-title" aria-current="page">#TEXT#</h3>
+                  <p class="t-MediaList-desc">#A01#</p>
+                </div>
+                <div class="t-MediaList-badgeWrap">
+                  <span class="t-MediaList-badge">#A02#</span>
+                </div>
+              </a>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-MediaList-item  #A04#">
+              <a href="#LINK#" class="t-MediaList-itemWrap #A05#" #A03#>
+                <div class="t-MediaList-iconWrap" aria-hidden="true">
+                  <span class="t-MediaList-icon u-color #A06#"><span class="t-Icon #ICON_CSS_CLASSES#" #IMAGE_ATTR#></span></span>
+                </div>
+                <div class="t-MediaList-body">
+                  <h3 class="t-MediaList-title">#TEXT#</h3>
+                  <p class="t-MediaList-desc">#A01#</p>
+                </div>
+                <div class="t-MediaList-badgeWrap">
+                  <span class="t-MediaList-badge">#A02#</span>
+                </div>
+              </a>
+            </li>
+            ```
+    }
+    attributeDescriptions {
+        a01: Description
+        a02: Badge Value
+        a03: Link Attributes
+        a04: List Item CSS Classes
+        a05: Link Class
+        a06: Icon Color Class
+    }
+    advanced {
+        identifier: MEDIA_LIST
+    }
+    subscription {
+        master: @media-list
+    }
+
+    templateOption apply-theme-colors (
+        name: Apply Theme Colors
+        sequence: 40
+        appearance {
+            cssClasses: u-colors
+        }
+        help {
+            helpText: Applies colors from the Theme's color palette to icons in the list.
+        }
+        advanced {
+            identifier: APPLY_THEME_COLORS
+        }
+    )
+
+    templateOption show-badges (
+        name: Show Badges
+        sequence: 30
+        appearance {
+            cssClasses: t-MediaList--showBadges
+        }
+        help {
+            helpText: Show a badge (Attribute 2) to the right of the list item.
+        }
+        advanced {
+            identifier: SHOW_BADGES
+        }
+    )
+
+    templateOption show-description (
+        name: Show Description
+        sequence: 20
+        appearance {
+            cssClasses: t-MediaList--showDesc
+        }
+        help {
+            helpText: Shows the description (Attribute 1) for each list item.
+        }
+        advanced {
+            identifier: SHOW_DESCRIPTION
+        }
+    )
+
+    templateOption show-icons (
+        name: Show Icons
+        sequence: 10
+        appearance {
+            cssClasses: t-MediaList--showIcons
+        }
+        help {
+            helpText: Display an icon next to the list item.
+        }
+        advanced {
+            identifier: SHOW_ICONS
+        }
+    )
+
+    templateOption icons-rounded (
+        name: Rounded Corners
+        group: @list/icon-shape
+        sequence: 10
+        appearance {
+            cssClasses: t-MediaList--iconsRounded
+        }
+        help {
+            helpText: The icons are displayed within a square with rounded corners.
+        }
+        advanced {
+            identifier: ICONS_ROUNDED
+        }
+    )
+
+    templateOption icons-square (
+        name: Square
+        group: @list/icon-shape
+        sequence: 20
+        appearance {
+            cssClasses: t-MediaList--iconsSquare
+        }
+        help {
+            helpText: The icons are displayed within a square shape.
+        }
+        advanced {
+            identifier: ICONS_SQUARE
+        }
+    )
+
+    templateOption 2columngrid (
+        name: 2 Column Grid
+        group: @list/layout
+        sequence: 10
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--2cols
+            ]
+        }
+        advanced {
+            identifier: 2COLUMNGRID
+        }
+    )
+
+    templateOption 3columngrid (
+        name: 3 Column Grid
+        group: @list/layout
+        sequence: 20
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--3cols
+            ]
+        }
+        advanced {
+            identifier: 3COLUMNGRID
+        }
+    )
+
+    templateOption 4columngrid (
+        name: 4 Column Grid
+        group: @list/layout
+        sequence: 30
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--4cols
+            ]
+        }
+        advanced {
+            identifier: 4COLUMNGRID
+        }
+    )
+
+    templateOption 5columngrid (
+        name: 5 Column Grid
+        group: @list/layout
+        sequence: 40
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--5cols
+            ]
+        }
+        advanced {
+            identifier: 5COLUMNGRID
+        }
+    )
+
+    templateOption spanhorizontal (
+        name: Span Horizontal
+        group: @list/layout
+        sequence: 50
+        appearance {
+            cssClasses: t-MediaList--horizontal
+        }
+        help {
+            helpText: Show all list items in one horizontal row.
+        }
+        advanced {
+            identifier: SPANHORIZONTAL
+        }
+    )
+
+    templateOption list-size-large (
+        name: Large
+        group: @list/size
+        sequence: 10
+        appearance {
+            cssClasses: [
+                t-MediaList--large
+                force-fa-lg
+            ]
+        }
+        help {
+            helpText: Increases the size of the text and icons in the list.
+        }
+        advanced {
+            identifier: LIST_SIZE_LARGE
+        }
+    )
+
+)
+

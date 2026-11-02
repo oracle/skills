@@ -1,0 +1,681 @@
+page 10030 (
+    name: Activity Dashboard
+    alias: ACTIVITY-DASHBOARD
+    title: Activity Dashboard
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+    }
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    region filters (
+        name: Filters
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noUI
+                t-Form--large
+            ]
+        }
+    )
+
+    region hourly-page-events (
+        name: Hourly Page Events
+        type: chart
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h320
+                t-Region--scrollBody
+            ]
+        }
+        performance {
+            lazyLoading: true
+        }
+        settings {
+            timeAxisType: enabled
+        }
+        tooltip {
+            showSeriesName: false
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    with nw as (
+                        -- APEX_ACTIVITY_LOG uses dates; convert system time to local time zone.
+                        select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, 'TZR' ) ) at local as tm from dual
+                    ),
+                    window as (
+                        select
+                             trunc(nw.tm - ((level-1)/24),'HH') start_tm,
+                             trunc(nw.tm - ((level-2)/24),'HH') end_tm,
+                             trunc(sysdate-((level-1)/24),'HH') log_start_tm,
+                             trunc(sysdate-((level-2)/24),'HH') log_end_tm
+                        from nw
+                        connect by level <= round( 24 * ( 1/24/60/60 * nvl(:P10030_TIMEFRAME,1) ) )
+                    )
+                    select w.start_tm log_time,
+                           ( select count(*)
+                               from apex_activity_log l
+                              where l.flow_id = :app_id
+                                and l.time_stamp between w.log_start_tm and w.log_end_tm ) as value
+                    from window w
+                    order by 1
+                    ```
+                pageItemsToSubmit: P10030_TIMEFRAME
+            }
+            columnMapping {
+                label: LOG_TIME
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 350
+            }
+        )
+
+        axis x (
+            name: x
+            value {
+                format: datetimeShort
+            }
+            minorTicks {
+                show: true
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+    region latest-activity (
+        name: Latest Activity
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select userid_lc       as username,
+                       max(time_stamp) as last_activity
+                  from apex_activity_log
+                 where flow_id     = :app_id
+                   and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+                   and userid_lc  is not null
+                 group by userid_lc
+                 order by 2 desc
+                ```
+            pageItemsToSubmit: P10030_TIMEFRAME
+        }
+        layout {
+            sequence: 50
+            slot: contentBody
+            startNewRow: false
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h240
+                t-Region--scrollBody
+            ]
+        }
+        reportLayout {
+            numberOfRows: 20
+        }
+        componentAppearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: No activities found
+        }
+
+        column LAST_ACTIVITY (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Last Activity
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USERNAME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Username
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region most-active-pages (
+        name: Most Active Pages
+        type: chart
+        layout {
+            sequence: 30
+            slot: contentBody
+            startNewRow: false
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h320
+                t-Region--scrollBody
+            ]
+        }
+        chartAppearance {
+            orientation: horizontal
+        }
+        performance {
+            lazyLoading: true
+        }
+        tooltip {
+            showSeriesName: false
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select x.step_id||'. '||(select page_name from apex_application_pages p where p.application_id = :app_id and page_id = x.step_id) label, 
+                            value
+                    from ( select step_id,
+                                  count(*) as value
+                             from apex_activity_log
+                            where flow_id = :app_id
+                              and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+                              and step_id is not null
+                            group by step_id
+                            order by 2 desc
+                         ) x
+                    ```
+                pageItemsToSubmit: P10030_TIMEFRAME
+            }
+            columnMapping {
+                label: LABEL
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 10
+            }
+        )
+
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+    region recent-errors (
+        name: Recent Errors
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select sqlerrm    label,
+                       time_stamp value
+                  from apex_activity_log
+                 where flow_id    = :app_id
+                   and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+                   and sqlerrm    is not null
+                 order by 2 desc, 1
+                ```
+            pageItemsToSubmit: P10030_TIMEFRAME
+        }
+        layout {
+            sequence: 40
+            slot: contentBody
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h240
+                t-Region--scrollBody
+            ]
+        }
+        reportLayout {
+            numberOfRows: 20
+        }
+        componentAppearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: No data found.
+        }
+
+        column LABEL (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Label
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column VALUE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Value
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region top-users (
+        name: Top Users
+        type: chart
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h320
+                t-Region--scrollBody
+            ]
+        }
+        chartAppearance {
+            orientation: horizontal
+        }
+        performance {
+            lazyLoading: true
+        }
+        tooltip {
+            showSeriesName: false
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select nvl( userid_lc, apex_lang.message('APEX.FEATURE.TOP_USERS.USERNAME.NOT_IDENTIFIED') ) as label,
+                           count(*) as value
+                    from apex_activity_log
+                    where flow_id = :app_id
+                    and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+                    group by nvl( userid_lc, apex_lang.message('APEX.FEATURE.TOP_USERS.USERNAME.NOT_IDENTIFIED') )
+                    order by 2 desc
+                    ```
+                pageItemsToSubmit: P10030_TIMEFRAME
+            }
+            columnMapping {
+                label: LABEL
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 10
+            }
+        )
+
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+    pageItem P10030_TIMEFRAME (
+        type: selectList
+        label {
+            label: Timeframe
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @filters
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            type: staticValue
+            staticValue: 900
+        }
+    )
+
+    button view-activity-by-user (
+        buttonName: VIEW_ACTIVITY_BY_USER
+        label: View Details
+        layout {
+            sequence: 10
+            region: @hourly-page-events
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10031
+                clearCache: 10031
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button view-activity-by-user-2 (
+        buttonName: VIEW_ACTIVITY_BY_USER_2
+        label: View Details
+        layout {
+            sequence: 10
+            region: @top-users
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10031
+                clearCache: 10031
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button view-activity-details (
+        buttonName: VIEW_ACTIVITY_DETAILS
+        label: View Details
+        layout {
+            sequence: 10
+            region: @most-active-pages
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10034
+                clearCache: 10034
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button view-recent-errors (
+        buttonName: VIEW_RECENT_ERRORS
+        label: View Details
+        layout {
+            sequence: 10
+            region: @recent-errors
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 10032
+                clearCache: 10032
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction change-filters (
+        name: Change Filters
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P10030_TIMEFRAME
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @hourly-page-events
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh-2 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @top-users
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh-3 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @most-active-pages
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh-4 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @recent-errors
+            }
+            execution {
+                sequence: 40
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh-5 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @latest-activity
+            }
+            execution {
+                sequence: 50
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

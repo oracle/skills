@@ -1,0 +1,336 @@
+page 10050 (
+    name: Feedback
+    alias: FEEDBACK
+    title: Feedback
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        width: 480
+        chained: false
+        resizable: false
+    }
+    css {
+        inline:
+            ```css
+            .feedback-positive, .feedback-negative, .feedback-neutral { padding: 8px; border-radius: 100%; background-color: white; margin: 4px; }
+            .feedback-positive { color: var(--ut-feedback-positive-text-color, var(--ut-palette-success)); }
+            .feedback-neutral { color: var(--ut-feedback-neutral-text-color, var(--ut-palette-warning)); }
+            .feedback-negative { color: var(--ut-feedback-negative-text-color, var(--ut-palette-danger)); }
+            ```
+    }
+    config {
+        buildOption: @feature-feedback
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region form-on-feedback (
+        name: Form on Feedback
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+    )
+
+    pageItem P10050_APPLICATION_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @form-on-feedback
+            slot: regionBody
+        }
+        source {
+            used: always
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10050_FEEDBACK (
+        type: textarea
+        label {
+            label: Feedback
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @form-on-feedback
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 64
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+    )
+
+    pageItem P10050_PAGE_ID (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @form-on-feedback
+            slot: regionBody
+        }
+        source {
+            used: always
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10050_RATING (
+        type: radioGroup
+        label {
+            label: Experience
+            alignment: left
+        }
+        settings {
+            noOfCols: 3
+        }
+        lov {
+            type: sharedComponent
+            lov: @feedback-rating
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 35
+            region: @form-on-feedback
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--radioButtonGroup
+            ]
+        }
+        security {
+            escapeSpecialChars: false
+        }
+    )
+
+    pageItem P10050_USER_AGENT (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @form-on-feedback
+            slot: regionBody
+        }
+        source {
+            type: sqlQuerySingleValue
+            sqlQuery:
+                ```sql
+                select sys.owa_util.get_cgi_env('user-agent') x
+                from dual
+                ```
+            used: always
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button submit (
+        buttonName: SUBMIT
+        label: Submit Feedback
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--gapLeft
+            ]
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation at-least-one-feedback-required (
+        name: At least One Feedback Required
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: functionBodyReturningBoolean
+            plsqlFunctionBody:
+                ```plsql
+                if :P10050_FEEDBACK is null and :P10050_RATING is null then
+                    return false;
+                else
+                    return true;
+                end if;
+                ```
+        }
+        error {
+            errorMessage: Please provide feedback or your experience.
+            displayLocation: inlineInNotification
+        }
+    )
+
+    process submit-feedback (
+        name: Submit Feedback
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: SUBMIT_FEEDBACK
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Feedback Submitted
+        }
+        advanced {
+            executionMappingIdentifier: 6202439940040444150
+        }
+        serverSideCondition {
+            whenButtonPressed: @submit
+        }
+
+        parameter p_application_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: APP_ID
+            }
+            advanced {
+                displaySequence: 2
+            }
+        )
+
+        parameter p_comment (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P10050_FEEDBACK
+            }
+            advanced {
+                displaySequence: 1
+            }
+        )
+
+        parameter p_page_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P10050_PAGE_ID
+            }
+            advanced {
+                displaySequence: 3
+            }
+        )
+
+        parameter p_rating (
+            parameter {
+                dataType: number
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P10050_RATING
+            }
+            advanced {
+                displaySequence: 4
+            }
+        )
+
+    )
+
+    branch (
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 10051
+                action: resetPagination
+                successMessage: false
+            }
+        }
+    )
+
+)
+

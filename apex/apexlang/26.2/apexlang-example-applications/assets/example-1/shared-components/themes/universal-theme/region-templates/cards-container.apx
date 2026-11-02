@@ -1,0 +1,92 @@
+regionTemplate cards-container (
+    name: Cards Container
+    templateClass: custom1
+    templateOptions {
+        default: u-colors
+    }
+    region {
+        template: <div role="region" aria-label="#TITLE!ATTR#" class="t-CardsRegion #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>#ORDER_BY_ITEM##BODY##SUB_REGIONS#</div>
+    }
+    advanced {
+        identifier: CARDS_CONTAINER
+    }
+    subscription {
+        master: @cards-container
+    }
+
+    templateOption apply-theme-colors (
+        name: Apply Theme Colors
+        sequence: 1
+        appearance {
+            cssClasses: u-colors
+        }
+        help {
+            helpText: Applies the colors from the theme's color palette to the icons or initials within cards.
+        }
+        advanced {
+            identifier: APPLY_THEME_COLORS
+        }
+    )
+
+    templateOption style-a (
+        name: Style A
+        group: @region/style
+        sequence: 10
+        appearance {
+            cssClasses: t-CardsRegion--styleA
+        }
+        advanced {
+            identifier: STYLE_A
+        }
+    )
+
+    templateOption style-b (
+        name: Style B
+        group: @region/style
+        sequence: 20
+        appearance {
+            cssClasses: t-CardsRegion--styleB
+        }
+        advanced {
+            identifier: STYLE_B
+        }
+    )
+
+    templateOption style-c (
+        name: Style C
+        group: @region/style
+        sequence: 30
+        appearance {
+            cssClasses: t-CardsRegion--styleC
+        }
+        advanced {
+            identifier: STYLE_C
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot sortOrder (
+        name: Sort Order
+        staticId: ORDER_BY_ITEM
+        supports {
+            regions: false
+            items: true
+            buttons: true
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

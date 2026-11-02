@@ -1,0 +1,380 @@
+listTemplate cards (
+    name: Cards
+    templateClass: horizontalImagesWithLabelList
+    templateOptions {
+        preset: [
+            t-Cards--animColorFill
+            t-Cards--3cols
+            t-Cards--basic
+        ]
+    }
+    list {
+        beforeEntries: <ul class="t-Cards #COMPONENT_CSS_CLASSES#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-Cards-item is-active #A04#" aria-current="page">
+              <div class="t-Card">
+                <a href="#LINK#" class="t-Card-wrap" #A05#>
+                  <div class="t-Card-icon u-color #A06#"><span class="t-Icon #ICON_CSS_CLASSES#"><span class="t-Card-initials" role="presentation">#A03#</span></span></div>
+                  <div class="t-Card-titleWrap">
+                    <h3 class="t-Card-title">#TEXT#</h3>
+                    <h4 class="t-Card-subtitle">#A07#</h4>
+                  </div>
+                  <div class="t-Card-body">
+                    <div class="t-Card-desc">#A01#</div>
+                    <div class="t-Card-info">#A02#</div>
+                  </div>
+                  <span class="t-Card-colorFill u-color #A06#" aria-hidden="true"></span>
+                </a>
+              </div>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-Cards-item #A04#">
+              <div class="t-Card">
+                <a href="#LINK#" class="t-Card-wrap" #A05#>
+                  <div class="t-Card-icon u-color #A06#"><span class="t-Icon #ICON_CSS_CLASSES#"><span class="t-Card-initials" role="presentation">#A03#</span></span></div>
+                  <div class="t-Card-titleWrap">
+                    <h3 class="t-Card-title">#TEXT#</h3>
+                    <h4 class="t-Card-subtitle">#A07#</h4>
+                  </div>
+                  <div class="t-Card-body">
+                    <div class="t-Card-desc">#A01#</div>
+                    <div class="t-Card-info">#A02#</div>
+                  </div>
+                  <span class="t-Card-colorFill u-color #A06#" aria-hidden="true"></span>
+                </a>
+              </div>
+            </li>
+            ```
+    }
+    attributeDescriptions {
+        a01: Description
+        a02: Secondary Information
+        a03: Initials
+        a04: List Item CSS Classes
+        a05: Link Attributes
+        a06: Card Color Class
+        a07: Subtitle
+    }
+    advanced {
+        identifier: CARDS
+    }
+    subscription {
+        master: @cards
+    }
+
+    templateOption display-subtitle (
+        name: Display Subtitle
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--displaySubtitle
+        }
+        advanced {
+            identifier: DISPLAY_SUBTITLE
+        }
+    )
+
+    templateOption use-theme-colors (
+        name: Apply Theme Colors
+        sequence: 10
+        appearance {
+            cssClasses: u-colors
+        }
+        help {
+            helpText: Applies the colors from the theme's color palette to the icons or initials within cards.
+        }
+        advanced {
+            identifier: USE_THEME_COLORS
+        }
+    )
+
+    templateOption color-fill (
+        name: Color Fill
+        group: @list/animation
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--animColorFill
+        }
+        help {
+            helpText: Fills the card background with the color of the icon or default link style.
+        }
+        advanced {
+            identifier: COLOR_FILL
+        }
+    )
+
+    templateOption raise-card (
+        name: Raise Card
+        group: @list/animation
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--animRaiseCard
+        }
+        help {
+            helpText: Raises the card so it pops up.
+        }
+        advanced {
+            identifier: RAISE_CARD
+        }
+    )
+
+    templateOption 2-lines (
+        name: 2 Lines
+        group: @list/body-text
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--desc-2ln
+        }
+        advanced {
+            identifier: 2_LINES
+        }
+    )
+
+    templateOption 3-lines (
+        name: 3 Lines
+        group: @list/body-text
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--desc-3ln
+        }
+        advanced {
+            identifier: 3_LINES
+        }
+    )
+
+    templateOption 4-lines (
+        name: 4 Lines
+        group: @list/body-text
+        sequence: 30
+        appearance {
+            cssClasses: t-Cards--desc-4ln
+        }
+        advanced {
+            identifier: 4_LINES
+        }
+    )
+
+    templateOption hidden-body-text (
+        name: Hidden
+        group: @list/body-text
+        sequence: 50
+        appearance {
+            cssClasses: t-Cards--hideBody
+        }
+        help {
+            helpText: This option hides the card body which contains description and subtext.
+        }
+        advanced {
+            identifier: HIDDEN_BODY_TEXT
+        }
+    )
+
+    templateOption icons-rounded (
+        name: Rounded Corners
+        group: @list/icon-shape
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--iconsRounded
+        }
+        help {
+            helpText: The icons are displayed within a square with rounded corners.
+        }
+        advanced {
+            identifier: ICONS_ROUNDED
+        }
+    )
+
+    templateOption icons-square (
+        name: Square
+        group: @list/icon-shape
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--iconsSquare
+        }
+        help {
+            helpText: The icons are displayed within a square shape.
+        }
+        advanced {
+            identifier: ICONS_SQUARE
+        }
+    )
+
+    templateOption display-icons (
+        name: Display Icons
+        group: @list/icons
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--displayIcons
+        }
+        advanced {
+            identifier: DISPLAY_ICONS
+        }
+    )
+
+    templateOption display-initials (
+        name: Display Initials
+        group: @list/icons
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--displayInitials
+        }
+        help {
+            helpText: Initials come from List Attribute 3
+        }
+        advanced {
+            identifier: DISPLAY_INITIALS
+        }
+    )
+
+    templateOption 2-columns (
+        name: 2 Columns
+        group: @list/layout
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--cols
+        }
+        advanced {
+            identifier: 2_COLUMNS
+        }
+    )
+
+    templateOption 3-columns (
+        name: 3 Columns
+        group: @list/layout
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--3cols
+        }
+        advanced {
+            identifier: 3_COLUMNS
+        }
+    )
+
+    templateOption 4-columns (
+        name: 4 Columns
+        group: @list/layout
+        sequence: 30
+        appearance {
+            cssClasses: t-Cards--4cols
+        }
+        advanced {
+            identifier: 4_COLUMNS
+        }
+    )
+
+    templateOption 5-columns (
+        name: 5 Columns
+        group: @list/layout
+        sequence: 50
+        appearance {
+            cssClasses: t-Cards--5cols
+        }
+        advanced {
+            identifier: 5_COLUMNS
+        }
+    )
+
+    templateOption cards-stacked (
+        name: Stacked
+        group: @list/layout
+        sequence: 5
+        appearance {
+            cssClasses: t-Cards--stacked
+        }
+        help {
+            helpText: Stacks the cards on top of each other.
+        }
+        advanced {
+            identifier: CARDS_STACKED
+        }
+    )
+
+    templateOption float (
+        name: Float
+        group: @list/layout
+        sequence: 60
+        appearance {
+            cssClasses: t-Cards--float
+        }
+        advanced {
+            identifier: FLOAT
+        }
+    )
+
+    templateOption span-horizontally (
+        name: Span Horizontally
+        group: @list/layout
+        sequence: 70
+        appearance {
+            cssClasses: t-Cards--spanHorizontally
+        }
+        advanced {
+            identifier: SPAN_HORIZONTALLY
+        }
+    )
+
+    templateOption basic (
+        name: Basic
+        group: @list/style
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--basic
+        }
+        advanced {
+            identifier: BASIC
+        }
+    )
+
+    templateOption block (
+        name: Block
+        group: @list/style
+        sequence: 40
+        appearance {
+            cssClasses: [
+                t-Cards--featured
+                t-Cards--block
+                force-fa-lg
+            ]
+        }
+        advanced {
+            identifier: BLOCK
+        }
+    )
+
+    templateOption compact (
+        name: Compact
+        group: @list/style
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--compact
+        }
+        help {
+            helpText: Use this option when you want to show smaller cards.
+        }
+        advanced {
+            identifier: COMPACT
+        }
+    )
+
+    templateOption featured (
+        name: Featured
+        group: @list/style
+        sequence: 30
+        appearance {
+            cssClasses: [
+                t-Cards--featured
+                force-fa-lg
+            ]
+        }
+        advanced {
+            identifier: FEATURED
+        }
+    )
+
+)
+

@@ -1,0 +1,30 @@
+list application-configuration (
+    name: Application Configuration
+    config {
+        buildOption: @feature-configuration-options
+    }
+
+    entry configuration-options (
+        label: Configuration Options
+        icon {
+            imageIconCssClasses: fa-sliders
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10010
+                clearCache: 10010
+            }
+        }
+        userDefinedAttributes {
+            1: Enable or disable application features
+        }
+        config {
+            buildOption: @feature-configuration-options
+        }
+    )
+
+)
+

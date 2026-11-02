@@ -1,0 +1,113 @@
+list application-administration (
+    name: Application Administration
+
+    entry countries (
+        label: Countries
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 12
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry departments (
+        label: Departments
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 20
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry jobs (
+        label: Jobs
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 18
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry products (
+        label: Products
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 16
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry regions (
+        label: Regions
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry warehouses (
+        label: Warehouses
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 14
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+)
+

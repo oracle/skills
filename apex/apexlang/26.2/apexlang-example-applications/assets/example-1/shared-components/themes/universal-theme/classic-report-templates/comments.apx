@@ -1,0 +1,124 @@
+classicReportTemplate comments (
+    name: Comments
+    templateClass: custom1
+    type: namedColumn
+    templateOptions {
+        preset: t-Comments--chat
+    }
+    reportTemplate {
+        top: <ul class="t-Comments #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">
+        bottom:
+            ```html
+            </ul>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    rowTemplate1 {
+        template:
+            ```html
+            <li class="t-Comments-item #COMMENT_MODIFIERS#">
+              <div class="t-Comments-icon">
+                <div class="t-Comments-userIcon #ICON_MODIFIER#" aria-hidden="true">#USER_ICON#</div>
+              </div>
+              <div class="t-Comments-body">
+                <div class="t-Comments-info">
+                  #USER_NAME# <span class="t-Comments-date">#COMMENT_DATE#</span> <span class="t-Comments-actions">#ACTIONS#</span>
+                </div>
+                <div class="t-Comments-comment">
+                  #COMMENT_TEXT##ATTRIBUTE_1##ATTRIBUTE_2##ATTRIBUTE_3##ATTRIBUTE_4#
+                </div>
+              </div>
+            </li>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: COMMENTS
+    }
+    subscription {
+        master: @comments
+    }
+
+    templateOption basic (
+        name: Basic
+        group: @report/comments-style
+        sequence: 10
+        appearance {
+            cssClasses: t-Comments--basic
+        }
+        advanced {
+            identifier: BASIC
+        }
+    )
+
+    templateOption speech-bubbles (
+        name: Speech Bubbles
+        group: @report/comments-style
+        sequence: 20
+        appearance {
+            cssClasses: t-Comments--chat
+        }
+        advanced {
+            identifier: SPEECH_BUBBLES
+        }
+    )
+
+    templateOption icons-rounded (
+        name: Rounded Corners
+        group: @report/icon-shape
+        sequence: 10
+        appearance {
+            cssClasses: t-Comments--iconsRounded
+        }
+        help {
+            helpText: The icons are displayed within a square with rounded corners.
+        }
+        advanced {
+            identifier: ICONS_ROUNDED
+        }
+    )
+
+    templateOption icons-square (
+        name: Square
+        group: @report/icon-shape
+        sequence: 20
+        appearance {
+            cssClasses: t-Comments--iconsSquare
+        }
+        help {
+            helpText: The icons are displayed within a square shape.
+        }
+        advanced {
+            identifier: ICONS_SQUARE
+        }
+    )
+
+)
+

@@ -1,0 +1,85 @@
+fieldTemplate required (
+    name: Required
+    templateClass: requiredLabel
+    label {
+        before:
+            ```html
+            <div class="t-Form-labelContainer col col-#LABEL_COLUMN_SPAN_NUMBER#">
+              <label for="#CURRENT_ITEM_NAME#" id="#LABEL_ID#" class="t-Form-label">
+            ```
+        after:
+            ```html
+             <span class="u-VisuallyHidden">(#VALUE_REQUIRED#)</span></label>
+            </div>
+            ```
+    }
+    item {
+        before:
+            ```html
+            <div class="t-Form-inputContainer col col-#ITEM_COLUMN_SPAN_NUMBER#">
+              <div class="t-Form-itemWrapper">#ITEM_PRE_TEXT#
+            ```
+        after:
+            ```html
+            #ITEM_POST_TEXT##HELP_TEMPLATE#
+              </div>
+              <div class="t-Form-itemAssistance">
+                #ERROR_TEMPLATE#
+                <div class="t-Form-itemRequired" aria-hidden="true">#REQUIRED#</div>
+              </div>
+              #INLINE_HELP_TEMPLATE#
+            </div>
+            ```
+        preText: <span class="t-Form-itemText t-Form-itemText--pre">#CURRENT_ITEM_PRE_TEXT#</span>
+        postText: <span class="t-Form-itemText t-Form-itemText--post">#CURRENT_ITEM_POST_TEXT#</span>
+    }
+    help {
+        invoke: <button class="t-Form-helpButton js-itemHelp" data-itemhelp="#CURRENT_ITEM_ID#" title="#CURRENT_ITEM_HELP_LABEL#" aria-label="#CURRENT_ITEM_HELP_LABEL#" tabindex="-1" type="button"><span class="a-Icon icon-help" aria-hidden="true"></span></button>
+        inline: <div class="t-Form-inlineHelp">#CURRENT_ITEM_INLINE_HELP_TEXT#</div>
+    }
+    error {
+        errorTemplate: <div class="t-Form-error">#ERROR_MESSAGE#</div>
+    }
+    fieldContainer {
+        beforeLabelAndItem: <div class="t-Form-fieldContainer is-required rel-col #ITEM_CSS_CLASSES#" id="#CURRENT_ITEM_CONTAINER_ID#">
+        afterLabelAndItem: </div>
+    }
+    advanced {
+        identifier: REQUIRED
+    }
+    subscription {
+        master: @required
+    }
+
+    templateOption indicator-asterisk (
+        name: Asterisk
+        group: @item/required-indicator
+        sequence: 10
+        appearance {
+            cssClasses: t-Form-fieldContainer--indicatorAsterisk
+        }
+        help {
+            helpText: Displays an asterisk * on required items.
+        }
+        advanced {
+            identifier: INDICATOR_ASTERISK
+        }
+    )
+
+    templateOption indicator-label (
+        name: Inline Label
+        group: @item/required-indicator
+        sequence: 20
+        appearance {
+            cssClasses: t-Form-fieldContainer--indicatorLabel
+        }
+        help {
+            helpText: Displays "Required" inline.
+        }
+        advanced {
+            identifier: INDICATOR_LABEL
+        }
+    )
+
+)
+

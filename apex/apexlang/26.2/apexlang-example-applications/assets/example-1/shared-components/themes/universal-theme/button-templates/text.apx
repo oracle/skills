@@ -1,0 +1,15 @@
+buttonTemplate text (
+    name: Text
+    templateClass: button
+    button {
+        normal: <button onclick="#JAVASCRIPT#" class="t-Button #BUTTON_CSS_CLASSES#" type="button" #BUTTON_ATTRIBUTES# id="#BUTTON_ID#"><span class="t-Button-label">#LABEL#</span></button>
+        hot: <button onclick="#JAVASCRIPT#" class="t-Button t-Button--hot #BUTTON_CSS_CLASSES#" type="button" #BUTTON_ATTRIBUTES# id="#BUTTON_ID#"><span class="t-Button-label">#LABEL#</span></button>
+    }
+    advanced {
+        identifier: TEXT
+    }
+    subscription {
+        master: @text
+    }
+)
+

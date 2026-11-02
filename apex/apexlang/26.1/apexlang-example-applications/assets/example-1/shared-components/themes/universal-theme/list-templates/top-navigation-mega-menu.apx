@@ -1,0 +1,255 @@
+listTemplate top-navigation-mega-menu (
+    name: Top Navigation Mega Menu
+    templateClass: pullDownMenu
+    list {
+        beforeEntries:
+            ```html
+            <div class="t-MegaMenu #COMPONENT_CSS_CLASSES#" id="t_MenuNav" style="display:none;">
+              <div class="a-Menu-content t-MegaMenu-container">
+                <div class="t-MegaMenu-body">
+                <ul class="t-MegaMenu-list t-MegaMenu-list--top">
+            ```
+        afterEntries: " </ul></div></div></div>"
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-MegaMenu-item t-MegaMenu-item--top t-MegaMenu-item--noSub is-active #A04#" data-current="true" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            </li>
+            ```
+        currentWithSublist:
+            ```html
+            <li class="t-MegaMenu-item t-MegaMenu-item--top t-MegaMenu-item--hasSub is-active #A04#" data-current="true" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-MegaMenu-item t-MegaMenu-item--top t-MegaMenu-item--noSub #A04#" data-current="false" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            </li>
+            ```
+        noncurrentWithSublist:
+            ```html
+            <li class="t-MegaMenu-item t-MegaMenu-item--top t-MegaMenu-item--hasSub #A04#" data-current="false" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            </li>
+            ```
+    }
+    sublist {
+        beforeEntries: <ul class="t-MegaMenu-list t-MegaMenu-list--sub">
+        afterEntries: </ul></li>
+    }
+    sublistEntry {
+        current:
+            ```html
+            <li class="t-MegaMenu-item is-active #A04#" data-current="true" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            </li>
+            ```
+        currentWithSublist:
+            ```html
+            <li class="t-MegaMenu-item is-active #A04#" data-current="true" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-MegaMenu-item #A04#" data-current="false" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            </li>
+            ```
+        noncurrentWithSublist:
+            ```html
+            <li class="t-MegaMenu-item #A04#" data-current="false" data-id="#A01#" data-shortcut="#A05#">
+              <span class="a-Menu-item t-MegaMenu-itemBody #A08#">
+                <span class="t-Icon #ICON_CSS_CLASSES#"></span>
+                <a class="a-Menu-label t-MegaMenu-labelWrap" href="#LINK#" target="#A06#">
+                  <span class="t-MegaMenu-label">#TEXT_ESC_SC#</span>
+                  <span class="t-MegaMenu-desc">#A03#</span>
+                </a>
+                <span class="t-MegaMenu-badge #A07#">#A02#</span>
+              </span>
+            ```
+    }
+    attributeDescriptions {
+        a01: ID Attribute
+        a02: Badge Value
+        a03: Description
+        a04: List Item Class
+        a05: Shortcut Key
+        a06: Link Target
+        a07: Badge Class
+        a08: Menu Item Class
+    }
+    advanced {
+        identifier: TOP_NAVIGATION_MEGA_MENU
+    }
+    subscription {
+        master: @top-navigation-mega-menu
+    }
+
+    templateOption add-actions (
+        name: Add Actions
+        sequence: 1
+        appearance {
+            cssClasses: js-addActions
+        }
+        help {
+            helpText: Use this option to add shortcuts for menu items. Note that actions.js must be included on your page to support this functionality.
+        }
+        advanced {
+            identifier: ADD_ACTIONS
+        }
+    )
+
+    templateOption display-menu-callout (
+        name: Display Menu Callout
+        sequence: 20
+        appearance {
+            cssClasses: js-menu-callout
+        }
+        help {
+            helpText: Displays a callout arrow that points to where the menu was activated from.
+        }
+        advanced {
+            identifier: DISPLAY_MENU_CALLOUT
+        }
+    )
+
+    templateOption full-width (
+        name: Full Width
+        sequence: 10
+        appearance {
+            cssClasses: t-MegaMenu--fullWidth
+        }
+        help {
+            helpText: Stretches the menu to fill the width of the screen.
+        }
+        advanced {
+            identifier: FULL_WIDTH
+        }
+    )
+
+    templateOption 2-columns (
+        name: 2 Columns
+        group: @list/layout
+        sequence: 10
+        appearance {
+            cssClasses: t-MegaMenu--layout2Cols
+        }
+        advanced {
+            identifier: 2_COLUMNS
+        }
+    )
+
+    templateOption 3-columns (
+        name: 3 Columns
+        group: @list/layout
+        sequence: 20
+        appearance {
+            cssClasses: t-MegaMenu--layout3Cols
+        }
+        advanced {
+            identifier: 3_COLUMNS
+        }
+    )
+
+    templateOption 4-columns (
+        name: 4 Columns
+        group: @list/layout
+        sequence: 30
+        appearance {
+            cssClasses: t-MegaMenu--layout4Cols
+        }
+        advanced {
+            identifier: 4_COLUMNS
+        }
+    )
+
+    templateOption 5-columns (
+        name: 5 Columns
+        group: @list/layout
+        sequence: 40
+        appearance {
+            cssClasses: t-MegaMenu--layout5Cols
+        }
+        advanced {
+            identifier: 5_COLUMNS
+        }
+    )
+
+    templateOption custom (
+        name: Custom
+        group: @list/layout
+        sequence: 60
+        appearance {
+            cssClasses: t-MegaMenu--layoutCustom
+        }
+        advanced {
+            identifier: CUSTOM
+        }
+    )
+
+    templateOption stacked (
+        name: Stacked
+        group: @list/layout
+        sequence: 60
+        appearance {
+            cssClasses: t-MegaMenu--layoutStacked
+        }
+        advanced {
+            identifier: STACKED
+        }
+    )
+
+)
+

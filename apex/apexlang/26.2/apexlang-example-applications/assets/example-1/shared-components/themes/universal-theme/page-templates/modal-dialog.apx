@@ -1,0 +1,212 @@
+pageTemplate modal-dialog (
+    name: Modal Dialog
+    templateClass: noTabs
+    page {
+        type: dialog
+        header:
+            ```html
+            <!DOCTYPE html>
+            <html class="no-js #RTL_CLASS# page-&APP_PAGE_ID. app-&APP_ALIAS." lang="&BROWSER_LANGUAGE." #TEXT_DIRECTION#>
+            <head>
+              <meta http-equiv="x-ua-compatible" content="IE=edge" />
+              <meta charset="utf-8">
+              <title>#TITLE#</title>
+              #APEX_CSS#
+              #THEME_CSS#
+              #TEMPLATE_CSS#
+              #THEME_STYLE_CSS#
+              #APPLICATION_CSS#
+              #PAGE_CSS#
+              #FAVICONS#
+              #HEAD#
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </head>
+            <body class="t-Dialog-page t-Dialog-page--standard t-PageTemplate--dialog #DIALOG_CSS_CLASSES# #PAGE_CSS_CLASSES#" #TEXT_DIRECTION# #ONLOAD#>
+            #FORM_OPEN#
+            ```
+        body:
+            ```html
+            <div class="t-Dialog" role="dialog" aria-label="#TITLE#">
+              <div class="t-Dialog-header">#REGION_POSITION_01#</div>
+              <div class="t-Dialog-bodyWrapperOut">
+                <div class="t-Dialog-bodyWrapperIn">
+                  <div class="t-Dialog-body" role="main">#SUCCESS_MESSAGE##NOTIFICATION_MESSAGE##GLOBAL_NOTIFICATION##BODY#</div>
+                </div>
+              </div>
+              <div class="t-Dialog-footer">#REGION_POSITION_03#</div>
+            </div>
+            ```
+        footer:
+            ```html
+            #FORM_CLOSE#
+            #DEVELOPER_TOOLBAR#
+            #APEX_JAVASCRIPT#
+            #GENERATED_CSS#
+            #THEME_JAVASCRIPT#
+            #TEMPLATE_JAVASCRIPT#
+            #APPLICATION_JAVASCRIPT#
+            #PAGE_JAVASCRIPT#  
+            #GENERATED_JAVASCRIPT#
+            </body>
+            </html>
+            ```
+    }
+    javaScript {
+        executeWhenPageLoads: apex.theme42.initializePage.modalDialog();
+    }
+    subtemplate {
+        successMessage:
+            ```html
+            <div class="t-Body-alert">
+              <div class="t-Alert t-Alert--defaultIcons t-Alert--success t-Alert--horizontal t-Alert--page t-Alert--colorBG" id="t_Alert_Success" role="alert">
+                <div class="t-Alert-wrap">
+                  <div class="t-Alert-icon">
+                    <span class="t-Icon"></span>
+                  </div>
+                  <div class="t-Alert-content">
+                    <div class="t-Alert-header">
+                      <h2 class="t-Alert-title">#SUCCESS_MESSAGE#</h2>
+                    </div>
+                  </div>
+                  <div class="t-Alert-buttons">
+                    <button class="t-Button t-Button--noUI t-Button--icon t-Button--closeAlert" onclick="apex.jQuery('#t_Alert_Success').remove();" type="button" title="#CLOSE_NOTIFICATION#"><span class="t-Icon icon-close"></span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ```
+        notification:
+            ```html
+            <div class="t-Body-alert">
+              <div class="t-Alert t-Alert--defaultIcons t-Alert--warning t-Alert--horizontal t-Alert--page t-Alert--colorBG" id="t_Alert_Notification" role="alert">
+                <div class="t-Alert-wrap">
+                  <div class="t-Alert-icon">
+                    <span class="t-Icon"></span>
+                  </div>
+                  <div class="t-Alert-content">
+                    <div class="t-Alert-body">#MESSAGE#</div>
+                  </div>
+                  <div class="t-Alert-buttons">
+                    <button class="t-Button t-Button--noUI t-Button--icon t-Button--closeAlert" onclick="apex.jQuery('#t_Alert_Notification').remove();" type="button" title="#CLOSE_NOTIFICATION#"><span class="t-Icon icon-close"></span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ```
+    }
+    layout {
+        maxColumns: 12
+        alwaysUseMaxColumns: true
+        defaultLabelColumnSpan: 2
+        firstColumnAttributes: col-start
+        lastColumnAttributes: col-end
+        containerTemplate:
+            ```html
+            <div class="container">
+            #ROWS#
+            </div>
+            ```
+        rowTemplate:
+            ```html
+            <div class="row #CSS_CLASSES#">
+            #COLUMNS#
+            </div>
+            ```
+        columnTemplate: <div class="col col-#COLUMN_SPAN_NUMBER# #CSS_CLASSES# #FIRST_LAST_COLUMN_ATTRIBUTES#" #ATTRIBUTES#>#CONTENT#</div>
+    }
+    positions {
+        breadcrumbPosition: dialogHeader
+    }
+    dialog {
+        width: 720
+        height: auto
+        maxWidth: 960
+        allowEmbedInFrame: modal
+        initCode: "apex.theme42.dialog(#PAGE_URL#,{title:#TITLE#,h:#DIALOG_HEIGHT#,w:#DIALOG_WIDTH#,mxw:#DIALOG_MAX_WIDTH#,modal:#IS_MODAL#,dialog:#DIALOG#,dlgCls:'t-Dialog-page--standard '+#DIALOG_CSS_CLASSES#,#DIALOG_ATTRIBUTES#},#PAGE_CSS_CLASSES#,#TRIGGERING_ELEMENT#)"
+        closureCode: apex.theme42.dialog.close(#IS_MODAL#,#TARGET#)
+        cancelCode: apex.theme42.dialog.cancel(#IS_MODAL#)
+    }
+    errorPage {
+        template:
+            ```html
+            <div class="t-Alert t-Alert--danger t-Alert--wizard t-Alert--defaultIcons">
+              <div class="t-Alert-wrap">
+                <div class="t-Alert-icon">
+                  <span class="t-Icon"></span>
+                </div>
+                <div class="t-Alert-content">
+                  <div class="t-Alert-body">
+                    <h3>#MESSAGE#</h3>
+                    <p>#ADDITIONAL_INFO#</p>
+                    <div class="t-Alert-inset">#TECHNICAL_INFO#</div>
+                  </div>
+                </div>
+                <div class="t-Alert-buttons">
+                  <button onclick="#BACK_LINK#" class="t-Button t-Button--hot w50p t-Button--large" type="button">#OK#</button>
+                </div>
+              </div>
+            </div>
+            ```
+    }
+    advanced {
+        identifier: MODAL_DIALOG
+    }
+    subscription {
+        master: @modal-dialog
+    }
+
+    templateOption remove-body-padding (
+        name: Remove Body Padding
+        sequence: 20
+        appearance {
+            cssClasses: t-Dialog--noPadding
+        }
+        advanced {
+            identifier: REMOVE_BODY_PADDING
+        }
+    )
+
+    templateOption stretch-to-fit-window (
+        name: Stretch to Fit Window
+        sequence: 1
+        appearance {
+            cssClasses: ui-dialog--stretch
+        }
+        help {
+            helpText: Stretch the dialog to fit the browser window.
+        }
+        advanced {
+            identifier: STRETCH_TO_FIT_WINDOW
+        }
+    )
+
+    slot contentBody (
+        name: Content Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+        gridLayout {
+            maxFixedColumns: 12
+        }
+    )
+
+    slot dialogFooter (
+        name: Dialog Footer
+        staticId: REGION_POSITION_03
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot dialogHeader (
+        name: Dialog Header
+        staticId: REGION_POSITION_01
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+)
+

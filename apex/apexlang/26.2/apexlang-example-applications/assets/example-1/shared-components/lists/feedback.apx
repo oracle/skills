@@ -1,0 +1,27 @@
+list feedback (
+    name: Feedback
+    config {
+        buildOption: @feature-feedback
+    }
+
+    entry user-feedback (
+        label: User Feedback
+        icon {
+            imageIconCssClasses: fa-comment-o
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10053
+                clearCache: 10053
+            }
+        }
+        userDefinedAttributes {
+            1: Report of all feedback submitted by application users
+        }
+    )
+
+)
+
