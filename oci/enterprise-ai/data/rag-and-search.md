@@ -25,6 +25,8 @@ Use this file when the user wants AI answers grounded in documents, files, vecto
 6. Define retention, deletion, and access boundaries for uploaded files and vector stores.
 7. Estimate File Search storage, Vector Store storage, retrieval, ingestion, and model-response cost before production.
 
+For Object Storage synchronization, use a Vector Store Connector and trigger a data sync. Check per-file ingestion logs and sync statistics; don't treat connector creation as proof that files are searchable. The documented maximum is five active connectors per vector store. Grant the connector resource scoped read access to the source bucket's objects. Use documented Object Storage metadata for search filters when retrieval must be scoped by source attributes.
+
 ## Database RAG Journey
 
 Use Oracle Database-owned guidance when vectors or generation run in the database:
@@ -54,6 +56,20 @@ For OCI SQL Search, design around these resources:
 
 Use the DBTools MCP Server or approved database tooling when the user wants generated SQL executed. Keep generation, authorization, execution, and guardrails as separate steps.
 
+## NL2SQL Model Selection and Refresh
+
+- Select the enrichment model using semantic-store `modelSelection`; individual SQL requests can supply `modelId`. The default is `openai.gpt-oss-120b`.
+- Choose an accessible on-demand model in the NL2SQL region. Dedicated endpoints, model-parameter tuning, and user-selected embedding models aren't supported.
+- Changing the enrichment model rebuilds enriched metadata while the store remains available. Evaluate SQL accuracy on the actual schema before selecting another model.
+- Enrich manually, on creation, or at a recurring ISO 8601 interval of at least six hours, such as `PT6H` or `P1D`. API delta refresh uses `GenerateEnrichmentJob` with `DeltaRefreshEnrichmentJobConfiguration` and updates changed objects.
+- Include refresh inference usage in cost estimates and monitor job results for metadata freshness.
+
+## Background SQL Generation
+
+For direct `GenerateSqlFromNl` calls, set `completionMode=BACKGROUND_JOB`, retain the job ID, and monitor `GetGenerateSqlFromNlJob`. On success, retrieve SQL from `jobOutput`. Without this option, `WAIT_FOR_COMPLETION` uses the service timeout. Background SQL generation is available through API, SDK, and CLI, not the Console.
+
+For a Responses workflow that calls the Database Tools MCP Server, use Responses `background=true` and track the response ID instead. These are separate asynchronous contracts; don't use a Responses retrieve operation for an NL2SQL job ID. Generated SQL still requires separate authorized execution.
+
 ## RAG Safety Checklist
 
 - Keep retrieval scopes explicit.
@@ -66,13 +82,18 @@ Use the DBTools MCP Server or approved database tooling when the user wants gene
 
 ## Sources
 
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/file-search.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/get-started-agents.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/files.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-stores.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-store-file-batches.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/agents.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/tool-support.htm
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/agent-building-blocks.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/openai-compatible-api.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-store-connectors.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/sync-data-vector-store.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/add-metadata-object-storage.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/limits.htm
+- https://docs.oracle.com/en-us/iaas/releasenotes/generative-ai/nl2sql-model-selection-background-generation.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/nl2sql.htm
 - https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/select-ai.htm
 - https://docs.oracle.com/en/database/oracle/oracle-database/26/vecse/

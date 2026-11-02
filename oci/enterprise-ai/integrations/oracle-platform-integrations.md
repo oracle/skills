@@ -13,6 +13,7 @@ Use this file when the user's Enterprise AI journey crosses Oracle services. Rou
 | APEX app generation or APEX AI agent component artifacts | `apex/apexlang/` |
 | OCR, document extraction, image analysis, language, or speech before GenAI | OCI AI Services documentation and service-specific SDKs |
 | Agent workflow that calls enterprise systems | `oci/enterprise-ai/agent-workflows/agent-tools.md` with Function Calling or MCP Calling |
+| Python or Java application using OCI model adapters | Current LangChain OCI, LangChain4j, or LlamaIndex integration documentation |
 
 ## Autonomous Database and Select AI
 
@@ -41,6 +42,14 @@ Use OCI AI Services when the task is better solved by a specialized pretrained o
 
 Generative AI can then summarize, normalize, reason over, or transform the extracted outputs.
 
+For model-based audio or image generation, also consider the compatible imports in `models/custom-and-imported-models.md`: Whisper transcription, OmniVoice speech synthesis, and Qwen Image generation/editing. Confirm the model's invocation API and regional hardware before replacing a specialized OCI AI service.
+
+## Framework Integrations
+
+For Python LangChain model integration, use Oracle's `langchain-oci` package and current examples; Oracle recommends migrating the OCI integration from `langchain-community`. Java applications can use LangChain4j's OCI Generative AI integration. LlamaIndex provides Python chat and embedding integrations, and the OCI playground can generate starter code.
+
+For Responses-based agents, verify compatibility with the selected client framework and OCI endpoint, auth helper, model, and tool subset. A framework integration doesn't imply parity with all provider APIs or establish residency for proxy models.
+
 ## Integration Safety
 
 - Keep source-system authorization outside the model.
@@ -51,6 +60,10 @@ Generative AI can then summarize, normalize, reason over, or transform the extra
 ## Sources
 
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/overview.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/langchain.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/setup-oci-langchain.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/llama-index.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm
 - https://docs.oracle.com/iaas/Content/document-understanding/using/home.htm
 - https://docs.oracle.com/en-us/iaas/Content/vision/using/home.htm
 - https://docs.oracle.com/en-us/iaas/Content/language/using/home.htm

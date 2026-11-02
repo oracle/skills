@@ -12,7 +12,7 @@ Use this file to choose the right tool pattern for OCI Enterprise AI agents. Rou
 | Analyze data, transform files, or run sandboxed code | Code Interpreter |
 | Call application-owned business logic | Function Calling |
 | Call a remote tool server from the OCI agent platform | MCP Calling |
-| Use provider-hosted web/X search or code execution with supported xAI models | xAI-compatible tools through Responses API |
+| Use provider-hosted X Search or code execution with supported xAI models | xAI-compatible tools through Responses API |
 | Generate SQL from natural language over Autonomous Database-backed metadata | SQL Search |
 | Query or change data after SQL is generated | Database tooling with explicit authorization and safety checks |
 
@@ -34,7 +34,7 @@ Practical constraints to include in designs:
 
 - Supported memory sizes are 1 GB, 4 GB, 16 GB, and 64 GB, with a shared tenancy pool documented by OCI.
 - Auto mode is simplest; explicit containers are better when memory size or session control matters.
-- Containers expire after inactivity, and files or in-memory variables in that container are lost after expiration.
+- Containers expire after 20 minutes of inactivity, and files or in-memory variables in that container are lost after expiration. The documented default shared memory pool is 64 GB per tenancy.
 - Network policies and custom skills are not supported by OCI Containers API; do not assume unrestricted internet or shell access.
 
 ## Function Calling
@@ -51,13 +51,15 @@ Constrain MCP access with `allowed_tools` when only a subset is needed. If the r
 
 ## xAI-Compatible Tools
 
-Some supported xAI models expose built-in tools such as Web Search, X Search, and xAI Code Execution through the Responses API `tools` parameter. Treat these as model/provider-specific tools, not general OCI tools. Check supported model and region tables before recommending them, and add their requests or execution usage to the cost estimate.
+The current tool table lists X Search (`x_search`) and xAI Code Execution (`code_interpreter`). These use xAI parameters and limits and execute at the provider. The OCI sandbox Code Interpreter uses the same type name but a different execution path; select by model and tool contract. Don't assume Web Search or other OpenAI/xAI tool types are supported merely because the client SDK accepts them. Check `tool-support.htm` and the xAI-specific model/region table, then estimate provider-tool usage separately.
 
 ## SQL Search
 
 Use SQL Search for NL2SQL over enterprise structured data when the source data is in Autonomous Database. SQL Search generates SQL; it does not run the query. Query execution should happen separately through approved database tooling and existing permissions.
 
 SQL Search requires a Semantic Store backed by structured data and Database Tools connections. Keep enrichment and query connections separate: enrichment can need broader schema access, while query execution should use lower-privileged access and the end user's authorization path.
+
+NL2SQL is an OCI-native API, not a Responses `tools` type. Call `GenerateSqlFromNl` directly or expose the Database Tools MCP Server through MCP Calling. The August 2026 release adds model selection, scheduled delta enrichment, and background SQL jobs; use `data/rag-and-search.md` for configuration and lifecycle details.
 
 Route follow-on SQL execution, schema discovery, and safe DML behavior to:
 
@@ -80,11 +82,11 @@ Route follow-on SQL execution, schema discovery, and safe DML behavior to:
 
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/tool-support.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/file-search.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/get-started-agents.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/code-interpreter.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/containers-api.htm
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/function.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/get-started-agents.htm#function-calling
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/mcp.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/nl2sql.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-stores.htm
-- https://docs.oracle.com/en-us/iaas/Content/generative-ai/agent-building-blocks.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/agentic-regions.htm
