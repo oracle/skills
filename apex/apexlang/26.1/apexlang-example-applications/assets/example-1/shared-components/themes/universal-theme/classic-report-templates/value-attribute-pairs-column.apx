@@ -1,0 +1,158 @@
+classicReportTemplate value-attribute-pairs-column (
+    name: Value Attribute Pairs - Column
+    templateClass: valueAttributePairs
+    type: genericColumns
+    templateOptions {
+        preset: t-AVPList--leftAligned
+    }
+    reportTemplate {
+        top: <dl class="t-AVPList #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# data-region-id="#REGION_STATIC_ID#">
+        bottom:
+            ```html
+            </dl>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    columnTemplate1 {
+        template:
+            ```html
+            <dt class="t-AVPList-label">
+              #COLUMN_HEADER#
+            </dt>
+            <dd class="t-AVPList-value">
+              #COLUMN_VALUE#
+            </dd>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: VALUE_ATTRIBUTE_PAIRS_COLUMN
+    }
+    subscription {
+        master: @value-attribute-pairs-column
+    }
+
+    templateOption fixed-large (
+        name: Fixed - Large
+        group: @report/label-width
+        sequence: 30
+        appearance {
+            cssClasses: t-AVPList--fixedLabelLarge
+        }
+        advanced {
+            identifier: FIXED_LARGE
+        }
+    )
+
+    templateOption fixed-medium (
+        name: Fixed - Medium
+        group: @report/label-width
+        sequence: 20
+        appearance {
+            cssClasses: t-AVPList--fixedLabelMedium
+        }
+        advanced {
+            identifier: FIXED_MEDIUM
+        }
+    )
+
+    templateOption fixed-small (
+        name: Fixed - Small
+        group: @report/label-width
+        sequence: 10
+        appearance {
+            cssClasses: t-AVPList--fixedLabelSmall
+        }
+        advanced {
+            identifier: FIXED_SMALL
+        }
+    )
+
+    templateOption variable-large (
+        name: Variable - Large
+        group: @report/label-width
+        sequence: 60
+        appearance {
+            cssClasses: t-AVPList--variableLabelLarge
+        }
+        advanced {
+            identifier: VARIABLE_LARGE
+        }
+    )
+
+    templateOption variable-medium (
+        name: Variable - Medium
+        group: @report/label-width
+        sequence: 50
+        appearance {
+            cssClasses: t-AVPList--variableLabelMedium
+        }
+        advanced {
+            identifier: VARIABLE_MEDIUM
+        }
+    )
+
+    templateOption variable-small (
+        name: Variable - Small
+        group: @report/label-width
+        sequence: 40
+        appearance {
+            cssClasses: t-AVPList--variableLabelSmall
+        }
+        advanced {
+            identifier: VARIABLE_SMALL
+        }
+    )
+
+    templateOption left-aligned-details (
+        name: Left Aligned Details
+        group: @report/layout
+        sequence: 10
+        appearance {
+            cssClasses: t-AVPList--leftAligned
+        }
+        advanced {
+            identifier: LEFT_ALIGNED_DETAILS
+        }
+    )
+
+    templateOption right-aligned-details (
+        name: Right Aligned Details
+        group: @report/layout
+        sequence: 20
+        appearance {
+            cssClasses: t-AVPList--rightAligned
+        }
+        advanced {
+            identifier: RIGHT_ALIGNED_DETAILS
+        }
+    )
+
+)
+

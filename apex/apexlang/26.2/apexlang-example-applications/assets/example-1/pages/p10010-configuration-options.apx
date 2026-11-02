@@ -1,0 +1,357 @@
+page 10010 (
+    name: Configuration Options
+    alias: CONFIGURATION-OPTIONS
+    title: Configuration Options
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+    }
+    help {
+        helpText:
+            ```html
+            <p>Configuration settings allow you to make specific functionality either available (enabled) or unavailable (disabled) to end users.</p>
+            <p>If a specific function is not 100% ready, or needs to be temporarily removed, click <strong>Disabled</strong>. 
+            Once it should be made available, simply click <strong>Enabled</strong>.</p>
+            <p><em><strong>Note:</strong> Changes made here will not be reflected for individual end users currently running the application. Once the end user signs out and then signs back in the revised feature settings will be invoked.</em></p>
+            ```
+    }
+    config {
+        buildOption: @feature-configuration-options
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region configuration-options (
+        name: Configuration Options
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                    build_option_id     ID, 
+                    build_option_name   application_option,
+                    apex_item.hidden(1, build_option_id) ||
+                    apex_item.hidden(2, build_option_status) ||
+                    apex_item.switch ( 
+                         p_idx        => 3,
+                         p_value      => build_option_status,
+                         p_on_value   => 'Include',
+                         p_on_label   => m.enabled,
+                         p_off_value  => 'Exclude',
+                         p_off_label  => m.disabled,
+                         p_item_id    => 'BO_OPT_' || rownum,
+                         p_item_label => ( case when build_option_status = 'Include' then
+                                               apex_lang.message( 'APEX.FEATURE.CONFIG.IS_ENABLED', apex_escape.html(build_option_name) )
+                                           when build_option_status = 'Exclude' then
+                                               apex_lang.message( 'APEX.FEATURE.CONFIG.IS_DISABLED', apex_escape.html(build_option_name) )
+                                           end ),
+                         p_attributes => 'style="white-space:pre;"') "STATUS",
+                    component_comment   description,
+                    last_updated_on        updated,
+                    lower(last_updated_by) updated_by,
+                    build_option_status current_status
+                  from apex_application_build_options,
+                  (select apex_lang.message('APEX.FEATURE.CONFIG.ENABLED') enabled, apex_lang.message('APEX.FEATURE.CONFIG.DISABLED') disabled from dual) m
+                 where application_id = :APP_ID 
+                 and feature_identifier not in ( 'APPLICATION_ACCESS_CONTROL', 'APPLICATION_CONFIGURATION')
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        actionsMenu {
+            subscription: false
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748873107645376708
+        }
+
+        column APPLICATION_OPTION (
+            type: plainText
+            heading {
+                heading: Feature
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column CURRENT_STATUS (
+            type: plainText
+            heading {
+                heading: Current Status
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column DESCRIPTION (
+            type: plainText
+            heading {
+                heading: Description
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column STATUS (
+            type: plainText
+            heading {
+                heading: Status
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: C
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column UPDATED (
+            type: plainText
+            heading {
+                heading: Updated
+            }
+            layout {
+                sequence: 5
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column UPDATED_BY (
+            type: plainText
+            heading {
+                heading: Updated By
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Configuration Options
+        }
+
+        savedReport 357488788 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn APPLICATION_OPTION (
+                sequence: 1
+            )
+
+            displayColumn DESCRIPTION (
+                sequence: 3
+            )
+
+            displayColumn STATUS (
+                sequence: 2
+            )
+
+            displayColumn UPDATED (
+                sequence: 4
+            )
+
+            displayColumn UPDATED_BY (
+                sequence: 5
+            )
+
+        )
+
+    )
+
+    button apply-changes (
+        buttonName: APPLY_CHANGES
+        label: Apply Changes
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset
+        layout {
+            sequence: 20
+            region: @configuration-options
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process update (
+        name: Update
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                for i in 1..apex_application.g_f01.count loop
+                    for c1 in ( select application_id, build_option_name, build_option_status
+                                from apex_application_build_options
+                                where apex_application.g_f01(i) = build_option_id
+                                   and application_Id = :APP_ID) loop
+                        if c1.build_option_status != apex_application.g_f03(i) then
+                            apex_util.set_build_option_status(  p_application_id => :APP_ID,
+                                                                p_id => apex_application.g_f01(i),
+                                                                p_build_status => upper(apex_application.g_f03(i)) );
+                        end if;
+                    end loop;
+                end loop;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: "Configuration Options updated. "
+        }
+        advanced {
+            executionMappingIdentifier: 35748880718941376715
+        }
+    )
+
+    branch (
+        name: Branch to Admin Page
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 10000
+            }
+        }
+    )
+
+)
+

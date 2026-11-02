@@ -1,11 +1,11 @@
 ---
 name: oci
-description: Oracle Cloud Infrastructure guidance for designing, operating, and troubleshooting OCI services, including OCI Kubernetes Engine (OKE), OCI Internet of Things Platform, OCI Functions deployment and troubleshooting, OCI Exadata Database Service Terraform configuration, and Enterprise AI workflows for OCI Generative AI models, Responses API agents, RAG, cost estimation, governance, private endpoints, hosted agentic applications, and Oracle platform integrations. Use when the user asks about OKE cluster design, Terraform or Resource Manager planning, Cloud Exadata Infrastructure, Cloud VM Clusters, DB Homes, Container Databases, Pluggable Databases, OKE incident troubleshooting, Generic VNIC Attachment, Multus, pod networking, node pools, add-ons, ingress, load balancers, OCIR image pulls, Workload Identity, Kubernetes workloads on OCI, OCI IoT domains or digital twins, device publish flows, OCI Functions setup, deployment, invocation, or troubleshooting, OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, or OCI Generative AI pricing.
+description: Oracle Cloud Infrastructure guidance for designing, operating, and troubleshooting OCI services, including OCI Kubernetes Engine (OKE), OCI Internet of Things Platform, OCI Functions deployment and troubleshooting, OCI Exadata Database Service Terraform configuration, OCI Security Zones Terraform configuration, and Enterprise AI workflows for OCI Generative AI models, Responses API agents, RAG, cost estimation, governance, private endpoints, hosted agentic applications, and Oracle platform integrations. Use when the user asks about OKE cluster design, Terraform or Resource Manager planning, OCI Security Zone recipes or Security Zones, Cloud Exadata Infrastructure, Cloud VM Clusters, DB Homes, Container Databases, Pluggable Databases, OKE incident troubleshooting, Generic VNIC Attachment, Multus, pod networking, node pools, add-ons, ingress, load balancers, OCIR image pulls, Workload Identity, Kubernetes workloads on OCI, OCI IoT domains or digital twins, device publish flows, OCI Functions setup, deployment, invocation, or troubleshooting, OCI Generative AI, Enterprise AI Models, Enterprise AI Agents, governed GenAI applications, agentic workflows, RAG on Oracle Cloud, or OCI Generative AI pricing.
 ---
 
 # Oracle Cloud Infrastructure Skills
 
-Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It includes a constrained Terraform Configuration generator for OCI Exadata Database Service on Dedicated Infrastructure. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
+Use this domain for practical Oracle Cloud Infrastructure guidance. Current content covers OCI Kubernetes Engine (OKE): cluster design, operational troubleshooting, Generic VNIC Attachment (GVA), and Multus multi-interface pod validation. It covers OCI Internet of Things Platform resource discovery, digital twin lifecycle workflows, device publish flows, and optional MCP-assisted operation. It covers OCI Functions local deployment and diagnosis-first troubleshooting. It includes a constrained Terraform Configuration generator for OCI Security Zone recipes and Security Zones. It also includes a constrained Terraform Configuration generator for OCI Exadata Database Service on Dedicated Infrastructure. It also covers Enterprise AI because that work is built around OCI Generative AI, OCI networking, IAM, cost estimation, hosted applications, and OCI platform integrations.
 
 ## How to Use This Domain
 
@@ -47,6 +47,10 @@ oci/
 │   ├── templates/
 │   └── tests/
 ├── oci-landing-zone-terraform-module/
+│   ├── terraform-oci-module-security-zone-skill/
+│   │   ├── SKILL.md
+│   │   ├── agents/
+│   │   └── references/
 │   └── terraform-oci-modules-exadata-database-skill/
 │       ├── SKILL.md
 │       ├── agents/
@@ -74,6 +78,7 @@ oci/
 | Deploy or validate Multus NetworkAttachmentDefinitions and multi-interface pods on OKE                                                         | Start with `oci/oke/multus-multihome.md`, then load `oci/oke/skills/oke-multihome-deployer/SKILL.md` |
 | Deploy an OCI Function from a local macOS or Linux workstation                                                                                 | `oci/functions/oci-functions-deploy/SKILL.md` |
 | Troubleshoot OCI Functions setup, deployment, invocation, or observability                                                                     | `oci/functions/oci-functions-troubleshoot/SKILL.md` |
+| Generate or update Terraform Configuration for OCI Security Zone recipes or Security Zones                                                     | `oci/oci-landing-zone-terraform-module/terraform-oci-module-security-zone-skill/SKILL.md` |
 | Generate or update Terraform Configuration for OCI Exadata Database Service on Dedicated Infrastructure                                        | `oci/oci-landing-zone-terraform-module/terraform-oci-modules-exadata-database-skill/SKILL.md` |
 | OCI IoT domains, domain groups, digital twin models, adapters, instances, relationships, raw commands, Data API access, or HTTPS publish flows | `oci/iot-platform/SKILL.md` |
 | OCI Generative AI models, custom/imported models, endpoints, or private endpoints                                                              | `oci/enterprise-ai/SKILL.md` |
@@ -91,6 +96,7 @@ oci/
 - `oci/functions/oci-functions-troubleshoot/SKILL.md`
 - `oci/functions/oci-functions-deploy/references/oci-functions-quickstart.md`
 - `oci/functions/oci-functions-troubleshoot/references/error-patterns.md`
+- `oci/oci-landing-zone-terraform-module/terraform-oci-module-security-zone-skill/SKILL.md`
 - `oci/oci-landing-zone-terraform-module/terraform-oci-modules-exadata-database-skill/SKILL.md`
 - `oci/iot-platform/SKILL.md`
 - `oci/iot-platform/references/cli-workflows.md`
@@ -123,6 +129,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 | Deploy a local function                                          | `functions/oci-functions-deploy/SKILL.md` -> preflight -> Fn context validation -> OCIR auth check -> app selection -> scaffold -> deploy |
 | Troubleshoot a failed function deploy                            | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/error-patterns.md` -> `functions/oci-functions-troubleshoot/references/deploy.md` |
 | Troubleshoot function invocation failures                        | `functions/oci-functions-troubleshoot/SKILL.md` -> `functions/oci-functions-troubleshoot/references/invoke.md` -> logs, traces, metrics, and limits |
+| Generate OCI Security Zone Terraform Configuration               | `oci-landing-zone-terraform-module/terraform-oci-module-security-zone-skill/SKILL.md` -> validate inputs and authorization read-only -> generate `main.tf`, `variables.tf`, and `terraform.tfvars` without running Terraform |
 | Generate OCI Exadata Database Service Terraform Configuration    | `oci-landing-zone-terraform-module/terraform-oci-modules-exadata-database-skill/SKILL.md` -> validate only requested-object inputs read-only -> generate `main.tf`, `variables.tf`, and `terraform.tfvars` without running Terraform |
 | Explore or update OCI IoT digital twin resources                 | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/references/resilience-guidance.md` |
 | Publish test telemetry to an OCI IoT twin                        | `iot-platform/SKILL.md` -> `iot-platform/references/cli-workflows.md` -> `iot-platform/templates/publish-curl.template.sh` |
@@ -131,6 +138,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 ## Scope Boundaries
 
 - Keep OCI service, networking, IAM, agent hosting, and cost-estimation guidance in this domain.
+- Route OCI Security Zone recipes and Security Zone Terraform configuration to `oci/oci-landing-zone-terraform-module/terraform-oci-module-security-zone-skill/`; it is generate-only and does not deploy or manage other Cloud Guard, IAM, or network resources.
 - Route Exadata Database Service Terraform configuration to `oci/oci-landing-zone-terraform-module/terraform-oci-modules-exadata-database-skill/`; it supports only Cloud Exadata Infrastructure, Cloud VM Clusters, DB Homes, Container Databases, and Pluggable Databases, and does not create IAM or network prerequisites.
 - Route OCI IoT domain, digital twin, adapter, device publish, raw command, and Data API workflows to `oci/iot-platform/`.
 - Route Oracle Database-owned implementation details to `db/features/`.

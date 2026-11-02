@@ -1,0 +1,98 @@
+---
+templateId: items.number-field.explicit-defaults
+componentType: item
+version: 1.0
+imports:
+  - number-field._common.md
+description: number-field variant explicit-defaults.
+---
+
+# Purpose
+
+Scenario overlay for `number-field` items focused on `explicit-defaults` behavior.
+
+---
+
+# Generation Rules (MANDATORY)
+
+1. Load `number-field._common.md` and `templates/items/items._common.md` before using this overlay.
+2. Inherit the family contract and add only the scenario-specific placeholders listed below.
+3. Remove blocks that are not required by the final prompt before finalizing the item DSL.
+
+---
+
+# Variable Contract
+
+Inherits the full family contract from `number-field._common.md`. Base family requirements such as `itemName`, `layout.region`, and `layout.sequence` still apply.
+
+## Required Variables
+
+- None beyond the inherited family contract.
+
+## Optional Variables
+
+- `label.alignment`
+- `layout.slot`
+- `layout.alignment`
+- `appearance.templateOptions`
+- `appearance.icon`
+- `appearance.formatMask`
+- `appearance.width`
+- `appearance.valuePlaceholder`
+- `settings.minValue`
+- `settings.maxValue`
+- `settings.numberAlignment`
+- `settings.virtualKeyboard`
+- `security.sessionStateProtection`
+
+---
+
+# Output Template
+
+```apexlang
+pageItem {{itemName}} (
+    type: numberField
+    label {
+        label: {{label.label}}
+        alignment: {{label.alignment}}
+    }
+    layout {
+        sequence: {{layout.sequence}}
+        region: @{{layout.region}}
+        slot: {{layout.slot}}
+        alignment: {{layout.alignment}}
+    }
+    appearance {
+        template: {{appearance.template}}
+        templateOptions: {{appearance.templateOptions}}
+        icon: {{appearance.icon}}
+        formatMask: {{appearance.formatMask}}
+        width: {{appearance.width}}
+        valuePlaceholder: {{appearance.valuePlaceholder}}
+    }
+    settings {
+        minValue: {{settings.minValue}}
+        maxValue: {{settings.maxValue}}
+        numberAlignment: {{settings.numberAlignment}}
+        virtualKeyboard: {{settings.virtualKeyboard}}
+    }
+    security {
+        sessionStateProtection: {{security.sessionStateProtection}}
+    }
+)
+```
+
+---
+
+# Conditional Rendering Rules
+
+- Show optional defaults only when the generator needs them visible in the final output.
+- Emit native number-field `settings {}` properties only when compiler/export evidence proves the specific plugin attributes; absence from the generic page-item grammar is not a rejection.
+
+---
+
+# Guardrails
+
+- Keep `number-field._common.md` as the source of truth for reusable family rules.
+- Keep placeholder names aligned with the inherited family contract.
+- Do not reintroduce fixed demo wrappers, demo identifiers, or literal region names.

@@ -1,0 +1,118 @@
+regionTemplate tabs-container (
+    name: Tabs Container
+    templateClass: navigationRegion
+    templateOptions {
+        preset: t-TabsRegion-mod--simple
+    }
+    region {
+        template:
+            ```html
+            <div class="t-TabsRegion #REGION_CSS_CLASSES# apex-tabs-region" #REGION_ATTRIBUTES# id="#REGION_STATIC_ID#">
+              #BODY#
+              <div class="t-TabsRegion-items">#SUB_REGIONS#</div>
+            </div>
+            ```
+    }
+    subRegions {
+        template: <div data-label="#SUB_REGION_TITLE#" id="SR_#SUB_REGION_ID#">#SUB_REGION#</div>
+    }
+    javaScript {
+        fileUrls: #APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.apexTabs#MIN#.js?v=#APEX_VERSION#
+    }
+    advanced {
+        identifier: TABS_CONTAINER
+    }
+    subscription {
+        master: @tabs-container
+    }
+
+    templateOption remember-active-tab (
+        name: Remember Active Tab
+        sequence: 10
+        appearance {
+            cssClasses: js-useLocalStorage
+        }
+        advanced {
+            identifier: REMEMBER_ACTIVE_TAB
+        }
+    )
+
+    templateOption fill-tab-labels (
+        name: Fill Tab Labels
+        group: @region/layout
+        sequence: 10
+        appearance {
+            cssClasses: t-TabsRegion-mod--fillLabels
+        }
+        advanced {
+            identifier: FILL_TAB_LABELS
+        }
+    )
+
+    templateOption pill (
+        name: Pill
+        group: @region/tab-style
+        sequence: 20
+        appearance {
+            cssClasses: t-TabsRegion-mod--pill
+        }
+        advanced {
+            identifier: PILL
+        }
+    )
+
+    templateOption simple (
+        name: Simple
+        group: @region/tab-style
+        sequence: 10
+        appearance {
+            cssClasses: t-TabsRegion-mod--simple
+        }
+        advanced {
+            identifier: SIMPLE
+        }
+    )
+
+    templateOption tabs-small (
+        name: Small
+        group: @region/tabs-size
+        sequence: 10
+        appearance {
+            cssClasses: t-TabsRegion-mod--small
+        }
+        advanced {
+            identifier: TABS_SMALL
+        }
+    )
+
+    templateOption tabslarge (
+        name: Large
+        group: @region/tabs-size
+        sequence: 20
+        appearance {
+            cssClasses: t-TabsRegion-mod--large
+        }
+        advanced {
+            identifier: TABSLARGE
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot tabs (
+        name: Tabs
+        staticId: SUB_REGIONS
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+)
+

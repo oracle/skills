@@ -1,0 +1,12 @@
+lov oehr-jobs-job-title (
+    name: OEHR_JOBS.JOB_TITLE
+    source {
+        tableName: OEHR_JOBS
+    }
+    columnMapping {
+        return: JOB_ID
+        display: JOB_TITLE
+        defaultSort: JOB_TITLE
+    }
+)
+

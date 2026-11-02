@@ -1,0 +1,620 @@
+page 10031 (
+    name: Top Users
+    alias: TOP-USERS
+    title: Top Users
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    css {
+        inline:
+            ```css
+            .hour-graph { display: table; width: 100%; }
+            span.hour { display: table-cell; padding: 0; font-size: 11px; text-align: center; min-width: 32px; }
+            span.hour-label { opacity: 0.5; }
+            span.hour-value { display: block; }
+            span.hour { background-color: var(--ut-palette-success); color:  var(--ut-palette-success-contrast); }
+            span.hour.is-null { background-color: var(--ut-component-highlight-background-color); color: var(--ut-component-text-default-color); }
+            span.hour.is-over1k { background-color: var(--ut-palette-primary); color:  var(--ut-palette-primary-contrast); }
+            ```
+    }
+    security {
+        authorizationScheme: @administration-rights
+    }
+    help {
+        helpText:
+            ```html
+            <p>Use this report and chart to see the users with the most page views for the specified timeframe.</p>
+            <p>Select the reporting timeframe (Default = 1 day) and choose between the report and chart icons at the top of the page.</p>
+            <p>For the interactive report, use the search field, or select the <strong>User</strong> column heading, to select a specific user. You can perform numerous functions by clicking the <strong>Actions</strong> button, such as columns displayed / hidden, rows per page, filter, and so forth. Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+            ```
+    }
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noUI
+                t-Form--large
+            ]
+        }
+    )
+
+    region top-users (
+        name: Top Users
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select the_user,
+                    '<div class="hour-graph">'||
+                        '<span class="hour'|| case when h00 = 0 then ' is-null' when h00 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 0</span> <span class="hour-value">'|| 
+                        case when h00 > 999 then to_char((h00/1000),'99999999D0') ||'k' else to_char(h00) end ||'</span></span>'||
+                        '<span class="hour'|| case when h01 = 0 then ' is-null' when h01 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 1</span> <span class="hour-value">'|| 
+                        case when h01 > 999 then to_char((h01/1000),'99999999D0') ||'k' else to_char(h01) end ||'</span></span>'||
+                        '<span class="hour'|| case when h02 = 0 then ' is-null' when h02 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 2</span> <span class="hour-value">'|| 
+                        case when h02 > 999 then to_char((h02/1000),'99999999D0') ||'k' else to_char(h02) end ||'</span></span>'||
+                        '<span class="hour'|| case when h03 = 0 then ' is-null' when h03 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 3</span> <span class="hour-value">'|| 
+                        case when h03 > 999 then to_char((h03/1000),'99999999D0') ||'k' else to_char(h03) end ||'</span></span>'||
+                        '<span class="hour'|| case when h04 = 0 then ' is-null' when h04 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 4</span> <span class="hour-value">'|| 
+                        case when h04 > 999 then to_char((h04/1000),'99999999D0') ||'k' else to_char(h04) end ||'</span></span>'||
+                        '<span class="hour'|| case when h05 = 0 then ' is-null' when h05 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 5</span> <span class="hour-value">'|| 
+                        case when h05 > 999 then to_char((h05/1000),'99999999D0') ||'k' else to_char(h05) end ||'</span></span>'||
+                        '<span class="hour'|| case when h06 = 0 then ' is-null' when h06 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 6</span> <span class="hour-value">'|| 
+                        case when h06 > 999 then to_char((h06/1000),'99999999D0') ||'k' else to_char(h06) end ||'</span></span>'||
+                        '<span class="hour'|| case when h07 = 0 then ' is-null' when h07 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 7</span> <span class="hour-value">'|| 
+                        case when h07 > 999 then to_char((h07/1000),'99999999D0') ||'k' else to_char(h07) end ||'</span></span>'||
+                        '<span class="hour'|| case when h08 = 0 then ' is-null' when h08 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 8</span> <span class="hour-value">'|| 
+                        case when h08 > 999 then to_char((h08/1000),'99999999D0') ||'k' else to_char(h08) end ||'</span></span>'||
+                        '<span class="hour'|| case when h09 = 0 then ' is-null' when h09 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 9</span> <span class="hour-value">'|| 
+                        case when h09 > 999 then to_char((h09/1000),'99999999D0') ||'k' else to_char(h09) end ||'</span></span>'||
+                        '<span class="hour'|| case when h10 = 0 then ' is-null' when h10 > 999 then ' is-over1k' end ||'"><span class="hour-label">10</span> <span class="hour-value">'|| 
+                        case when h10 > 999 then to_char((h10/1000),'99999999D0') ||'k' else to_char(h10) end ||'</span></span>'||
+                        '<span class="hour'|| case when h11 = 0 then ' is-null' when h11 > 999 then ' is-over1k' end ||'"><span class="hour-label">11</span> <span class="hour-value">'|| 
+                        case when h11 > 999 then to_char((h11/1000),'99999999D0') ||'k' else to_char(h11) end ||'</span></span>'||
+                        '<span class="hour'|| case when h12 = 0 then ' is-null' when h12 > 999 then ' is-over1k' end ||'"><span class="hour-label">12</span> <span class="hour-value">'|| 
+                        case when h12 > 999 then to_char((h12/1000),'99999999D0') ||'k' else to_char(h12) end ||'</span></span>'||
+                        '<span class="hour'|| case when h13 = 0 then ' is-null' when h13 > 999 then ' is-over1k' end ||'"><span class="hour-label">13</span> <span class="hour-value">'|| 
+                        case when h13 > 999 then to_char((h13/1000),'99999999D0') ||'k' else to_char(h13) end ||'</span></span>'||
+                        '<span class="hour'|| case when h14 = 0 then ' is-null' when h14 > 999 then ' is-over1k' end ||'"><span class="hour-label">14</span> <span class="hour-value">'|| 
+                        case when h14 > 999 then to_char((h14/1000),'99999999D0') ||'k' else to_char(h14) end ||'</span></span>'||
+                        '<span class="hour'|| case when h15 = 0 then ' is-null' when h15 > 999 then ' is-over1k' end ||'"><span class="hour-label">15</span> <span class="hour-value">'|| 
+                        case when h15 > 999 then to_char((h15/1000),'99999999D0') ||'k' else to_char(h15) end ||'</span></span>'||
+                        '<span class="hour'|| case when h16 = 0 then ' is-null' when h16 > 999 then ' is-over1k' end ||'"><span class="hour-label">16</span> <span class="hour-value">'|| 
+                        case when h16 > 999 then to_char((h16/1000),'99999999D0') ||'k' else to_char(h16) end ||'</span></span>'||
+                        '<span class="hour'|| case when h17 = 0 then ' is-null' when h17 > 999 then ' is-over1k' end ||'"><span class="hour-label">17</span> <span class="hour-value">'|| 
+                        case when h17 > 999 then to_char((h17/1000),'99999999D0') ||'k' else to_char(h17) end ||'</span></span>'||
+                        '<span class="hour'|| case when h18 = 0 then ' is-null' when h18 > 999 then ' is-over1k' end ||'"><span class="hour-label">18</span> <span class="hour-value">'|| 
+                        case when h18 > 999 then to_char((h18/1000),'99999999D0') ||'k' else to_char(h18) end ||'</span></span>'||
+                        '<span class="hour'|| case when h19 = 0 then ' is-null' when h19 > 999 then ' is-over1k' end ||'"><span class="hour-label">19</span> <span class="hour-value">'|| 
+                        case when h19 > 999 then to_char((h19/1000),'99999999D0') ||'k' else to_char(h19) end ||'</span></span>'||
+                        '<span class="hour'|| case when h20 = 0 then ' is-null' when h20 > 999 then ' is-over1k' end ||'"><span class="hour-label">20</span> <span class="hour-value">'|| 
+                        case when h20 > 999 then to_char((h20/1000),'99999999D0') ||'k' else to_char(h20) end ||'</span></span>'||
+                        '<span class="hour'|| case when h21 = 0 then ' is-null' when h21 > 999 then ' is-over1k' end ||'"><span class="hour-label">21</span> <span class="hour-value">'|| 
+                        case when h21 > 999 then to_char((h21/1000),'99999999D0') ||'k' else to_char(h21) end ||'</span></span>'||
+                        '<span class="hour'|| case when h22 = 0 then ' is-null' when h22 > 999 then ' is-over1k' end ||'"><span class="hour-label">22</span> <span class="hour-value">'|| 
+                        case when h22 > 999 then to_char((h22/1000),'99999999D0') ||'k' else to_char(h22) end ||'</span></span>'||
+                        '<span class="hour'|| case when h23 = 0 then ' is-null' when h23 > 999 then ' is-over1k' end ||'"><span class="hour-label">23</span> <span class="hour-value">'|| 
+                        case when h23 > 999 then to_char((h23/1000),'99999999D0') ||'k' else to_char(h23) end ||'</span></span>'||
+                        '</div>' hours,
+                        page_events,
+                    median_elapsed,
+                    rows_fetched,
+                    ir_searches,
+                    errors,
+                    most_recent
+                    from (  
+                    select userid_lc                    as the_user,
+                        count(*)                        as page_events,
+                        median(elap)                    as median_elapsed,
+                        sum(num_rows)                   as rows_fetched,
+                        sum(decode(ir_search,null,0,1)) as ir_searches,
+                        sum(decode(sqlerrm,null,0,1))   as errors,
+                        max(time_stamp)                 as most_recent,
+                        sum(decode(to_char(time_stamp,'HH24'),0,1,0)) h00,
+                        sum(decode(to_char(time_stamp,'HH24'),1,1,0)) h01,
+                        sum(decode(to_char(time_stamp,'HH24'),2,1,0)) h02,
+                        sum(decode(to_char(time_stamp,'HH24'),3,1,0)) h03,
+                        sum(decode(to_char(time_stamp,'HH24'),4,1,0)) h04,
+                        sum(decode(to_char(time_stamp,'HH24'),5,1,0)) h05,
+                        sum(decode(to_char(time_stamp,'HH24'),6,1,0)) h06,
+                        sum(decode(to_char(time_stamp,'HH24'),7,1,0)) h07,
+                        sum(decode(to_char(time_stamp,'HH24'),8,1,0)) h08,
+                        sum(decode(to_char(time_stamp,'HH24'),9,1,0)) h09,
+                        sum(decode(to_char(time_stamp,'HH24'),10,1,0)) h10,
+                        sum(decode(to_char(time_stamp,'HH24'),11,1,0)) h11,
+                        sum(decode(to_char(time_stamp,'HH24'),12,1,0)) h12,
+                        sum(decode(to_char(time_stamp,'HH24'),13,1,0)) h13,
+                        sum(decode(to_char(time_stamp,'HH24'),14,1,0)) h14,
+                        sum(decode(to_char(time_stamp,'HH24'),15,1,0)) h15,
+                        sum(decode(to_char(time_stamp,'HH24'),16,1,0)) h16,
+                        sum(decode(to_char(time_stamp,'HH24'),17,1,0)) h17,
+                        sum(decode(to_char(time_stamp,'HH24'),18,1,0)) h18,
+                        sum(decode(to_char(time_stamp,'HH24'),19,1,0)) h19,
+                        sum(decode(to_char(time_stamp,'HH24'),20,1,0)) h20,
+                        sum(decode(to_char(time_stamp,'HH24'),21,1,0)) h21,
+                        sum(decode(to_char(time_stamp,'HH24'),22,1,0)) h22,
+                        sum(decode(to_char(time_stamp,'HH24'),23,1,0)) h23
+                    from apex_activity_log l
+                    where flow_id = :APP_ID
+                        and time_stamp >= sysdate - ( 1/24/60/60 * :P10031_TIMEFRAME )
+                        and userid is not null
+                    group by userid_lc) x
+                ```
+            pageItemsToSubmit: P10031_TIMEFRAME
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        serverSideCondition {
+            type: item=value
+            item: P10031_VIEW_AS
+            value: REPORT
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        advanced {
+            savedReportMappingIdentifier: 6202369098282444083
+        }
+
+        column ERRORS (
+            type: plainText
+            heading {
+                heading: Errors
+                alignment: end
+            }
+            layout {
+                sequence: 7
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column HOURS (
+            type: plainText
+            heading {
+                heading: Activity by Hour
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column IR_SEARCHES (
+            type: plainText
+            heading {
+                heading: IR Search
+                alignment: end
+            }
+            layout {
+                sequence: 6
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column MEDIAN_ELAPSED (
+            type: plainText
+            heading {
+                heading: Median Elapsed
+                alignment: end
+            }
+            layout {
+                sequence: 4
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990D0000
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column MOST_RECENT (
+            type: plainText
+            heading {
+                heading: Most_Recent
+            }
+            layout {
+                sequence: 8
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column PAGE_EVENTS (
+            type: plainText
+            heading {
+                heading: Page Events
+                alignment: end
+            }
+            layout {
+                sequence: 3
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column ROWS_FETCHED (
+            type: plainText
+            heading {
+                heading: Rows Fetched
+                alignment: end
+            }
+            layout {
+                sequence: 5
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column THE_USER (
+            type: plainText
+            heading {
+                heading: User
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Top Users
+        }
+
+        savedReport 62023757 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn HOURS (
+                sequence: 2
+            )
+
+            displayColumn PAGE_EVENTS (
+                sequence: 3
+            )
+
+            displayColumn THE_USER (
+                sequence: 1
+            )
+
+            sort (
+                column: PAGE_EVENTS
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: MOST_RECENT
+                sort {
+                    direction: desc
+                    sequence: 2
+                }
+            )
+
+        )
+
+    )
+
+    region top-users-chart (
+        name: Top Users Chart
+        type: chart
+        layout {
+            sequence: 30
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: item=value
+            item: P10031_VIEW_AS
+            value: CHART
+        }
+        chart {
+            type: donut
+        }
+        chartLayout {
+            height: 600
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            pieChartOtherThreshold: 0.02
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: false
+        }
+        componentAdvanced {
+            initJavaScriptFunction:
+                ```javascript-browser
+                function( options ){ 
+                
+                    this.pieSliceLabel = function(dataContext) {
+                        var series_name,
+                            percent = Math.round(dataContext.value/dataContext.totalValue*100);
+                        
+                        if ( dataContext.seriesData ) {
+                            series_name = dataContext.seriesData.name;
+                        } else {
+                            series_name = 'Other';
+                        }
+                        return series_name + " " + percent + "% ( " + dataContext.value + " )";
+                    }
+                    
+                    // Set chart initialization options 
+                    options.dataLabel = pieSliceLabel; 
+                    return options; 
+                }
+                ```
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select userid_lc as userid,
+                           count(*) as page_views
+                      from apex_activity_log
+                     where flow_id     = :app_id
+                       and time_stamp >= sysdate - ( 1/24/60/60 * :P10031_TIMEFRAME )
+                       and userid     is not null
+                     group by userid_lc
+                     order by 2
+                    ```
+                pageItemsToSubmit: P10031_TIMEFRAME
+            }
+            columnMapping {
+                label: USERID
+                value: PAGE_VIEWS
+            }
+            label {
+                show: true
+                position: outsideSlice
+            }
+        )
+
+    )
+
+    pageItem P10031_TIMEFRAME (
+        type: selectList
+        label {
+            label: Timeframe
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            type: staticValue
+            staticValue: 900
+        }
+    )
+
+    pageItem P10031_VIEW_AS (
+        type: radioGroup
+        label {
+            label: View As
+            alignment: left
+        }
+        settings {
+            noOfCols: 2
+            pageActionOnSelection: submitPage
+        }
+        lov {
+            type: sharedComponent
+            lov: @view-as-report-chart
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--radioButtonGroup
+            ]
+        }
+        source {
+            type: staticValue
+            staticValue: REPORT
+        }
+        security {
+            escapeSpecialChars: false
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset
+        layout {
+            sequence: 20
+            region: @top-users
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction refresh-report (
+        name: Refresh Report
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P10031_TIMEFRAME
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @top-users
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action native-refresh-2 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @top-users
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

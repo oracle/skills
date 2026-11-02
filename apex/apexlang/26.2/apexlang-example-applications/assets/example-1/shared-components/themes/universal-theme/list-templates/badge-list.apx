@@ -1,0 +1,283 @@
+listTemplate badge-list (
+    name: Badge List
+    templateClass: horizontalLinksList
+    templateOptions {
+        preset: [
+            t-BadgeList--large
+            t-BadgeList--cols t-BadgeList--3cols
+            t-BadgeList--circular
+        ]
+    }
+    list {
+        beforeEntries: <ul class="t-BadgeList #COMPONENT_CSS_CLASSES#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-BadgeList-item #A02# is-current" aria-current="page">
+              <a class="t-BadgeList-wrap u-color #A04#" href="#LINK#" #A03#>
+                <span class="t-BadgeList-label">#TEXT#</span>
+                <span class="t-BadgeList-value">#A01#</span>
+              </a>
+            </li>
+            
+            ```
+        noncurrent:
+            ```html
+            <li class="t-BadgeList-item #A02#">
+              <a class="t-BadgeList-wrap u-color #A04#" href="#LINK#" #A03#>
+                <span class="t-BadgeList-label">#TEXT#</span>
+                <span class="t-BadgeList-value">#A01#</span>
+              </a>
+            </li>
+            
+            ```
+    }
+    attributeDescriptions {
+        a01: Value
+        a02: List item CSS Classes
+        a03: Link Attributes
+        a04: Link Classes
+    }
+    advanced {
+        identifier: BADGE_LIST
+    }
+    subscription {
+        master: @badge-list
+    }
+    comments {
+        comments:
+            ```
+            A01: Large Number
+            A02: List Item Classes
+            A03: Link Attributes
+            ```
+    }
+
+    templateOption apply-theme-colors (
+        name: Apply Theme Colors
+        sequence: 10
+        appearance {
+            cssClasses: u-colors
+        }
+        advanced {
+            identifier: APPLY_THEME_COLORS
+        }
+    )
+
+    templateOption large (
+        name: 64px
+        group: @list/badge-size
+        sequence: 30
+        appearance {
+            cssClasses: t-BadgeList--large
+        }
+        advanced {
+            identifier: LARGE
+        }
+    )
+
+    templateOption medium (
+        name: 48px
+        group: @list/badge-size
+        sequence: 20
+        appearance {
+            cssClasses: t-BadgeList--medium
+        }
+        advanced {
+            identifier: MEDIUM
+        }
+    )
+
+    templateOption small (
+        name: 32px
+        group: @list/badge-size
+        sequence: 10
+        appearance {
+            cssClasses: t-BadgeList--small
+        }
+        advanced {
+            identifier: SMALL
+        }
+    )
+
+    templateOption xlarge (
+        name: 96px
+        group: @list/badge-size
+        sequence: 40
+        appearance {
+            cssClasses: t-BadgeList--xlarge
+        }
+        advanced {
+            identifier: XLARGE
+        }
+    )
+
+    templateOption xxlarge (
+        name: 128px
+        group: @list/badge-size
+        sequence: 50
+        appearance {
+            cssClasses: t-BadgeList--xxlarge
+        }
+        advanced {
+            identifier: XXLARGE
+        }
+    )
+
+    templateOption 2columngrid (
+        name: 2 Column Grid
+        group: @list/layout
+        sequence: 20
+        appearance {
+            cssClasses: t-BadgeList--cols
+        }
+        help {
+            helpText: Arrange badges in a two column grid
+        }
+        advanced {
+            identifier: 2COLUMNGRID
+        }
+    )
+
+    templateOption 3columngrid (
+        name: 3 Column Grid
+        group: @list/layout
+        sequence: 30
+        appearance {
+            cssClasses: [
+                t-BadgeList--cols
+                t-BadgeList--3cols
+            ]
+        }
+        help {
+            helpText: Arrange badges in a 3 column grid
+        }
+        advanced {
+            identifier: 3COLUMNGRID
+        }
+    )
+
+    templateOption 4columngrid (
+        name: 4 Column Grid
+        group: @list/layout
+        sequence: 40
+        appearance {
+            cssClasses: [
+                t-BadgeList--cols
+                t-BadgeList--4cols
+            ]
+        }
+        help {
+            helpText: Arrange badges in 4 column grid
+        }
+        advanced {
+            identifier: 4COLUMNGRID
+        }
+    )
+
+    templateOption 5columngrid (
+        name: 5 Column Grid
+        group: @list/layout
+        sequence: 50
+        appearance {
+            cssClasses: [
+                t-BadgeList--cols
+                t-BadgeList--5cols
+            ]
+        }
+        help {
+            helpText: Arrange badges in a 5 column grid
+        }
+        advanced {
+            identifier: 5COLUMNGRID
+        }
+    )
+
+    templateOption fixed (
+        name: Span Horizontally
+        group: @list/layout
+        sequence: 60
+        appearance {
+            cssClasses: t-BadgeList--fixed
+        }
+        help {
+            helpText: Span badges horizontally
+        }
+        advanced {
+            identifier: FIXED
+        }
+    )
+
+    templateOption flexiblebox (
+        name: Flexible Box
+        group: @list/layout
+        sequence: 80
+        appearance {
+            cssClasses: t-BadgeList--flex
+        }
+        help {
+            helpText: Use flexbox to arrange items
+        }
+        advanced {
+            identifier: FLEXIBLEBOX
+        }
+    )
+
+    templateOption floatitems (
+        name: Float Items
+        group: @list/layout
+        sequence: 70
+        appearance {
+            cssClasses: t-BadgeList--float
+        }
+        help {
+            helpText: Float badges to left
+        }
+        advanced {
+            identifier: FLOATITEMS
+        }
+    )
+
+    templateOption stacked (
+        name: Stacked
+        group: @list/layout
+        sequence: 10
+        appearance {
+            cssClasses: t-BadgeList--stacked
+        }
+        help {
+            helpText: Stack badges on top of each other
+        }
+        advanced {
+            identifier: STACKED
+        }
+    )
+
+    templateOption circular (
+        name: Circular
+        group: @list/style
+        sequence: 20
+        appearance {
+            cssClasses: t-BadgeList--circular
+        }
+        advanced {
+            identifier: CIRCULAR
+        }
+    )
+
+    templateOption grid (
+        name: Grid
+        group: @list/style
+        sequence: 30
+        appearance {
+            cssClasses: t-BadgeList--dash
+        }
+        advanced {
+            identifier: GRID
+        }
+    )
+
+)
+

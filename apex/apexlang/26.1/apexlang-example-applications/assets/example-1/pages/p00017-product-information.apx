@@ -1,0 +1,532 @@
+page 17 (
+    name: Product Information
+    alias: PRODUCT-INFORMATION
+    title: Product Information
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: @administration-rights
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region product-information (
+        name: Product Information
+        type: form
+        source {
+            location: localDatabase
+            tableName: OEHR_PRODUCT_INFORMATION
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P17_CATALOG_URL (
+        type: textField
+        label {
+            label: Catalog URL
+            alignment: right
+        }
+        layout {
+            sequence: 110
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @product-information
+            column: CATALOG_URL
+            dataType: varchar2
+        }
+    )
+
+    pageItem P17_CATEGORY_ID (
+        type: numberField
+        label {
+            label: Category ID
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 40
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @product-information
+            column: CATEGORY_ID
+            dataType: number
+        }
+    )
+
+    pageItem P17_LIST_PRICE (
+        type: numberField
+        label {
+            label: List Price
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 90
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @product-information
+            column: LIST_PRICE
+            dataType: number
+        }
+    )
+
+    pageItem P17_MIN_PRICE (
+        type: numberField
+        label {
+            label: Min Price
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 100
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @product-information
+            column: MIN_PRICE
+            dataType: number
+        }
+    )
+
+    pageItem P17_PRODUCT_DESCRIPTION (
+        type: textarea
+        label {
+            label: Product Description
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 5
+        }
+        validation {
+            maxLength: 2000
+        }
+        source {
+            formRegion: @product-information
+            column: PRODUCT_DESCRIPTION
+            dataType: varchar2
+        }
+    )
+
+    pageItem P17_PRODUCT_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @product-information
+            slot: regionBody
+        }
+        source {
+            formRegion: @product-information
+            column: PRODUCT_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P17_PRODUCT_NAME (
+        type: textField
+        label {
+            label: Product Name
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @product-information
+            column: PRODUCT_NAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P17_PRODUCT_STATUS (
+        type: textField
+        label {
+            label: Product Status
+            alignment: right
+        }
+        layout {
+            sequence: 80
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 20
+        }
+        source {
+            formRegion: @product-information
+            column: PRODUCT_STATUS
+            dataType: varchar2
+        }
+    )
+
+    pageItem P17_SUPPLIER_ID (
+        type: numberField
+        label {
+            label: Supplier ID
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 70
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @product-information
+            column: SUPPLIER_ID
+            dataType: number
+        }
+    )
+
+    pageItem P17_WARRANTY_PERIOD (
+        type: textField
+        label {
+            label: Warranty Period
+            alignment: right
+        }
+        layout {
+            sequence: 60
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @product-information
+            column: WARRANTY_PERIOD
+            dataType: intervalYearToMonth
+        }
+    )
+
+    pageItem P17_WEIGHT_CLASS (
+        type: numberField
+        label {
+            label: Weight Class
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 50
+            region: @product-information
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @product-information
+            column: WEIGHT_CLASS
+            dataType: number
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P17_PRODUCT_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P17_PRODUCT_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P17_PRODUCT_ID
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 35748680193483375991
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialize-form-product-information (
+        name: Initialize form Product Information
+        type: formInitialization
+        formRegion: @product-information
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 35748679314925375990
+        }
+    )
+
+    process process-form-product-information (
+        name: Process form Product Information
+        type: formAutoRowProcessing
+        formRegion: @product-information
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 35748679763551375990
+        }
+    )
+
+)
+

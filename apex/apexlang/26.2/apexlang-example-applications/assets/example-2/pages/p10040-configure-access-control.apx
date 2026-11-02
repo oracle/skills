@@ -1,0 +1,199 @@
+page 10040 (
+    name: Configure Access Control
+    alias: CONFIGURE-ACCESS-CONTROL
+    title: Configure Access Control
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+        pageAccessProtection: noArgumentsSupported
+    }
+    help {
+        helpText:
+            ```html
+            <p>Select the appropriate choice for any authenticated users.<br> 
+            Selecting <strong>No</strong> makes the application more secure as only specified users can access the application. 
+            However, if your application has a large user community then maintaining users may be onerous, and you may prefer to choose <strong>Yes</strong> and only enter application Administrators, and possibly Contributors.<br>
+            If you select <strong>Yes</strong> then you must also select how users not included in the users list are treated.</p>
+            <p>Select between requiring email addresses and any alphanumeric value for Usernames.<br>
+            Generally, you should set this setting to <strong>E-mail Address</strong> if your application uses (or will be configured to use) a centralized authentication scheme such as Oracle Access Manager, or SSO.</p>
+            <p><em><strong>Note:</strong> This application supports the following 3 access levels: Reader, Contributor, and Administrator.
+            <ul>
+              <li><strong>Readers</strong> have read-only access to all information and can also view reports.</li>
+              <li><strong>Contributors</strong> can create, edit and delete information and view reports.</li>
+              <li><strong>Administrators</strong>, in addition to Contributors capability, can also perform configuration of the application by accessing the Administration section of the application.</li>
+            </ul>
+            </em></p>
+            ```
+    }
+    config {
+        buildOption: @feature-access-control
+    }
+
+    region access-control-configuration (
+        name: Access Control Configuration
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10040_ALLOW_OTHER_USERS (
+        type: switch
+        label {
+            label: Any authenticated user may access this application
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @access-control-configuration
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 3
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+        }
+        source {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                if apex_app_setting.get_value( p_name => 'ACCESS_CONTROL_SCOPE' ) = 'ACL_ONLY' then
+                    return 'N';
+                else
+                    return 'Y';
+                end if;
+                ```
+        }
+        help {
+            inlineHelpText: Choose <strong>No</strong> if all users are defined in the access control list. Choose <strong>Yes</strong> if authenticated users not in the access control list may also use this application.
+        }
+    )
+
+    button apply-changes (
+        buttonName: APPLY_CHANGES
+        label: Apply Changes
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process set-access-control (
+        name: Set Access Control
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                begin
+                    if :P10040_ALLOW_OTHER_USERS = 'Y' then
+                        apex_app_setting.set_value (
+                            p_name  => 'ACCESS_CONTROL_SCOPE',
+                            p_value => 'ALL_USERS');
+                    else
+                        apex_app_setting.set_value (
+                            p_name  => 'ACCESS_CONTROL_SCOPE',
+                            p_value => 'ACL_ONLY');
+                    end if;
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Access Control settings saved.
+        }
+        advanced {
+            executionMappingIdentifier: 6202401099644444118
+        }
+    )
+
+    branch (
+        name: Branch to Admin Page
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 10000
+            }
+        }
+    )
+
+)
+
