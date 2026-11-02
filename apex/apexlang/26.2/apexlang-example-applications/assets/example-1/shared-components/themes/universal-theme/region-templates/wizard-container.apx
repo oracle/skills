@@ -1,0 +1,122 @@
+regionTemplate wizard-container (
+    name: Wizard Container
+    templateClass: formRegion
+    templateOptions {
+        preset: t-Wizard--hideStepsXSmall
+    }
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" class="t-Wizard #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>
+              <div class="t-Wizard-header">
+                <h1 class="t-Wizard-title" id="#REGION_STATIC_ID#_heading" data-apex-heading>#TITLE#</h1>
+                <div class="u-Table t-Wizard-controls">
+                  <div class="u-Table-fit t-Wizard-buttons">#PREVIOUS##CLOSE#</div>
+                  <div class="u-Table-fill t-Wizard-steps">#BODY#</div>
+                  <div class="u-Table-fit t-Wizard-buttons">#NEXT#</div>
+                </div>
+              </div>
+              <div class="t-Wizard-body">#SUB_REGIONS#</div>
+            </div>
+            ```
+    }
+    advanced {
+        identifier: WIZARD_CONTAINER
+    }
+    subscription {
+        master: @wizard-container
+    }
+
+    templateOption show-title (
+        name: Show Title
+        sequence: 10
+        appearance {
+            cssClasses: t-Wizard--showTitle
+        }
+        advanced {
+            identifier: SHOW_TITLE
+        }
+    )
+
+    templateOption hidesmallscreens (
+        name: Small Screens (Tablet)
+        group: @region/hide-steps-for
+        sequence: 20
+        appearance {
+            cssClasses: t-Wizard--hideStepsSmall
+        }
+        help {
+            helpText: Hides the wizard progress steps for screens that are smaller than 768px wide.
+        }
+        advanced {
+            identifier: HIDESMALLSCREENS
+        }
+    )
+
+    templateOption hidexsmallscreens (
+        name: X Small Screens (Mobile)
+        group: @region/hide-steps-for
+        sequence: 10
+        appearance {
+            cssClasses: t-Wizard--hideStepsXSmall
+        }
+        help {
+            helpText: Hides the wizard progress steps for screens that are smaller than 768px wide.
+        }
+        advanced {
+            identifier: HIDEXSMALLSCREENS
+        }
+    )
+
+    slot close (
+        name: Close
+        staticId: CLOSE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot wizardSubRegions (
+        name: Wizard Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

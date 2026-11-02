@@ -1,0 +1,239 @@
+regionTemplate inline-drawer (
+    name: Inline Drawer
+    templateClass: custom4
+    templateOptions {
+        preset: js-dialog-class-t-Drawer--pullOutEnd
+        default: js-modal
+    }
+    region {
+        template:
+            ```html
+            <div id="#REGION_STATIC_ID#_parent">
+              <div id="#REGION_STATIC_ID#" class="t-DrawerRegion js-dialog-class-ui-dialog--drawer #REGION_CSS_CLASSES# js-regionDialog" #REGION_ATTRIBUTES# style="display:none" title="#TITLE!ATTR#">
+                <div class="t-DrawerRegion-wrap">
+                  <div class="t-DrawerRegion-bodyWrapperOut">
+                    <div class="t-DrawerRegion-bodyWrapperIn">
+                      <div class="t-DrawerRegion-body">#BODY##SUB_REGIONS#</div>
+                    </div>
+                  </div>
+                  <div class="t-DrawerRegion-buttons">
+                    <div class="t-ButtonRegion t-ButtonRegion--dialogRegion">
+                      <div class="t-ButtonRegion-wrap">
+                        <div class="t-ButtonRegion-col t-ButtonRegion-col--left">
+                          <div class="t-ButtonRegion-buttons">#PREVIOUS##DELETE##CLOSE#</div>
+                        </div>
+                        <div class="t-ButtonRegion-col t-ButtonRegion-col--right">
+                          <div class="t-ButtonRegion-buttons">#EDIT##CREATE##NEXT#</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ```
+    }
+    advanced {
+        identifier: INLINE_DRAWER
+    }
+    subscription {
+        master: @inline-drawer
+    }
+
+    templateOption modal (
+        name: Modal
+        sequence: 10
+        appearance {
+            cssClasses: js-modal
+        }
+        advanced {
+            identifier: MODAL
+        }
+    )
+
+    templateOption remove-body-padding (
+        name: Remove Body Padding
+        sequence: 5
+        appearance {
+            cssClasses: t-DialogRegion--noPadding
+        }
+        help {
+            helpText: Removes the padding around the region body.
+        }
+        advanced {
+            identifier: REMOVE_BODY_PADDING
+        }
+    )
+
+    templateOption drawer-size-extra-large (
+        name: Extra Large
+        group: @region/dialog-size
+        sequence: 40
+        appearance {
+            cssClasses: js-dialog-class-t-Drawer--xl
+        }
+        advanced {
+            identifier: DRAWER_SIZE_EXTRA_LARGE
+        }
+    )
+
+    templateOption drawer-size-large (
+        name: Large
+        group: @region/dialog-size
+        sequence: 30
+        appearance {
+            cssClasses: js-dialog-class-t-Drawer--lg
+        }
+        advanced {
+            identifier: DRAWER_SIZE_LARGE
+        }
+    )
+
+    templateOption drawer-size-medium (
+        name: Medium
+        group: @region/dialog-size
+        sequence: 20
+        appearance {
+            cssClasses: js-dialog-class-t-Drawer--md
+        }
+        advanced {
+            identifier: DRAWER_SIZE_MEDIUM
+        }
+    )
+
+    templateOption drawer-size-small (
+        name: Small
+        group: @region/dialog-size
+        sequence: 10
+        appearance {
+            cssClasses: js-dialog-class-t-Drawer--sm
+        }
+        advanced {
+            identifier: DRAWER_SIZE_SMALL
+        }
+    )
+
+    templateOption none (
+        name: None (Auto)
+        group: @region/dialog-size
+        sequence: 5
+        appearance {
+            cssClasses: js-dialog-nosize
+        }
+        advanced {
+            identifier: NONE
+        }
+    )
+
+    templateOption position-end (
+        name: End
+        group: @region/region-position
+        sequence: 20
+        appearance {
+            cssClasses: js-dialog-class-t-Drawer--pullOutEnd
+        }
+        advanced {
+            identifier: POSITION_END
+        }
+    )
+
+    templateOption position-start (
+        name: Start
+        group: @region/region-position
+        sequence: 10
+        appearance {
+            cssClasses: js-dialog-class-t-Drawer--pullOutStart
+        }
+        advanced {
+            identifier: POSITION_START
+        }
+    )
+
+    slot close (
+        name: Close
+        staticId: CLOSE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot create (
+        name: Create
+        staticId: CREATE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot delete (
+        name: Delete
+        staticId: DELETE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot edit (
+        name: Edit
+        staticId: EDIT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

@@ -1,0 +1,374 @@
+classicReportTemplate cards (
+    name: Cards
+    templateClass: custom1
+    type: namedColumn
+    templateOptions {
+        preset: [
+            t-Cards--animColorFill
+            t-Cards--3cols
+            t-Cards--basic
+        ]
+    }
+    reportTemplate {
+        top: <ul class="t-Cards #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_cards" data-region-id="#REGION_STATIC_ID#">
+        bottom:
+            ```html
+            </ul>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    rowTemplate1 {
+        template:
+            ```html
+            <li class="t-Cards-item #CARD_MODIFIERS#">
+              <div class="t-Card">
+                <a href="#CARD_LINK#" class="t-Card-wrap">
+                  <div class="t-Card-icon u-color #CARD_COLOR#"><span class="t-Icon fa #CARD_ICON#"><span class="t-Card-initials" role="presentation">#CARD_INITIALS#</span></span></div>
+                  <div class="t-Card-titleWrap"><h3 class="t-Card-title">#CARD_TITLE#</h3><h4 class="t-Card-subtitle">#CARD_SUBTITLE#</h4></div>
+                  <div class="t-Card-body">
+                    <div class="t-Card-desc">#CARD_TEXT#</div>
+                    <div class="t-Card-info">#CARD_SUBTEXT#</div>
+                  </div>
+                  <span class="t-Card-colorFill u-color #CARD_COLOR#"></span>
+                </a>
+              </div>
+            </li>
+            ```
+        conditionType: plsqlExpression
+        plsqlExpression: :CARD_LINK is not null
+    }
+    rowTemplate2 {
+        template:
+            ```html
+            <li class="t-Cards-item #CARD_MODIFIERS#">
+              <div class="t-Card">
+                <div class="t-Card-wrap">
+                  <div class="t-Card-icon u-color #CARD_COLOR#"><span class="t-Icon fa #CARD_ICON#"><span class="t-Card-initials" role="presentation">#CARD_INITIALS#</span></span></div>
+                  <div class="t-Card-titleWrap"><h3 class="t-Card-title">#CARD_TITLE#</h3><h4 class="t-Card-subtitle">#CARD_SUBTITLE#</h4></div>
+                  <div class="t-Card-body">
+                    <div class="t-Card-desc">#CARD_TEXT#</div>
+                    <div class="t-Card-info">#CARD_SUBTEXT#</div>
+                  </div>
+                  <span class="t-Card-colorFill u-color #CARD_COLOR#"></span>
+                </div>
+              </div>
+            </li>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: CARDS
+    }
+    subscription {
+        master: @cards
+    }
+
+    templateOption display-subtitle (
+        name: Display Subtitle
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--displaySubtitle
+        }
+        advanced {
+            identifier: DISPLAY_SUBTITLE
+        }
+    )
+
+    templateOption use-theme-colors (
+        name: Apply Theme Colors
+        sequence: 10
+        appearance {
+            cssClasses: u-colors
+        }
+        advanced {
+            identifier: USE_THEME_COLORS
+        }
+    )
+
+    templateOption card-raise-card (
+        name: Raise Card
+        group: @report/animation
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--animRaiseCard
+        }
+        advanced {
+            identifier: CARD_RAISE_CARD
+        }
+    )
+
+    templateOption cards-color-fill (
+        name: Color Fill
+        group: @report/animation
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--animColorFill
+        }
+        advanced {
+            identifier: CARDS_COLOR_FILL
+        }
+    )
+
+    templateOption 2-lines (
+        name: 2 Lines
+        group: @report/body-text
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--desc-2ln
+        }
+        advanced {
+            identifier: 2_LINES
+        }
+    )
+
+    templateOption 3-lines (
+        name: 3 Lines
+        group: @report/body-text
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--desc-3ln
+        }
+        advanced {
+            identifier: 3_LINES
+        }
+    )
+
+    templateOption 4-lines (
+        name: 4 Lines
+        group: @report/body-text
+        sequence: 30
+        appearance {
+            cssClasses: t-Cards--desc-4ln
+        }
+        advanced {
+            identifier: 4_LINES
+        }
+    )
+
+    templateOption hidden-body-text (
+        name: Hidden
+        group: @report/body-text
+        sequence: 50
+        appearance {
+            cssClasses: t-Cards--hideBody
+        }
+        help {
+            helpText: This option hides the card body which contains description and subtext.
+        }
+        advanced {
+            identifier: HIDDEN_BODY_TEXT
+        }
+    )
+
+    templateOption icons-rounded (
+        name: Rounded Corners
+        group: @report/icon-shape
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--iconsRounded
+        }
+        help {
+            helpText: The icons are displayed within a square with rounded corners.
+        }
+        advanced {
+            identifier: ICONS_ROUNDED
+        }
+    )
+
+    templateOption icons-square (
+        name: Square
+        group: @report/icon-shape
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--iconsSquare
+        }
+        help {
+            helpText: The icons are displayed within a square shape.
+        }
+        advanced {
+            identifier: ICONS_SQUARE
+        }
+    )
+
+    templateOption display-icons (
+        name: Display Icons
+        group: @report/icons
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--displayIcons
+        }
+        advanced {
+            identifier: DISPLAY_ICONS
+        }
+    )
+
+    templateOption display-initials (
+        name: Display Initials
+        group: @report/icons
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--displayInitials
+        }
+        advanced {
+            identifier: DISPLAY_INITIALS
+        }
+    )
+
+    templateOption 2-columns (
+        name: 2 Columns
+        group: @report/layout
+        sequence: 15
+        appearance {
+            cssClasses: t-Cards--cols
+        }
+        advanced {
+            identifier: 2_COLUMNS
+        }
+    )
+
+    templateOption 3-columns (
+        name: 3 Columns
+        group: @report/layout
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--3cols
+        }
+        advanced {
+            identifier: 3_COLUMNS
+        }
+    )
+
+    templateOption 4-columns (
+        name: 4 Columns
+        group: @report/layout
+        sequence: 30
+        appearance {
+            cssClasses: t-Cards--4cols
+        }
+        advanced {
+            identifier: 4_COLUMNS
+        }
+    )
+
+    templateOption 5-columns (
+        name: 5 Columns
+        group: @report/layout
+        sequence: 50
+        appearance {
+            cssClasses: t-Cards--5cols
+        }
+        advanced {
+            identifier: 5_COLUMNS
+        }
+    )
+
+    templateOption float (
+        name: Float
+        group: @report/layout
+        sequence: 60
+        appearance {
+            cssClasses: t-Cards--float
+        }
+        advanced {
+            identifier: FLOAT
+        }
+    )
+
+    templateOption span-horizontally (
+        name: Span Horizontally
+        group: @report/layout
+        sequence: 70
+        appearance {
+            cssClasses: t-Cards--spanHorizontally
+        }
+        advanced {
+            identifier: SPAN_HORIZONTALLY
+        }
+    )
+
+    templateOption basic (
+        name: Basic
+        group: @report/style
+        sequence: 10
+        appearance {
+            cssClasses: t-Cards--basic
+        }
+        advanced {
+            identifier: BASIC
+        }
+    )
+
+    templateOption block (
+        name: Block
+        group: @report/style
+        sequence: 40
+        appearance {
+            cssClasses: [
+                t-Cards--featured
+                t-Cards--block
+                force-fa-lg
+            ]
+        }
+        advanced {
+            identifier: BLOCK
+        }
+    )
+
+    templateOption compact (
+        name: Compact
+        group: @report/style
+        sequence: 20
+        appearance {
+            cssClasses: t-Cards--compact
+        }
+        help {
+            helpText: Use this option when you want to show smaller cards.
+        }
+        advanced {
+            identifier: COMPACT
+        }
+    )
+
+    templateOption featured (
+        name: Featured
+        group: @report/style
+        sequence: 30
+        appearance {
+            cssClasses: [
+                t-Cards--featured
+                force-fa-lg
+            ]
+        }
+        advanced {
+            identifier: FEATURED
+        }
+    )
+
+)
+

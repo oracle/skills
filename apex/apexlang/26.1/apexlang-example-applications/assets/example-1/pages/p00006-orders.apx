@@ -1,0 +1,669 @@
+page 6 (
+    name: Orders
+    alias: ORDERS
+    title: Orders
+    appearance {
+        pageTemplate: @standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noPadding
+                t-ButtonRegion--noUI
+            ]
+        }
+    )
+
+    region order-items (
+        name: Order Items
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: OEHR_ORDER_ITEMS
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @interactive-report
+            templateOptions: [
+                #DEFAULT#
+            ]
+        }
+        masterDetail {
+            masterRegion: @orders
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        pagination {
+            type: page
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                pdf
+                excel
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748583440387374643
+        }
+
+        savedReport 357485839 (
+            visibility: primary
+            view {
+                default: grid
+                rowsPerPage: 10
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_ID
+                layout {
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @LINE_ITEM_ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @PRODUCT_ID
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @UNIT_PRICE
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @QUANTITY
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_ITEM_ID
+                layout {
+                    sequence: 6
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column LINE_ITEM_ID (
+            type: hidden
+            heading {
+                heading: Line Item ID
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: LINE_ITEM_ID
+                dataType: number
+            }
+        )
+
+        column ORDER_ID (
+            type: hidden
+            heading {
+                heading: Order
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ORDER_ID
+                dataType: number
+            }
+            masterDetail {
+                masterColumn: @ORDER_ID
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ORDER_ITEM_ID (
+            type: hidden
+            heading {
+                heading: Order Item ID
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                databaseColumn: ORDER_ITEM_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column PRODUCT_ID (
+            type: numberField
+            heading {
+                heading: Product
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: text
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: PRODUCT_ID
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column QUANTITY (
+            type: numberField
+            heading {
+                heading: Quantity
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: numeric
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 990
+            }
+            source {
+                databaseColumn: QUANTITY
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column UNIT_PRICE (
+            type: numberField
+            heading {
+                heading: Unit Price
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: text
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G999G999G999G990D0
+            }
+            source {
+                databaseColumn: UNIT_PRICE
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: OEHR_ORDER_ITEMS
+        }
+    )
+
+    region orders (
+        name: Orders
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: OEHR_ORDERS
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @interactive-report
+            templateOptions: [
+                #DEFAULT#
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+        pagination {
+            type: page
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                pdf
+                excel
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748572248067374328
+        }
+
+        savedReport 357485727 (
+            visibility: primary
+            view {
+                default: grid
+                rowsPerPage: 10
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_ID
+                layout {
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_DATE
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_MODE
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @CUSTOMER_ID
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_STATUS
+                layout {
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @ORDER_TOTAL
+                layout {
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @SALES_REP_ID
+                layout {
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @PROMOTION_ID
+                layout {
+                    sequence: 8
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CUSTOMER_ID (
+            type: numberField
+            heading {
+                heading: Customer
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: text
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: CUSTOMER_ID
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column ORDER_DATE (
+            type: textField
+            heading {
+                heading: Order Date
+            }
+            layout {
+                sequence: 40
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: ORDER_DATE
+                dataType: timestampWithTimeZone
+            }
+        )
+
+        column ORDER_ID (
+            type: hidden
+            heading {
+                heading: Order ID
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ORDER_ID
+                dataType: number
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ORDER_MODE (
+            type: textField
+            heading {
+                heading: Order Mode
+            }
+            layout {
+                sequence: 50
+            }
+            validation {
+                maxLength: 8
+            }
+            source {
+                databaseColumn: ORDER_MODE
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column ORDER_STATUS (
+            type: numberField
+            heading {
+                heading: Order Status
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: numeric
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 990
+            }
+            source {
+                databaseColumn: ORDER_STATUS
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column ORDER_TOTAL (
+            type: numberField
+            heading {
+                heading: Order Total
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: text
+            }
+            layout {
+                sequence: 80
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G999G999G999G990
+            }
+            source {
+                databaseColumn: ORDER_TOTAL
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        column PROMOTION_ID (
+            type: hidden
+            heading {
+                heading: Promotion ID
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                databaseColumn: PROMOTION_ID
+                dataType: number
+            }
+        )
+
+        column SALES_REP_ID (
+            type: numberField
+            heading {
+                heading: Sales Rep
+                alignment: end
+            }
+            settings {
+                numberAlignment: end
+                virtualKeyboard: text
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: SALES_REP_ID
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: OEHR_ORDERS
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process oehr-order-items-save-interactive-grid-data (
+        name: OEHR_ORDER_ITEMS - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @order-items
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 35748591702804374650
+        }
+        serverSideCondition {
+            whenButtonPressed: @save
+        }
+    )
+
+    process oehr-orders-save-interactive-grid-data (
+        name: OEHR_ORDERS - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @orders
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 35748582506427374337
+        }
+        serverSideCondition {
+            whenButtonPressed: @save
+        }
+    )
+
+)
+

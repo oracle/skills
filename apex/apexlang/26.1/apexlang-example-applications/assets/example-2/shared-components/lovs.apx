@@ -1,0 +1,251 @@
+lov access-roles (
+    name: ACCESS_ROLES
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select role_name d, role_id r
+            from APEX_APPL_ACL_ROLES where application_id = :APP_ID 
+            order by 1
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov desktop-theme-styles (
+    name: DESKTOP THEME STYLES
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select s.name d,
+                   s.theme_style_id r
+              from apex_application_theme_styles s,
+                   apex_application_themes t
+             where s.application_id = :app_id
+               and t.application_id = s.application_id
+               and t.theme_number   = s.theme_number
+               and t.is_current     = 'Yes'
+             order by 1
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov email-username-format (
+    name: EMAIL_USERNAME_FORMAT
+    source {
+        location: staticValues
+    }
+
+    entry email-addresses (
+        sequence: 1
+        display: Email Addresses
+        return: EMAIL
+    )
+
+)
+
+lov feedback-rating (
+    name: FEEDBACK_RATING
+    source {
+        location: staticValues
+    }
+
+    entry negative (
+        sequence: 3
+        display: Negative
+        return: 1
+        globalization {
+            template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-frown-o fa-2x feedback-negative" aria-hidden="true" ></span></span>
+        }
+    )
+
+    entry neutral (
+        sequence: 2
+        display: Neutral
+        return: 2
+        globalization {
+            template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-emoji-neutral fa-2x feedback-neutral" aria-hidden="true" ></span></span>
+        }
+    )
+
+    entry positive (
+        sequence: 1
+        display: Positive
+        return: 3
+        globalization {
+            template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-smile-o fa-2x feedback-positive" aria-hidden="true" ></span></span>
+        }
+    )
+
+)
+
+lov feedback-status (
+    name: FEEDBACK_STATUS
+    source {
+        location: staticValues
+    }
+
+    entry acknowledged (
+        sequence: 2
+        display: Acknowledged
+        return: 1
+    )
+
+    entry closed (
+        sequence: 4
+        display: Closed
+        return: 4
+    )
+
+    entry no-action (
+        sequence: 1
+        display: No Action
+        return: 0
+    )
+
+    entry open (
+        sequence: 3
+        display: Open
+        return: 3
+    )
+
+)
+
+lov oehr-customers-cust-first-name (
+    name: OEHR_CUSTOMERS.CUST_FIRST_NAME
+    source {
+        tableName: OEHR_CUSTOMERS
+    }
+    columnMapping {
+        return: CUSTOMER_ID
+        display: CUST_FIRST_NAME
+        defaultSort: CUST_FIRST_NAME
+    }
+)
+
+lov oehr-departments-department-name (
+    name: OEHR_DEPARTMENTS.DEPARTMENT_NAME
+    source {
+        tableName: OEHR_DEPARTMENTS
+    }
+    columnMapping {
+        return: DEPARTMENT_ID
+        display: DEPARTMENT_NAME
+        defaultSort: DEPARTMENT_NAME
+    }
+)
+
+lov oehr-employees-first-name (
+    name: OEHR_EMPLOYEES.FIRST_NAME
+    source {
+        tableName: OEHR_EMPLOYEES
+    }
+    columnMapping {
+        return: EMPLOYEE_ID
+        display: FIRST_NAME
+        defaultSort: FIRST_NAME
+    }
+)
+
+lov oehr-jobs-job-title (
+    name: OEHR_JOBS.JOB_TITLE
+    source {
+        tableName: OEHR_JOBS
+    }
+    columnMapping {
+        return: JOB_ID
+        display: JOB_TITLE
+        defaultSort: JOB_TITLE
+    }
+)
+
+lov oehr-locations-street-address (
+    name: OEHR_LOCATIONS.STREET_ADDRESS
+    source {
+        tableName: OEHR_LOCATIONS
+    }
+    columnMapping {
+        return: LOCATION_ID
+        display: STREET_ADDRESS
+        defaultSort: STREET_ADDRESS
+    }
+)
+
+lov oehr-regions-region-name (
+    name: OEHR_REGIONS.REGION_NAME
+    source {
+        tableName: OEHR_REGIONS
+    }
+    columnMapping {
+        return: REGION_ID
+        display: REGION_NAME
+        defaultSort: REGION_NAME
+    }
+)
+
+lov timeframe-4-weeks (
+    name: TIMEFRAME (4 WEEKS)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select disp,
+                   val as seconds
+              from table( apex_util.get_timeframe_lov_data )
+             order by insert_order
+            ```
+    }
+    columnMapping {
+        return: SECONDS
+        display: DISP
+    }
+)
+
+lov user-theme-preference (
+    name: USER_THEME_PREFERENCE
+    source {
+        location: staticValues
+    }
+
+    entry allow-end-users-to-choose-theme-style (
+        sequence: 1
+        display: Allow End Users to choose Theme Style
+        return: Yes
+    )
+
+)
+
+lov view-as-report-chart (
+    name: VIEW_AS_REPORT_CHART
+    source {
+        location: staticValues
+    }
+
+    entry add-chart-page (
+        sequence: 2
+        display: Add Chart Page
+        return: CHART
+        globalization {
+            template: <span class="fa fa-pie-chart" aria-hidden="true"></span><span class="u-VisuallyHidden">#DISPLAY_VALUE#</span>
+        }
+    )
+
+    entry add-report-page (
+        sequence: 1
+        display: Add Report Page
+        return: REPORT
+        globalization {
+            template: <span class="fa fa-table" aria-hidden="true"></span><span class="u-VisuallyHidden">#DISPLAY_VALUE#</span>
+        }
+    )
+
+)
+

@@ -1,0 +1,207 @@
+list navigation-bar (
+    name: Navigation Bar
+
+    entry about (
+        label: About
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 30
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        config {
+            buildOption: @feature-about-page
+        }
+    )
+
+    entry about-page (
+        label: About Page
+        icon {
+            imageIconCssClasses: fa-info-circle-o
+        }
+        layout {
+            sequence: 60
+            parentEntry: @about
+        }
+        link {
+            target: {
+                page: 10060
+                clearCache: 10060
+            }
+        }
+        config {
+            buildOption: @feature-about-page
+        }
+    )
+
+    entry app-user (
+        label: &APP_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 70
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+    )
+
+    entry feedback (
+        label: Feedback
+        icon {
+            imageIconCssClasses: fa-comment-o
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10050
+                items: {
+                    P10050_PAGE_ID: &APP_PAGE_ID.
+                }
+                clearCache: 10050
+                action: resetPagination
+            }
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: apex_util.feedback_enabled
+        }
+        config {
+            buildOption: @feature-feedback
+        }
+    )
+
+    entry install-app (
+        label: Install App
+        icon {
+            imageIconCssClasses: fa-cloud-download
+        }
+        layout {
+            sequence: 10
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                type: url
+                url: #action$a-pwa-install
+            }
+        }
+        userDefinedAttributes {
+            2: a-pwaInstall
+        }
+    )
+
+    entry list_item (
+        label: ---
+        layout {
+            sequence: 50
+            parentEntry: @about
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry list_item-2 (
+        label: ---
+        layout {
+            sequence: 80
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+    entry page-help (
+        label: Page Help
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 40
+            parentEntry: @about
+        }
+        link {
+            target: {
+                page: 10061
+                items: {
+                    P10061_PAGE_ID: &APP_PAGE_ID.
+                }
+            }
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        config {
+            buildOption: @feature-about-page
+        }
+    )
+
+    entry settings (
+        label: Settings
+        icon {
+            imageIconCssClasses: fa-gear
+        }
+        layout {
+            sequence: 1
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                page: 20000
+            }
+        }
+        config {
+            buildOption: @feature-user-settings
+        }
+    )
+
+    entry sign-out (
+        label: Sign Out
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 90
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+)
+

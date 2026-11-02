@@ -1,0 +1,134 @@
+list activity-reports (
+    name: Activity Reports
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    entry application-error-log (
+        label: Application Error Log
+        icon {
+            imageIconCssClasses: fa-exclamation
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 10032
+                clearCache: 10032
+            }
+        }
+        userDefinedAttributes {
+            1: Report of errors logged by this application
+        }
+    )
+
+    entry automations-log (
+        label: Automations Log
+        icon {
+            imageIconCssClasses: fa-gears
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 10035
+                clearCache: 10035
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Report of automation executions and messages logged by this application
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_appl_automations a, apex_automation_log l
+                where a.automation_id = l.automation_id
+                and l.application_id = :APP_ID
+                ```
+        }
+    )
+
+    entry dashboard (
+        label: Dashboard
+        icon {
+            imageIconCssClasses: fa-area-chart
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10030
+                clearCache: 10030
+            }
+        }
+        userDefinedAttributes {
+            1: View application activity metrics
+        }
+    )
+
+    entry page-performance (
+        label: Page Performance
+        icon {
+            imageIconCssClasses: fa-file-chart
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 10033
+                clearCache: 10033
+            }
+        }
+        userDefinedAttributes {
+            1: Report of activity and performance by application page
+        }
+    )
+
+    entry page-views (
+        label: Page Views
+        icon {
+            imageIconCssClasses: fa-file-search
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 10034
+                clearCache: 10034
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Report of each page view by user including date of access and elapsed time
+        }
+    )
+
+    entry top-users (
+        label: Top Users
+        icon {
+            imageIconCssClasses: fa-user-chart
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10031
+                clearCache: 10031
+            }
+        }
+        userDefinedAttributes {
+            1: Report of page views aggregated by user
+        }
+    )
+
+)
+

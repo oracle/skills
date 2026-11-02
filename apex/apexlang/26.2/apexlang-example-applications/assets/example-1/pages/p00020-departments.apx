@@ -1,0 +1,234 @@
+page 20 (
+    name: Departments
+    alias: DEPARTMENTS
+    title: Departments
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+    }
+    help {
+        helpText:
+            ```html
+            <p>To find data enter a search term into the search dialog, or click on the column headings to limit the records returned.</p>
+            
+            <p>You can perform numerous functions by clicking the <strong>Actions</strong> button. This includes selecting the columns that are displayed / hidden and their display sequence, plus numerous data and format functions.  You can also define additional views of the data using the chart, group by, and pivot options.</p>
+            
+            <p>If you want to save your customizations select report, or click download to unload the data. Enter you email address and time frame under subscription to be sent the data on a regular basis.<p>
+            
+            <p>For additional information click Help at the bottom of the Actions menu.</p> 
+            
+            <p>Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+            ```
+    }
+
+    region departments (
+        name: Departments
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: OEHR_DEPARTMENTS
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 21
+                items: {
+                    P21_DEPARTMENT_ID: \#DEPARTMENT_ID#\
+                }
+                action: resetPagination
+            }
+            linkIcon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        actionsMenu {
+            subscription: false
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748767074630376609
+        }
+
+        column DEPARTMENT_ID (
+            type: hidden
+            heading {
+                heading: Department ID
+            }
+            layout {
+                sequence: 0
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column DEPARTMENT_NAME (
+            type: plainText
+            heading {
+                heading: Department Name
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column LOCATION_ID (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Location
+            }
+            lov {
+                lov: @oehr-locations-street-address
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: varchar2
+            }
+            columnFilter {
+                type: defaultBasedOnColumnType
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column MANAGER_ID (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Manager
+            }
+            lov {
+                lov: @oehr-employees-first-name
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: varchar2
+            }
+            columnFilter {
+                type: defaultBasedOnColumnType
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Departments
+        }
+
+        savedReport 357488520 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn DEPARTMENT_NAME (
+                sequence: 1
+            )
+
+            displayColumn LOCATION_ID (
+                sequence: 3
+            )
+
+            displayColumn MANAGER_ID (
+                sequence: 2
+            )
+
+            sort (
+                column: DEPARTMENT_NAME
+                sort {
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 10
+            region: @departments
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 21
+                clearCache: 21
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @departments
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @departments
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

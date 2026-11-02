@@ -1,0 +1,528 @@
+page 3 (
+    name: Customers
+    alias: CUSTOMERS
+    title: Customers
+    appearance {
+        pageTemplate: @/left-side-column
+        templateOptions: #DEFAULT#
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region button-bar (
+        name: Button Bar
+        type: staticContent
+        source {
+            htmlCode: <div id="active_facets"></div>
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noPadding
+                t-ButtonRegion--noUI
+            ]
+        }
+    )
+
+    region customers (
+        name: Customers
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: OEHR_CUSTOMERS
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--inline
+                t-Report--hideNoPagination
+            ]
+        }
+        performance {
+            maxRowsToProcess: 100000
+        }
+        messages {
+            whenNoDataFound: no data found
+        }
+
+        column ACCOUNT_MGR_ID (
+            reportColumnQueryId: 14
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 14
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column CITY (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: City
+            }
+            layout {
+                sequence: 6
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column COUNTRY_ID (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Country ID
+            }
+            layout {
+                sequence: 8
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column CREDIT_LIMIT (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 12
+            }
+        )
+
+        column CUSTOMER_ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: link
+            heading {
+                heading: <span class="u-VisuallyHidden">Edit</span>
+                alignment: center
+            }
+            layout {
+                sequence: 0
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 4
+                    items: {
+                        P4_CUSTOMER_ID: \#CUSTOMER_ID#\
+                    }
+                    action: resetPagination
+                }
+                linkText: <span role="img" aria-label="Edit" class="fa fa-edit" title="Edit"></span>
+            }
+            sorting {
+                sortable: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            security {
+                authorizationScheme: @contribution-rights
+            }
+        )
+
+        column CUST_EMAIL (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 13
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column CUST_FIRST_NAME (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Cust First Name
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column CUST_LAST_NAME (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Cust Last Name
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column NLS_LANGUAGE (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Nls Language
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column NLS_TERRITORY (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 11
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column PHONE_NUMBER (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: Phone Number
+            }
+            layout {
+                sequence: 9
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column POSTAL_CODE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Postal Code
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column STATE_PROVINCE (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: State Province
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column STREET_ADDRESS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Street Address
+            }
+            layout {
+                sequence: 4
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+    )
+
+    region search (
+        name: Search
+        type: facetedSearch
+        source {
+            filteredRegion: @customers
+        }
+        layout {
+            sequence: 10
+            slot: leftColumn
+            columnSpan: 4
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
+            ]
+        }
+        accessibility {
+            landmarkLabel: Filters
+        }
+        settings {
+            compactNosThreshold: 10000
+            showCurrentFacets: selector
+            currentFacetsSelector: #active_facets
+            showTotalRowCount: true
+            displayChartForTopNValues: 10
+        }
+
+        facet P3_ACCOUNT_MGR_ID (
+            type: checkboxGroup
+            label {
+                label: Account Mgr
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-employees-first-name
+            }
+            layout {
+                sequence: 20
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+                allowToExclude: false
+            }
+            source {
+                databaseColumn: ACCOUNT_MGR_ID
+                dataType: number
+            }
+        )
+
+        facet P3_COUNTRY_ID (
+            type: checkboxGroup
+            label {
+                label: Country ID
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 30
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+                allowToExclude: false
+            }
+            source {
+                databaseColumn: COUNTRY_ID
+            }
+        )
+
+        facet P3_CREDIT_LIMIT (
+            type: range
+            label {
+                label: Credit Limit
+            }
+            settings {
+                selectMultiple: true
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC2:<300;|300,300 - 1#G#000;300|1000,1#G#000 - 2#G#000;1000|2000,2#G#000 - 3#G#000;2000|3000,>=3#G#000;3000|
+            }
+            layout {
+                sequence: 60
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+                allowToExclude: false
+            }
+            source {
+                databaseColumn: CREDIT_LIMIT
+                dataType: number
+            }
+        )
+
+        facet P3_NLS_LANGUAGE (
+            type: checkboxGroup
+            label {
+                label: Nls Language
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 50
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+                allowToExclude: false
+            }
+            source {
+                databaseColumn: NLS_LANGUAGE
+            }
+        )
+
+        facet P3_NLS_TERRITORY (
+            type: checkboxGroup
+            label {
+                label: Nls Territory
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 40
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+                allowToExclude: false
+            }
+            source {
+                databaseColumn: NLS_TERRITORY
+            }
+        )
+
+        facet P3_SEARCH (
+            type: search
+            label {
+                label: Search
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dbColumns: CUST_FIRST_NAME,CUST_LAST_NAME,STREET_ADDRESS,POSTAL_CODE,CITY,STATE_PROVINCE,COUNTRY_ID,PHONE_NUMBER,NLS_LANGUAGE
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 10
+            region: @customers
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 4
+                clearCache: 4
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset (
+        buttonName: RESET
+        label: Reset
+        layout {
+            sequence: 10
+            region: @button-bar
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+            ]
+            icon: fa-undo
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 3
+                clearCache: 3
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @customers
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @customers
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

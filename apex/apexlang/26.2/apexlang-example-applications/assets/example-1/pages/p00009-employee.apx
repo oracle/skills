@@ -1,0 +1,524 @@
+page 9 (
+    name: Employee
+    alias: EMPLOYEE
+    title: Employee
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    security {
+        authorizationScheme: @contribution-rights
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region employee (
+        name: Employee
+        type: form
+        source {
+            location: localDatabase
+            tableName: OEHR_EMPLOYEES
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P9_COMMISSION_PCT (
+        type: numberField
+        label {
+            label: Commission Percent
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 90
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee
+            column: COMMISSION_PCT
+            dataType: number
+        }
+    )
+
+    pageItem P9_DEPARTMENT_ID (
+        type: selectList
+        label {
+            label: Department
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @oehr-departments-department-name
+        }
+        layout {
+            sequence: 110
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @employee
+            column: DEPARTMENT_ID
+            dataType: number
+        }
+    )
+
+    pageItem P9_EMAIL (
+        type: textField
+        label {
+            label: Email
+            alignment: right
+        }
+        layout {
+            sequence: 40
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 25
+        }
+        source {
+            formRegion: @employee
+            column: EMAIL
+            dataType: varchar2
+        }
+    )
+
+    pageItem P9_EMPLOYEE_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @employee
+            slot: regionBody
+        }
+        source {
+            formRegion: @employee
+            column: EMPLOYEE_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P9_FIRST_NAME (
+        type: textField
+        label {
+            label: First Name
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 20
+        }
+        source {
+            formRegion: @employee
+            column: FIRST_NAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P9_HIRE_DATE (
+        type: datePicker
+        label {
+            label: Hire Date
+            alignment: right
+        }
+        layout {
+            sequence: 60
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee
+            column: HIRE_DATE
+            dataType: date
+        }
+    )
+
+    pageItem P9_JOB_ID (
+        type: selectList
+        label {
+            label: Job
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @oehr-jobs-job-title
+        }
+        layout {
+            sequence: 70
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @employee
+            column: JOB_ID
+            dataType: varchar2
+        }
+    )
+
+    pageItem P9_LAST_NAME (
+        type: textField
+        label {
+            label: Last Name
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 25
+        }
+        source {
+            formRegion: @employee
+            column: LAST_NAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P9_MANAGER_ID (
+        type: selectList
+        label {
+            label: Manager
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @oehr-employees-first-name
+        }
+        layout {
+            sequence: 100
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @employee
+            column: MANAGER_ID
+            dataType: number
+        }
+    )
+
+    pageItem P9_PHONE_NUMBER (
+        type: textField
+        label {
+            label: Phone Number
+            alignment: right
+        }
+        layout {
+            sequence: 50
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 20
+        }
+        source {
+            formRegion: @employee
+            column: PHONE_NUMBER
+            dataType: varchar2
+        }
+    )
+
+    pageItem P9_SALARY (
+        type: numberField
+        label {
+            label: Salary
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: text
+        }
+        layout {
+            sequence: 80
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee
+            column: SALARY
+            dataType: number
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P9_EMPLOYEE_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P9_EMPLOYEE_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P9_EMPLOYEE_ID
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 35748621177600374756
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process initialize-form-employee (
+        name: Initialize form Employee
+        type: formInitialization
+        formRegion: @employee
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 35748620363081374756
+        }
+    )
+
+    process process-form-employee (
+        name: Process form Employee
+        type: formAutoRowProcessing
+        formRegion: @employee
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 35748620701866374756
+        }
+    )
+
+)
+

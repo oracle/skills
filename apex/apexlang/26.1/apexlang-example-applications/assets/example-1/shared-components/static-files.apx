@@ -1,0 +1,15 @@
+file "icons/app-icon-192.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "icons/app-icon-32.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+
+file "icons/app-icon-512.png" (
+    mimeType: image/png
+    charSet: utf-8
+)
+

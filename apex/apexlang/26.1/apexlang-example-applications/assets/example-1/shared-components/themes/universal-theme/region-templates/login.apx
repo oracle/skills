@@ -1,0 +1,133 @@
+regionTemplate login (
+    name: Login
+    templateClass: custom3
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" class="t-Login-region t-Form--stretchInputs t-Form--labelsAbove #REGION_CSS_CLASSES#" id="#REGION_ID#" #REGION_ATTRIBUTES#>
+              <div class="t-Login-header">
+                #REGION_IMAGE#
+                <span class="t-Login-logo #ICON_CSS_CLASSES#" aria-hidden="true"></span>
+                <h1 class="t-Login-title" id="#REGION_STATIC_ID#_heading" data-apex-heading>#TITLE#</h1>
+              </div>
+              <div class="t-Login-body">#BODY#</div>
+              <div class="t-Login-buttons">#NEXT#</div>
+              <div class="t-Login-links">#EDIT##CREATE#</div>
+              <div class="t-Login-subRegions">#SUB_REGIONS#</div>
+            </div>
+            ```
+        image: <img class="t-Login-logo" src="#REGION_IMAGE_URL#" alt="" data-app-icon />
+    }
+    advanced {
+        identifier: LOGIN
+    }
+    subscription {
+        master: @login
+    }
+
+    templateOption login-header-icon (
+        name: Icon
+        group: @region/login-header
+        sequence: 10
+        appearance {
+            cssClasses: t-Login-region--headerIcon
+        }
+        help {
+            helpText: Displays only the Region Icon in the Login region.
+        }
+        advanced {
+            identifier: LOGIN_HEADER_ICON
+        }
+    )
+
+    templateOption login-header-title (
+        name: Title
+        group: @region/login-header
+        sequence: 20
+        appearance {
+            cssClasses: [
+                t-Login-region--headerTitle
+                js-removeLandmark
+            ]
+        }
+        help {
+            helpText: Displays only the Region Title in the Login region.
+        }
+        advanced {
+            identifier: LOGIN_HEADER_TITLE
+        }
+    )
+
+    templateOption logo-header-hidden (
+        name: Hidden
+        group: @region/login-header
+        sequence: 30
+        appearance {
+            cssClasses: [
+                t-Login-region--headerHidden
+                js-removeLandmark
+            ]
+        }
+        help {
+            helpText: Hides both the Region Icon and Title from the Login region.
+        }
+        advanced {
+            identifier: LOGO_HEADER_HIDDEN
+        }
+    )
+
+    slot create (
+        name: Create
+        staticId: CREATE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot edit (
+        name: Edit
+        staticId: EDIT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

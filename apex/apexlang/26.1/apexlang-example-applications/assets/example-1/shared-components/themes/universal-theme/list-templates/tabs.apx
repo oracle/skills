@@ -1,0 +1,146 @@
+listTemplate tabs (
+    name: Tabs
+    templateClass: tabbedNavigationList
+    templateOptions {
+        preset: t-Tabs--simple
+    }
+    list {
+        beforeEntries: <ul class="t-Tabs #COMPONENT_CSS_CLASSES#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-Tabs-item is-active #A03#" aria-current="page" id="#A01#">
+              <a href="#LINK#" class="t-Tabs-link #A04#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span>
+                <span class="t-Tabs-label">#TEXT#</span>
+              </a>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-Tabs-item #A03#" id="#A01#">
+              <a href="#LINK#" class="t-Tabs-link #A04#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span>
+                <span class="t-Tabs-label">#TEXT#</span>
+              </a>
+            </li>
+            ```
+    }
+    javaScript {
+        fileUrls: #APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.apexTabs#MIN#.js?v=#APEX_VERSION#
+    }
+    attributeDescriptions {
+        a01: List Item ID
+        a03: List Item Class
+        a04: Link Class
+    }
+    advanced {
+        identifier: TABS
+    }
+    subscription {
+        master: @tabs
+    }
+
+    templateOption above-label (
+        name: Above Label
+        group: @list/icons
+        sequence: 20
+        appearance {
+            cssClasses: t-Tabs--iconsAbove
+        }
+        help {
+            helpText: Places icons above tab label.
+        }
+        advanced {
+            identifier: ABOVE_LABEL
+        }
+    )
+
+    templateOption inline-with-label (
+        name: Inline with Label
+        group: @list/icons
+        sequence: 10
+        appearance {
+            cssClasses: t-Tabs--inlineIcons
+        }
+        advanced {
+            identifier: INLINE_WITH_LABEL
+        }
+    )
+
+    templateOption fill-labels (
+        name: Fill Labels
+        group: @list/layout
+        sequence: 1
+        appearance {
+            cssClasses: t-Tabs--fillLabels
+        }
+        help {
+            helpText: Stretch tabs to fill to the width of the tabs container.
+        }
+        advanced {
+            identifier: FILL_LABELS
+        }
+    )
+
+    templateOption large (
+        name: Large
+        group: @list/size
+        sequence: 10
+        appearance {
+            cssClasses: t-Tabs--large
+        }
+        help {
+            helpText: Increases font size and white space around tab items.
+        }
+        advanced {
+            identifier: LARGE
+        }
+    )
+
+    templateOption small (
+        name: Small
+        group: @list/size
+        sequence: 5
+        appearance {
+            cssClasses: t-Tabs--small
+        }
+        advanced {
+            identifier: SMALL
+        }
+    )
+
+    templateOption pill (
+        name: Pill
+        group: @list/style
+        sequence: 20
+        appearance {
+            cssClasses: t-Tabs--pill
+        }
+        help {
+            helpText: Displays tabs in a pill container.
+        }
+        advanced {
+            identifier: PILL
+        }
+    )
+
+    templateOption simple (
+        name: Simple
+        group: @list/style
+        sequence: 10
+        appearance {
+            cssClasses: t-Tabs--simple
+        }
+        help {
+            helpText: A very simplistic tab UI.
+        }
+        advanced {
+            identifier: SIMPLE
+        }
+    )
+
+)
+

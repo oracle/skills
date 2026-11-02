@@ -1,0 +1,123 @@
+listTemplate top-navigation-tabs (
+    name: Top Navigation Tabs
+    templateClass: tabbedNavigationList
+    templateOptions {
+        preset: [
+            t-NavTabs--inlineLabels-lg
+            t-NavTabs--displayLabels-sm
+        ]
+    }
+    list {
+        beforeEntries: <ul class="t-NavTabs #COMPONENT_CSS_CLASSES#" id="#PARENT_STATIC_ID#_navtabs">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-NavTabs-item #A03# is-active" aria-current="page" id="#A01#">
+              <a href="#LINK#" class="t-NavTabs-link #A04# " title="#TEXT_ESC_SC#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span>
+                <span class="t-NavTabs-label">#TEXT_ESC_SC#</span>
+                <span class="t-NavTabs-badge #A05#">#A02#</span>
+              </a>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-NavTabs-item #A03#" id="#A01#">
+              <a href="#LINK#" class="t-NavTabs-link #A04# " title="#TEXT_ESC_SC#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span>
+                <span class="t-NavTabs-label">#TEXT_ESC_SC#</span>
+                <span class="t-NavTabs-badge #A05#">#A02#</span>
+              </a>
+            </li>
+            ```
+    }
+    attributeDescriptions {
+        a01: List Item ID
+        a02: Badge Value
+        a03: List Item Class
+        a04: Link Class
+        a05: Badge Class
+    }
+    advanced {
+        identifier: TOP_NAVIGATION_TABS
+    }
+    subscription {
+        master: @top-navigation-tabs
+    }
+
+    templateOption label-above-lg (
+        name: Display labels above
+        group: @list/desktop
+        sequence: 20
+        appearance {
+            cssClasses: t-NavTabs--stacked
+        }
+        help {
+            helpText: Display the label stacked above the icon and badge
+        }
+        advanced {
+            identifier: LABEL_ABOVE_LG
+        }
+    )
+
+    templateOption label-inline-lg (
+        name: Display labels inline
+        group: @list/desktop
+        sequence: 10
+        appearance {
+            cssClasses: t-NavTabs--inlineLabels-lg
+        }
+        help {
+            helpText: Display the label inline with the icon and badge
+        }
+        advanced {
+            identifier: LABEL_INLINE_LG
+        }
+    )
+
+    templateOption no-label-lg (
+        name: Do not display labels
+        group: @list/desktop
+        sequence: 30
+        appearance {
+            cssClasses: t-NavTabs--hiddenLabels-lg
+        }
+        help {
+            helpText: Hides the label for the list item
+        }
+        advanced {
+            identifier: NO_LABEL_LG
+        }
+    )
+
+    templateOption display-labels-sm (
+        name: Display labels
+        group: @list/mobile
+        sequence: 40
+        appearance {
+            cssClasses: t-NavTabs--displayLabels-sm
+        }
+        help {
+            helpText: Displays the label for the list items below the icon
+        }
+        advanced {
+            identifier: DISPLAY_LABELS_SM
+        }
+    )
+
+    templateOption hide-labels-sm (
+        name: Do not display labels
+        group: @list/mobile
+        sequence: 50
+        appearance {
+            cssClasses: t-NavTabs--hiddenLabels-sm
+        }
+        advanced {
+            identifier: HIDE_LABELS_SM
+        }
+    )
+
+)
+

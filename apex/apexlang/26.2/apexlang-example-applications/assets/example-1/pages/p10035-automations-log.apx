@@ -1,0 +1,319 @@
+page 10035 (
+    name: Automations Log
+    alias: AUTOMATIONS-LOG
+    title: Automations Log
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+    }
+    help {
+        helpText:
+            ```html
+            <p>This page provides an interactive report of the automations log.</p>
+            <p>Review logged information about previous automation executions. The log contains start and end timestamps as well as details about processed rows (successful and with errors). Drill down into Messages to see individual messages for processed rows.</p>
+            
+            ```
+    }
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    region automations-log (
+        name: Automations Log
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select l.id,
+                       l.start_timestamp,
+                       a.name automation_name,
+                       l.status,
+                       l.successful_row_count,
+                       l.error_row_count,
+                       (select count(1) from apex_automation_msg_log m where m.automation_log_id = l.id) msg_count,
+                       l.is_job,
+                       l.end_timestamp
+                  from apex_appl_automations a, apex_automation_log l
+                 where a.automation_id = l.automation_id
+                 and l.application_id = :APP_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        actionsMenu {
+            subscription: false
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748953408540376798
+        }
+
+        column AUTOMATION_NAME (
+            type: plainText
+            heading {
+                heading: Automation
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column END_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Ended
+            }
+            layout {
+                sequence: 9
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column ERROR_ROW_COUNT (
+            type: plainText
+            heading {
+                heading: Error Rows
+                alignment: end
+            }
+            layout {
+                sequence: 6
+                columnAlignment: end
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column IS_JOB (
+            type: plainText
+            heading {
+                heading: Scheduled
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column MSG_COUNT (
+            type: link
+            heading {
+                heading: Message
+                alignment: end
+            }
+            layout {
+                sequence: 7
+                columnAlignment: end
+            }
+            link {
+                target: {
+                    page: 10036
+                    items: {
+                        P10036_LOG_ID: #ID#
+                    }
+                    clearCache: 10036
+                    action: resetPagination
+                }
+                linkText: #MSG_COUNT#
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column START_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Started
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column STATUS (
+            type: plainText
+            heading {
+                heading: Status
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column SUCCESSFUL_ROW_COUNT (
+            type: plainText
+            heading {
+                heading: Successful Rows
+                alignment: end
+            }
+            layout {
+                sequence: 5
+                columnAlignment: end
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Automations Log
+        }
+
+        savedReport 357489605 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn AUTOMATION_NAME (
+                sequence: 2
+            )
+
+            displayColumn ERROR_ROW_COUNT (
+                sequence: 5
+            )
+
+            displayColumn MSG_COUNT (
+                sequence: 6
+            )
+
+            displayColumn START_TIMESTAMP (
+                sequence: 1
+            )
+
+            displayColumn STATUS (
+                sequence: 3
+            )
+
+            displayColumn SUCCESSFUL_ROW_COUNT (
+                sequence: 4
+            )
+
+            sort (
+                column: START_TIMESTAMP
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset
+        layout {
+            sequence: 20
+            region: @automations-log
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+
