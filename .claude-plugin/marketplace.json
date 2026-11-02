@@ -39,6 +39,13 @@
       "keywords": ["oracle", "graalvm", "native-image", "maven", "gradle"]
     },
     {
+      "name": "database-cloud-services",
+      "source": "./database-cloud-services",
+      "description": "Oracle Database Cloud Services workflows, starting with ExaCC Terraform generation, pipeline validation, and OCI API MCP operations.",
+      "category": "oracle",
+      "keywords": ["oracle", "database-cloud-services", "exacc", "exadata", "terraform", "oci"]
+    },
+    {
       "name": "oci",
       "source": "./oci",
       "description": "Oracle Cloud Infrastructure guidance for OKE, OCI IoT Platform digital twins and publish flows, Enterprise AI models, agents, RAG, governance, and Oracle platform integrations.",
