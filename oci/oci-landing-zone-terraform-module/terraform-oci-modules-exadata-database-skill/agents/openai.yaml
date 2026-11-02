@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build OCI Exadata main.tf"
+  short_description: "Generate OCI Exadata Database Terraform"
+  default_prompt: "Use $build-oci-exadata-database-main-tf to create validated Terraform root files for OCI Exadata Database Service."
