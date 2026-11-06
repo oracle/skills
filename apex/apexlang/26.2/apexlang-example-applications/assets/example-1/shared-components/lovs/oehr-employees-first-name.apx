@@ -1,0 +1,12 @@
+lov oehr-employees-first-name (
+    name: OEHR_EMPLOYEES.FIRST_NAME
+    source {
+        tableName: OEHR_EMPLOYEES
+    }
+    columnMapping {
+        return: EMPLOYEE_ID
+        display: FIRST_NAME
+        defaultSort: FIRST_NAME
+    }
+)
+

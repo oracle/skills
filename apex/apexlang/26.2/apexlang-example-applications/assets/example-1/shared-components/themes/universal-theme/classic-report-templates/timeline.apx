@@ -1,0 +1,129 @@
+classicReportTemplate timeline (
+    name: Timeline
+    templateClass: custom1
+    type: namedColumn
+    reportTemplate {
+        top:
+            ```html
+            <ul class="t-Timeline #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_timeline" data-region-id="#REGION_STATIC_ID#">
+            
+            ```
+        bottom:
+            ```html
+            </ul>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    rowTemplate1 {
+        template:
+            ```html
+            <li class="t-Timeline-item #EVENT_MODIFIERS#" #EVENT_ATTRIBUTES#>
+              <div class="t-Timeline-wrap">
+                <div class="t-Timeline-user">
+                  <div class="t-Timeline-avatar #USER_COLOR#" role="presentation">
+                    #USER_AVATAR#
+                  </div>
+                  <div class="t-Timeline-userinfo">
+                    <span class="t-Timeline-username">#USER_NAME#</span>
+                    <span class="t-Timeline-date">#EVENT_DATE#</span>
+                  </div>
+                </div>
+                <div class="t-Timeline-content">
+                  <div class="t-Timeline-typeWrap">
+                    <div class="t-Timeline-type #EVENT_STATUS#">
+                      <span class="t-Icon #EVENT_ICON#"></span>
+                      <span class="t-Timeline-typename">#EVENT_TYPE#</span>
+                    </div>
+                  </div>
+                  <div class="t-Timeline-body">
+                    <h3 class="t-Timeline-title">#EVENT_TITLE#</h3>
+                    <p class="t-Timeline-desc">#EVENT_DESC#</p>
+                  </div>
+                </div>
+              </div>
+            </li>
+            ```
+        conditionType: plsqlExpression
+        plsqlExpression: :EVENT_LINK is null
+    }
+    rowTemplate2 {
+        template:
+            ```html
+            <li class="t-Timeline-item #EVENT_MODIFIERS#" #EVENT_ATTRIBUTES#>
+              <a href="#EVENT_LINK#" class="t-Timeline-wrap">
+                <div class="t-Timeline-user">
+                  <div class="t-Timeline-avatar #USER_COLOR#" role="presentation">
+                    #USER_AVATAR#
+                  </div>
+                  <div class="t-Timeline-userinfo">
+                    <span class="t-Timeline-username">#USER_NAME#</span>
+                    <span class="t-Timeline-date">#EVENT_DATE#</span>
+                  </div>
+                </div>
+                <div class="t-Timeline-content">
+                  <div class="t-Timeline-typeWrap">
+                    <div class="t-Timeline-type #EVENT_STATUS#">
+                      <span class="t-Icon #EVENT_ICON#"></span>
+                      <span class="t-Timeline-typename">#EVENT_TYPE#</span>
+                    </div>
+                  </div>
+                  <div class="t-Timeline-body">
+                    <h3 class="t-Timeline-title">#EVENT_TITLE#</h3>
+                    <p class="t-Timeline-desc">#EVENT_DESC#</p>
+                  </div>
+                </div>
+              </a>
+            </li>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: TIMELINE
+    }
+    subscription {
+        master: @timeline
+    }
+
+    templateOption compact (
+        name: Compact
+        group: @report/style
+        sequence: 1
+        appearance {
+            cssClasses: t-Timeline--compact
+        }
+        help {
+            helpText: Displays a compact version of timeline with smaller text and fewer columns.
+        }
+        advanced {
+            identifier: COMPACT
+        }
+    )
+
+)
+

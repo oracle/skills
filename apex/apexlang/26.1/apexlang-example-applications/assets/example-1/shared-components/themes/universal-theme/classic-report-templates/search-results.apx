@@ -1,0 +1,115 @@
+classicReportTemplate search-results (
+    name: Search Results
+    templateClass: borderless
+    type: namedColumn
+    reportTemplate {
+        top:
+            ```html
+            <div class="t-SearchResults #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">
+            <ul class="t-SearchResults-list">
+            ```
+        bottom:
+            ```html
+            </ul>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            </div>
+            ```
+    }
+    rowTemplate1 {
+        template:
+            ```html
+              <li class="t-SearchResults-item">
+                <h3 class="t-SearchResults-title"><a href="#SEARCH_LINK#">#SEARCH_TITLE#</a></h3>
+                <div class="t-SearchResults-info">
+                  <p class="t-SearchResults-desc">#SEARCH_DESC#</p>
+                  <span class="t-SearchResults-misc">#LABEL_01#: #VALUE_01#</span>
+                </div>
+              </li>
+            ```
+        conditionType: plsqlExpression
+        plsqlExpression: :LABEL_02 is null
+    }
+    rowTemplate2 {
+        template:
+            ```html
+              <li class="t-SearchResults-item">
+                <h3 class="t-SearchResults-title"><a href="#SEARCH_LINK#">#SEARCH_TITLE#</a></h3>
+                <div class="t-SearchResults-info">
+                  <p class="t-SearchResults-desc">#SEARCH_DESC#</p>
+                  <span class="t-SearchResults-misc">#LABEL_01#: #VALUE_01#</span>
+                  <span class="t-SearchResults-misc">#LABEL_02#: #VALUE_02#</span>
+                </div>
+              </li>
+            ```
+        conditionType: plsqlExpression
+        plsqlExpression: :LABEL_03 is null
+    }
+    rowTemplate3 {
+        template:
+            ```html
+              <li class="t-SearchResults-item">
+                <h3 class="t-SearchResults-title"><a href="#SEARCH_LINK#">#SEARCH_TITLE#</a></h3>
+                <div class="t-SearchResults-info">
+                  <p class="t-SearchResults-desc">#SEARCH_DESC#</p>
+                  <span class="t-SearchResults-misc">#LABEL_01#: #VALUE_01#</span>
+                  <span class="t-SearchResults-misc">#LABEL_02#: #VALUE_02#</span>
+                  <span class="t-SearchResults-misc">#LABEL_03#: #VALUE_03#</span>
+                </div>
+              </li>
+            ```
+        conditionType: plsqlExpression
+        plsqlExpression: :LABEL_04 is null
+    }
+    rowTemplate4 {
+        template:
+            ```html
+              <li class="t-SearchResults-item">
+                <h3 class="t-SearchResults-title"><a href="#SEARCH_LINK#">#SEARCH_TITLE#</a></h3>
+                <div class="t-SearchResults-info">
+                  <p class="t-SearchResults-desc">#SEARCH_DESC#</p>
+                  <span class="t-SearchResults-misc">#LABEL_01#: #VALUE_01#</span>
+                  <span class="t-SearchResults-misc">#LABEL_02#: #VALUE_02#</span>
+                  <span class="t-SearchResults-misc">#LABEL_03#: #VALUE_03#</span>
+                  <span class="t-SearchResults-misc">#LABEL_04#: #VALUE_04#</span>
+                </div>
+              </li>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: SEARCH_RESULTS
+    }
+    subscription {
+        master: @search-results
+    }
+    comments {
+        comments: " (SELECT link_text, link_target, detail1, detail2, last_modified)"
+    }
+)
+

@@ -1,0 +1,81 @@
+classicReportTemplate contextual-info (
+    name: Contextual Info
+    templateClass: valueAttributePairs
+    type: genericColumns
+    reportTemplate {
+        top: " <div class=\"t-ContextualInfo #COMPONENT_CSS_CLASSES#\" id=\"report_#REGION_STATIC_ID#\" #REPORT_ATTRIBUTES# data-region-id=\"#REGION_STATIC_ID#\">"
+        bottom:
+            ```html
+            </div>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    columnTemplate1 {
+        template:
+            ```html
+            <div class="t-ContextualInfo-item">
+              <span class="t-ContextualInfo-label">#COLUMN_HEADER#</span>
+              <span class="t-ContextualInfo-value">#COLUMN_VALUE#</span>
+            </div>
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: CONTEXTUAL_INFO
+    }
+    subscription {
+        master: @contextual-info
+    }
+
+    templateOption display-items-stacked (
+        name: Stacked
+        group: @report/display-items
+        sequence: 1
+        appearance {
+            cssClasses: t-ContextualInfo-item--stacked
+        }
+        advanced {
+            identifier: DISPLAY_ITEMS_STACKED
+        }
+    )
+
+    templateOption display-labels-stacked (
+        name: Stacked
+        group: @report/display-labels
+        sequence: 1
+        appearance {
+            cssClasses: t-ContextualInfo-label--stacked
+        }
+        advanced {
+            identifier: DISPLAY_LABELS_STACKED
+        }
+    )
+
+)
+

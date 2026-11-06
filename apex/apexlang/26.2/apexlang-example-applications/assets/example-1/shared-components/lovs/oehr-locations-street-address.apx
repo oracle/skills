@@ -1,0 +1,12 @@
+lov oehr-locations-street-address (
+    name: OEHR_LOCATIONS.STREET_ADDRESS
+    source {
+        tableName: OEHR_LOCATIONS
+    }
+    columnMapping {
+        return: LOCATION_ID
+        display: STREET_ADDRESS
+        defaultSort: STREET_ADDRESS
+    }
+)
+

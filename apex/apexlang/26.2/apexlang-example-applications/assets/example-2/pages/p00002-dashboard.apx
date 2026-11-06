@@ -1,0 +1,282 @@
+page 2 (
+    name: Dashboard
+    alias: DASHBOARD
+    title: Dashboard
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region order-modes (
+        name: Order Modes
+        type: chart
+        layout {
+            sequence: 40
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        security {
+            escapeSpecialChars: false
+        }
+        chart {
+            type: pie
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                tableName: OEHR_ORDERS
+            }
+            columnMapping {
+                label: ORDER_MODE
+                valueAggregation: count
+            }
+            label {
+                show: true
+            }
+            performance {
+                maxRowsToProcess: 20
+            }
+        )
+
+    )
+
+    region product-status (
+        name: Product Status
+        type: chart
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        security {
+            escapeSpecialChars: false
+        }
+        chart {
+            type: pie
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                tableName: OEHR_PRODUCTS
+            }
+            columnMapping {
+                label: PRODUCT_STATUS
+                valueAggregation: count
+            }
+            label {
+                show: true
+            }
+            performance {
+                maxRowsToProcess: 20
+            }
+        )
+
+    )
+
+    region total-customer-orders (
+        name: Total Customer Orders
+        type: chart
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        security {
+            escapeSpecialChars: false
+        }
+        performance {
+            lazyLoading: true
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select ( select l."CUST_FIRST_NAME" from "OEHR_CUSTOMERS" l where l."CUSTOMER_ID" = c."CUSTOMER_ID") "CUSTOMER_ID", 
+                           sum(c."ORDER_TOTAL") value
+                      from "OEHR_ORDERS" c
+                     where c."ORDER_TOTAL" is not null
+                     group by c."CUSTOMER_ID"
+                     order by 2 desc
+                    ```
+            }
+            columnMapping {
+                label: CUSTOMER_ID
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 20
+            }
+        )
+
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+    region total-sales-rep-orders (
+        name: Total Sales Rep Orders
+        type: chart
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        security {
+            escapeSpecialChars: false
+        }
+        performance {
+            lazyLoading: true
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select ( select l."FIRST_NAME" from "OEHR_EMPLOYEES" l where l."EMPLOYEE_ID" = c."SALES_REP_ID") "SALES_REP_ID", 
+                           sum(c."ORDER_TOTAL") value
+                      from "OEHR_ORDERS" c
+                     where c."ORDER_TOTAL" is not null
+                     group by c."SALES_REP_ID"
+                     order by 2 desc
+                    ```
+            }
+            columnMapping {
+                label: SALES_REP_ID
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 20
+            }
+        )
+
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+)
+

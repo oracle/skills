@@ -1,0 +1,201 @@
+regionTemplate content-block (
+    name: Content Block
+    templateClass: custom1
+    templateOptions {
+        preset: t-ContentBlock--h1
+    }
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" class="t-ContentBlock #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>
+              <div class="t-ContentBlock-header">
+                <div class="t-ContentBlock-headerItems t-ContentBlock-headerItems--title">
+                  <span class="t-ContentBlock-headerIcon"><span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span></span>
+                  <h1 class="t-ContentBlock-title" id="#REGION_STATIC_ID#_heading" data-apex-heading>#TITLE#</h1>
+                  #EDIT#
+                </div>
+                <div class="t-ContentBlock-headerItems t-ContentBlock-headerItems--buttons">#CHANGE#</div>
+              </div>
+              <div class="t-ContentBlock-body">#BODY##SUB_REGIONS#</div>
+              <div class="t-ContentBlock-buttons">#PREVIOUS##NEXT#</div>
+            </div>
+            
+            ```
+    }
+    advanced {
+        identifier: CONTENT_BLOCK
+    }
+    subscription {
+        master: @content-block
+    }
+
+    templateOption add-body-padding (
+        name: Add Body Padding
+        sequence: 10
+        appearance {
+            cssClasses: t-ContentBlock--padded
+        }
+        help {
+            helpText: Adds padding to the region's body container.
+        }
+        advanced {
+            identifier: ADD_BODY_PADDING
+        }
+    )
+
+    templateOption show-region-icon (
+        name: Show Region Icon
+        sequence: 30
+        appearance {
+            cssClasses: t-ContentBlock--showIcon
+        }
+        help {
+            helpText: Displays the region icon in the region header beside the region title
+        }
+        advanced {
+            identifier: SHOW_REGION_ICON
+        }
+    )
+
+    templateOption light-background (
+        name: Light Background
+        group: @region/body-style
+        sequence: 20
+        appearance {
+            cssClasses: t-ContentBlock--lightBG
+        }
+        help {
+            helpText: Gives the region body a slightly lighter background.
+        }
+        advanced {
+            identifier: LIGHT_BACKGROUND
+        }
+    )
+
+    templateOption shadow-background (
+        name: Shadow Background
+        group: @region/body-style
+        sequence: 10
+        appearance {
+            cssClasses: t-ContentBlock--shadowBG
+        }
+        help {
+            helpText: Gives the region body a slightly darker background.
+        }
+        advanced {
+            identifier: SHADOW_BACKGROUND
+        }
+    )
+
+    templateOption heading-font-alternative (
+        name: Alternative
+        group: @region/heading-font
+        sequence: 1
+        appearance {
+            cssClasses: t-ContentBlock--headingFontAlt
+        }
+        advanced {
+            identifier: HEADING_FONT_ALTERNATIVE
+        }
+    )
+
+    templateOption content-title-h1 (
+        name: Large
+        group: @region/region-title
+        sequence: 10
+        appearance {
+            cssClasses: t-ContentBlock--h1
+        }
+        advanced {
+            identifier: CONTENT_TITLE_H1
+        }
+    )
+
+    templateOption content-title-h2 (
+        name: Medium
+        group: @region/region-title
+        sequence: 20
+        appearance {
+            cssClasses: t-ContentBlock--h2
+        }
+        advanced {
+            identifier: CONTENT_TITLE_H2
+        }
+    )
+
+    templateOption content-title-h3 (
+        name: Small
+        group: @region/region-title
+        sequence: 30
+        appearance {
+            cssClasses: t-ContentBlock--h3
+        }
+        advanced {
+            identifier: CONTENT_TITLE_H3
+        }
+    )
+
+    slot change (
+        name: Change
+        staticId: CHANGE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot edit (
+        name: Edit
+        staticId: EDIT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

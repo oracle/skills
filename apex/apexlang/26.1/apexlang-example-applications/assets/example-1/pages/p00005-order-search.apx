@@ -1,0 +1,331 @@
+page 5 (
+    name: Order Search
+    alias: ORDER-SEARCH
+    title: Order Search
+    appearance {
+        pageTemplate: @left-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region button-bar (
+        name: Button Bar
+        type: staticContent
+        source {
+            htmlCode: <div id="active_facets"></div>
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noPadding
+                t-ButtonRegion--noUI
+            ]
+        }
+    )
+
+    region search (
+        name: Search
+        type: facetedSearch
+        source {
+            filteredRegion: @search-results
+        }
+        layout {
+            sequence: 10
+            slot: leftColumn
+            columnSpan: 4
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            compactNosThreshold: 10000
+            showCurrentFacets: selector
+            currentFacetsSelector: #active_facets
+            showTotalRowCount: true
+            displayChartForTopNValues: 10
+        }
+
+        facet P5_CUSTOMER_ID (
+            type: checkboxGroup
+            label {
+                label: Customer
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-customers-cust-first-name
+            }
+            layout {
+                sequence: 20
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: CUSTOMER_ID
+                dataType: number
+            }
+        )
+
+        facet P5_ORDER_MODE (
+            type: radioGroup
+            label {
+                label: Order Mode
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 60
+            }
+            listEntries {
+                zeroCountEntries: disable
+                sortByTopCounts: false
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: ORDER_MODE
+            }
+        )
+
+        facet P5_ORDER_STATUS (
+            type: range
+            label {
+                label: Order Status
+            }
+            settings {
+                selectMultiple: true
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC2:<2;|2,2 - 4;2|4,4 - 6;4|6,6 - 8;6|8,>=8;8|
+            }
+            layout {
+                sequence: 50
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: ORDER_STATUS
+                dataType: number
+            }
+        )
+
+        facet P5_ORDER_TOTAL (
+            type: range
+            label {
+                label: Order Total
+            }
+            settings {
+                selectMultiple: true
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC2:<2#G#000;|2000,2#G#000 - 10#G#000;2000|10000,10#G#000 - 20#G#000;10000|20000,20#G#000 - 40#G#000;20000|40000,>=40#G#000;40000|
+            }
+            layout {
+                sequence: 30
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: ORDER_TOTAL
+                dataType: number
+            }
+        )
+
+        facet P5_SALES_REP_ID (
+            type: checkboxGroup
+            label {
+                label: Sales Rep
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-employees-first-name
+            }
+            layout {
+                sequence: 40
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: SALES_REP_ID
+                dataType: number
+            }
+        )
+
+        facet P5_SEARCH (
+            type: search
+            label {
+                label: Search
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dbColumns: ORDER_MODE,CUSTOMER_ID,SALES_REP_ID
+            }
+        )
+
+    )
+
+    region search-results (
+        name: Search Results
+        type: cards
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select "ORDER_ID",
+                       "ORDER_DATE",
+                       "ORDER_MODE",
+                       "CUSTOMER_ID",
+                       ( select l1."CUST_FIRST_NAME" from "OEHR_CUSTOMERS" l1 where l1."CUSTOMER_ID" = m."CUSTOMER_ID") "CUSTOMER_ID_L$1",
+                       "ORDER_STATUS",
+                       "ORDER_TOTAL",
+                       "SALES_REP_ID",
+                       ( select l2."FIRST_NAME" from "OEHR_EMPLOYEES" l2 where l2."EMPLOYEE_ID" = m."SALES_REP_ID") "SALES_REP_ID_L$2",
+                       "PROMOTION_ID"
+                from "OEHR_ORDERS" m
+                ```
+        }
+        orderBy {
+            type: item
+            item: {
+                itemName: P5_ORDER_BY
+                orderBys: {
+                    "CUSTOMER_ID_L$1": "CUSTOMER_ID_L$1" asc
+                    ORDER_DATE: "ORDER_DATE" asc
+                    ORDER_MODE: "ORDER_MODE" asc
+                }
+            }
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @cards-container
+            templateOptions: #DEFAULT#
+        }
+        title {
+            column: CUSTOMER_ID_L$1
+        }
+        body {
+            column: ORDER_DATE
+        }
+        iconAndBadge {
+            iconSource: initials
+            iconColumn: CUSTOMER_ID_L$1
+            badgeColumn: ORDER_MODE
+        }
+    )
+
+    pageItem P5_ORDER_BY (
+        type: selectList
+        label {
+            label: Order By
+            alignment: right
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC2:Customer Id L$1;CUSTOMER_ID_L$1,Order Date;ORDER_DATE,Order Mode;ORDER_MODE
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @search-results
+            slot: sortOrder
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        advanced {
+            warnOnUnsavedChanges: ignore
+        }
+        default {
+            type: static
+            staticValue: CUSTOMER_ID_L$1
+        }
+    )
+
+    button reset (
+        buttonName: RESET
+        label: Reset
+        layout {
+            sequence: 10
+            region: @button-bar
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+            ]
+            icon: fa-undo
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 5
+                clearCache: 5
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

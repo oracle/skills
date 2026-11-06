@@ -1,0 +1,74 @@
+page 10061 (
+    name: Help
+    alias: PAGE-HELP
+    title: Help
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    config {
+        buildOption: @feature-about-page
+    }
+
+    region search-dialog (
+        name: Search Dialog
+        type: plSqlDynamicContent
+        source {
+            plsqlCode:
+                ```plsql
+                for c1 in 
+                (
+                    select page_title, help_text 
+                      from apex_application_pages
+                     where page_id = :P10061_PAGE_ID 
+                       and application_id = :APP_ID
+                )
+                loop
+                    if c1.help_text is null then
+                        sys.htp.p('No help is available for this page.');
+                    else
+                        if substr(c1.help_text, 1, 3) != '<p>' then
+                            sys.htp.p('<p>');
+                        end if;
+                
+                        sys.htp.p(apex_application.do_substitutions(c1.help_text));
+                
+                        if substr(trim(c1.help_text), -4) != '</p>' then
+                            sys.htp.p('</p>');
+                        end if;
+                    end if;
+                end loop;
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10061_PAGE_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @search-dialog
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+)
+

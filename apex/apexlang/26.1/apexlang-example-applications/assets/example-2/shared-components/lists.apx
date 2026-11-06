@@ -1,0 +1,839 @@
+list access-control (
+    name: Access Control
+    config {
+        buildOption: @feature-access-control
+    }
+
+    entry access-control (
+        label: Access Control
+        icon {
+            imageIconCssClasses: fa-key
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10040
+            }
+        }
+        userDefinedAttributes {
+            1: Change access control settings and disable access control
+        }
+    )
+
+    entry users (
+        label: Users
+        icon {
+            imageIconCssClasses: fa-users
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10041
+                action: resetPagination
+            }
+        }
+        userDefinedAttributes {
+            1: Set level of access for authenticated users of this application
+        }
+    )
+
+)
+
+list activity-reports (
+    name: Activity Reports
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    entry application-error-log (
+        label: Application Error Log
+        icon {
+            imageIconCssClasses: fa-exclamation
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 10032
+                clearCache: 10032
+            }
+        }
+        userDefinedAttributes {
+            1: Report of errors logged by this application
+        }
+    )
+
+    entry automations-log (
+        label: Automations Log
+        icon {
+            imageIconCssClasses: fa-gears
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 10035
+                clearCache: 10035
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Report of automation executions and messages logged by this application
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_appl_automations a, apex_automation_log l
+                where a.automation_id = l.automation_id
+                and l.application_id = :APP_ID
+                ```
+        }
+    )
+
+    entry dashboard (
+        label: Dashboard
+        icon {
+            imageIconCssClasses: fa-area-chart
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10030
+                clearCache: 10030
+            }
+        }
+        userDefinedAttributes {
+            1: View application activity metrics
+        }
+    )
+
+    entry page-performance (
+        label: Page Performance
+        icon {
+            imageIconCssClasses: fa-file-chart
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 10033
+                clearCache: 10033
+            }
+        }
+        userDefinedAttributes {
+            1: Report of activity and performance by application page
+        }
+    )
+
+    entry page-views (
+        label: Page Views
+        icon {
+            imageIconCssClasses: fa-file-search
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 10034
+                clearCache: 10034
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Report of each page view by user including date of access and elapsed time
+        }
+    )
+
+    entry top-users (
+        label: Top Users
+        icon {
+            imageIconCssClasses: fa-user-chart
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10031
+                clearCache: 10031
+            }
+        }
+        userDefinedAttributes {
+            1: Report of page views aggregated by user
+        }
+    )
+
+)
+
+list application-administration (
+    name: Application Administration
+
+    entry countries (
+        label: Countries
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 12
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry departments (
+        label: Departments
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 20
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry jobs (
+        label: Jobs
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 18
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry products (
+        label: Products
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 16
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry regions (
+        label: Regions
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+    entry warehouses (
+        label: Warehouses
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 14
+            }
+        }
+        userDefinedAttributes {
+            1: Manage component
+        }
+    )
+
+)
+
+list application-configuration (
+    name: Application Configuration
+    config {
+        buildOption: @feature-configuration-options
+    }
+
+    entry configuration-options (
+        label: Configuration Options
+        icon {
+            imageIconCssClasses: fa-sliders
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10010
+                clearCache: 10010
+            }
+        }
+        userDefinedAttributes {
+            1: Enable or disable application features
+        }
+        config {
+            buildOption: @feature-configuration-options
+        }
+    )
+
+)
+
+list feedback (
+    name: Feedback
+    config {
+        buildOption: @feature-feedback
+    }
+
+    entry user-feedback (
+        label: User Feedback
+        icon {
+            imageIconCssClasses: fa-comment-o
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10053
+                clearCache: 10053
+            }
+        }
+        userDefinedAttributes {
+            1: Report of all feedback submitted by application users
+        }
+    )
+
+)
+
+list navigation-bar (
+    name: Navigation Bar
+
+    entry about (
+        label: About
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 30
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        config {
+            buildOption: @feature-about-page
+        }
+    )
+
+    entry about-page (
+        label: About Page
+        icon {
+            imageIconCssClasses: fa-info-circle-o
+        }
+        layout {
+            sequence: 60
+            parentEntry: @about
+        }
+        link {
+            target: {
+                page: 10060
+                clearCache: 10060
+            }
+        }
+        config {
+            buildOption: @feature-about-page
+        }
+    )
+
+    entry app-user (
+        label: &APP_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 70
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+    )
+
+    entry feedback (
+        label: Feedback
+        icon {
+            imageIconCssClasses: fa-comment-o
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10050
+                items: {
+                    P10050_PAGE_ID: &APP_PAGE_ID.
+                }
+                clearCache: 10050
+                action: resetPagination
+            }
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: apex_util.feedback_enabled
+        }
+        config {
+            buildOption: @feature-feedback
+        }
+    )
+
+    entry install-app (
+        label: Install App
+        icon {
+            imageIconCssClasses: fa-cloud-download
+        }
+        layout {
+            sequence: 10
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                type: url
+                url: #action$a-pwa-install
+            }
+        }
+        userDefinedAttributes {
+            2: a-pwaInstall
+        }
+    )
+
+    entry list_item (
+        label: ---
+        layout {
+            sequence: 50
+            parentEntry: @about
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry list_item-2 (
+        label: ---
+        layout {
+            sequence: 80
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+    entry page-help (
+        label: Page Help
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 40
+            parentEntry: @about
+        }
+        link {
+            target: {
+                page: 10061
+                items: {
+                    P10061_PAGE_ID: &APP_PAGE_ID.
+                }
+            }
+        }
+        userDefinedAttributes {
+            2: icon-only
+        }
+        config {
+            buildOption: @feature-about-page
+        }
+    )
+
+    entry settings (
+        label: Settings
+        icon {
+            imageIconCssClasses: fa-gear
+        }
+        layout {
+            sequence: 1
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                page: 20000
+            }
+        }
+        config {
+            buildOption: @feature-user-settings
+        }
+    )
+
+    entry sign-out (
+        label: Sign Out
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 90
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+)
+
+list navigation-menu (
+    name: Navigation Menu
+
+    entry administration (
+        label: Administration
+        icon {
+            imageIconCssClasses: fa-user-wrench
+        }
+        layout {
+            sequence: 10000
+        }
+        link {
+            target: {
+                page: 10000
+            }
+        }
+        security {
+            authorizationScheme: @administration-rights
+        }
+    )
+
+    entry customers (
+        label: Customers
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+    entry dashboard (
+        label: Dashboard
+        icon {
+            imageIconCssClasses: fa-dashboard
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry employees (
+        label: Employees
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 70
+        }
+        link {
+            target: {
+                page: 8
+            }
+        }
+    )
+
+    entry home (
+        label: Home
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry order-search (
+        label: Order Search
+        icon {
+            imageIconCssClasses: fa-cards
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+    entry orders (
+        label: Orders
+        icon {
+            imageIconCssClasses: fa-layout-header-sidebar-left
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 6
+            }
+        }
+    )
+
+    entry orders-calendar (
+        label: Orders Calendar
+        icon {
+            imageIconCssClasses: fa-calendar-o
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+    )
+
+)
+
+list page-navigation (
+    name: Page Navigation
+
+    entry customers (
+        label: Customers
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+    entry dashboard (
+        label: Dashboard
+        icon {
+            imageIconCssClasses: fa-dashboard
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry employees (
+        label: Employees
+        icon {
+            imageIconCssClasses: fa-table-search
+        }
+        layout {
+            sequence: 70
+        }
+        link {
+            target: {
+                page: 8
+            }
+        }
+    )
+
+    entry order-search (
+        label: Order Search
+        icon {
+            imageIconCssClasses: fa-cards
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+    entry orders (
+        label: Orders
+        icon {
+            imageIconCssClasses: fa-layout-header-sidebar-left
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 6
+            }
+        }
+    )
+
+    entry orders-calendar (
+        label: Orders Calendar
+        icon {
+            imageIconCssClasses: fa-calendar-o
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+    )
+
+)
+
+list user-interface (
+    name: User Interface
+    config {
+        buildOption: @feature-theme-style-selection
+    }
+
+    entry theme-style-selection (
+        label: Theme Style Selection
+        icon {
+            imageIconCssClasses: fa-paint-brush
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10020
+                clearCache: 10020
+            }
+        }
+        userDefinedAttributes {
+            1: Set the default application look and feel
+        }
+        config {
+            buildOption: @feature-theme-style-selection
+        }
+    )
+
+)
+
+list user-settings (
+    name: User Settings
+    config {
+        buildOption: @feature-user-settings
+    }
+
+    entry push-notifications (
+        label: Push Notifications
+        icon {
+            imageIconCssClasses: fa-bell-o
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20010
+            }
+        }
+        userDefinedAttributes {
+            1: Configure whether you want to receive push notifications on this device.
+            2: <span class="a-pwaPush--state"></span>
+        }
+        config {
+            buildOption: @feature-push-notifications
+        }
+    )
+
+)
+

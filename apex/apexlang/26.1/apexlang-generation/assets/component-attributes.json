@@ -1,0 +1,3166 @@
+{
+  "version": 1,
+  "compilerProvenance": {
+    "buildID": "26.1.0+3102",
+    "metadataHash": "6a1eb24a95ae",
+    "normalizerVersion": "node-json-v1",
+    "coverage": "curated_subset",
+    "verifiedAt": "2026-06-02T10:36:38Z",
+    "notes": "Curated repo-safe subset verified against the active compiler metadata provenance. This file may intentionally narrow compiler-valid behavior, but it is not the compiler source of truth."
+  },
+  "notes": "Canonical machine-readable safe subset for covered APEXlang component attributes. For covered shapes, templates and agent prose must not contradict this file. Packaged compiler metadata and direct compiler validation remain authoritative when they disagree with this file. For calendar settings.createLink and settings.viewEditLink, the preferred emitted contract is a structured object with required page and optional items. Existing form/report page reuse vs new page creation must be confirmed explicitly with the user, report type must be chosen explicitly for new view-link report pages, and target pages or item names must not be inferred.",
+  "components": {
+    "region": {
+      "calendar": {
+        "allowedBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "advanced",
+          "settings",
+          "performance",
+          "security",
+          "readOnly",
+          "serverSideCondition",
+          "componentAdvanced"
+        ],
+        "appearance": {
+          "allowedProperties": [
+            "template",
+            "templateOptions"
+          ]
+        },
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId",
+            "regionDisplaySelector"
+          ],
+          "propertyEnums": {
+            "regionDisplaySelector": [
+              true,
+              false
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "displayColumn",
+            "startDateColumn",
+            "endDateColumn",
+            "allDayEventColumn",
+            "pkColumn",
+            "timeFormat",
+            "additionalCalendarViews",
+            "createLink",
+            "viewEditLink",
+            "maxEventsDay",
+            "cssClass",
+            "supplementalInfo",
+            "dragAndDrop",
+            "dragAndDropPlsqlCode",
+            "showWeekend",
+            "firstHour",
+            "visibleDaysOfWeek"
+          ],
+          "propertyEnums": {
+            "timeFormat": [
+              "12Hour",
+              "24Hour"
+            ],
+            "additionalCalendarViews": [
+              "list",
+              "navigation"
+            ]
+          },
+          "propertyNotes": {
+            "createLink": "Preferred emitted shape: { page: <number>, items?: { <target_item>: <substitution_value> } }. page is required. Ask whether to reuse an existing form page or create a new modal form page on the same base table/view as the calendar source. Do not infer target page numbers or target item names.",
+            "viewEditLink": "Preferred emitted shape: { page: <number>, items?: { <target_item>: <substitution_value> } }. page is required. Ask whether to reuse an existing report page or create a new report page. If creating a new report page, ask for the report type every time. The report target must receive the calendar primary key through a dedicated page item and filter by that item."
+          }
+        },
+        "performance": {
+          "allowedProperties": [
+            "lazyLoading"
+          ]
+        },
+        "security": {
+          "allowedProperties": [
+            "authorizationScheme",
+            "escapeSpecialChars"
+          ]
+        },
+        "readOnly": {
+          "allowedProperties": [
+            "type"
+          ]
+        },
+        "componentAdvanced": {
+          "allowedProperties": [
+            "initJavaScriptFunction"
+          ]
+        }
+      },
+      "chart": {
+        "allowedBlocks": [
+          "layout",
+          "appearance",
+          "advanced",
+          "title",
+          "chart",
+          "chartLayout",
+          "chartAppearance",
+          "legend",
+          "animation",
+          "gauge",
+          "axis",
+          "series",
+          "dataCursor",
+          "tooltip",
+          "messages",
+          "security"
+        ],
+        "chartTypeAxisRequirements": {
+          "line": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "bar": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "area": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "scatter": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "bubble": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "stock": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "range": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          },
+          "pareto": {
+            "minimumChildren": {
+              "axis": 2
+            },
+            "requiredAxisNames": [
+              "x",
+              "y"
+            ]
+          }
+        },
+        "axis": {
+          "identifier": {
+            "required": true,
+            "mustBeUniqueWithinParent": true
+          },
+          "allowedProperties": [
+            "name",
+            "title"
+          ],
+          "requiredProperties": [
+            "name"
+          ],
+          "propertyEnums": {
+            "name": [
+              "x",
+              "y",
+              "y2"
+            ]
+          },
+          "allowedBlocks": [
+            "value",
+            "majorTicks",
+            "minorTicks"
+          ],
+          "value": {
+            "allowedProperties": [
+              "min",
+              "max",
+              "format",
+              "decimalPlaces",
+              "formatScaling"
+            ],
+            "propertyEnums": {
+              "format": [
+                "dateShort",
+                "dateMedium",
+                "dateLong",
+                "dateFull",
+                "timeShort",
+                "timeMedium",
+                "timeLong",
+                "timeFull",
+                "datetimeShort",
+                "datetimeMedium",
+                "datetimeLong",
+                "datetimeFull",
+                "decimal",
+                "currency",
+                "percent"
+              ]
+            }
+          },
+          "majorTicks": {
+            "allowedProperties": [
+              "show"
+            ]
+          },
+          "minorTicks": {
+            "allowedProperties": [
+              "show"
+            ]
+          }
+        },
+        "series": {
+          "identifier": {
+            "required": true,
+            "mustBeUniqueWithinParent": true
+          },
+          "requiredProperties": [
+            "name"
+          ],
+          "allowedBlocks": [
+            "execution",
+            "source",
+            "columnMapping",
+            "appearance",
+            "line",
+            "marker",
+            "label",
+            "tooltip",
+            "thresholds",
+            "link",
+            "security"
+          ],
+          "execution": {
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "columnMapping": {
+            "requiredProperties": [
+              "label",
+              "value"
+            ]
+          }
+        }
+      },
+      "classicReport": {
+        "requiredBlocks": [
+          "componentAppearance"
+        ],
+        "componentAppearance": {
+          "allowedProperties": [
+            "template",
+            "templateOptions"
+          ],
+          "requiredProperties": [
+            "template"
+          ]
+        },
+        "pagination": {
+          "allowedProperties": [
+            "type",
+            "displayPosition"
+          ],
+          "propertyEnums": {
+            "type": [
+              "externalPaginationButtons",
+              "nextAndPreviousLinks",
+              "rowRangesXToYNoPagination",
+              "rowRangesXToYOfZNoPagination",
+              "rowRangesXToYOfZWithPagination",
+              "setPaginationLinks",
+              "setPaginationSearchEngine",
+              "setPaginationSelectList"
+            ],
+            "displayPosition": [
+              "bottomLeft",
+              "bottomRight",
+              "topLeft",
+              "topRight",
+              "topAndBottomLeft",
+              "topAndBottomRight"
+            ]
+          }
+        },
+        "column": {
+          "allowedProperties": [
+            "reportColumnQueryId",
+            "derivedColumn",
+            "type"
+          ],
+          "requiredBlocks": [
+            "layout"
+          ],
+          "allowedBlocks": [
+            "heading",
+            "layout",
+            "appearance",
+            "columnFormatting",
+            "settings",
+            "comments",
+            "security",
+            "link",
+            "lov",
+            "sorting"
+          ],
+          "heading": {
+            "allowedProperties": [
+              "heading",
+              "alignment"
+            ]
+          },
+          "layout": {
+            "allowedProperties": [
+              "sequence",
+              "columnAlignment"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "appearance": {
+            "allowedProperties": [
+              "formatMask",
+              "backgroundColor",
+              "foregroundColor"
+            ]
+          },
+          "columnFormatting": {
+            "allowedProperties": [
+              "htmlExpression"
+            ]
+          },
+          "settings": {
+            "allowedProperties": [
+              "format"
+            ]
+          },
+          "security": {
+            "allowedProperties": [
+              "authorizationScheme"
+            ]
+          },
+          "link": {
+            "allowedProperties": [
+              "target",
+              "linkText",
+              "linkAttributes"
+            ]
+          },
+          "lov": {
+            "allowedProperties": [
+              "type",
+              "lov"
+            ]
+          },
+          "sorting": {
+            "allowedProperties": [
+              "defaultSequence",
+              "sortable"
+            ]
+          }
+        }
+      },
+      "cards": {
+        "requiredBlocks": [
+          "source",
+          "title",
+          "componentAppearance"
+        ],
+        "allowedBlocks": [
+          "source",
+          "layout",
+          "appearance",
+          "advanced",
+          "card",
+          "title",
+          "subtitle",
+          "body",
+          "secondaryBody",
+          "media",
+          "blobAttributes",
+          "iconAndBadge",
+          "action",
+          "messages",
+          "componentAppearance",
+          "security"
+        ],
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId",
+            "regionDisplaySelector"
+          ],
+          "propertyEnums": {
+            "regionDisplaySelector": [
+              true,
+              false
+            ]
+          }
+        },
+        "source": {
+          "allowedProperties": [
+            "location",
+            "type",
+            "restSource",
+            "pageItemsToSubmit"
+          ],
+          "requiredProperties": [
+            "location"
+          ],
+          "propertyEnums": {
+            "location": [
+              "localDatabase",
+              "restSource"
+            ],
+            "type": [
+              "sqlQuery"
+            ]
+          },
+          "allowedBlocks": [
+            "sqlQuery"
+          ],
+          "propertyNotes": {
+            "location": "Required source discriminator. localDatabase requires type: sqlQuery plus sqlQuery and forbids restSource; restSource requires restSource: @alias and forbids type/sqlQuery.",
+            "restSource": "Required only with location: restSource and must resolve to a declared shared REST Data Source with HTTPS remote-server and exact Web Credential validForUrls evidence."
+          }
+        },
+        "appearance": {
+          "allowedProperties": [
+            "template",
+            "templateOptions"
+          ]
+        },
+        "card": {
+          "allowedProperties": [
+            "primaryKeyColumn1",
+            "primaryKeyColumn2",
+            "cssClasses"
+          ],
+          "propertyNotes": {
+            "cssClasses": "For conditional card styling, reference only a source-projected alias whose values are restricted to an active-build allowlist of semantic Universal Theme classes."
+          },
+          "allowedSemanticClassTokens": [
+            "u-normal",
+            "u-hot",
+            "u-info",
+            "u-success",
+            "u-warning",
+            "u-danger"
+          ]
+        },
+        "title": {
+          "allowedProperties": [
+            "column",
+            "htmlExpression",
+            "advancedFormatting",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "advancedFormatting"
+          ],
+          "propertyNotes": {
+            "advancedFormatting": "Required. Use false with title.column and true with title.htmlExpression.",
+            "htmlExpression": "Use APEX substitution strings in the form &COLUMN. inside cards title.htmlExpression. Do not use #COLUMN# tokens."
+          }
+        },
+        "subtitle": {
+          "allowedProperties": [
+            "column",
+            "htmlExpression",
+            "advancedFormatting",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "advancedFormatting"
+          ],
+          "propertyNotes": {
+            "advancedFormatting": "Required. Use false with subtitle.column and true with subtitle.htmlExpression.",
+            "htmlExpression": "Use APEX substitution strings in the form &COLUMN. inside cards subtitle.htmlExpression. Do not use #COLUMN# tokens."
+          }
+        },
+        "body": {
+          "allowedProperties": [
+            "column",
+            "htmlExpression",
+            "advancedFormatting",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "advancedFormatting"
+          ],
+          "propertyNotes": {
+            "advancedFormatting": "Required. Use false with body.column and true with body.htmlExpression.",
+            "htmlExpression": "Use APEX substitution strings in the form &COLUMN. inside cards htmlExpression. Do not use #COLUMN# tokens."
+          }
+        },
+        "secondaryBody": {
+          "allowedProperties": [
+            "column",
+            "htmlExpression",
+            "advancedFormatting",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "advancedFormatting"
+          ],
+          "propertyNotes": {
+            "advancedFormatting": "Required. Use false with secondaryBody.column and true with secondaryBody.htmlExpression.",
+            "htmlExpression": "Use APEX substitution strings in the form &COLUMN. inside cards htmlExpression. Do not use #COLUMN# tokens."
+          }
+        },
+        "media": {
+          "allowedProperties": [
+            "advancedFormatting",
+            "htmlExpression",
+            "source",
+            "blobColumn",
+            "urlColumn",
+            "url",
+            "position",
+            "appearance",
+            "sizing",
+            "cssClasses",
+            "imageDescription"
+          ],
+          "requiredProperties": [
+            "advancedFormatting",
+            "position"
+          ],
+          "propertyEnums": {
+            "source": [
+              "blobColumn",
+              "urlColumn",
+              "imageUrl"
+            ],
+            "position": [
+              "first",
+              "body",
+              "background"
+            ],
+            "appearance": [
+              "square",
+              "widescreen"
+            ],
+            "sizing": [
+              "fit",
+              "cover"
+            ]
+          }
+        },
+        "blobAttributes": {
+          "allowedProperties": [
+            "mimeTypeColumn",
+            "lastUpdatedColumn"
+          ]
+        },
+        "iconAndBadge": {
+          "allowedProperties": [
+            "iconSource",
+            "iconColumn",
+            "imageColumn",
+            "imageUrl",
+            "iconCssClasses",
+            "iconPosition",
+            "iconDescription",
+            "badgeColumn",
+            "badgeLabel",
+            "badgeCssClasses"
+          ],
+          "propertyEnums": {
+            "iconSource": [
+              "iconClass",
+              "iconClassColumn",
+              "initials",
+              "imageUrl",
+              "imageBlobColumn"
+            ],
+            "iconPosition": [
+              "top",
+              "start",
+              "end"
+            ]
+          }
+        },
+        "messages": {
+          "allowedProperties": [
+            "whenNoDataFound",
+            "noDataFoundIcon"
+          ]
+        },
+        "security": {
+          "allowedProperties": [
+            "authorizationScheme"
+          ],
+          "propertyNotes": {
+            "authorizationScheme": "Optional compiler-backed region authorization. Reference an existing shared authorization scheme when Cards data is more restricted than the page; never invent a scheme name."
+          }
+        },
+        "action": {
+          "allowedProperties": [
+            "type",
+            "label"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "button",
+              "fullCard",
+              "title",
+              "subtitle",
+              "media"
+            ]
+          },
+          "allowedBlocks": [
+            "layout",
+            "behavior",
+            "appearance",
+            "advanced",
+            "serverSideCondition"
+          ],
+          "requiredBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "position",
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ],
+            "propertyEnums": {
+              "position": [
+                "primary",
+                "secondary"
+              ]
+            }
+          },
+          "behavior": {
+            "allowedProperties": [
+              "target",
+              "targetUrl",
+              "type",
+              "linkAttributes"
+            ],
+            "requiredProperties": [
+              "type"
+            ],
+            "propertyEnums": {
+              "type": [
+                "redirectThisApp",
+                "redirectOtherApp",
+                "redirectUrl",
+                "triggerAction"
+              ]
+            },
+            "propertyNotes": {
+              "target": "Preferred native Cards action navigation contract. Use declarative target: { page, items, clearCache } and map row values with &SOURCE_COLUMN. substitutions.",
+              "targetUrl": "Compiler-supported fallback only; generation should prefer declarative target."
+            }
+          },
+          "appearance": {
+            "allowedProperties": [
+              "displayType",
+              "icon",
+              "hot",
+              "cssClasses"
+            ],
+            "propertyEnums": {
+              "displayType": [
+                "text",
+                "icon",
+                "textWithIcon"
+              ]
+            },
+            "propertyNotes": {
+              "displayType": "Button-only presentation. icon is required for icon and textWithIcon; hot and cssClasses are button-only.",
+              "cssClasses": "Button-only classes. Prefer native displayType, icon, and hot before custom classes."
+            }
+          },
+          "advanced": {
+            "allowedProperties": [
+              "staticId"
+            ],
+            "requiredProperties": [
+              "staticId"
+            ]
+          },
+          "serverSideCondition": {
+            "allowedProperties": [
+              "type",
+              "sqlQuery",
+              "language",
+              "sqlExpression",
+              "plsqlExpression",
+              "javaScriptExpression",
+              "plsqlFunctionBody",
+              "javaScriptFunctionBody",
+              "value",
+              "item",
+              "preference",
+              "page",
+              "pages",
+              "text",
+              "list",
+              "executeCondition"
+            ],
+            "requiredProperties": [
+              "type"
+            ],
+            "propertyEnums": {
+              "type": [
+                "always",
+                "rowsReturned",
+                "noRowsReturned",
+                "expression",
+                "functionBody",
+                "request=Value",
+                "request!=Value",
+                "requestIsContainedInValue",
+                "requestIsNotContainedInValue",
+                "item=value",
+                "item!=value",
+                "itemIsNull",
+                "itemIsNotNull",
+                "itemIsZero",
+                "itemIsNotZero",
+                "itemIsNullOrZero",
+                "itemIsNotNullAndNotZero",
+                "itemContainsNoSpaces",
+                "itemIsNumeric",
+                "itemIsNotNumeric",
+                "itemIsAlphanumeric",
+                "itemIsInColonDelimitedList",
+                "itemIsNotInColonDelimitedList",
+                "textIsContainedInItem",
+                "text=value",
+                "text!=value",
+                "textIsContainedInValue",
+                "textIsNotContainedInValue",
+                "userPreference=value",
+                "userPreference!=value",
+                "currentPage=page",
+                "currentPage!=page",
+                "currentPageInList",
+                "currentPageNotInList",
+                "currentPage=pageSubmitted",
+                "currentPage!=pageSubmitted",
+                "currentPageIsInPrinterFriendlyMode",
+                "currentPageIsNotInPrinterFriendlyMode",
+                "pageRegionIsReadOnly",
+                "pageRegionIsNotReadOnly",
+                "userIsAuthenticated",
+                "userIsPublicUser",
+                "inlineValidationErrorsDisplayed",
+                "inlineValidationErrorsNotDisplayed",
+                "sqlReportsOkToShowForwardButton",
+                "sqlReportsOkToShowBackButton",
+                "currentLanguage=value",
+                "currentLanguage!=value",
+                "currentLanguageIsContainedInValue",
+                "currentLanguageIsNotContainedInValue",
+                "clientBrowserIsMozilla",
+                "clientBrowserIsIE7higher",
+                "clientBrowserIsXhtmlCssCapable",
+                "clientBrowserIsOther",
+                "cgiEnvDadName=value",
+                "cgiEnvDadName!=value",
+                "cgiEnvServerName=value",
+                "cgiEnvServerName!=value",
+                "cgiEnvHttpHost=value",
+                "cgiEnvHttpHost!=value",
+                "never"
+              ],
+              "language": [
+                "plsql",
+                "javaScript-mle"
+              ],
+              "executeCondition": [
+                "forEachRow",
+                "once"
+              ]
+            }
+          },
+          "allowedChildren": [
+            "triggerAction"
+          ],
+          "triggerAction": {
+            "allowedProperties": [
+              "name",
+              "action"
+            ],
+            "requiredProperties": [
+              "action"
+            ]
+          }
+        },
+        "componentAppearance": {
+          "allowedProperties": [
+            "layout",
+            "gridColumns",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "layout"
+          ],
+          "propertyEnums": {
+            "layout": [
+              "grid",
+              "float",
+              "horizontal"
+            ],
+            "gridColumns": [
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        }
+      },
+      "map": {
+        "allowedBlocks": [
+          "layout",
+          "appearance",
+          "map",
+          "controls",
+          "initialPositionAndZoom",
+          "attributes"
+        ],
+        "layer": {
+          "identifier": {
+            "required": true,
+            "mustBeUniqueWithinParent": true
+          },
+          "allowedProperties": [
+            "name"
+          ],
+          "requiredProperties": [
+            "name"
+          ],
+          "requiredBlocks": [
+            "layout",
+            "source",
+            "columnMapping"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source",
+            "columnMapping",
+            "tooltip",
+            "infoWindow",
+            "link"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "tableName",
+              "type",
+              "sqlQuery",
+              "plsqlFunctionBody"
+            ],
+            "propertyEnums": {
+              "type": [
+                "sqlQuery",
+                "functionBody"
+              ]
+            }
+          },
+          "columnMapping": {
+            "allowedProperties": [
+              "geometryColumnDataType",
+              "geometryColumn",
+              "longitudeColumn",
+              "latitudeColumn",
+              "primaryKeyColumn"
+            ],
+            "requiredProperties": [
+              "geometryColumnDataType"
+            ],
+            "propertyEnums": {
+              "geometryColumnDataType": [
+                "longitudeLatitude",
+                "sdoGeometry",
+                "geojson"
+              ]
+            }
+          },
+          "tooltip": {
+            "allowedProperties": [
+              "column"
+            ]
+          },
+          "infoWindow": {
+            "allowedProperties": [
+              "advancedFormatting",
+              "titleColumn",
+              "bodyColumn",
+              "htmlExpression",
+              "cssClasses"
+            ]
+          },
+          "link": {
+            "allowedProperties": [
+              "type",
+              "target",
+              "targetUrl"
+            ]
+          }
+        }
+      },
+      "interactiveReport": {
+        "column": {
+          "allowedProperties": [
+            "type"
+          ],
+          "requiredBlocks": [
+            "heading",
+            "layout"
+          ],
+          "allowedBlocks": [
+            "heading",
+            "layout",
+            "appearance",
+            "settings",
+            "columnFormatting",
+            "source",
+            "link",
+            "lov",
+            "security",
+            "comments",
+            "enableUsersTo",
+            "genAI",
+            "advanced"
+          ],
+          "heading": {
+            "allowedProperties": [
+              "heading",
+              "alignment"
+            ],
+            "requiredProperties": [
+              "heading"
+            ]
+          },
+          "layout": {
+            "allowedProperties": [
+              "sequence",
+              "columnAlignment",
+              "group"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "settings": {
+            "allowedProperties": [
+              "type",
+              "initials",
+              "cssClasses",
+              "label",
+              "value",
+              "state"
+            ]
+          },
+          "columnFormatting": {
+            "allowedProperties": [
+              "htmlExpression"
+            ]
+          },
+          "link": {
+            "allowedProperties": [
+              "target",
+              "linkText",
+              "linkAttributes"
+            ]
+          },
+          "commentsColumn": {
+            "requiredBlocks": [
+              "heading",
+              "layout",
+              "source",
+              "settings"
+            ],
+            "allowedBlocks": [
+              "heading",
+              "layout",
+              "source",
+              "settings",
+              "plugin-avatar",
+              "action"
+            ],
+            "heading": {
+              "allowedProperties": [
+                "heading"
+              ],
+              "requiredProperties": [
+                "heading"
+              ]
+            },
+            "layout": {
+              "allowedProperties": [
+                "sequence"
+              ],
+              "requiredProperties": [
+                "sequence"
+              ]
+            },
+            "source": {
+              "allowedProperties": [
+                "dataType"
+              ],
+              "requiredProperties": [
+                "dataType"
+              ]
+            },
+            "settings": {
+              "allowedProperties": [
+                "userName",
+                "commentText",
+                "date",
+                "attributes",
+                "commentClass",
+                "displayAvatar"
+              ],
+              "requiredProperties": [
+                "userName",
+                "commentText"
+              ],
+              "propertyEnums": {
+                "displayAvatar": [
+                  true,
+                  false
+                ]
+              }
+            },
+            "plugin-avatar": {
+              "allowedProperties": [
+                "type",
+                "icon",
+                "initials",
+                "image",
+                "description",
+                "shape",
+                "cssClasses"
+              ],
+              "requiredProperties": [
+                "type",
+                "shape"
+              ],
+              "propertyEnums": {
+                "type": [
+                  "icon",
+                  "image",
+                  "initials"
+                ],
+                "shape": [
+                  "circular",
+                  "noShape",
+                  "rounded",
+                  "square"
+                ]
+              }
+            },
+            "action": {
+              "allowedProperties": [
+                "position",
+                "label"
+              ],
+              "requiredProperties": [
+                "position"
+              ],
+              "allowedBlocks": [
+                "layout",
+                "behavior"
+              ],
+              "requiredBlocks": [
+                "layout",
+                "behavior"
+              ],
+              "propertyEnums": {
+                "position": [
+                  "actions",
+                  "avatarLink",
+                  "userNameLink"
+                ]
+              },
+              "layout": {
+                "allowedProperties": [
+                  "sequence"
+                ],
+                "requiredProperties": [
+                  "sequence"
+                ]
+              },
+              "behavior": {
+                "allowedProperties": [
+                  "target"
+                ],
+                "requiredProperties": [
+                  "target"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "interactiveGrid": {
+        "minimumChildren": {
+          "savedReport": 1
+        },
+        "column": {
+          "allowedProperties": [
+            "type"
+          ],
+          "allowedBlocks": [
+            "heading",
+            "layout",
+            "settings",
+            "source",
+            "validation",
+            "sessionState",
+            "columnFormatting",
+            "columnFilter"
+          ],
+          "settings": {
+            "allowedProperties": [
+              "numberAlignment",
+              "virtualKeyboard"
+            ]
+          },
+          "columnFormatting": {
+            "allowedProperties": [
+              "htmlExpression"
+            ]
+          }
+        }
+      },
+      "avatar": {
+        "allowedBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+          "settings",
+          "column",
+          "security"
+        ],
+        "requiredBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "componentAppearance",
+          "settings"
+        ],
+        "minimumChildren": {
+          "column": 1
+        },
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "report"
+            ]
+          }
+        },
+        "orderBy": {
+          "allowedProperties": [
+            "type",
+            "orderByClause",
+            "item"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "staticValue",
+              "item"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "type",
+            "initials",
+            "icon",
+            "image",
+            "description",
+            "shape",
+            "size",
+            "spacing",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "initials",
+              "icon",
+              "image"
+            ],
+            "shape": [
+              "circular",
+              "noShape",
+              "rounded",
+              "square"
+            ],
+            "size": [
+              "extraExtraLarge",
+              "extraExtraSmall",
+              "extraLarge",
+              "extraSmall",
+              "large",
+              "medium",
+              "small"
+            ],
+            "spacing": [
+              "auto",
+              "large",
+              "medium",
+              "none",
+              "small",
+              "stack"
+            ]
+          }
+        },
+        "security": {
+          "allowedProperties": [
+            "authorizationScheme"
+          ],
+          "propertyNotes": {
+            "authorizationScheme": "Optional compiler-backed region authorization. When access is restricted, reference an existing shared authorization scheme; never invent a scheme name."
+          }
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "propertyEnums": {
+              "dataType": [
+                "bfile",
+                "blob",
+                "boolean",
+                "clob",
+                "date",
+                "intervalDayToSecond",
+                "intervalYearToMonth",
+                "number",
+                "rowid",
+                "sdoGeometry",
+                "timestamp",
+                "timestampWithLocalTimeZone",
+                "timestampWithTimeZone",
+                "varchar2"
+              ]
+            }
+          }
+        }
+      },
+      "badge": {
+        "requiredBlocks": [
+          "source",
+          "componentAppearance",
+          "settings"
+        ],
+        "allowedBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+          "settings",
+          "action",
+          "column",
+          "security",
+          "advanced"
+        ],
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "report"
+            ]
+          }
+        },
+        "orderBy": {
+          "allowedProperties": [
+            "type",
+            "orderByClause",
+            "item"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "staticValue",
+              "item"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "label",
+            "value",
+            "state",
+            "icon",
+            "displayLabel",
+            "style",
+            "shape",
+            "size"
+          ],
+          "requiredProperties": [
+            "label",
+            "value"
+          ],
+          "propertyEnums": {
+            "style": [
+              "outline",
+              "subtle"
+            ],
+            "shape": [
+              "circular",
+              "rounded",
+              "square"
+            ],
+            "size": [
+              "small",
+              "medium",
+              "large"
+            ]
+          }
+        },
+        "action": {
+          "allowedProperties": [
+            "position"
+          ],
+          "requiredProperties": [
+            "position"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "behavior",
+            "serverSideCondition"
+          ],
+          "requiredBlocks": [
+            "layout"
+          ],
+          "propertyEnums": {
+            "position": [
+              "link"
+            ]
+          },
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "behavior": {
+            "allowedProperties": [
+              "type",
+              "target",
+              "targetUrl",
+              "linkAttributes"
+            ]
+          }
+        },
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId",
+            "regionDisplaySelector"
+          ],
+          "propertyEnums": {
+            "regionDisplaySelector": [
+              true,
+              false
+            ]
+          }
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source",
+            "security",
+            "comments"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "type",
+              "databaseColumn",
+              "dataType",
+              "primaryKey",
+              "availableOnClient",
+              "valueProtected"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "propertyEnums": {
+              "type": [
+                "databaseColumn"
+              ],
+              "dataType": [
+                "bfile",
+                "blob",
+                "boolean",
+                "clob",
+                "date",
+                "intervalDayToSecond",
+                "intervalYearToMonth",
+                "number",
+                "rowid",
+                "sdoGeometry",
+                "timestamp",
+                "timestampWithLocalTimeZone",
+                "timestampWithTimeZone",
+                "varchar2"
+              ]
+            }
+          }
+        }
+      },
+      "contentRow": {
+        "allowedBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+          "settings",
+          "plugin-avatar",
+          "plugin-badge",
+          "plugin-appearance",
+          "plugin-grouping",
+          "rowSelection",
+          "pagination",
+          "entityTitle",
+          "messages",
+          "action",
+          "column",
+          "security"
+        ],
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "partial",
+              "report"
+            ]
+          }
+        },
+        "orderBy": {
+          "allowedProperties": [
+            "type",
+            "orderByClause",
+            "item"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "staticValue",
+              "item"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "overline",
+            "title",
+            "description",
+            "miscellaneous",
+            "displayAvatar",
+            "displayBadge"
+          ]
+        },
+        "plugin-avatar": {
+          "allowedProperties": [
+            "type",
+            "icon",
+            "initials",
+            "description",
+            "shape",
+            "size",
+            "cssClasses"
+          ]
+        },
+        "plugin-badge": {
+          "allowedProperties": [
+            "label",
+            "value",
+            "state",
+            "style",
+            "shape",
+            "size",
+            "icon",
+            "displayLabel",
+            "position",
+            "columnWidth"
+          ],
+          "propertyEnums": {
+            "position": [
+              "start",
+              "end"
+            ]
+          }
+        },
+        "plugin-appearance": {
+          "allowedProperties": [
+            "stackOnMobile"
+          ]
+        },
+        "rowSelection": {
+          "allowedProperties": [
+            "type",
+            "currentSelectionPageItem",
+            "selectAllPageItem"
+          ],
+          "propertyEnums": {
+            "type": [
+              "focusOnly",
+              "singleSelection",
+              "multipleSelection"
+            ]
+          }
+        },
+        "messages": {
+          "allowedProperties": [
+            "whenNoDataFound",
+            "noDataFoundIcon"
+          ]
+        },
+        "entityTitle": {
+          "allowedProperties": [
+            "singular",
+            "plural"
+          ]
+        },
+        "pagination": {
+          "allowedProperties": [
+            "type",
+            "entitiesPerPage",
+            "showTotalCount"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "page",
+              "scroll"
+            ]
+          }
+        },
+        "action": {
+          "allowedProperties": [
+            "position",
+            "template",
+            "label"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "behavior",
+            "appearance",
+            "serverSideCondition",
+            "menu"
+          ],
+          "propertyEnums": {
+            "position": [
+              "avatarLink",
+              "titleLink",
+              "badgeLink",
+              "fullRowLink",
+              "primaryActions"
+            ],
+            "template": [
+              "button",
+              "menu"
+            ]
+          },
+          "behavior": {
+            "allowedProperties": [
+              "type",
+              "target",
+              "targetUrl",
+              "linkAttributes"
+            ]
+          },
+          "appearance": {
+            "allowedProperties": [
+              "displayType",
+              "icon",
+              "cssClasses"
+            ]
+          },
+          "menu": {
+            "allowedProperties": [
+              "label"
+            ],
+            "allowedBlocks": [
+              "layout",
+              "behavior",
+              "appearance",
+              "serverSideCondition"
+            ],
+            "behavior": {
+              "allowedProperties": [
+                "type",
+                "target",
+                "targetUrl",
+                "linkAttributes"
+              ]
+            },
+            "appearance": {
+              "allowedProperties": [
+                "displayType",
+                "icon",
+                "cssClasses"
+              ]
+            }
+          }
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source",
+            "accessibility",
+            "appearance"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "type",
+              "databaseColumn",
+              "dataType",
+              "primaryKey"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ]
+          }
+        }
+      },
+      "mediaList": {
+        "allowedBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+          "settings",
+          "plugin-avatar",
+          "plugin-badge",
+          "action",
+          "column",
+          "security"
+        ],
+        "requiredBlocks": [
+          "layout",
+          "appearance",
+          "componentAppearance",
+          "settings"
+        ],
+        "layout": {
+          "allowedProperties": [
+            "sequence",
+            "parentRegion",
+            "slot"
+          ],
+          "requiredProperties": [
+            "sequence",
+            "slot"
+          ],
+          "propertyEnums": {
+            "slot": [
+              "body",
+              "regionBody",
+              "subRegions"
+            ]
+          }
+        },
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "partial",
+              "report"
+            ]
+          }
+        },
+        "orderBy": {
+          "allowedProperties": [
+            "type",
+            "orderByClause",
+            "item"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "staticValue",
+              "item"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "title",
+            "description",
+            "displayAvatar",
+            "displayBadge",
+            "applyThemeColors",
+            "layout",
+            "size"
+          ],
+          "requiredProperties": [
+            "title"
+          ],
+          "propertyEnums": {
+            "layout": [
+              "2ColumnGrid",
+              "3ColumnGrid",
+              "4ColumnGrid",
+              "5ColumnGrid",
+              "horizontalSpan"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        },
+        "plugin-avatar": {
+          "allowedProperties": [
+            "type",
+            "image",
+            "initials",
+            "icon",
+            "description",
+            "shape"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "icon",
+              "image",
+              "initials"
+            ],
+            "shape": [
+              "circular",
+              "noShape",
+              "rounded",
+              "square"
+            ]
+          }
+        },
+        "plugin-badge": {
+          "allowedProperties": [
+            "label",
+            "value",
+            "state",
+            "icon",
+            "displayLabel",
+            "style",
+            "shape"
+          ],
+          "requiredProperties": [
+            "label",
+            "value"
+          ],
+          "propertyEnums": {
+            "style": [
+              "outline",
+              "subtle"
+            ],
+            "shape": [
+              "circular",
+              "rounded",
+              "square"
+            ]
+          }
+        },
+        "action": {
+          "allowedProperties": [
+            "position"
+          ],
+          "requiredProperties": [
+            "position"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "behavior",
+            "serverSideCondition",
+            "security"
+          ],
+          "requiredBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "propertyEnums": {
+            "position": [
+              "link"
+            ]
+          },
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "behavior": {
+            "allowedProperties": [
+              "type",
+              "target",
+              "targetUrl",
+              "linkAttributes"
+            ],
+            "requiredProperties": [
+              "type"
+            ],
+            "propertyEnums": {
+              "type": [
+                "redirectThisApp",
+                "triggerAction"
+              ]
+            }
+          },
+          "security": {
+            "allowedProperties": [
+              "authorizationScheme"
+            ]
+          }
+        },
+        "security": {
+          "allowedProperties": [
+            "authorizationScheme"
+          ]
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source",
+            "security",
+            "comments"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "type",
+              "databaseColumn",
+              "dataType",
+              "primaryKey"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "propertyEnums": {
+              "type": [
+                "databaseColumn",
+                "sqlExpression",
+                "none"
+              ],
+              "dataType": [
+                "bfile",
+                "blob",
+                "boolean",
+                "clob",
+                "date",
+                "intervalDayToSecond",
+                "intervalYearToMonth",
+                "number",
+                "rowid",
+                "sdoGeometry",
+                "timestamp",
+                "timestampWithLocalTimeZone",
+                "timestampWithTimeZone",
+                "varchar2"
+              ]
+            }
+          },
+          "security": {
+            "allowedProperties": [
+              "authorizationScheme",
+              "escapeSpecialChars"
+            ]
+          }
+        }
+      },
+      "metricCard": {
+        "requiredBlocks": [
+          "appearance",
+          "componentAppearance",
+          "settings"
+        ],
+        "allowedBlocks": [
+          "source",
+          "orderBy",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+          "settings",
+          "plugin-avatar",
+          "plugin-badge",
+          "plugin-grouping",
+          "rowSelection",
+          "messages",
+          "pagination",
+          "action",
+          "column",
+          "security",
+          "advanced"
+        ],
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "partial",
+              "report"
+            ]
+          }
+        },
+        "orderBy": {
+          "allowedProperties": [
+            "type",
+            "orderByClause",
+            "item"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "staticValue",
+              "item"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "title",
+            "titleCssClasses",
+            "metric",
+            "metricCssClasses",
+            "meta",
+            "metaCssClasses",
+            "layout",
+            "itemCssClasses"
+          ],
+          "requiredProperties": [
+            "metric"
+          ],
+          "propertyEnums": {
+            "layout": [
+              "2Columns",
+              "3Columns",
+              "4Columns",
+              "5Columns",
+              "autoWrapping",
+              "overflow",
+              "stacked"
+            ]
+          },
+          "conditionalRequirements": {
+            "reportScope": "settings.layout and settings.itemCssClasses are report-only and must be omitted in partial mode."
+          }
+        },
+        "plugin-avatar": {
+          "allowedProperties": [
+            "displayAvatar",
+            "type",
+            "icon",
+            "initials",
+            "image",
+            "position",
+            "alignment",
+            "shape",
+            "size",
+            "style"
+          ],
+          "requiredProperties": [
+            "displayAvatar",
+            "type"
+          ],
+          "enforcedValues": {
+            "displayAvatar": true
+          },
+          "propertyEnums": {
+            "type": [
+              "icon",
+              "image",
+              "initials"
+            ],
+            "position": [
+              "inline",
+              "top"
+            ],
+            "alignment": [
+              "start",
+              "center",
+              "end"
+            ],
+            "shape": [
+              "circular",
+              "noShape",
+              "rounded",
+              "square"
+            ],
+            "size": [
+              "small",
+              "medium",
+              "large"
+            ],
+            "style": [
+              "subtle"
+            ]
+          },
+          "conditionalRequirements": {
+            "payload": "Emit exactly one of icon, initials, or image matching type.",
+            "icon": "Use a static Font APEX literal or an &COLUMN. substitution backed by a varchar2 SQL literal or explicit CASE allowlist whose every output is in the pinned Font APEX catalog.",
+            "initials": "Use a bare projected varchar2 source-column alias.",
+            "image": "Use a compiler-backed media object. BLOB mode requires typed blob, filename, MIME type, and last-updated columns; URL modes require application-managed file paths.",
+            "alignment": "Allowed only when position is inline.",
+            "style": "Allowed only when type is icon or initials; omit it for image."
+          }
+        },
+        "plugin-badge": {
+          "allowedProperties": [
+            "displayBadge",
+            "label",
+            "value",
+            "state",
+            "icon",
+            "style",
+            "shape",
+            "size",
+            "displayLabel"
+          ],
+          "requiredProperties": [
+            "displayBadge",
+            "label",
+            "value"
+          ],
+          "enforcedValues": {
+            "displayBadge": true
+          },
+          "propertyEnums": {
+            "style": [
+              "outline",
+              "subtle"
+            ],
+            "shape": [
+              "circular",
+              "rounded",
+              "square"
+            ],
+            "size": [
+              "small",
+              "medium",
+              "large"
+            ]
+          },
+          "conditionalRequirements": {
+            "selectors": "Use bare projected aliases for source-backed label, value, and state fields; source-backed labels use varchar2 and labels contain no HTML or event attributes.",
+            "state": "When present, state references a varchar2 column restricted to danger, warning, success, or info."
+          }
+        },
+        "plugin-grouping": {
+          "allowedProperties": [
+            "groupTitle",
+            "groupIcon"
+          ],
+          "conditionalRequirements": {
+            "groupIcon": "Requires groupTitle.",
+            "grouping": "Requires at least one child column with appearance.group=true and static orderBy beginning with grouped columns.",
+            "reportScope": "The plugin-grouping block is report-only and must be omitted in partial mode."
+          }
+        },
+        "rowSelection": {
+          "allowedProperties": [
+            "type",
+            "currentSelectionPageItem",
+            "selectAllPageItem"
+          ],
+          "propertyEnums": {
+            "type": [
+              "focusOnly",
+              "singleSelection",
+              "multipleSelection"
+            ]
+          },
+          "conditionalRequirements": {
+            "focusOnly": "Require a primary-key child column and omit both selection items.",
+            "singleSelection": "Require a primary-key child column plus a same-page hidden currentSelectionPageItem; omit selectAllPageItem.",
+            "multipleSelection": "Require a primary-key child column, a same-page hidden currentSelectionPageItem, and a same-page checkbox/switch selectAllPageItem.",
+            "reportScope": "The rowSelection block is report-only and must be omitted in partial mode."
+          }
+        },
+        "messages": {
+          "allowedProperties": [
+            "whenNoDataFound",
+            "noDataFoundIcon"
+          ],
+          "conditionalRequirements": {
+            "reportScope": "The messages block is report-only and must be omitted in partial mode."
+          }
+        },
+        "pagination": {
+          "allowedProperties": [
+            "entitiesPerPage"
+          ],
+          "conditionalRequirements": {
+            "reportScope": "The pagination block is report-only and supports only entitiesPerPage."
+          }
+        },
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId",
+            "regionDisplaySelector"
+          ],
+          "propertyEnums": {
+            "regionDisplaySelector": [
+              true,
+              false
+            ]
+          }
+        },
+        "action": {
+          "allowedProperties": [
+            "position"
+          ],
+          "requiredProperties": [
+            "position"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "behavior",
+            "serverSideCondition",
+            "security",
+            "comments"
+          ],
+          "requiredBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "propertyEnums": {
+            "position": [
+              "link"
+            ]
+          },
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "behavior": {
+            "allowedProperties": [
+              "type",
+              "target",
+              "targetUrl",
+              "linkAttributes"
+            ],
+            "requiredProperties": [
+              "type"
+            ],
+            "propertyEnums": {
+              "type": [
+                "redirectThisApp",
+                "redirectOtherApp",
+                "redirectUrl",
+                "triggerAction"
+              ]
+            },
+            "conditionalRequirements": {
+              "redirectThisApp": "Require target and omit targetUrl.",
+              "redirectOtherApp": "Require target and omit targetUrl.",
+              "redirectUrl": "Require targetUrl and omit target.",
+              "triggerAction": "Omit target and targetUrl."
+            }
+          },
+          "security": {
+            "allowedProperties": [
+              "authorizationScheme"
+            ]
+          }
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "appearance",
+            "source"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "appearance": {
+            "allowedProperties": [
+              "formatMask",
+              "group"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "databaseColumn",
+              "dataType",
+              "primaryKey"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "propertyEnums": {
+              "dataType": [
+                "bfile",
+                "blob",
+                "boolean",
+                "clob",
+                "date",
+                "intervalDayToSecond",
+                "intervalYearToMonth",
+                "number",
+                "rowid",
+                "sdoGeometry",
+                "timestamp",
+                "timestampWithLocalTimeZone",
+                "timestampWithTimeZone",
+                "varchar2"
+              ]
+            }
+          }
+        }
+      },
+      "comments": {
+        "requiredBlocks": [
+          "source",
+          "componentAppearance",
+          "settings"
+        ],
+        "allowedBlocks": [
+          "source",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+            "settings",
+            "plugin-avatar",
+            "action",
+            "rowSelection",
+          "performance",
+          "pagination",
+          "entityTitle",
+          "messages",
+          "column",
+          "security",
+          "advanced"
+        ],
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "partial",
+              "report"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "userName",
+            "commentText",
+            "date",
+            "attributes",
+            "commentClass",
+            "displayAvatar",
+            "style",
+            "alignment",
+            "applyThemeColors"
+          ],
+          "requiredProperties": [
+            "userName",
+            "commentText"
+          ],
+          "propertyEnums": {
+            "displayAvatar": [
+              true,
+              false
+            ],
+            "style": [
+              "basic",
+              "chatSpeechBubbles"
+            ],
+            "applyThemeColors": [
+              true,
+              false
+            ]
+          }
+        },
+        "plugin-avatar": {
+          "allowedProperties": [
+            "type",
+            "icon",
+            "initials",
+            "image",
+            "description",
+            "shape",
+            "cssClasses"
+          ],
+          "requiredProperties": [
+            "type",
+            "shape"
+          ],
+          "propertyEnums": {
+            "type": [
+              "icon",
+              "image",
+              "initials"
+            ],
+            "shape": [
+              "circular",
+              "noShape",
+              "rounded",
+              "square"
+            ]
+          }
+        },
+        "rowSelection": {
+          "allowedProperties": [
+            "type"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+            "propertyEnums": {
+              "type": [
+                "focusOnly",
+                "singleSelection",
+                "multipleSelection"
+              ]
+            }
+          },
+        "performance": {
+          "allowedProperties": [
+            "lazyLoading"
+          ],
+          "propertyEnums": {
+            "lazyLoading": [
+              true,
+              false
+            ]
+          }
+        },
+        "pagination": {
+          "allowedProperties": [
+            "type",
+            "entitiesPerPage",
+            "showTotalCount"
+          ],
+          "requiredProperties": [
+            "type"
+          ],
+          "propertyEnums": {
+            "type": [
+              "page"
+            ],
+            "showTotalCount": [
+              true,
+              false
+            ]
+          }
+        },
+        "entityTitle": {
+          "allowedProperties": [
+            "singular",
+            "plural"
+          ]
+        },
+        "messages": {
+          "allowedProperties": [
+            "whenNoDataFound"
+          ]
+        },
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId",
+            "regionDisplaySelector"
+          ],
+          "propertyEnums": {
+            "regionDisplaySelector": [
+              true,
+              false
+            ]
+          }
+        },
+        "action": {
+          "allowedProperties": [
+            "position",
+            "label"
+          ],
+          "requiredProperties": [
+            "position"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "requiredBlocks": [
+            "layout",
+            "behavior"
+          ],
+          "propertyEnums": {
+            "position": [
+              "actions",
+              "avatarLink",
+              "userNameLink"
+            ]
+          },
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "behavior": {
+            "allowedProperties": [
+              "target"
+            ],
+            "requiredProperties": [
+              "target"
+            ]
+          }
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "databaseColumn",
+              "dataType",
+              "primaryKey"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "propertyEnums": {
+              "dataType": [
+                "bfile",
+                "blob",
+                "boolean",
+                "clob",
+                "date",
+                "intervalDayToSecond",
+                "intervalYearToMonth",
+                "number",
+                "rowid",
+                "sdoGeometry",
+                "timestamp",
+                "timestampWithLocalTimeZone",
+                "timestampWithTimeZone",
+                "varchar2"
+              ]
+            }
+          }
+        }
+      },
+      "regionDisplaySelector": {
+        "requiredBlocks": [
+          "layout",
+          "settings"
+        ],
+        "allowedBlocks": [
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "settings",
+          "security",
+          "advanced"
+        ],
+        "settings": {
+          "allowedProperties": [
+            "mode",
+            "displayRegionIcons",
+            "includeShowAll",
+            "rememberSelection"
+          ],
+          "requiredProperties": [
+            "mode",
+            "displayRegionIcons",
+            "rememberSelection"
+          ],
+          "propertyEnums": {
+            "mode": [
+              "viewSingleRegion",
+              "scrollWindow"
+            ],
+            "displayRegionIcons": [
+              true,
+              false
+            ],
+            "includeShowAll": [
+              true,
+              false
+            ],
+            "rememberSelection": [
+              "byUser",
+              "bySession",
+              false
+            ]
+          }
+        },
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId"
+          ]
+        },
+        "applicationSettings": {
+          "source": "upstream_catalog_reference",
+          "scope": "application",
+          "selector": "NATIVE_DISPLAY_SELECTOR",
+          "componentType": "region",
+          "componentName": "regionDisplaySelector",
+          "sourceShape": "settings.attributes.includeSlider",
+          "settings": {
+            "allowedProperties": [
+              "includeSlider"
+            ],
+            "propertyEnums": {
+              "includeSlider": [
+                true,
+                false
+              ]
+            },
+            "propertyDefaults": {
+              "includeSlider": true
+            }
+          },
+          "generation": {
+            "required": false,
+            "emitWhen": "explicitly requested"
+          }
+        }
+      },
+      "timeline": {
+        "requiredBlocks": [
+          "source",
+          "componentAppearance",
+          "settings"
+        ],
+        "allowedBlocks": [
+          "source",
+          "layout",
+          "appearance",
+          "accessibility",
+          "comments",
+          "serverSideCondition",
+          "componentAppearance",
+          "settings",
+          "plugin-avatar",
+          "plugin-badge",
+          "pagination",
+          "column",
+          "security",
+          "advanced"
+        ],
+        "componentAppearance": {
+          "allowedProperties": [
+            "display"
+          ],
+          "requiredProperties": [
+            "display"
+          ],
+          "propertyEnums": {
+            "display": [
+              "partial",
+              "report"
+            ]
+          }
+        },
+        "settings": {
+          "allowedProperties": [
+            "userName",
+            "date",
+            "title",
+            "description",
+            "displayAvatar",
+            "displayBadge"
+          ],
+          "requiredProperties": [
+            "userName",
+            "date",
+            "title"
+          ],
+          "propertyEnums": {
+            "displayAvatar": [
+              true,
+              false
+            ],
+            "displayBadge": [
+              true,
+              false
+            ]
+          }
+        },
+        "plugin-avatar": {
+          "allowedProperties": [
+            "type",
+            "icon",
+            "initials",
+            "image",
+            "description",
+            "shape"
+          ],
+          "requiredProperties": [
+            "type",
+            "shape"
+          ],
+          "propertyEnums": {
+            "type": [
+              "icon",
+              "image",
+              "initials"
+            ],
+            "shape": [
+              "circular",
+              "noShape",
+              "rounded",
+              "square"
+            ]
+          }
+        },
+        "plugin-badge": {
+          "allowedProperties": [
+            "label",
+            "value",
+            "state",
+            "icon",
+            "style",
+            "shape",
+            "displayLabel"
+          ],
+          "requiredProperties": [
+            "label",
+            "value"
+          ],
+          "propertyEnums": {
+            "style": [
+              "outline",
+              "subtle"
+            ],
+            "shape": [
+              "circular",
+              "rounded",
+              "square"
+            ],
+            "displayLabel": [
+              true,
+              false
+            ]
+          }
+        },
+        "pagination": {
+          "allowedProperties": [
+            "entitiesPerPage"
+          ]
+        },
+        "advanced": {
+          "allowedProperties": [
+            "htmlDomId",
+            "regionDisplaySelector"
+          ],
+          "propertyEnums": {
+            "regionDisplaySelector": [
+              true,
+              false
+            ]
+          }
+        },
+        "column": {
+          "requiredBlocks": [
+            "layout",
+            "source"
+          ],
+          "allowedBlocks": [
+            "layout",
+            "source"
+          ],
+          "layout": {
+            "allowedProperties": [
+              "sequence"
+            ],
+            "requiredProperties": [
+              "sequence"
+            ]
+          },
+          "source": {
+            "allowedProperties": [
+              "databaseColumn",
+              "dataType",
+              "primaryKey"
+            ],
+            "requiredProperties": [
+              "databaseColumn",
+              "dataType"
+            ],
+            "propertyEnums": {
+              "dataType": [
+                "bfile",
+                "blob",
+                "boolean",
+                "clob",
+                "date",
+                "intervalDayToSecond",
+                "intervalYearToMonth",
+                "number",
+                "rowid",
+                "sdoGeometry",
+                "timestamp",
+                "timestampWithLocalTimeZone",
+                "timestampWithTimeZone",
+                "varchar2"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "pageItem": {
+      "displayOnly": {
+        "requiredBlocks": [
+          "settings"
+        ],
+        "allowedBlocks": [
+          "label",
+          "layout",
+          "appearance",
+          "settings",
+          "source",
+          "help",
+          "advanced",
+          "sessionState",
+          "security"
+        ],
+        "appearance": {
+          "allowedProperties": [
+            "template",
+            "templateOptions"
+          ]
+        },
+        "settings": {
+          "allowedProperties": [
+            "sendOnPageSubmit",
+            "format"
+          ],
+          "requiredProperties": [
+            "sendOnPageSubmit"
+          ],
+          "enforcedValues": {
+            "sendOnPageSubmit": false
+          }
+        },
+        "source": {
+          "allowedProperties": [
+            "formRegion",
+            "column",
+            "dataType",
+            "queryOnly",
+            "primaryKey",
+            "type",
+            "staticValue",
+            "sqlQuery",
+            "item",
+            "language",
+            "sqlExpression",
+            "plsqlExpression",
+            "javaScriptExpression",
+            "plsqlFunctionBody",
+            "javaScriptFunctionBody",
+            "databaseColumn",
+            "preference",
+            "used",
+            "postCalculationComputation"
+          ],
+          "propertyEnums": {
+            "type": [
+              "staticValue",
+              "databaseColumn",
+              "item",
+              "sqlQuerySingleValue",
+              "sqlQueryMultipleValues",
+              "expression",
+              "functionBody",
+              "preference",
+              "null"
+            ]
+          }
+        }
+      },
+      "selectList": {
+        "allowedBlocks": [
+          "label",
+          "layout",
+          "appearance",
+          "lov",
+          "settings",
+          "default",
+          "validation",
+          "source",
+          "help",
+          "sessionState",
+          "security"
+        ],
+        "appearance": {
+          "allowedProperties": [
+            "template",
+            "templateOptions",
+            "height"
+          ]
+        },
+        "settings": {
+          "allowedProperties": [
+            "cascadingLovParentItem"
+          ]
+        },
+        "default": {
+          "allowedProperties": [
+            "type",
+            "staticValue"
+          ]
+        },
+        "help": {
+          "allowedProperties": [
+            "inlineHelpText",
+            "helpText"
+          ]
+        },
+        "sessionState": {
+          "allowedProperties": [
+            "storage"
+          ],
+          "propertyEnums": {
+            "storage": [
+              "request",
+              "session",
+              "user"
+            ]
+          }
+        },
+        "security": {
+          "allowedProperties": [
+            "sessionStateProtection",
+            "encryptSessionState"
+          ]
+        }
+      },
+      "radioGroup": {
+        "allowedBlocks": [
+          "label",
+          "layout",
+          "appearance",
+          "settings",
+          "lov",
+          "help",
+          "default",
+          "validation",
+          "source"
+        ],
+        "settings": {
+          "allowedProperties": [
+            "noOfCols"
+          ]
+        },
+        "help": {
+          "allowedProperties": [
+            "inlineHelpText",
+            "helpText"
+          ]
+        },
+        "default": {
+          "allowedProperties": [
+            "type",
+            "staticValue"
+          ]
+        }
+      }
+    },
+    "sharedComponent": {
+      "componentSetting": {
+        "requiredBlocks": [
+          "settings"
+        ],
+        "allowedBlocks": [
+          "settings"
+        ],
+        "settings": {
+          "allowedProperties": [
+            "attributes"
+          ],
+          "requiredProperties": [
+            "attributes"
+          ]
+        }
+      },
+      "listEntry": {
+        "requiredBlocks": [
+          "link"
+        ],
+        "allowedBlocks": [
+          "icon",
+          "layout",
+          "isCurrent",
+          "link",
+          "serverSideCondition",
+          "userDefinedAttributes"
+        ],
+        "isCurrent": {
+          "allowedProperties": [
+            "type",
+            "pages"
+          ],
+          "requiredProperties": [
+            "type",
+            "pages"
+          ]
+        },
+        "link": {
+          "allowedProperties": [
+            "target"
+          ],
+          "requiredProperties": [
+            "target"
+          ]
+        }
+      },
+      "breadcrumbEntry": {
+        "requiredBlocks": [
+          "execution",
+          "link"
+        ],
+        "allowedBlocks": [
+          "appearance",
+          "execution",
+          "link"
+        ],
+        "appearance": {
+          "allowedProperties": [
+            "parentEntry"
+          ]
+        },
+        "execution": {
+          "allowedProperties": [
+            "sequence"
+          ]
+        },
+        "link": {
+          "allowedProperties": [
+            "target"
+          ],
+          "requiredProperties": [
+            "target"
+          ]
+        }
+      }
+    }
+  }
+}

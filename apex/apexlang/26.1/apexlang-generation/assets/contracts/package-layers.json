@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Progressive public-package layer contract. The public skill keeps one entrypoint while assets are grouped by load responsibility.",
+  "decision_order": [
+    "apexlang-core",
+    "apexlang-metadata",
+    "apexlang-patterns",
+    "apexlang-runtime"
+  ],
+  "trace_required": true,
+  "layers": [
+    {
+      "id": "apexlang-core",
+      "summary": "Router, workflow entrypoints, local context discovery, stop conditions, and import approval rules.",
+      "required_paths": ["SKILL.md", "assets/routing-catalog-main.json", "assets/routing-load-policy.json", "assets/workspace-intelligence.json"],
+      "load_policy": "always_first"
+    },
+    {
+      "id": "apexlang-metadata",
+      "summary": "Grammar, compiler property lookup tools, compiler-truth audit, and curated fallback component attributes.",
+      "required_paths": [
+        "assets/grammar/apexlang.ebnf",
+        "assets/contracts/grammar-semantic-rules.json",
+        "runtime/grammar_contract.mjs",
+        "tools/query-valid-props.mjs",
+        "tools/compiler-truth-audit.mjs",
+        "assets/component-attributes.json"
+      ],
+      "load_policy": "when_structural_legality_or_validation_is_needed",
+      "model_context_policy": "tool_results_only",
+      "runtime_only_paths": ["assets/grammar/apexlang.ebnf", "assets/component-attributes.json"],
+      "model_interfaces": ["tools/query-valid-props.mjs", "tools/compiler-truth-audit.mjs"]
+    },
+    {
+      "id": "apexlang-patterns",
+      "summary": "Structured page construction packs plus selected templates and domain references.",
+      "required_paths": [
+        "assets/contracts/page-patterns.json",
+        "assets/contracts/page-construction-packs.json",
+        "assets/apex-generation/components.registry.json",
+        "templates",
+        "references/domains/README.md"
+      ],
+      "load_policy": "when_generation_requires_page_or_app_pattern_selection",
+      "model_context_policy": "resolver_projection_only",
+      "model_interfaces": ["tools/apexctl.mjs context resolve"]
+    },
+    {
+      "id": "apexlang-runtime",
+      "summary": "SQLcl preflight, live validate/import gates, and failure repair loop references.",
+      "required_paths": ["references/ops/sqlcl.md", "references/ops/runtime-gates.md", "runtime/runtime.bundle.mjs", "assets/validator-fix-recipes.json"],
+      "load_policy": "when_live_db_or_runtime_validation_is_requested_or_required",
+      "model_context_policy": "projected_repair_results_only"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+listTemplate navigation-bar (
+    name: Navigation Bar
+    templateClass: pullDownMenu
+    list {
+        beforeEntries: <ul class="t-NavigationBar #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-NavigationBar-item is-active #A02#" aria-current="page">
+              <a class="t-Button t-Button--icon t-Button--header t-Button--navBar" href="#LINK#" title="#A04#" target="#A06#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true" #IMAGE_ATTR#></span><span class="t-Button-label">#TEXT_ESC_SC#</span><span class="t-Button-badge">#A01#</span>
+              </a>
+            </li>
+            ```
+        currentWithSublist:
+            ```html
+            <li class="t-NavigationBar-item is-active #A02#" aria-current="page">
+              <button class="t-Button t-Button--icon t-Button t-Button--header t-Button--navBar js-menuButton" type="button" id="#LIST_ITEM_ID#" data-menu="menu_#LIST_ITEM_ID#" title="#A04#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true" #IMAGE_ATTR#></span><span class="t-Button-label">#TEXT_ESC_SC#</span><span class="t-Button-badge">#A01#</span><span class="a-Icon icon-down-arrow" aria-hidden="true"></span>
+              </button>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-NavigationBar-item #A02#">
+              <a class="t-Button t-Button--icon t-Button--header t-Button--navBar" href="#LINK#" title="#A04#" target="#A06#">
+                <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true" #IMAGE_ATTR#></span><span class="t-Button-label">#TEXT_ESC_SC#</span><span class="t-Button-badge">#A01#</span>
+              </a>
+            </li>
+            ```
+        noncurrentWithSublist:
+            ```html
+            <li class="t-NavigationBar-item #A02#">
+              <button class="t-Button t-Button--icon t-Button t-Button--header t-Button--navBar js-menuButton" type="button" id="#LIST_ITEM_ID#" data-menu="menu_#LIST_ITEM_ID#" title="#A04#">
+                  <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true" #IMAGE_ATTR#></span><span class="t-Button-label">#TEXT_ESC_SC#</span><span class="t-Button-badge">#A01#</span><span class="a-Icon icon-down-arrow" aria-hidden="true"></span>
+              </button>
+            ```
+    }
+    sublist {
+        beforeEntries: <div class="t-NavigationBar-menu" style="display: none" id="menu_#PARENT_LIST_ITEM_ID#"><ul>
+        afterEntries: </ul></div></li>
+    }
+    sublistEntry {
+        current: <li class="#A02#" data-current="true" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        currentWithSublist: <li class="#A02#" data-current="true" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        noncurrent: <li class="#A02#" data-current="false" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        noncurrentWithSublist: <li class="#A02#" data-current="false" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+    }
+    attributeDescriptions {
+        a01: Badge Value
+        a02: List  Item CSS Classes
+        a04: Title Attribute
+        a06: Link Target
+    }
+    advanced {
+        identifier: NAVIGATION_BAR
+    }
+    subscription {
+        master: @navigation-bar
+    }
+
+    templateOption display-menu-callout (
+        name: Display Menu Callout
+        sequence: 10
+        appearance {
+            cssClasses: js-menu-callout
+        }
+        help {
+            helpText: Use this option to add display a callout for the menu.
+        }
+        advanced {
+            identifier: DISPLAY_MENU_CALLOUT
+        }
+    )
+
+)
+

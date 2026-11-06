@@ -1,0 +1,418 @@
+page 10054 (
+    name: Feedback
+    alias: FEEDBACK1
+    title: Feedback
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    css {
+        inline:
+            ```css
+            /* Color feedback rating icons */
+            .feedback-positive { color: var(--ut-feedback-positive-text-color, var(--ut-palette-success)); }
+            .feedback-neutral { color: var(--ut-feedback-neutral-text-color, var(--ut-palette-warning)); }
+            .feedback-negative { color: var(--ut-feedback-negative-text-color, var(--ut-palette-danger)); }
+            ```
+    }
+    security {
+        authorizationScheme: @administration-rights
+    }
+    config {
+        buildOption: @feature-feedback
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region form-items-region (
+        name: Form Items Region
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+    )
+
+    pageItem P10054_FEEDBACK (
+        type: displayOnly
+        label {
+            label: Feedback
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+        }
+    )
+
+    pageItem P10054_FEEDBACK_STATUS (
+        type: selectList
+        label {
+            label: Status
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @feedback-status
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 70
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+        }
+    )
+
+    pageItem P10054_FILED (
+        type: displayOnly
+        label {
+            label: Filed
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @optional-floating
+        }
+    )
+
+    pageItem P10054_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @form-items-region
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10054_PAGE_ID (
+        type: displayOnly
+        label {
+            label: Page
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+        }
+    )
+
+    pageItem P10054_RATING_ICON (
+        type: displayOnly
+        label {
+            label: Rating
+            alignment: left
+        }
+        settings {
+            format: htmlUnsafe
+        }
+        layout {
+            sequence: 40
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @optional-floating
+        }
+    )
+
+    pageItem P10054_RESPONSE (
+        type: textarea
+        label {
+            label: Response
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+            width: 64
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+    )
+
+    pageItem P10054_USER_AGENT (
+        type: displayOnly
+        label {
+            label: User Agent
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            region: @form-items-region
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional-floating
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P10054_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--gapLeft
+            ]
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process clear-page-s-cache (
+        name: Clear Page(s) Cache
+        type: clearSessionState
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 35749022693919376853
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 35749023016193376854
+        }
+    )
+
+    process delete-feedback (
+        name: Delete Feedback
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_util.delete_feedback (
+                    p_feedback_id => :P10054_ID );
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Feedback Deleted
+        }
+        advanced {
+            executionMappingIdentifier: 35749022297969376853
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+    )
+
+    process load-data (
+        name: Load Data
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                for l_feedback in (
+                   select page_id,
+                          page_name,
+                          case feedback_rating
+                                when 1 then '<span class="fa fa-frown-o feedback-negative" aria-hidden="true" title="Negative"></span>' 
+                                when 2 then '<span class="fa fa-emoji-neutral feedback-neutral" aria-hidden="true" title="Neutral"></span>'  
+                                when 3 then '<span class="fa fa-smile-o feedback-positive" aria-hidden="true" title="Positive"></span>' 
+                                end rating_icon,
+                          lower(created_by) || ' - ' || apex_util.get_since(created_on) filed,
+                          feedback,
+                          public_response,
+                          feedback_status,
+                          http_user_agent
+                     from apex_team_feedback
+                    where feedback_id = :P10054_ID )
+                loop
+                   :P10054_PAGE_ID         := l_feedback.page_id||'. '||l_feedback.page_name;
+                   :P10054_FILED           := l_feedback.filed;
+                   :P10054_RATING_ICON     := l_feedback.rating_icon;
+                   :P10054_FEEDBACK        := l_feedback.feedback;
+                   :P10054_RESPONSE        := l_feedback.public_response;
+                   :P10054_FEEDBACK_STATUS := l_feedback.feedback_status;
+                   :P10054_USER_AGENT      := l_feedback.http_user_agent;
+                end loop;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: afterHeader
+        }
+        advanced {
+            executionMappingIdentifier: 35749021491405376853
+        }
+    )
+
+    process reply-to-feedback (
+        name: Reply to Feedback
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_util.reply_to_feedback (
+                    p_feedback_id     => :P10054_ID,
+                    p_status          => :P10054_FEEDBACK_STATUS,
+                    p_public_response => :P10054_RESPONSE );
+                ```
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Action Processed.
+        }
+        advanced {
+            executionMappingIdentifier: 35749021881164376853
+        }
+        serverSideCondition {
+            whenButtonPressed: @save
+        }
+    )
+
+)
+

@@ -1,0 +1,110 @@
+listTemplate menu-bar (
+    name: Menu Bar
+    templateClass: pullDownMenu
+    templateOptions {
+        default: js-showSubMenuIcons
+    }
+    list {
+        beforeEntries: <div class="t-MenuBar #COMPONENT_CSS_CLASSES#" id="#PARENT_STATIC_ID#_menubar"><ul>
+        afterEntries: </ul></div>
+    }
+    entry {
+        current: <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        currentWithSublist: <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+        noncurrent: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        noncurrentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+    }
+    sublist {
+        beforeEntries: <ul>
+        afterEntries: </ul></li>
+    }
+    sublistEntry {
+        current: <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        currentWithSublist: <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+        noncurrent: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        noncurrentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+    }
+    javaScript {
+        executeWhenPageLoads:
+            ```javascript-browser
+            var e = apex.jQuery("##PARENT_STATIC_ID#_menubar", apex.gPageContext$);
+            if (e.hasClass("js-addActions")) {
+              apex.actions.addFromMarkup( e );
+            }
+            e.menu({
+              behaveLikeTabs: e.hasClass("js-tabLike"),
+              menubarShowSubMenuIcon: e.hasClass("js-showSubMenuIcons") || null,
+              iconType: 'fa',
+              menubar: true,
+              menubarOverflow: true,
+              callout: e.hasClass("js-menu-callout")
+            });
+            ```
+    }
+    attributeDescriptions {
+        a01: Menu Item ID / Action Name
+        a02: Disabled (True/False)
+        a03: Hidden (True/False)
+        a04: Title Attribute (Used By Actions Only)
+        a05: Shortcut
+        a06: Link Target
+    }
+    advanced {
+        identifier: MENU_BAR
+    }
+    subscription {
+        master: @menu-bar
+    }
+
+    templateOption add-actions (
+        name: Add Actions
+        sequence: 40
+        appearance {
+            cssClasses: js-addActions
+        }
+        help {
+            helpText: Use this option to add shortcuts for menu items. Note that actions.js must be included on your page to support this functionality.
+        }
+        advanced {
+            identifier: ADD_ACTIONS
+        }
+    )
+
+    templateOption behave-like-tabs (
+        name: Behave Like Tabs
+        sequence: 10
+        appearance {
+            cssClasses: js-tabLike
+        }
+        advanced {
+            identifier: BEHAVE_LIKE_TABS
+        }
+    )
+
+    templateOption display-menu-callout (
+        name: Display Menu Callout
+        sequence: 50
+        appearance {
+            cssClasses: js-menu-callout
+        }
+        help {
+            helpText: Use this option to add display a callout for the menu.
+        }
+        advanced {
+            identifier: DISPLAY_MENU_CALLOUT
+        }
+    )
+
+    templateOption show-sub-menu-icons (
+        name: Show Sub Menu Icons
+        sequence: 30
+        appearance {
+            cssClasses: js-showSubMenuIcons
+        }
+        advanced {
+            identifier: SHOW_SUB_MENU_ICONS
+        }
+    )
+
+)
+

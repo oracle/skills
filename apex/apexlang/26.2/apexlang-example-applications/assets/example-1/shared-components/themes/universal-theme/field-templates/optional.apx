@@ -1,0 +1,41 @@
+fieldTemplate optional (
+    name: Optional
+    templateClass: optionalLabel
+    label {
+        before:
+            ```html
+            <div class="t-Form-labelContainer col col-#LABEL_COLUMN_SPAN_NUMBER#">
+            <label for="#CURRENT_ITEM_NAME#" id="#LABEL_ID#" class="t-Form-label">
+            ```
+        after:
+            ```html
+            </label>
+            </div>
+            
+            ```
+    }
+    item {
+        before: <div class="t-Form-inputContainer col col-#ITEM_COLUMN_SPAN_NUMBER#"><div class="t-Form-itemWrapper">#ITEM_PRE_TEXT#
+        after: #ITEM_POST_TEXT##HELP_TEMPLATE#</div>#INLINE_HELP_TEMPLATE##ERROR_TEMPLATE#</div>
+        preText: <span class="t-Form-itemText t-Form-itemText--pre">#CURRENT_ITEM_PRE_TEXT#</span>
+        postText: <span class="t-Form-itemText t-Form-itemText--post">#CURRENT_ITEM_POST_TEXT#</span>
+    }
+    help {
+        invoke: <button class="t-Form-helpButton js-itemHelp" data-itemhelp="#CURRENT_ITEM_ID#" title="#CURRENT_ITEM_HELP_LABEL#" aria-label="#CURRENT_ITEM_HELP_LABEL#" tabindex="-1" type="button"><span class="a-Icon icon-help" aria-hidden="true"></span></button>
+        inline: <span class="t-Form-inlineHelp">#CURRENT_ITEM_INLINE_HELP_TEXT#</span>
+    }
+    error {
+        errorTemplate: <span class="t-Form-error">#ERROR_MESSAGE#</span>
+    }
+    fieldContainer {
+        beforeLabelAndItem: <div class="t-Form-fieldContainer rel-col #ITEM_CSS_CLASSES#" id="#CURRENT_ITEM_CONTAINER_ID#">
+        afterLabelAndItem: </div>
+    }
+    advanced {
+        identifier: OPTIONAL
+    }
+    subscription {
+        master: @optional
+    }
+)
+

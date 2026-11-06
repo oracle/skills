@@ -1,0 +1,12 @@
+lov oehr-customers-cust-first-name (
+    name: OEHR_CUSTOMERS.CUST_FIRST_NAME
+    source {
+        tableName: OEHR_CUSTOMERS
+    }
+    columnMapping {
+        return: CUSTOMER_ID
+        display: CUST_FIRST_NAME
+        defaultSort: CUST_FIRST_NAME
+    }
+)
+

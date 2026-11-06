@@ -1,0 +1,220 @@
+listTemplate side-navigation-menu (
+    name: Side Navigation Menu
+    templateClass: verticalSidebarList
+    templateOptions {
+        preset: [
+            js-navCollapsed--hidden
+            t-TreeNav--styleA
+        ]
+        default: js-defaultCollapsed
+    }
+    list {
+        beforeEntries:
+            ```html
+            <div class="t-Body-nav" id="t_Body_nav" role="navigation" aria-label="&"APP_TEXT$APEX.TEMPLATE.MAIN_NAV_LABEL".">
+              <div class="a-TreeView t-TreeNav #COMPONENT_CSS_CLASSES#" id="t_TreeNav" data-id="#PARENT_STATIC_ID#_tree" aria-label="&"APP_TEXT$APEX.TEMPLATE.MAIN_NAV_LABEL".">
+                <ul>
+            
+            ```
+        afterEntries:
+            ```html
+                </ul>
+              </div>
+            </div>
+            <script>(sessionStorage.getItem("ORA_WWV_apex.toggleCore.nav.&APP_ID..preferenceForExpanded") === "true" && window.matchMedia("(min-width: " + getComputedStyle(document.documentElement).getPropertyValue("--js-mq-lg") + ")").matches) && document.getElementById('t_PageBody').classList.add('js-navExpanded');</script>
+            <script>
+                const labels = document.querySelectorAll(".a-TreeView .a-TreeView-label");
+                for (const label of labels) {
+                    label.textContent = label.textContent.replaceAll(/\[(.*?)\]/ig, '');
+                }
+            </script>
+            ```
+    }
+    entry {
+        current:
+            ```html
+            <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#">
+              <a href="#LINK#" title="#A04#" style="display: none" target="#A06#">#TEXT_ESC_SC#</a>
+              <div class="a-TreeView-node a-TreeView-node--topLevel" aria-hidden="true">
+                <div role="none" class="a-TreeView-row is-selected is-current--top"></div>
+                <div role="none" class="a-TreeView-content is-selected is-current--top">
+                  <span class="fa fa-file-o #ICON_CSS_CLASSES#"></span>
+                  <span class="a-TreeView-label">#TEXT_ESC_SC#</span>
+                </div>
+              </div>
+            </li>
+            
+            ```
+        currentWithSublist:
+            ```html
+            <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#">
+              <a href="#LINK#" title="#A04#" style="display: none" target="#A06#">#TEXT_ESC_SC#</a>
+              <div class="a-TreeView-node a-TreeView-node--topLevel" aria-hidden="true">
+                <div role="none" class="a-TreeView-row is-selected is-current--top"></div>
+                <div role="none" class="a-TreeView-content is-selected is-current--top">
+                  <span class="fa fa-file-o #ICON_CSS_CLASSES#"></span>
+                  <span class="a-TreeView-label">#TEXT_ESC_SC#</span>
+                </div>
+              </div>
+            
+            ```
+        noncurrent:
+            ```html
+            <li data-current="false" data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#">
+              <a href="#LINK#" title="#A04#" style="display: none" target="#A06#">#TEXT_ESC_SC#</a>
+              <div class="a-TreeView-node a-TreeView-node--topLevel" aria-hidden="true">
+                <div role="none" class="a-TreeView-row"></div>
+                <div role="none" class="a-TreeView-content">
+                  <span class="fa fa-file-o #ICON_CSS_CLASSES#"></span>
+                  <span class="a-TreeView-label">#TEXT_ESC_SC#</span>
+                </div>
+              </div>
+            </li>
+            ```
+        noncurrentWithSublist:
+            ```html
+            <li data-current="false" data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#">
+              <a href="#LINK#" title="#A04#" style="display: none" target="#A06#">#TEXT_ESC_SC#</a>
+              <div class="a-TreeView-node a-TreeView-node--topLevel" aria-hidden="true">
+                <div role="none" class="a-TreeView-row"></div>
+                <div role="none" class="a-TreeView-content">
+                  <span class="fa fa-file-o #ICON_CSS_CLASSES#"></span>
+                  <span class="a-TreeView-label">#TEXT_ESC_SC#</span>
+                </div>
+              </div>
+            
+            ```
+    }
+    sublist {
+        beforeEntries: <ul style="display:none">
+        afterEntries: </ul></li>
+    }
+    sublistEntry {
+        current: <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        currentWithSublist: <li data-current="true" data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+        noncurrent: <li data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        noncurrentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-icon="#ICON_CSS_CLASSES#" data-shortcut="#A05#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+    }
+    javaScript {
+        fileUrls: #APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.treeView#MIN#.js?v=#APEX_VERSION#
+        executeWhenPageLoads: apex.jQuery('body').addClass('t-PageBody--leftNav');
+    }
+    attributeDescriptions {
+        a01: ID Attribute
+        a02: Disabled (True/False)
+        a04: Title Attribute (Used By Actions Only)
+        a05: Shortcut Key
+        a06: Link Target
+    }
+    advanced {
+        identifier: SIDE_NAVIGATION_MENU
+    }
+    subscription {
+        master: @side-navigation-menu
+    }
+
+    templateOption add-actions (
+        name: Add Actions
+        sequence: 1
+        appearance {
+            cssClasses: js-addActions
+        }
+        help {
+            helpText: Use this option to add shortcuts for menu items. Note that actions.js must be included on your page to support this functionality.
+        }
+        advanced {
+            identifier: ADD_ACTIONS
+        }
+    )
+
+    templateOption collapsed-default (
+        name: Collapsed by Default
+        sequence: 10
+        appearance {
+            cssClasses: js-defaultCollapsed
+        }
+        help {
+            helpText: This option will load the side navigation menu in a collapsed state by default.
+        }
+        advanced {
+            identifier: COLLAPSED_DEFAULT
+        }
+    )
+
+    templateOption collapse-style-hidden (
+        name: Hidden
+        group: @list/collapse-style
+        sequence: 20
+        appearance {
+            cssClasses: js-navCollapsed--hidden
+        }
+        help {
+            helpText: Completely hide the navigation menu when it is collapsed.
+        }
+        advanced {
+            identifier: COLLAPSE_STYLE_HIDDEN
+        }
+    )
+
+    templateOption icon-default (
+        name: Icon
+        group: @list/collapse-style
+        sequence: 10
+        appearance {
+            cssClasses: js-navCollapsed--default
+        }
+        help {
+            helpText: Display icons when the navigation menu is collapsed for large screens.
+        }
+        advanced {
+            identifier: ICON_DEFAULT
+        }
+    )
+
+    templateOption style-a (
+        name: Style A
+        group: @list/style
+        sequence: 20
+        appearance {
+            cssClasses: t-TreeNav--styleA
+        }
+        help {
+            helpText: Style Variation A
+        }
+        advanced {
+            identifier: STYLE_A
+        }
+    )
+
+    templateOption style-b (
+        name: Style B
+        group: @list/style
+        sequence: 30
+        appearance {
+            cssClasses: t-TreeNav--styleB
+        }
+        help {
+            helpText: Style Variation B
+        }
+        advanced {
+            identifier: STYLE_B
+        }
+    )
+
+    templateOption style-c (
+        name: Classic
+        group: @list/style
+        sequence: 10
+        appearance {
+            cssClasses: t-TreeNav--classic
+        }
+        help {
+            helpText: Classic Style
+        }
+        advanced {
+            identifier: STYLE_C
+        }
+    )
+
+)
+

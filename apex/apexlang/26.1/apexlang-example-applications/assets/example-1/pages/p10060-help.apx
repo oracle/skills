@@ -1,0 +1,45 @@
+page 10060 (
+    name: About
+    alias: HELP
+    title: About
+    pageGroup: @administration
+    appearance {
+        pageTemplate: @standard
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: All application help text can be accessed from this page. The links in the "Documentation" region give a much more in-depth explanation of the application's features and functionality.
+    }
+    config {
+        buildOption: @feature-about-page
+    }
+
+    region about-page (
+        name: About Page
+        type: staticContent
+        source {
+            htmlCode: This application was generated directly from Sample Datasets. Go to SQL Workshop > Utilities > Sample Datasets to install tables and then create an application based on those tables.
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--padded
+                t-ContentBlock--h1
+                t-ContentBlock--lightBG
+            ]
+        }
+    )
+
+)
+

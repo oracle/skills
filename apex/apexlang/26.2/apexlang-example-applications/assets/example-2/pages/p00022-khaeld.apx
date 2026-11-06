@@ -1,0 +1,603 @@
+page 22 (
+    name: khaeld
+    alias: KHAELD
+    title: khaeld
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+
+    region button-bar (
+        name: Button Bar
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noUI
+            ]
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P22_FILE
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region data-source (
+        name: Data Source
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--noUI
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region loaded-file (
+        name: Loaded File
+        type: staticContent
+        layout {
+            sequence: 40
+            parentRegion: @data-source
+            slot: regionBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P22_FILE
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region preview (
+        name: Preview
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select p.line_number,
+                       p.col001, p.col002, p.col003, p.col004, p.col005, p.col006, p.col007, p.col008, p.col009, p.col010
+                       -- add more columns (col011 to col300) here.
+                  from apex_application_temp_files f, 
+                       table( apex_data_parser.parse(
+                                  p_content           => f.blob_content,
+                                  p_file_name         => f.filename,
+                                  p_xlsx_sheet_name   => case when :P22_XLSX_WORKSHEET is not null then :P22_XLSX_WORKSHEET end,
+                                  p_file_profile      => apex_data_loading.get_file_profile( p_static_id => 'khaled' ),
+                                  p_max_rows          => 100 ) ) p
+                 where f.name = :P22_FILE
+                ```
+        }
+        layout {
+            sequence: 50
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+            ]
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P22_FILE
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--horizontalBorders
+                t-Report--hideNoPagination
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: no data found
+        }
+        heading {
+            type: none
+        }
+
+        column COL001 (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Col001
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL002 (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Col002
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL003 (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Col003
+            }
+            layout {
+                sequence: 4
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL004 (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Col004
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL005 (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Col005
+            }
+            layout {
+                sequence: 6
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL006 (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Col006
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL007 (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Col007
+            }
+            layout {
+                sequence: 8
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL008 (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: Col008
+            }
+            layout {
+                sequence: 9
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL009 (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Col009
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column COL010 (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: Col010
+            }
+            layout {
+                sequence: 11
+            }
+            sorting {
+                defaultSequence: 1
+                sortable: false
+            }
+        )
+
+        column LINE_NUMBER (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Line Number
+                alignment: end
+            }
+            layout {
+                sequence: 1
+                columnAlignment: end
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region upload-a-file (
+        name: Upload a File
+        type: staticContent
+        layout {
+            sequence: 30
+            parentRegion: @data-source
+            slot: regionBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P22_FILE
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    pageItem P22_ERROR_ROW_COUNT (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @upload-a-file
+            slot: regionBody
+        }
+    )
+
+    pageItem P22_FILE (
+        type: fileUpload
+        label {
+            label: Upload a File
+            alignment: left
+        }
+        display {
+            displayAs: blockDropzone
+            dropzoneDesc: Supported formats XLSX
+        }
+        storage {
+            type: appTempFiles
+            maxFileSize: 5000
+        }
+        layout {
+            sequence: 10
+            region: @upload-a-file
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 0
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--stretchInputs
+            ]
+        }
+    )
+
+    pageItem P22_FILE_NAME (
+        type: displayOnly
+        label {
+            label: Loaded File
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @loaded-file
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        default {
+            type: static
+            staticValue: Pasted Data
+        }
+    )
+
+    pageItem P22_XLSX_WORKSHEET (
+        type: selectList
+        label {
+            label: XLSX Worksheet
+            alignment: left
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select p.sheet_display_name,
+                       p.sheet_file_name
+                  from apex_application_temp_files f,
+                       table( apex_data_parser.get_xlsx_worksheets( p_content => f.blob_content ) ) p
+                 where f.name = :P22_FILE
+                ```
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 30
+            region: @loaded-file
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        serverSideCondition {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                declare
+                    l_sheet_count number;
+                begin
+                    select count(*)
+                      into l_sheet_count
+                      from apex_application_temp_files f,
+                           table( apex_data_parser.get_xlsx_worksheets( p_content => f.blob_content ) ) p
+                     where f.name = :P22_FILE;
+                    
+                     -- display if the XSLX file contains multiple worksheets
+                    return ( l_sheet_count > 1 );
+                exception
+                    when others then 
+                        return false;
+                end;
+                ```
+        }
+    )
+
+    button clear (
+        buttonName: CLEAR
+        label: Clear
+        layout {
+            sequence: 10
+            region: @button-bar
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button load (
+        buttonName: LOAD
+        label: Load Data
+        layout {
+            sequence: 20
+            region: @button-bar
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction submit-worksheet-on-change (
+        name: Submit worksheet on change
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P22_XLSX_WORKSHEET
+        }
+
+        action native-submit-page (
+            action: submitPage
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction upload-a-file (
+        name: Upload a File
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P22_FILE
+        }
+        clientSideCondition {
+            type: itemIsNotNull
+            item: P22_FILE
+        }
+
+        action native-submit-page (
+            action: submitPage
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation is-valid-file-type (
+        name: Is valid file type
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: functionBodyReturningBoolean
+            plsqlFunctionBody:
+                ```plsql
+                if apex_data_parser.assert_file_type(
+                       p_file_name => :P22_FILE_NAME,
+                       p_file_type => apex_data_parser.c_file_type_xlsx )
+                then
+                    return true;
+                else
+                    :P22_FILE := null;
+                    return false;
+                end if;
+                ```
+        }
+        error {
+            errorMessage: Invalid file type. Supported file types XLSX.
+            associatedItem: @P22_FILE
+        }
+    )
+
+    computation p22-file-name (
+        itemName: P22_FILE_NAME
+        execution {
+            sequence: 10
+            point: afterSubmit
+        }
+        computation {
+            sqlQuery:
+                ```sql
+                select filename
+                  from apex_application_temp_files 
+                 where name = :P22_FILE
+                ```
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P22_FILE
+        }
+    )
+
+    process clear-cache (
+        name: Clear Cache
+        type: clearSessionState
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 63135810169419857672
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :REQUEST = 'CLEAR' or :P22_ERROR_ROW_COUNT = 0
+        }
+    )
+
+    process load-data (
+        name: Load Data
+        type: dataLoading
+        dataLoading {
+            dataLoadDefinition: @khaled
+        }
+        sourceData {
+            fileBrowseItem: P22_FILE
+            xlsxSheetNameItem: P22_XLSX_WORKSHEET
+        }
+        processingResult {
+            errorRowCountItem: P22_ERROR_ROW_COUNT
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 63135809795090857672
+        }
+        serverSideCondition {
+            whenButtonPressed: @load
+        }
+    )
+
+)
+

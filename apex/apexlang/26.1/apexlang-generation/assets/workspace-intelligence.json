@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "package_profile": "public-product",
+  "discovery_boundary": {
+    "mode": "current_session_directory",
+    "allow_root_redefinition": false,
+    "allow_paths_outside_session": false
+  },
+  "app_discovery": {
+    "standard_root": "applications",
+    "marker_files": [
+      "application.apx"
+    ],
+    "marker_directories": [
+      ".apex",
+      "pages",
+      "shared-components"
+    ],
+    "missing_standard_root_policy": "ask_for_exact_app_directory_or_bounded_scan_root",
+    "nonstandard_candidate_policy": "ask_user_to_confirm_before_app_scoped_reads_or_edits",
+    "empty_standard_root_policy": "allow_create_new_in_standard_root_when_authoritative_context_present"
+  },
+  "source_classes": [
+    "table_metadata",
+    "data_model",
+    "api_contract",
+    "requirements",
+    "live_db"
+  ],
+  "source_precedence": [
+    "table_metadata",
+    "data_model",
+    "api_contract",
+    "requirements",
+    "live_db"
+  ],
+  "root_candidates": {
+    "table_metadata": [
+      "table-metadata/"
+    ],
+    "data_model": [
+      "dm/",
+      "data-model/",
+      "data-models/",
+      "data-modeler/"
+    ],
+    "api_contract": [
+      "openapi/",
+      "apis/",
+      "api/",
+      "contracts/"
+    ],
+    "requirements": [
+      "specs/",
+      "requirements/"
+    ]
+  },
+  "bounded_scan": {
+    "enabled": true,
+    "max_depth": 4,
+    "excluded_directories": [
+      ".git",
+      ".vscode",
+      "node_modules",
+      "dist",
+      "build",
+      "coverage",
+      ".next",
+      ".turbo",
+      "artifacts",
+      "apex-exports"
+    ],
+    "allowed_extensions": [
+      ".json",
+      ".yaml",
+      ".yml",
+      ".md",
+      ".sql",
+      ".xml"
+    ],
+    "recognizers": {
+      "table_metadata": [
+        "structured-metadata-json",
+        "structured-metadata-yaml",
+        "schema-dictionary-markdown"
+      ],
+      "data_model": [
+        "ddl-table-view-sql",
+        "entity-model-json",
+        "entity-model-yaml"
+      ],
+      "api_contract": [
+        "openapi-json",
+        "openapi-yaml",
+        "postman-collection-json"
+      ],
+      "requirements": [
+        "requirements-markdown",
+        "spec-markdown"
+      ]
+    }
+  },
+  "authoritative_evidence_rules": {
+    "table_metadata": [
+      "structured object/column extracts",
+      "verified schema dictionaries"
+    ],
+    "data_model": [
+      "structured model exports with object fields"
+    ],
+    "api_contract": [
+      "openapi",
+      "postman",
+      "structured endpoint manifests"
+    ],
+    "live_db": [
+      "dictionary metadata"
+    ],
+    "supporting_only": [
+      "requirements",
+      "prose-only notes"
+    ]
+  },
+  "hard_stop_conditions": [
+    "do not infer schema or api shape from prose alone",
+    "do not scan outside current session directory",
+    "do not use artifacts or apex-exports directories as source context",
+    "when app-scoped work is requested and no app root is resolved, ask for the exact app directory or bounded scan root",
+    "when only nonstandard app roots are found, ask the user to confirm the target app before reads or edits",
+    "stop when same-rank authoritative sources conflict",
+    "stop when verified db-backed output lacks authoritative object and column evidence"
+  ],
+  "db_prompt_flow": {
+    "prompt_mode": "discovery_first_connection_flow",
+    "interactive_only": true,
+    "discovery_steps": [
+      "inspect_offline_schema_registry",
+      "scan_saved_sqlcl_connections"
+    ],
+    "metadata_preference": "prefer_authoritative_offline_context",
+    "required_live_inputs": [
+      "db_connection_name"
+    ],
+    "auto_bind_single_saved_connection": true,
+    "manual_entry": {
+      "input_name": "db_connection_name",
+      "prompt": "Provide db_connection_name because no usable saved SQLcl connection could be resolved."
+    },
+    "workspace_prompt": {
+      "input_name": "apex_workspace_name",
+      "context_field": "db_context.workspace.name",
+      "prompt": "Choose the workspace reported by the active runtime when it cannot resolve a unique workspace."
+    },
+    "multiple_connection_prompt": {
+      "source": "saved_sqlcl_connections",
+      "prompt_mode": "select_from_list",
+      "empty_list_prompt": "No saved SQLcl connections were found. Provide db_connection_name if live DB context is still required, or continue only with authoritative offline metadata."
+    },
+    "offline_override": {
+      "prompt_mode": "explicit_opt_in",
+      "note": "Offline mode is selected only when the user explicitly asks for offline-only execution."
+    },
+    "offline_behavior": {
+      "disables_live_metadata_validation": true,
+      "disables_apex_validate": true,
+      "disables_apex_import": true
+    },
+    "workspace_selection": {
+      "prompt_mode": "runtime_ambiguity_or_new_app_only",
+      "persistence": "session_context_only",
+      "context_path": "APEXLANG_OUTPUT_ROOT/context-resolution.json",
+      "context_field": "db_context.workspace",
+      "materialization_behavior": "new-app materialize requires --workspace-name or session context populated from the user-provided workspace name"
+    }
+  }
+}
