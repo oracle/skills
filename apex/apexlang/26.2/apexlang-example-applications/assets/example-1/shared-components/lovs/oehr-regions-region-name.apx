@@ -1,0 +1,12 @@
+lov oehr-regions-region-name (
+    name: OEHR_REGIONS.REGION_NAME
+    source {
+        tableName: OEHR_REGIONS
+    }
+    columnMapping {
+        return: REGION_ID
+        display: REGION_NAME
+        defaultSort: REGION_NAME
+    }
+)
+

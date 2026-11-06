@@ -1,0 +1,101 @@
+buttonTemplate text-with-icon (
+    name: Text with Icon
+    templateClass: buttonAlternative1
+    templateOptions {
+        preset: t-Button--iconLeft
+    }
+    button {
+        normal: <button class="t-Button t-Button--icon #BUTTON_CSS_CLASSES#" #BUTTON_ATTRIBUTES# onclick="#JAVASCRIPT#" type="button" id="#BUTTON_ID#"><span class="t-Icon t-Icon--left #ICON_CSS_CLASSES#" aria-hidden="true"></span><span class="t-Button-label">#LABEL#</span><span class="t-Icon t-Icon--right #ICON_CSS_CLASSES#" aria-hidden="true"></span></button>
+        hot: <button class="t-Button t-Button--icon #BUTTON_CSS_CLASSES# t-Button--hot" #BUTTON_ATTRIBUTES# onclick="#JAVASCRIPT#" type="button" id="#BUTTON_ID#"><span class="t-Icon t-Icon--left #ICON_CSS_CLASSES#" aria-hidden="true"></span><span class="t-Button-label">#LABEL#</span><span class="t-Icon t-Icon--right #ICON_CSS_CLASSES#" aria-hidden="true"></span></button>
+    }
+    advanced {
+        identifier: TEXT_WITH_ICON
+    }
+    subscription {
+        master: @text-with-icon
+    }
+
+    templateOption hide-icon-on-desktop (
+        name: Hide Icon on Desktop
+        sequence: 20
+        appearance {
+            cssClasses: t-Button--desktopHideIcon
+        }
+        help {
+            helpText: This template options hides the button icon on large screens.
+        }
+        advanced {
+            identifier: HIDE_ICON_ON_DESKTOP
+        }
+    )
+
+    templateOption hide-label-on-mobile (
+        name: Hide Label on Mobile
+        sequence: 10
+        appearance {
+            cssClasses: t-Button--mobileHideLabel
+        }
+        help {
+            helpText: This template options hides the button label on small screens.
+        }
+        advanced {
+            identifier: HIDE_LABEL_ON_MOBILE
+        }
+    )
+
+    templateOption push (
+        name: Push
+        group: @button/icon-hover-animation
+        sequence: 20
+        appearance {
+            cssClasses: t-Button--hoverIconPush
+        }
+        help {
+            helpText: The icon will animate to the right or left on button hover or focus.
+        }
+        advanced {
+            identifier: PUSH
+        }
+    )
+
+    templateOption spin (
+        name: Spin
+        group: @button/icon-hover-animation
+        sequence: 10
+        appearance {
+            cssClasses: t-Button--hoverIconSpin
+        }
+        help {
+            helpText: The icon will spin on button hover or focus.
+        }
+        advanced {
+            identifier: SPIN
+        }
+    )
+
+    templateOption lefticon (
+        name: Left
+        group: @button/icon-position
+        sequence: 10
+        appearance {
+            cssClasses: t-Button--iconLeft
+        }
+        advanced {
+            identifier: LEFTICON
+        }
+    )
+
+    templateOption righticon (
+        name: Right
+        group: @button/icon-position
+        sequence: 20
+        appearance {
+            cssClasses: t-Button--iconRight
+        }
+        advanced {
+            identifier: RIGHTICON
+        }
+    )
+
+)
+

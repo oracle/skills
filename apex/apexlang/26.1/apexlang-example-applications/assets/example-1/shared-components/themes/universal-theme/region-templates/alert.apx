@@ -1,0 +1,285 @@
+regionTemplate alert (
+    name: Alert
+    templateClass: custom1
+    templateOptions {
+        preset: [
+            t-Alert--horizontal
+            t-Alert--defaultIcons
+            t-Alert--warning
+        ]
+    }
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" class="t-Alert #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>
+              <div class="t-Alert-wrap">
+                <div class="t-Alert-icon">
+                  <span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span>
+                </div>
+                <div class="t-Alert-content">
+                  <div class="t-Alert-header">
+                    <h2 class="t-Alert-title" id="#REGION_STATIC_ID#_heading" data-apex-heading>#TITLE#</h2>
+                  </div>
+                  <div class="t-Alert-body">#BODY##SUB_REGIONS#</div>
+                </div>
+                <div class="t-Alert-buttons">#PREVIOUS##CLOSE##CREATE##NEXT#</div>
+              </div>
+            </div>
+            ```
+    }
+    advanced {
+        identifier: ALERT
+    }
+    subscription {
+        master: @alert
+    }
+
+    templateOption coloredbackground (
+        name: Highlight Background
+        sequence: 1
+        appearance {
+            cssClasses: t-Alert--colorBG
+        }
+        help {
+            helpText: Set alert background color to that of the alert type (warning, success, etc.)
+        }
+        advanced {
+            identifier: COLOREDBACKGROUND
+        }
+    )
+
+    templateOption horizontal (
+        name: Horizontal
+        group: @region/alert-display
+        sequence: 10
+        appearance {
+            cssClasses: t-Alert--horizontal
+        }
+        help {
+            helpText: Show horizontal alert with buttons to the right.
+        }
+        advanced {
+            identifier: HORIZONTAL
+        }
+    )
+
+    templateOption wizard (
+        name: Wizard
+        group: @region/alert-display
+        sequence: 20
+        appearance {
+            cssClasses: t-Alert--wizard
+        }
+        help {
+            helpText: Show the alert in a wizard style region.
+        }
+        advanced {
+            identifier: WIZARD
+        }
+    )
+
+    templateOption hide-icons (
+        name: Hide Icons
+        group: @region/alert-icons
+        sequence: 10
+        appearance {
+            cssClasses: t-Alert--noIcon
+        }
+        help {
+            helpText: Hides alert icons
+        }
+        advanced {
+            identifier: HIDE_ICONS
+        }
+    )
+
+    templateOption show-custom-icons (
+        name: Show Custom Icons
+        group: @region/alert-icons
+        sequence: 30
+        appearance {
+            cssClasses: t-Alert--customIcons
+        }
+        help {
+            helpText: Set custom icons by modifying the Alert Region's Icon CSS Classes property.
+        }
+        advanced {
+            identifier: SHOW_CUSTOM_ICONS
+        }
+    )
+
+    templateOption usedefaulticons (
+        name: Show Default Icons
+        group: @region/alert-icons
+        sequence: 20
+        appearance {
+            cssClasses: t-Alert--defaultIcons
+        }
+        help {
+            helpText: Uses default icons for alert types.
+        }
+        advanced {
+            identifier: USEDEFAULTICONS
+        }
+    )
+
+    templateOption hiddenheader (
+        name: Hidden but Accessible
+        group: @region/alert-title
+        sequence: 20
+        appearance {
+            cssClasses: t-Alert--accessibleHeading
+        }
+        help {
+            helpText: Visually hides the alert title, but assistive technologies can still read it.
+        }
+        advanced {
+            identifier: HIDDENHEADER
+        }
+    )
+
+    templateOption hiddenheadernoat (
+        name: Hidden
+        group: @region/alert-title
+        sequence: 10
+        appearance {
+            cssClasses: [
+                t-Alert--removeHeading
+                js-removeLandmark
+            ]
+        }
+        help {
+            helpText: Hides the Alert Title from being displayed.
+        }
+        advanced {
+            identifier: HIDDENHEADERNOAT
+        }
+    )
+
+    templateOption danger (
+        name: Danger
+        group: @region/alert-type
+        sequence: 20
+        appearance {
+            cssClasses: t-Alert--danger
+        }
+        help {
+            helpText: Show an error or danger alert.
+        }
+        advanced {
+            identifier: DANGER
+        }
+    )
+
+    templateOption information (
+        name: Information
+        group: @region/alert-type
+        sequence: 30
+        appearance {
+            cssClasses: t-Alert--info
+        }
+        help {
+            helpText: Show informational alert.
+        }
+        advanced {
+            identifier: INFORMATION
+        }
+    )
+
+    templateOption success (
+        name: Success
+        group: @region/alert-type
+        sequence: 40
+        appearance {
+            cssClasses: t-Alert--success
+        }
+        help {
+            helpText: Show success alert.
+        }
+        advanced {
+            identifier: SUCCESS
+        }
+    )
+
+    templateOption warning (
+        name: Warning
+        group: @region/alert-type
+        sequence: 10
+        appearance {
+            cssClasses: t-Alert--warning
+        }
+        help {
+            helpText: Show a warning alert.
+        }
+        advanced {
+            identifier: WARNING
+        }
+    )
+
+    slot close (
+        name: Close
+        staticId: CLOSE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot create (
+        name: Create
+        staticId: CREATE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+        gridLayout {
+            maxFixedColumns: 12
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

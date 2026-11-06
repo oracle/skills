@@ -1,0 +1,7 @@
+interface:
+  display_name: "Oracle Data Guard"
+  short_description: "Diagnose and tune SQLcl Data Guard"
+  default_prompt: "Use $oracle-data-guard to assess this Oracle Data Guard question and provide the appropriate operational guidance."
+
+policy:
+  allow_implicit_invocation: true

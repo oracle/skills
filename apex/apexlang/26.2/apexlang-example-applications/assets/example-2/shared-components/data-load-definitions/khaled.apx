@@ -1,0 +1,42 @@
+dataLoadDefinition khaled (
+    name: khaled
+    target {
+        tableName: C1
+    }
+    advanced {
+        commitInterval: 200
+    }
+    dataProfile {
+        name: khaled
+        format: xlsx
+    }
+    advanced {
+        encoding: utf-8
+        defaultXlsxSheetName: sheet1.xml
+    }
+
+    dataProfileColumn id (
+        columnName: ID
+        source {
+            sequence: 1
+            dataType: number
+        }
+        parsing {
+            selector: BLOODGRPID
+        }
+    )
+
+    dataProfileColumn name (
+        columnName: NAME
+        source {
+            sequence: 2
+            dataType: varchar2
+            maxLength: 100
+        }
+        parsing {
+            selector: SEX
+        }
+    )
+
+)
+

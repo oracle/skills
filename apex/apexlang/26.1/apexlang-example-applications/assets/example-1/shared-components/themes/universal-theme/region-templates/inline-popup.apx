@@ -1,0 +1,300 @@
+regionTemplate inline-popup (
+    name: Inline Popup
+    templateClass: custom4
+    templateOptions {
+        preset: js-dialog-size600x400
+    }
+    region {
+        template:
+            ```html
+            <div id="#REGION_STATIC_ID#_parent">
+            <div id="#REGION_STATIC_ID#" class="t-DialogRegion #REGION_CSS_CLASSES# js-regionPopup" #REGION_ATTRIBUTES# style="display:none" title="#TITLE!ATTR#">
+              <div class="t-DialogRegion-wrap">
+                <div class="t-DialogRegion-bodyWrapperOut"><div class="t-DialogRegion-bodyWrapperIn"><div class="t-DialogRegion-body">#BODY##SUB_REGIONS#</div></div></div>
+                <div class="t-DialogRegion-buttons">
+                   <div class="t-ButtonRegion t-ButtonRegion--dialogRegion">
+                     <div class="t-ButtonRegion-wrap">
+                       <div class="t-ButtonRegion-col t-ButtonRegion-col--left"><div class="t-ButtonRegion-buttons">#PREVIOUS##DELETE##CLOSE#</div></div>
+                       <div class="t-ButtonRegion-col t-ButtonRegion-col--right"><div class="t-ButtonRegion-buttons">#EDIT##CREATE##NEXT#</div></div>
+                     </div>
+                   </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            ```
+    }
+    advanced {
+        identifier: INLINE_POPUP
+    }
+    subscription {
+        master: @inline-popup
+    }
+
+    templateOption auto-height-inline-dialog (
+        name: Auto Height
+        sequence: 1
+        appearance {
+            cssClasses: js-dialog-autoheight
+        }
+        help {
+            helpText: This option will set the height of the dialog to fit its contents.
+        }
+        advanced {
+            identifier: AUTO_HEIGHT_INLINE_DIALOG
+        }
+    )
+
+    templateOption display-popup-callout (
+        name: Display Popup Callout
+        sequence: 40
+        appearance {
+            cssClasses: js-popup-callout
+        }
+        help {
+            helpText: Use this option to add display a callout for the popup. Note that callout will only be displayed if the data-parent-element custom attribute is defined.
+        }
+        advanced {
+            identifier: DISPLAY_POPUP_CALLOUT
+        }
+    )
+
+    templateOption remove-body-padding (
+        name: Remove Body Padding
+        sequence: 20
+        appearance {
+            cssClasses: t-DialogRegion--noPadding
+        }
+        help {
+            helpText: Removes the padding around the region body.
+        }
+        advanced {
+            identifier: REMOVE_BODY_PADDING
+        }
+    )
+
+    templateOption remove-page-overlay (
+        name: Remove Page Overlay
+        sequence: 30
+        appearance {
+            cssClasses: js-popup-noOverlay
+        }
+        help {
+            helpText: This option will display the inline dialog without an overlay on the background.
+        }
+        advanced {
+            identifier: REMOVE_PAGE_OVERLAY
+        }
+    )
+
+    templateOption above (
+        name: Above
+        group: @region/callout-position
+        sequence: 30
+        appearance {
+            cssClasses: js-popup-pos-above
+        }
+        help {
+            helpText: Positions the callout above or typically on top of the parent.
+        }
+        advanced {
+            identifier: ABOVE
+        }
+    )
+
+    templateOption after (
+        name: After
+        group: @region/callout-position
+        sequence: 20
+        appearance {
+            cssClasses: js-popup-pos-after
+        }
+        help {
+            helpText: Positions the callout after or typically to the right of the parent.
+        }
+        advanced {
+            identifier: AFTER
+        }
+    )
+
+    templateOption before (
+        name: Before
+        group: @region/callout-position
+        sequence: 10
+        appearance {
+            cssClasses: js-popup-pos-before
+        }
+        help {
+            helpText: Positions the callout before or typically to the left of the parent.
+        }
+        advanced {
+            identifier: BEFORE
+        }
+    )
+
+    templateOption below (
+        name: Below
+        group: @region/callout-position
+        sequence: 40
+        appearance {
+            cssClasses: js-popup-pos-below
+        }
+        help {
+            helpText: Positions the callout below or typically to the bottom of the parent.
+        }
+        advanced {
+            identifier: BELOW
+        }
+    )
+
+    templateOption inside (
+        name: Inside
+        group: @region/callout-position
+        sequence: 50
+        appearance {
+            cssClasses: js-popup-pos-inside
+        }
+        help {
+            helpText: Positions the callout inside of the parent. This is useful when the parent is sufficiently large, such as a report or large region.
+        }
+        advanced {
+            identifier: INSIDE
+        }
+    )
+
+    templateOption large-720x480 (
+        name: Large (720x480)
+        group: @region/dialog-size
+        sequence: 30
+        appearance {
+            cssClasses: js-dialog-size720x480
+        }
+        advanced {
+            identifier: LARGE_720X480
+        }
+    )
+
+    templateOption medium-600x400 (
+        name: Medium (600x400)
+        group: @region/dialog-size
+        sequence: 20
+        appearance {
+            cssClasses: js-dialog-size600x400
+        }
+        advanced {
+            identifier: MEDIUM_600X400
+        }
+    )
+
+    templateOption none (
+        name: None
+        group: @region/dialog-size
+        sequence: 1
+        appearance {
+            cssClasses: js-dialog-nosize
+        }
+        advanced {
+            identifier: NONE
+        }
+    )
+
+    templateOption small-480x320 (
+        name: Small (480x320)
+        group: @region/dialog-size
+        sequence: 10
+        appearance {
+            cssClasses: js-dialog-size480x320
+        }
+        advanced {
+            identifier: SMALL_480X320
+        }
+    )
+
+    slot close (
+        name: Close
+        staticId: CLOSE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot create (
+        name: Create
+        staticId: CREATE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot delete (
+        name: Delete
+        staticId: DELETE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot edit (
+        name: Edit
+        staticId: EDIT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

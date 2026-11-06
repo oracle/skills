@@ -2,34 +2,58 @@
 
 ## Overview
 
-Oracle Data Provider for .NET (ODP.NET) is the official Oracle driver for .NET applications. Two packages are available:
+Oracle Data Provider for .NET (ODP.NET) is the official Oracle Database driver for .NET and C# applications. Three packages are available:
 
 | Package | Description |
-|---------|-------------|
-| `Oracle.ManagedDataAccess.Core` | Managed driver — pure .NET, no Oracle Client required. Recommended for most scenarios. |
-| `Oracle.DataAccess` | Unmanaged driver — requires Oracle Client installation. Needed for advanced features (AQ, Sharding). |
+| ------- | ----------- |
+| `Oracle.ManagedDataAccess.Core` | ODP.NET Core — pure .NET, no Oracle Client required for multi-platform .NET (Core). Recommended and most popular. |
+| `Oracle.ManagedDataAccess` | Managed ODP.NET — pure .NET, no Oracle Client required. Recommended for .NET Framework on Windows apps. |
+| `Oracle.DataAccess` | Unmanaged ODP.NET — requires Oracle Client installation. For .NET Framework on Windows apps. Deprecated in version 26ai. |
+
+ODP.NET Core and managed ODP.NET can be installed from NuGet Gallery.
 
 ```bash
-# NuGet — Managed driver (.NET 6+)
+# Add ODP.NET Core via NuGet
 dotnet add package Oracle.ManagedDataAccess.Core
 
-# Entity Framework Core provider
-dotnet add package Oracle.EntityFrameworkCore
+# Add managed ODP.NET via NuGet
+dotnet add package Oracle.ManagedDataAccess
 ```
+
+Popular optional ODP.NET packages include:
+
+| Package | Description |
+| ------- | ----------- |
+| `Oracle.EntityFrameworkCore` | ODP.NET Entity Framework Core is a cross-platform object-relational mapper for Oracle Database. Requires ODP.NET Core. |
+| `Oracle.ManagedDataAccess.EntityFramework` | ODP.NET Entity Framework 6 is a .NET Framework object-relational mapper for Oracle Database. Requires managed ODP.NET. |
+| `Oracle.ManagedDataAccess.OpenTelemetry` | ODP.NET Extension for OpenTelemetry creates and publishes ODP.NET traces to an OpenTelemetry collector. Available with ODP.NET Core managed ODP.NET. |
+
+```bash
+# Add ODP.NET Entity Framework Core via NuGet
+dotnet add package Oracle.EntityFrameworkCore
+
+# Add ODP.NET Entity Framework via NuGet
+dotnet add package Oracle.ManagedDataAccess.EntityFramework
+
+# Add ODP.NET OpenTelemetry via NuGet
+dotnet add package Oracle.ManagedDataAccess.OpenTelemetry
+```
+
+The example code below uses or builds upon the Oracle HR sample schema.
 
 ---
 
 ## Connecting
 
-### Basic Connection
+### Basic Connection to On-Premises Oracle Database
 
 ```csharp
 using Oracle.ManagedDataAccess.Client;
 
-// Easy Connect
+// Easy Connect connecting to Oracle AI Database Free
 string connStr = "User Id=hr;Password=password;Data Source=localhost:1521/freepdb1;";
 
-// Alternatives:
+// Alternatives to connect using a net service alias and connect descriptor 
 // connStr = "User Id=hr;Password=password;Data Source=mydb_high;";
 // connStr = "User Id=hr;Password=password;" +
 //     "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))" +
@@ -44,16 +68,16 @@ var result = cmd.ExecuteScalar();
 Console.WriteLine(result);
 ```
 
-### Wallet / mTLS (Autonomous Database)
+### Basic Connection to Oracle Autonomous AI Database using a wallet and mTLS
 
 ```csharp
-// Set TNS_ADMIN to wallet directory (contains tnsnames.ora, sqlnet.ora, cwallet.sso)
+// Set TNS_ADMIN to wallet directory containing tnsnames.ora, sqlnet.ora, cwallet.sso files
 string connStr = "User Id=admin;Password=password;Data Source=myatp_high;" +
-    "Connection Timeout=30;";
+    "Connection Timeout=120;";
 
-// Configure wallet location in code
-OracleConfiguration.TnsAdmin = "/path/to/wallet";
-OracleConfiguration.WalletLocation = "/path/to/wallet";
+// Set fully qualified paths to wallet and *.ora files
+OracleConfiguration.TnsAdmin = "<PATH TO *.ORA FILES>";
+OracleConfiguration.WalletLocation = "<PATH TO WALLET FILE>";
 
 using var conn = new OracleConnection(connStr);
 conn.Open();
@@ -65,7 +89,7 @@ conn.Open();
 
 ### Bind Parameters
 
-ODP.NET uses `:name` syntax for named binds (not `@` like SQL Server).
+ODP.NET uses `:` syntax for parameter binds. ODP.NET can bind by parameter order (default) or by name.
 
 ```csharp
 using var cmd = new OracleCommand(
@@ -92,7 +116,6 @@ cmd.Parameters.Add("sal",  OracleDbType.Decimal).Value = 9500;
 cmd.Parameters.Add("id",   OracleDbType.Int32).Value   = 100;
 
 int rows = cmd.ExecuteNonQuery();
-conn.Commit();
 Console.WriteLine($"Rows updated: {rows}");
 ```
 
@@ -121,7 +144,7 @@ catch
 }
 ```
 
-### Batch Insert (Array Binding)
+### Batch Insert Using Array Binding
 
 ODP.NET supports array binding for high-performance bulk DML:
 
@@ -133,26 +156,25 @@ using var cmd = new OracleCommand(
 
 cmd.ArrayBindCount = batchSize;
 
-cmd.Parameters.Add("id",   OracleDbType.Int32,   new int[]    { 201, 202, 203 }, ParameterDirection.Input);
+cmd.Parameters.Add("id",   OracleDbType.Int32,   new int[]    { 301, 302, 303 }, ParameterDirection.Input);
 cmd.Parameters.Add("name", OracleDbType.Varchar2, new string[] { "Alice", "Bob", "Carol" }, ParameterDirection.Input);
 cmd.Parameters.Add("dept", OracleDbType.Int32,   new int[]    { 10, 20, 10 }, ParameterDirection.Input);
 
 cmd.ExecuteNonQuery();
-conn.Commit();
 ```
 
 ---
 
-## Connection Pooling
+## Connection Pooling and Connection Strings
 
 ODP.NET has built-in connection pooling enabled by default. Configure via the connection string:
 
 ```csharp
 string connStr = "User Id=hr;Password=password;Data Source=localhost:1521/freepdb1;" +
-    "Min Pool Size=2;Max Pool Size=20;Connection Lifetime=300;Pooling=true;";
+    "Min Pool Size=5;Max Pool Size=150;Connection Timeout=20;Incr Pool Size=10;Decr Pool Size=2;";
 ```
 
-### With `appsettings.json` (ASP.NET Core)
+### Store ODP.NET Connection Strings in `appsettings.json`
 
 ```json
 {
@@ -219,7 +241,6 @@ cmd.CommandType = CommandType.StoredProcedure;
 cmd.Parameters.Add("p_id",  OracleDbType.Int32).Value   = 100;
 cmd.Parameters.Add("p_sal", OracleDbType.Decimal).Value = 9500;
 cmd.ExecuteNonQuery();
-conn.Commit();
 ```
 
 ### Function with Return Value
@@ -237,7 +258,7 @@ cmd.ExecuteNonQuery();
 Console.WriteLine($"Count: {ret.Value}");
 ```
 
-### REF CURSOR
+### Return Result Set Using REF CURSOR
 
 ```csharp
 using var cmd = new OracleCommand("hr.get_dept_employees", conn);
@@ -258,10 +279,10 @@ while (reader.Read())
 
 ---
 
-## LOB Handling
+## Large Object (LOB) Handling
 
 ```csharp
-// Read CLOB
+// Read Character LOB (CLOB)
 using var cmd = new OracleCommand(
     "SELECT resume FROM employee_docs WHERE employee_id = :id", conn);
 cmd.Parameters.Add("id", 100);
@@ -274,50 +295,53 @@ if (reader.Read())
     Console.WriteLine(text[..200]);
 }
 
-// Write BLOB from file
+// Write Binary LOB (BLOB) from file
 byte[] photoBytes = File.ReadAllBytes("photo.jpg");
 using var cmd2 = new OracleCommand(
     "UPDATE employee_photos SET photo = :photo WHERE employee_id = :id", conn);
 cmd2.Parameters.Add("photo", OracleDbType.Blob).Value = photoBytes;
 cmd2.Parameters.Add("id", 100);
 cmd2.ExecuteNonQuery();
-conn.Commit();
 ```
 
 ---
 
 ## Best Practices
 
-- **Always use named bind parameters** with `:name` syntax — never string concatenation.
-- **Rely on the built-in connection pool** — set `Min Pool Size` and `Max Pool Size` in the connection string.
+- **Always use bind parameters** with `:name` syntax — never string concatenation.
+- **Rely on the built-in connection pool to optimize connection performance and behavior** — set `Min Pool Size` and `Max Pool Size` in the connection string.
 - **Use array binding** for bulk inserts (`ArrayBindCount`) — far faster than looping.
-- **Dispose connections and commands** with `using` to return connections to the pool promptly.
+- **Dispose all ODP.NET objects, especially connections and commands** with `using` or explicit `Close()` and `Dispose()` calls.
 - **Use `OracleDbType` explicitly** to avoid implicit type mapping surprises.
-- **Set `BindByName = true`** when parameter order in the command does not match the SQL: `cmd.BindByName = true;`
+- **Set `BindByName = true`** when the command's bind parameter order does not match the SQL order: `OracleCommand.BindByName = true;`.
+- **For large result sets, reduce database round trips by increasing `RowsToFetchPerRoundTrip`** on the `OracleConfiguration`, `OracleConnection`, `OracleCommand`, `OracleDataReader`, or `OracleRefCursor` class.
+- **For large LOBs and LONGs, reduce database round trips by increasing the initial LOB or LONG data retrieved using `InitialLOBFetchSize` and `InitialLONGFetchSize`, respectively.** By default, initial LOB and LONG data fetches are deferred until a read attempt.
 
 ---
 
 ## Common Mistakes
 
 | Mistake | Problem | Fix |
-|---------|---------|-----|
-| Using `@param` instead of `:param` | Parameter not bound; ORA-01008 | ODP.NET uses `:name` syntax |
-| Not setting `BindByName = true` | Parameters bound by position, not name | `cmd.BindByName = true` |
-| String concat in SQL | SQL injection | Use OracleParameter |
-| Not disposing OracleConnection | Pool exhaustion | Use `using` statement |
-| Expecting EF Core migrations to work like SQL Server | Oracle schema differences | Use Oracle-specific migration configs |
+| ------- | ------- | --- |
+| Using `@parameter` instead of `:parameter` | Parameter not bound; ORA-01008 | ODP.NET uses `:name` syntax |
+| Not setting `BindByName = true` | Parameters bound by position, not name | Set `OracleCommand.BindByName = true` when opting to bind parameters by name. |
+| String concatenation in SQL | SQL injection | Use bind parameters and `OracleDBMSAssert` |
+| Not disposing `OracleConnection` | Pool exhaustion | Use `using` statement or explicit `Close()` and `Dispose()` calls |
+| Expecting EF Core to know the database version to ensure client feature compatibility | EF Core has no mechanism to retrieve this info | Set the database compatibility version, such as `UseOracleSQLCompatibility(OracleSQLCompatibility.DatabaseVersion23)` for Oracle AI Database 23ai and 26ai. |
 
 ---
 
 ## Oracle Version Notes (19c vs 26ai)
 
-- `Oracle.ManagedDataAccess.Core` 23.x supports Oracle Database 11.2 through 26ai.
-- `Oracle.EntityFrameworkCore` 8.x targets EF Core 8 / .NET 8.
-- Oracle 23ai `VECTOR` type support is available in ODP.NET 23.4+.
+- `Oracle.ManagedDataAccess.Core` and `Oracle.ManagedDataAccess` 23.x support Oracle Database 19c through 26ai.
+- `Oracle.EntityFrameworkCore` major version number matches the EF Core major version it supports, such as `Oracle.EntityFrameworkCore 10.23.26200` supports EF Core 10.
+- Oracle AI Database `VECTOR` type support is available in ODP.NET 23.3 and higher.
+- The `RowsToFetchPerRoundTrip` property is supported with ODP.NET Core and managed ODP.NET 23.7 and higher.
 
 ## Sources
 
-- [ODP.NET Managed Driver Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/19/odpnt/)
-- [Oracle.ManagedDataAccess.Core on NuGet](https://www.nuget.org/packages/Oracle.ManagedDataAccess.Core)
-- [Oracle EF Core Provider](https://www.nuget.org/packages/Oracle.EntityFrameworkCore)
+- [ODP.NET Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/26/odpnt/)
 - [Oracle .NET Developer Center](https://www.oracle.com/database/technologies/appdev/dotnet.html)
+- [Oracle .NET Sample Code](https://github.com/oracle/dotnet-db-samples/)
+- [Oracle .NET Videos](https://www.youtube.com/oracledotnetteam)
+- [ODP.NET Forum](https://forums.oracle.com/ords/apexds/domain/dev-community/category/odp-dot-net)

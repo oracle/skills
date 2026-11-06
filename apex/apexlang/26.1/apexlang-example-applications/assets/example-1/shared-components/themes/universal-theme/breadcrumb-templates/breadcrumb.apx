@@ -1,0 +1,20 @@
+breadcrumbTemplate breadcrumb (
+    name: Breadcrumb
+    templateClass: breadcrumb
+    breadcrumb {
+        beforeEntries: <ul class="t-Breadcrumb #COMPONENT_CSS_CLASSES#">
+        maxEntries: 6
+        afterEntries: </ul>
+    }
+    entry {
+        currentPage: <li class="t-Breadcrumb-item is-active" aria-current="page"><h1 class="t-Breadcrumb-label">#NAME#</h1></li>
+        nonCurrentPage: <li class="t-Breadcrumb-item"><a href="#LINK#" class="t-Breadcrumb-label">#NAME#</a></li>
+    }
+    advanced {
+        identifier: BREADCRUMB
+    }
+    subscription {
+        master: @breadcrumb
+    }
+)
+

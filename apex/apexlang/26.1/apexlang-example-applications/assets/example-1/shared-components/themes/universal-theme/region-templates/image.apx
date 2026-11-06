@@ -1,0 +1,269 @@
+regionTemplate image (
+    name: Image
+    templateClass: custom1
+    templateOptions {
+        preset: [
+            t-ImageRegion--noFilter
+            t-ImageRegion--auto
+            t-ImageRegion--cover
+            t-ImageRegion--square
+        ]
+    }
+    region {
+        template: <div id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES# class="t-ImageRegion #REGION_CSS_CLASSES#"><img src="#REGION_IMAGE_URL#" alt="#REGION_IMAGE_ALT_TEXT#" #REGION_IMAGE_ATTRIBUTES# /></div>
+    }
+    advanced {
+        identifier: IMAGE
+    }
+    subscription {
+        master: @image
+    }
+
+    templateOption image-stretch (
+        name: Image Stretch
+        sequence: 1
+        appearance {
+            cssClasses: t-ImageRegion--stretch
+        }
+        advanced {
+            identifier: IMAGE_STRETCH
+        }
+    )
+
+    templateOption filter-blur (
+        name: Blur
+        group: @region/image-filter
+        sequence: 430
+        appearance {
+            cssClasses: t-ImageRegion--blur
+        }
+        advanced {
+            identifier: FILTER_BLUR
+        }
+    )
+
+    templateOption filter-grayscale (
+        name: Grayscale
+        group: @region/image-filter
+        sequence: 410
+        appearance {
+            cssClasses: t-ImageRegion--grayscale
+        }
+        advanced {
+            identifier: FILTER_GRAYSCALE
+        }
+    )
+
+    templateOption filter-invert (
+        name: Invert
+        group: @region/image-filter
+        sequence: 440
+        appearance {
+            cssClasses: t-ImageRegion--invert
+        }
+        advanced {
+            identifier: FILTER_INVERT
+        }
+    )
+
+    templateOption filter-none (
+        name: None
+        group: @region/image-filter
+        sequence: 400
+        appearance {
+            cssClasses: t-ImageRegion--noFilter
+        }
+        advanced {
+            identifier: FILTER_NONE
+        }
+    )
+
+    templateOption filter-saturate (
+        name: Saturate
+        group: @region/image-filter
+        sequence: 450
+        appearance {
+            cssClasses: t-ImageRegion--saturate
+        }
+        advanced {
+            identifier: FILTER_SATURATE
+        }
+    )
+
+    templateOption filter-sepia (
+        name: Sepia
+        group: @region/image-filter
+        sequence: 420
+        appearance {
+            cssClasses: t-ImageRegion--sepia
+        }
+        advanced {
+            identifier: FILTER_SEPIA
+        }
+    )
+
+    templateOption ratio-1-1 (
+        name: 1:1 (Square)
+        group: @region/image-ratio
+        sequence: 110
+        appearance {
+            cssClasses: t-ImageRegion--1x1
+        }
+        advanced {
+            identifier: RATIO_1_1
+        }
+    )
+
+    templateOption ratio-16-9 (
+        name: 16:9 (Widescreen)
+        group: @region/image-ratio
+        sequence: 120
+        appearance {
+            cssClasses: t-ImageRegion--16x9
+        }
+        advanced {
+            identifier: RATIO_16_9
+        }
+    )
+
+    templateOption ratio-2-1 (
+        name: 2:1 (Univisium)
+        group: @region/image-ratio
+        sequence: 140
+        appearance {
+            cssClasses: t-ImageRegion--2x1
+        }
+        advanced {
+            identifier: RATIO_2_1
+        }
+    )
+
+    templateOption ratio-4-3 (
+        name: 4:3 (Standard)
+        group: @region/image-ratio
+        sequence: 130
+        appearance {
+            cssClasses: t-ImageRegion--4x3
+        }
+        advanced {
+            identifier: RATIO_4_3
+        }
+    )
+
+    templateOption ratio-auto (
+        name: Auto
+        group: @region/image-ratio
+        sequence: 100
+        appearance {
+            cssClasses: t-ImageRegion--auto
+        }
+        advanced {
+            identifier: RATIO_AUTO
+        }
+    )
+
+    templateOption scale-contain (
+        name: Contain
+        group: @region/image-scale
+        sequence: 200
+        appearance {
+            cssClasses: t-ImageRegion--contain
+        }
+        advanced {
+            identifier: SCALE_CONTAIN
+        }
+    )
+
+    templateOption scale-cover (
+        name: Cover
+        group: @region/image-scale
+        sequence: 210
+        appearance {
+            cssClasses: t-ImageRegion--cover
+        }
+        advanced {
+            identifier: SCALE_COVER
+        }
+    )
+
+    templateOption scale-down (
+        name: Scale Down
+        group: @region/image-scale
+        sequence: 230
+        appearance {
+            cssClasses: t-ImageRegion--scale-down
+        }
+        advanced {
+            identifier: SCALE_DOWN
+        }
+    )
+
+    templateOption scale-fill (
+        name: Fill
+        group: @region/image-scale
+        sequence: 220
+        appearance {
+            cssClasses: t-ImageRegion--fill
+        }
+        advanced {
+            identifier: SCALE_FILL
+        }
+    )
+
+    templateOption shape-circle (
+        name: Circle
+        group: @region/image-shape
+        sequence: 320
+        appearance {
+            cssClasses: t-ImageRegion--circle
+        }
+        advanced {
+            identifier: SHAPE_CIRCLE
+        }
+    )
+
+    templateOption shape-rounded (
+        name: Rounded
+        group: @region/image-shape
+        sequence: 310
+        appearance {
+            cssClasses: t-ImageRegion--rounded
+        }
+        advanced {
+            identifier: SHAPE_ROUNDED
+        }
+    )
+
+    templateOption shape-square (
+        name: Square
+        group: @region/image-shape
+        sequence: 300
+        appearance {
+            cssClasses: t-ImageRegion--square
+        }
+        advanced {
+            identifier: SHAPE_SQUARE
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            regions: false
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+)
+

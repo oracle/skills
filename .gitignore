@@ -1,3 +1,5 @@
 .claude/settings.local.json
-apex/apexlang/.DS_Store
-apex/.DS_Store
+.DS_Store
+.idea
+.oca
+*.log

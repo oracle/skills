@@ -47,8 +47,8 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 
 ## Domains
 
-- `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, framework, container, and agent workflow skills.
-- `oci/` contains Oracle Cloud Infrastructure skills, including OCI Kubernetes Engine cluster design and troubleshooting, OCI IoT Platform digital twin workflows, plus Enterprise AI guidance for OCI Generative AI, agents, RAG, governance, model endpoints, Autonomous Database, APEX, and integrations.
+- `db/` is the active Oracle Database domain and includes database, ORDS, SQLcl, VecDB, framework, container, and agent workflow skills.
+- `oci/` contains Oracle Cloud Infrastructure skills, including OCI Functions deployment and troubleshooting, OCI Kubernetes Engine cluster design and troubleshooting, OCI IoT Platform digital twin workflows, plus Enterprise AI guidance for OCI Generative AI, agents, RAG, governance, model endpoints, Autonomous Database, APEX, and integrations.
 - `fusion/` is the root for future Oracle Fusion skills.
 - `apex/` is the root for future Oracle APEX skills.
 - `graal/` contains GraalVM skills, starting with Native Image.
@@ -81,7 +81,8 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
 │   ├── plsql/
 │   ├── security/
 │   ├── sql-dev/
-│   └── sqlcl/
+│   ├── sqlcl/
+│   └── vecdb/
 ├── fusion/
 │   └── SKILL.md
 ├── apex/
@@ -103,6 +104,9 @@ Browse and toggle installed plugins anytime with `/plugin`. Enabled plugins are 
     │   ├── data/
     │   ├── cost/
     │   └── integrations/
+    ├── functions/
+    │   ├── oci-functions-deploy/
+    │   └── oci-functions-troubleshoot/
     ├── iot-platform/
     │   ├── SKILL.md
     │   ├── agents/

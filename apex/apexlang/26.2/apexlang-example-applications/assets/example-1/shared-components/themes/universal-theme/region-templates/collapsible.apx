@@ -1,0 +1,543 @@
+regionTemplate collapsible (
+    name: Collapsible
+    templateClass: hideAndShowRegion
+    templateOptions {
+        preset: [
+            is-expanded
+            t-Region--scrollBody
+        ]
+    }
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!HTML#" class="t-Region t-Region--hideShow #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>
+             <div class="t-Region-header">
+              <div class="t-Region-headerItems t-Region-headerItems--controls"><span class="t-Button t-Button--icon t-Button--hideShow"><span class="a-Icon _a-Collapsible-icon" aria-hidden="true"></span></span></div>
+              <div class="t-Region-headerItems t-Region-headerItems--title">
+                <h2 class="t-Region-title" data-apex-heading><button class="t-Region-titleButton" type="button">#TITLE#</button></h2>
+              </div>
+              <div class="t-Region-headerItems t-Region-headerItems--buttons">#EDIT#</div>
+             </div>
+             <div class="t-Region-bodyWrap">
+               <div class="t-Region-buttons t-Region-buttons--top">
+                <div class="t-Region-buttons-left">#CLOSE#</div>
+                <div class="t-Region-buttons-right">#CREATE#</div>
+               </div>
+               <div class="t-Region-body">
+                 #COPY#
+                 #BODY#
+                 #SUB_REGIONS#
+                 #CHANGE#
+               </div>
+               <div class="t-Region-buttons t-Region-buttons--bottom">
+                <div class="t-Region-buttons-left">#PREVIOUS#</div>
+                <div class="t-Region-buttons-right">#NEXT#</div>
+               </div>
+             </div>
+            </div>
+            ```
+    }
+    advanced {
+        identifier: COLLAPSIBLE
+    }
+    subscription {
+        master: @collapsible
+    }
+
+    templateOption nobodypadding (
+        name: Remove Body Padding
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--noPadding
+        }
+        help {
+            helpText: Removes padding from region body.
+        }
+        advanced {
+            identifier: NOBODYPADDING
+        }
+    )
+
+    templateOption remember-collapsible-state (
+        name: Remember Collapsible State
+        sequence: 20
+        appearance {
+            cssClasses: js-useLocalStorage
+        }
+        help {
+            helpText: This option saves the current state of the collapsible region for the duration of the session.
+        }
+        advanced {
+            identifier: REMEMBER_COLLAPSIBLE_STATE
+        }
+    )
+
+    templateOption accent-1 (
+        name: Accent 1
+        group: @region/accent
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--accent1
+        }
+        advanced {
+            identifier: ACCENT_1
+        }
+    )
+
+    templateOption accent-10 (
+        name: Accent 10
+        group: @region/accent
+        sequence: 100
+        appearance {
+            cssClasses: t-Region--accent10
+        }
+        advanced {
+            identifier: ACCENT_10
+        }
+    )
+
+    templateOption accent-11 (
+        name: Accent 11
+        group: @region/accent
+        sequence: 110
+        appearance {
+            cssClasses: t-Region--accent11
+        }
+        advanced {
+            identifier: ACCENT_11
+        }
+    )
+
+    templateOption accent-12 (
+        name: Accent 12
+        group: @region/accent
+        sequence: 120
+        appearance {
+            cssClasses: t-Region--accent12
+        }
+        advanced {
+            identifier: ACCENT_12
+        }
+    )
+
+    templateOption accent-13 (
+        name: Accent 13
+        group: @region/accent
+        sequence: 130
+        appearance {
+            cssClasses: t-Region--accent13
+        }
+        advanced {
+            identifier: ACCENT_13
+        }
+    )
+
+    templateOption accent-14 (
+        name: Accent 14
+        group: @region/accent
+        sequence: 140
+        appearance {
+            cssClasses: t-Region--accent14
+        }
+        advanced {
+            identifier: ACCENT_14
+        }
+    )
+
+    templateOption accent-15 (
+        name: Accent 15
+        group: @region/accent
+        sequence: 150
+        appearance {
+            cssClasses: t-Region--accent15
+        }
+        advanced {
+            identifier: ACCENT_15
+        }
+    )
+
+    templateOption accent-2 (
+        name: Accent 2
+        group: @region/accent
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--accent2
+        }
+        advanced {
+            identifier: ACCENT_2
+        }
+    )
+
+    templateOption accent-3 (
+        name: Accent 3
+        group: @region/accent
+        sequence: 30
+        appearance {
+            cssClasses: t-Region--accent3
+        }
+        advanced {
+            identifier: ACCENT_3
+        }
+    )
+
+    templateOption accent-4 (
+        name: Accent 4
+        group: @region/accent
+        sequence: 40
+        appearance {
+            cssClasses: t-Region--accent4
+        }
+        advanced {
+            identifier: ACCENT_4
+        }
+    )
+
+    templateOption accent-5 (
+        name: Accent 5
+        group: @region/accent
+        sequence: 50
+        appearance {
+            cssClasses: t-Region--accent5
+        }
+        advanced {
+            identifier: ACCENT_5
+        }
+    )
+
+    templateOption accent-6 (
+        name: Accent 6
+        group: @region/accent
+        sequence: 60
+        appearance {
+            cssClasses: t-Region--accent6
+        }
+        advanced {
+            identifier: ACCENT_6
+        }
+    )
+
+    templateOption accent-7 (
+        name: Accent 7
+        group: @region/accent
+        sequence: 70
+        appearance {
+            cssClasses: t-Region--accent7
+        }
+        advanced {
+            identifier: ACCENT_7
+        }
+    )
+
+    templateOption accent-8 (
+        name: Accent 8
+        group: @region/accent
+        sequence: 80
+        appearance {
+            cssClasses: t-Region--accent8
+        }
+        advanced {
+            identifier: ACCENT_8
+        }
+    )
+
+    templateOption accent-9 (
+        name: Accent 9
+        group: @region/accent
+        sequence: 90
+        appearance {
+            cssClasses: t-Region--accent9
+        }
+        advanced {
+            identifier: ACCENT_9
+        }
+    )
+
+    templateOption 240px (
+        name: 240px
+        group: @region/body-height
+        sequence: 10
+        appearance {
+            cssClasses: i-h240
+        }
+        help {
+            helpText: Sets region body height to 240px.
+        }
+        advanced {
+            identifier: 240PX
+        }
+    )
+
+    templateOption 320px (
+        name: 320px
+        group: @region/body-height
+        sequence: 20
+        appearance {
+            cssClasses: i-h320
+        }
+        help {
+            helpText: Sets region body height to 320px.
+        }
+        advanced {
+            identifier: 320PX
+        }
+    )
+
+    templateOption 480px (
+        name: 480px
+        group: @region/body-height
+        sequence: 30
+        appearance {
+            cssClasses: i-h480
+        }
+        help {
+            helpText: Sets body height to 480px.
+        }
+        advanced {
+            identifier: 480PX
+        }
+    )
+
+    templateOption 640px (
+        name: 640px
+        group: @region/body-height
+        sequence: 40
+        appearance {
+            cssClasses: i-h640
+        }
+        help {
+            helpText: Sets body height to 640px.
+        }
+        advanced {
+            identifier: 640PX
+        }
+    )
+
+    templateOption hideoverflow (
+        name: Hide
+        group: @region/body-overflow
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--hiddenOverflow
+        }
+        advanced {
+            identifier: HIDEOVERFLOW
+        }
+    )
+
+    templateOption scrollbody (
+        name: Scroll - Default
+        group: @region/body-overflow
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--scrollBody
+        }
+        advanced {
+            identifier: SCROLLBODY
+        }
+    )
+
+    templateOption icons-plus-or-minus (
+        name: Plus or Minus
+        group: @region/collapsible-button-icons
+        sequence: 1
+        appearance {
+            cssClasses: t-Region--hideShowIconsMath
+        }
+        help {
+            helpText: Use the plus and minus icons for the expand and collapse button.
+        }
+        advanced {
+            identifier: ICONS_PLUS_OR_MINUS
+        }
+    )
+
+    templateOption conrtols-position-end (
+        name: End
+        group: @region/collapsible-icon-position
+        sequence: 1
+        appearance {
+            cssClasses: t-Region--controlsPosEnd
+        }
+        help {
+            helpText: Position the expand / collapse button to the end of the region header.
+        }
+        advanced {
+            identifier: CONRTOLS_POSITION_END
+        }
+    )
+
+    templateOption collapsed (
+        name: Collapsed
+        group: @region/default-state
+        sequence: 20
+        appearance {
+            cssClasses: is-collapsed
+        }
+        advanced {
+            identifier: COLLAPSED
+        }
+    )
+
+    templateOption expanded (
+        name: Expanded
+        group: @region/default-state
+        sequence: 10
+        appearance {
+            cssClasses: is-expanded
+        }
+        advanced {
+            identifier: EXPANDED
+        }
+    )
+
+    templateOption noborder (
+        name: Remove Borders
+        group: @region/style
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--noBorder
+        }
+        help {
+            helpText: Removes borders from the region.
+        }
+        advanced {
+            identifier: NOBORDER
+        }
+    )
+
+    templateOption remove-ui-decoration (
+        name: Remove UI Decoration
+        group: @region/style
+        sequence: 30
+        appearance {
+            cssClasses: t-Region--noUI
+        }
+        help {
+            helpText: Removes UI decoration (borders, backgrounds, shadows, etc) from the region.
+        }
+        advanced {
+            identifier: REMOVE_UI_DECORATION
+        }
+    )
+
+    templateOption stacked (
+        name: Stack Region
+        group: @region/style
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--stacked
+        }
+        help {
+            helpText: Removes side borders and shadows, and can be useful for accordions and regions that need to be grouped together vertically.
+        }
+        advanced {
+            identifier: STACKED
+        }
+    )
+
+    slot change (
+        name: Change
+        staticId: CHANGE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot close (
+        name: Close
+        staticId: CLOSE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot copy (
+        name: Copy
+        staticId: COPY
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot create (
+        name: Create
+        staticId: CREATE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot edit (
+        name: Edit
+        staticId: EDIT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+        gridLayout {
+            maxFixedColumns: 12
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+        gridLayout {
+            maxFixedColumns: 12
+        }
+    )
+
+)
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "OCI Functions Troubleshoot"
+  short_description: "Diagnose OCI Functions issues with read-only checks before any fix is attempted"
+  default_prompt: "Use $oci-functions-troubleshoot to classify an OCI Functions problem, stay diagnosis-only unless I explicitly ask you to execute a fix, and answer with stage, evidence, most_likely_cause, confidence, next_confirming_check, smallest_safe_remediation, and validation."

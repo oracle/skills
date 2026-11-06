@@ -1,0 +1,4 @@
+interface:
+  display_name: "OCI Networking Landing Zones"
+  short_description: "Build safe OCI network Terraform changes"
+  default_prompt: "Use $oci-networking-landing-zones to create validated Terraform root files for supported OCI Networking modules"

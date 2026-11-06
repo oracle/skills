@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build OCI IAM main.tf"
+  short_description: "Generate supported OCI IAM Terraform"
+  default_prompt: "Use $build-oci-iam-main-tf to create validated Terraform root files for supported OCI IAM modules."
