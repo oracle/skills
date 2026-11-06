@@ -1,0 +1,94 @@
+# restDataSource
+
+- componentType: `restDataSource`
+- identifierRequired: true
+- filePath: `shared-components/rest-data-sources/<filename>.apx`
+
+## Properties
+
+### identification (direct group)
+
+- `name` — `<STRING>`; Enter a name of the REST Data Source.; Yes; —; —; maxLength=255; —;
+
+### authentication
+
+- `credentials` — `<@webCredential>`; —; No; —; —; lovType=COMPONENT; —;
+- `server` — `<@authenticationServer>`; —; No; —; —; lovType=COMPONENT; `restDataSource[authentication.credentials] = sample`;
+- `urlPathPrefix` — `<STRING>`; —; No; —; —; maxLength=500; `restDataSource[authentication.credentials] = sample` and `restDataSource[authentication.server] = sample`;
+
+### source
+
+- `type` — `<STRING>`; —; Yes; —; `<enum:[http:"HTTP", http:"HTTP", oci:"OCI", oci:"OCI", odataRestService:"OData REST Service", odataRestService:"OData REST Service", oracleCloudAppsBoss:"Oracle Cloud Applications (BOSS) REST Service", oracleCloudAppsBoss:"Oracle Cloud Applications (BOSS) REST Service", oracleCloudAppsSaas:"Oracle Cloud Applications (SaaS) REST Service", oracleCloudAppsSaas:"Oracle Cloud Applications (SaaS) REST Service", ords:"ORDS", ords:"ORDS", restEnabledSqlQuery:"REST Enabled SQL Query", restEnabledSqlQuery:"REST Enabled SQL Query"]>`; —; —;
+- `urlPathPrefix` — `<STRING>`; —; Yes; —; —; maxLength=500; —;
+- `remoteServer` — `<@restDataSourceServer>`; —; Yes; —; —; lovType=COMPONENT; —;
+- `remoteServer` — `<@restEnabledSqlDatabase>`; —; Yes; —; —; lovType=COMPONENT; `restDataSource[source.type] = restEnabledSqlQuery`;
+
+### advanced
+
+- `httpTransferTimeout` — `<INTEGER>`; —; No; —; —; —; —;
+- `openapiUrl` — `<STRING>`; —; No; —; —; maxLength=4000; —;
+- `staticId` — `<STRING>`; Use the Static ID to reference the REST Data Source in API Calls.; Yes; —; —; maxLength=255; —;
+- `passEcid` — `<STRING>`; —; No; —; —; —; —;
+- `encoding` — `<STRING>`; —; No; —; `<enum:[iso-8859-6:"Arabic ISO-8859-6", windows-1256:"Arabic Windows 1256", big5:"Chinese Big5", gbk:"Chinese GBK", iso-8859-5:"Cyrillic ISO-8859-5", koi8-r:"Cyrillic KOI8-R", koi8-u:"Cyrillic KOI8-U", windows-1251:"Cyrillic Windows 1251", iso-8859-2:"Eastern European ISO-8859-2", windows-1250:"Eastern European Windows 1250", iso-8859-7:"Greek ISO-8859-7", windows-1253:"Greek Windows 1253", iso-8859-8-i:"Hebrew ISO-8859-8-i", windows-1255:"Hebrew Windows 1255", euc-jp:"Japanese EUC", shift-jis:"Japanese Shift JIS", euc-kr:"Korean EUC", iso-8859-4:"Northern European ISO-8859-4", windows-1257:"Northern European Windows 1257", iso-8859-3:"Southern European ISO-8859-3", tis-620:"Thai TIS-620", iso-8859-9:"Turkish ISO-8859-9", windows-1254:"Turkish Windows 1254", us-ascii:"US-ASCII", utf-16be:"Unicode UTF-16 Big Endian", utf-16le:"Unicode UTF-16 Little Endian", utf-8:"Unicode UTF-8", windows-1258:"Vietnamese Windows 1258", iso-8859-1:"Western European ISO-8859-1", windows-1252:"Western European Windows 1252"]>`; —; —;
+- `numericChars` — `<STRING>`; —; No; —; —; maxLength=2; —;
+- `xmlNamespaces` — `<STRING>`; —; No; —; —; maxLength=4000; `dataProfile[dataProfile.format] = xml`;
+- `csvSeparator` — `<STRING>`; —; No; —; —; maxLength=5; `dataProfile[dataProfile.format] = csv`;
+- `csvEnclosedBy` — `<STRING>`; —; No; —; —; maxLength=1; `dataProfile[dataProfile.format] = csv`;
+- `skipRows` — `<NUMBER>`; —; No; —; —; —; `dataProfile[dataProfile.format] = csv`;
+- `firstLineContainsHeaders` — `<BOOLEAN>`; —; Yes; `Y`; —; —; `dataProfile[dataProfile.format] = csv`;
+
+### synchronization
+
+- `jobIsActive` — `<BOOLEAN>`; —; Yes; `N`; —; —; —;
+- `localTableOwner` — `<STRING>`; —; No; —; —; —; —;
+- `localTableName` — `<STRING>`; —; No; —; —; maxLength=128; —;
+- `nestedRows` — `<@dataProfileColumn>`; —; No; —; —; lovType=COMPONENT; `restDataSource[synchronization.localTableName] = sample`;
+- `type` — `<STRING>`; —; Yes; `APPEND`; `<enum:[append:"Append", merge:"Merge", fullRefreshDelete:"Full Refresh - Delete", fullRefreshTruncate:"Full Refresh - Truncate"]>`; —; `restDataSource[synchronization.localTableName] = sample`;
+- `schedule` — `<STRING>`; —; No; —; —; maxLength=255; `restDataSource[synchronization.localTableName] = sample`;
+- `commitInterval` — `<INTEGER>`; —; No; —; —; —; `restDataSource[synchronization.localTableName] = sample`;
+- `httpRequestLimit` — `<INTEGER>`; —; No; —; —; —; `restDataSource[synchronization.localTableName] = sample`;
+
+### subscription
+
+- `master` — `<@restDataSource>`; —; No; —; —; lovType=COMPONENT; —;
+
+### restSourceCatalog
+
+- `name` — `<STRING>`; —; No; —; —; —; —;
+- `service` — `<STRING>`; —; No; —; —; —; —;
+- `version` — `<STRING>`; —; No; —; —; —; —;
+
+### comments
+
+- `comments` — `<STRING>`; —; No; —; —; maxLength=4000; —;
+
+### dataProfile
+
+- `name` — `<STRING>`; —; Yes; —; —; maxLength=255; —;
+- `format` — `<STRING>`; —; Yes; `JSON`; `<enum:[csv:"CSV", json:"JSON", xml:"XML"]>`; —; —;
+- `comments` — `<STRING>`; —; No; —; —; maxLength=4000; —;
+- `rowSelector` — `<STRING>`; —; No; —; —; maxLength=255; `dataProfile[dataProfile.format] = json` or `dataProfile[dataProfile.format] = xml`;
+- `containsSingleRow` — `<BOOLEAN>`; —; Yes; `N`; —; —; `dataProfile[dataProfile.format] = json` or `dataProfile[dataProfile.format] = xml`;
+- `useRawSelectors` — `<BOOLEAN>`; —; Yes; `N`; —; —; `dataProfile[dataProfile.format] = json`;
+- `singleRowSelector` — `<STRING>`; —; No; —; —; maxLength=255; `dataProfile[dataProfile.format] = json` and `dataProfile[dataProfile.containsSingleRow] = N` or `dataProfile[dataProfile.format] = xml` and `dataProfile[dataProfile.containsSingleRow] = N`;
+
+### invocationScope
+
+- `type` — `<STRING>`; —; No; —; `<enum:[staticValue:"Static Value", item:"Item", sqlQuery:"SQL Query (return single value)", expression:"Expression", functionBody:"Function Body"]>`; —; `restDataSource[authentication.credentials] = sample`;
+- `text` — `<STRING>`; —; Yes; —; —; —; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = staticValue`;
+- `item` — `<STRING>`; —; Yes; —; —; maxLength=255, textCase=UPPER; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = staticValue`;
+- `sqlQuery` — `<STRING>`; —; Yes; —; —; maxLength=4000; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = sqlQuery`;
+- `language` — `<STRING>`; —; Yes; `PLSQL`; `<enum:[plsql:"PL/SQL", javaScript-mle:"JavaScript (MLE)"]>`; —; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = functionBody`;
+- `language` — `<STRING>`; —; Yes; `PLSQL`; `<enum:[sql:"SQL", plsql:"PL/SQL", javaScript-mle:"JavaScript (MLE)"]>`; —; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = expression`;
+- `plsqlFunctionBody` — `<STRING>`; —; Yes; —; —; maxLength=4000; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = functionBody` and `restDataSource[invocationScope.language] = plsql`;
+- `javaScriptFunctionBody` — `<STRING>`; —; Yes; —; —; maxLength=4000; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = functionBody` and `restDataSource[invocationScope.language] = javaScript-mle`;
+- `sqlExpression` — `<STRING>`; —; Yes; —; —; maxLength=4000; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = expression` and `restDataSource[invocationScope.language] = sql`;
+- `plsqlExpression` — `<STRING>`; —; Yes; —; —; maxLength=4000; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = expression` and `restDataSource[invocationScope.language] = plsql`;
+- `javaScriptExpression` — `<STRING>`; —; Yes; —; —; maxLength=4000; `restDataSource[authentication.credentials] = sample` and `restDataSource[invocationScope.type] = expression` and `restDataSource[invocationScope.language] = javaScript-mle`;
+
+### synchronizationRateLimit
+
+- `timeframe` — `<INTEGER>`; —; No; —; —; —; `restDataSource[synchronization.localTableName] = sample`;
+- `httpRequests` — `<INTEGER>`; —; Yes; —; —; —; `restDataSource[synchronization.localTableName] = sample` and `restDataSource[synchronizationRateLimit.timeframe] = sample`;
+- `whenExceeded` — `<STRING>`; —; Yes; `ERROR`; `<enum:[raiseError:"Raise Error", wait:"Wait"]>`; —; `restDataSource[synchronization.localTableName] = sample` and `restDataSource[synchronizationRateLimit.timeframe] = sample`;
+

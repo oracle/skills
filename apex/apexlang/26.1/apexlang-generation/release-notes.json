@@ -1,0 +1,329 @@
+{
+  "title": "APEXlang Skills Release Notes",
+  "description": "Download the latest release version",
+  "mastheadUtility": "Oracle APEX",
+  "breadcrumbRoot": "APEXlang Skills",
+  "breadcrumbCurrent": "Release Notes",
+  "downloadUrl": "https://github.com/oracle/skills/",
+  "downloadLabel": "Download",
+  "releases": [
+    {
+      "version": "2026.09.21",
+      "summary": "This release adds and hardens support for Media List, Comments, and Metric Card template components, expands Cards and Region Display Selector capabilities, and delivers deterministic Smart Filter and Search workflows with compiler-backed validation, source-projection contracts, safe navigation, and packaged registry/runtime alignment.",
+      "sections": [
+        {
+          "title": "Media List Template Component",
+          "items": [
+            "Added Media List template-component support for report and partial configurations, including base, grouped, linked, avatar, badge, and layout variants.",
+            "Added deterministic routing with explicit precedence for direct Media List requests, List regions, and Classic Reports.",
+            "Added metadata-driven source validation with report-mode support limited to verified local database and SQL query sources.",
+            "Added parent-aware placement validation for Standard and Content Block regions.",
+            "Added compiler-conformance checks for Media List source types and nested component properties.",
+            "Expanded Media List templates, component metadata, registry entries, validator recipes, documentation, package coverage, and regression checks."
+          ]
+        },
+        {
+          "title": "Comments Template Component",
+          "items": [
+            "Added Comments template-component support for report and partial display modes.",
+            "Added required user and comment mappings with optional date-column mapping and compiler-backed validation.",
+            "Added report styles, avatar icon/image/initials variants, display settings, and compiler-backed action support.",
+            "Added safety validation for avatar image URLs, dynamic attributes, comment classes, and projected source columns.",
+            "Added partial-mode restrictions for single-row sources and report-only behavior blocks.",
+            "Aligned Comments contracts and guidance with APEX 26.1 and expanded the component registry, templates, validator recipes, and regression coverage."
+          ]
+        },
+        {
+          "title": "Metric Card Template Component",
+          "items": [
+            "Added Metric Card template-component support for minimal, grouped, linked, avatar, badge, and partial configurations.",
+            "Added deterministic routing that aligns semantic Metric Card requests with component selection.",
+            "Added guidance for dashboard KPI strips, normalized multi-row sources, explicit projected child columns, grouping, and selection.",
+            "Added validation for Metric Card settings, supported data types, child-column mappings, action targets, URL schemes, hosts, paths, fragments, and link attributes.",
+            "Added safe declarative navigation and trigger-action contracts for Metric Card links.",
+            "Expanded Metric Card templates, metadata, routing, repair recipes, package tests, and compiler-backed validation coverage."
+          ]
+        },
+        {
+          "title": "Smart Filter and Search Region",
+          "items": [
+            "Added dedicated Smart Filter and Search routing with deterministic resolver precedence over related Faceted Search and Cards intents.",
+            "Smart Filters now require one authoritative filtered-results region declared after the filter region.",
+            "Added supported-target validation for Classic Reports, Cards, Maps, and Calendars while rejecting unsupported target shapes.",
+            "Added validation for searchable-column allowlists, refinement and suggestion sources, filter topology, source projections, and duplicate or reordered search columns.",
+            "Added security-scope checks so search, suggestions, refinements, and counts remain within the filtered region's authorization and server-side condition.",
+            "Added performance, accessibility, refresh, export, and Generation Plan evidence requirements.",
+            "Improved diagnostics for missing or incomplete Smart Filter plugin metadata.",
+            "Updated Smart Filter/Search templates, routing catalogs, validator recipes, package coverage, and regression checks."
+          ]
+        },
+        {
+          "title": "Cards Region Updates",
+          "items": [
+            "Expanded Cards region contracts and templates for source mapping, layout, ordering, media, actions, conditions, trigger actions, and row selection.",
+            "Added deterministic validation for primary-key identity, projected source columns, native media mappings, action sequencing, and supported property values.",
+            "Added refresh contracts for refresh-after-dialog and refresh-on-change behavior.",
+            "Added navigation validation for full-card, title, subtitle, media, and button actions.",
+            "Added declarative behavior-target validation, trigger-action consumer checks, safe navigation URL validation, and restricted link-attribute handling.",
+            "Preserved native Cards media, security, and navigation boundaries while aligning contracts with APEX 26.1.",
+            "Expanded Cards metadata, templates, routing rules, validator recipes, package coverage, and regression checks."
+          ]
+        },
+        {
+          "title": "Region Display Selector",
+          "items": [
+            "Added Region Display Selector support with standard and permutation-oriented workflows.",
+            "Added application-scoped slider configuration through component settings.",
+            "Added validation for controller uniqueness, target membership, minimum eligible targets, controller exclusion, ordering, and excluded breadcrumb or header regions.",
+            "Clarified the distinction between `htmlDomId` and `staticId` for controllers and controlled regions.",
+            "Documented catalog defaults separately from generation-required values.",
+            "Added machine-readable registry metadata, validator repair guidance, focused regressions, and packaged component coverage."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "2026.08.28",
+      "summary": "This release adds supported Avatar, Badge, and Timeline template-component workflows, pins Font APEX icon validation to a versioned catalogue, and strengthens routing, validation, packaging, and template-registry integrity. Credits to Github user [https://github.com/zrh535](zrh535) for identifying these bugs and proposing the suggested fixes.",
+      "sections": [
+        {
+          "title": "New Supported Template Components",
+          "items": [
+            "Added report-mode Avatar support for initials, icons, and URL-column images.",
+            "Added report-mode Badge support for minimal and linked Badge regions.",
+            "Added Timeline support for report and partial configurations, including optional Avatar and Badge content.",
+            "Timeline Avatar variants now use one matching icon, image, or initials value; initials come from a dedicated projected column.",
+            "Avatar image URLs now accept only `:APP_FILES` or `:APEX_FILES` with a static relative path.",
+            "Moved each template component's options into its own directory."
+          ]
+        },
+        {
+          "title": "Validation, Routing, and Security",
+          "items": [
+            "Badge validation covers table/view, SQL, REST, JSON, function-body, property-graph, and sample-data sources.",
+            "Icon requests keep icon guidance when they also match Cards, Dashboards, Interactive Reports, or Lists.",
+            "Validation now checks source mappings, authorization, nested components, safe targets, and invalid direct page properties."
+          ]
+        },
+        {
+          "title": "Font APEX Icons",
+          "items": [
+            "Added a pinned Font APEX 26.1 icon and modifier index.",
+            "Avatar, Badge, and Timeline icons must use one indexed icon and supported modifiers.",
+            "Added tooling to check and refresh the icon index."
+          ]
+        },
+        {
+          "title": "Merged SQLcl and Runtime Bug Fixes",
+          "items": [
+            "Fixed double decoding of HTML entities during SQLcl script processing.",
+            "Fixed malformed closing script tags in SQLcl runtime scripts.",
+            "Enforced TLS certificate verification in the SQLcl runtime verifier and added regression coverage for verification failures.",
+            "Hardened temporary SQL file creation and cleanup.",
+            "Added regression coverage for HTML decoding, malformed script tags, TLS verification, and temporary SQL-file security."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "2026.08.01",
+      "summary": "This release makes APEXlang generation more deterministic by establishing explicit grammar, package, pattern, and component contracts. It simplifies orchestration, strengthens compiler-aware validation, improves cross-platform runtime consistency, and delivers safer defaults for file uploads and SQL projections.",
+      "sections": [
+        {
+          "title": "Generation Workflow and Reusable Patterns",
+          "items": [
+            "Simplified the core routing and prompt contract, clarifying intent normalization, routing boundaries, missing-input handling, and the distinct responsibilities of draft, critique, and revision agents.",
+            "Updated natural-language routing test coverage and validation guidance so human requests are translated into APEXlang tasks more predictably.",
+            "Added structured page-pattern and page-construction packs, plus catalog and routing-load support, so generation can select reusable patterns through machine-readable contracts."
+          ]
+        },
+        {
+          "title": "Language, Packaging, and Runtime Contracts",
+          "items": [
+            "Added the complete `apexlang.ebnf` grammar, grammar documentation, semantic rules, and an upstream-consistency check to make syntax validation and language evolution deterministic and reviewable.",
+            "Introduced explicit package-layer contracts and a public package manifest. Package loading now separates distributable public content from internal and development-only assets.",
+            "Normalized CRLF and mixed line endings to LF before formatting and runtime validation across the APEXlang CLI, package flow, and validator. The normalization boundary is now shared through reusable runtime helpers, documented in the runtime-gate guidance, and covered by regression tests so formatting, packaging, and validation produce reproducible results across platforms."
+          ]
+        },
+        {
+          "title": "Component and Property Validation",
+          "items": [
+            "Strengthened property mapping by retaining component-tree context during validation, allowing child properties to be evaluated against their parent component and relationships.",
+            "Added handling for ambiguous component matches, conditional properties, faceted-search and smart-filter aliases, source-located diagnostics, and regression coverage for invalid child records.",
+            "Expanded executable guardrails for component properties, defaults, dependencies, required values, aliases, and page consistency; templates and examples now align with compiler-backed component truth.",
+            "Added Unicode SQL alias validation coverage, including quoted multibyte aliases and aliases with spaces, while preserving existing ASCII behavior."
+          ]
+        },
+        {
+          "title": "File Upload Experience",
+          "items": [
+            "File-upload items now default to `blockDropzone` for a more usable upload experience, while `inlineDropzone` and `nativeFileBrowse` remain available when explicitly requested.",
+            "Explicit Dropzone modes now require `dropzoneTitle` and `dropzoneDesc`; templates, validator fix recipes, audit documentation, and regression tests were updated accordingly."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "2026.06.26",
+      "summary": "This release tightens APEXlang generation boundaries around verified metadata, compiler-backed component shapes, and snippet safety. It expands local validation for live-runtime edge cases, updates report, button, faceted-search, map, list, and Interactive Grid guidance, and converts sample content into explicit metavariable templates so generated artifacts do not inherit placeholder schema names.",
+      "sections": [
+        {
+          "title": "Generation Planning and Snippet Safety",
+          "items": [
+            "Added a shared snippet classification contract so examples are treated as normative rules, metavariable templates, illustrative prompts, or counterexamples instead of implicit schema evidence.",
+            "Generated `.apx` artifacts now explicitly reject unresolved `{{...}}` variables and prompt-only pseudo-identifiers such as `SOURCE_TABLE`, `LOOKUP_TABLE`, `SOURCE_ID`, and `LOOKUP_NAME`.",
+            "The full-application specification template now requires frozen application and region plans, requirement coverage, source evidence, behavior coverage, rich UI pattern planning, LOV planning, and an app UX contract mirror before non-trivial artifact drafting.",
+            "Generation plans now act as boundary contracts for non-trivial work, including page, region, source, action, navigation, target mapping, template option, and component-family decisions.",
+            "Routing and skeleton examples were generalized away from EMP/DEPT sample names and now use bound source, lookup, related-record, region, map, REST, and API metavariables."
+          ]
+        },
+        {
+          "title": "Validation and Compiler Truth",
+          "items": [
+            "Validator coverage now catches button icon-position mistakes, Classic Report link columns without `type: link`, Interactive Report columns using Classic Report-only `type: link`, map layer links without required link types, and unmatched dynamic-action action braces.",
+            "Faceted Search validation now enforces the standard default settings block, selector-mode pairing, concrete current-facets selectors, and positive top-N chart values only when chart mode is explicitly requested.",
+            "Interactive Report and Interactive Grid saved-report visibility checks now use compiler-backed values, including `primary` for Interactive Grid defaults and `primaryDefault` for Interactive Report defaults.",
+            "Additional validator rules cover report-region link block placement, Interactive Report column metadata, filter and facet identifiers, content-row action layout sequencing, list region template placement, invokeApi parameter expressions, and forbidden theme master subscriptions.",
+            "The validator lint registry was reorganized into grouped rule sets, and compiler-truth audit/query tooling now supports more component families including columns, axes, series, layers, filters, facets, lists, entries, and breadcrumbs."
+          ]
+        },
+        {
+          "title": "Templates and Component Guidance",
+          "items": [
+            "Button guidance now requires canonical emitted template-option values, defaults text-with-icon buttons to `t-Button--iconLeft`, allows `t-Button--iconRight` only by explicit request, and omits left/right positioning for icon-only buttons.",
+            "Classic Report templates now require `type: link` whenever a column-level `link {}` block is emitted, while Interactive Report templates keep linked columns as `type: plainText` with column-level `link {}` metadata.",
+            "Interactive Grid guidance now separates saved-report display metadata from column navigation, uses `visibility: primary` for generated primary saved reports, and treats grid column navigation as compiler-gated.",
+            "Faceted Search templates now emit `compactNosThreshold: 10000`, `showCurrentFacets: true`, and `showTotalRowCount: true` by default, with selector mode and top-N chart settings reserved for explicit requests.",
+            "Template and example files for forms, maps, REST data sources, SQL snippets, page navigation, LOVs, buttons, static-content button containers, and report columns were updated to bind project-specific identifiers before use."
+          ]
+        },
+        {
+          "title": "Repository Maintenance",
+          "items": [
+            "Removed macOS `.DS_Store` metadata files from the ApexLang package tree.",
+            "Expanded component attribute metadata for Classic Report pagination and Interactive Report column link properties.",
+            "Updated validator fix recipes for Interactive Report link columns, Faceted Search settings, selector mode, chart top-N settings, and saved-report visibility repairs."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "2026.06.04",
+      "summary": "This release adds the Spec-to-Code layer, giving generation a drafting phase that produces a frozen specification plan before implementation. It also strengthens live validation and import readiness, broadens UX and template quality gates, improves runtime-risk detection, and makes validation failures easier to understand and repair.",
+      "sections": [
+        {
+          "title": "Templates Documentation and Rules",
+          "items": [
+            "Added broader UX quality gates for generated apps, including breadcrumbs, master/detail layouts, dashboard KPI Metric Cards, Classic Report defaults, map viewport rules, modal refresh behavior, and full-app UX traceability.",
+            "Cards regions now support native row navigation actions with validated label, layout, and declarative behavior.target mappings."
+          ]
+        },
+        {
+          "title": "Workflow Process",
+          "items": [
+            "Live APEX validation is now authoritative for packaged APEXlang validation flows.",
+            "Validator now catches more runtime-risky issues, including stale template options, page filename/alias mismatches, invalid Smart Filter targets, missing breadcrumbs, drawer defaults, and unsupported component shapes.",
+            "Validation reports now produce clearer problems.json output and repair guidance.",
+            "Packaging/runtime docs and tests were updated so the public APEXlang package follows the same validation and compiler-truth expectations."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "2026.05.27",
+      "sections": [
+        {
+          "title": "APEX Components, Templates & UI Guidance",
+          "items": [
+            "These changes affect how APEX pages, regions, reports, forms, dashboards, layouts, and template-based UI are generated.",
+            "Classic Reports now use only the canonical appearance block and must not emit `componentAppearance`.",
+            "Form regions now emit only `edit { enabled: true }`; `edit.add`, `edit.update`, and `edit.delete` are rejected for forms.",
+            "Metric Card child columns now require exact supported `source.dataType` values.",
+            "Smart Filters now require the filter region to be declared before the filtered results region.",
+            "Faceted Search guidance was tightened around unsupported runtime properties.",
+            "Dashboards now prefer Metric Card template components for KPI strips instead of native Cards by default.",
+            "Multi-chart dashboards now require a `chart_row_plan`.",
+            "Five-chart dashboards default to one two-column row followed by one three-column row.",
+            "Layout guidance now prefers semantic page-template slots such as `leftColumn` and `body` for sidebar/main layouts.",
+            "Asymmetric layouts were clarified so valid `columnSpan` plus later column patterns are not incorrectly rejected."
+          ]
+        },
+        {
+          "title": "Validation & Runtime Evidence",
+          "items": [
+            "These changes make validation more reliable and easier to troubleshoot.",
+            {
+              "text": "Validation now produces structured evidence:",
+              "items": [
+                "`validation-report.json`",
+                "`validation-transcript.log`",
+                "`problems.json`",
+                "`component-contracts/*.json`"
+              ]
+            },
+            {
+              "text": "Validation now requires stronger evidence from:",
+              "items": [
+                "live APEX validation",
+                "compiler truth",
+                "VSCode Problems diagnostics"
+              ]
+            },
+            "Local validation is treated as syntax hygiene, not as a substitute for live or compiler-backed validation."
+          ]
+        },
+        {
+          "title": "Routing, Catalogs & Intent Detection",
+          "items": [
+            "These changes make routing files clearer and improve how user requests are classified.",
+            {
+              "text": "Renamed routing files to make their purpose clearer:",
+              "items": [
+                "`router-catalog.json` to `routing-catalog-main.json`",
+                "`load-policies.json` to `routing-load-policy.json`",
+                "`routing-index.json` to `routing-assets-index.json`",
+                "`catalog.json` to `domains-catalog.json`"
+              ]
+            },
+            "Moved prompt normalization into governance.",
+            "Generalized translation and localization routing so intent is detected from concepts like localization, multilingual, locale, i18n, text messages, and `APP_TEXT$`."
+          ]
+        },
+        {
+          "title": "Generated Output & Workspace Discovery",
+          "items": [
+            "These changes make it clearer which generated files matter during normal review.",
+            "`artifacts/` and `apex-exports/` are support folders created by the APEXlang workflow. They are useful for logs, validation reports, backups, and troubleshooting, but they are not the files most users need to review.",
+            "For normal changes, review the generated app under `applications/<app-name>/`.",
+            "Review `dist/apexlang/` only when checking the packaged APEXlang skill itself.",
+            "Usually ignore `artifacts/`, because it contains run logs, validation reports, and troubleshooting output.",
+            "Usually ignore `apex-exports/`, because it contains APEX backup/export snapshots.",
+            "Only open `artifacts/` or `apex-exports/` when debugging a failed run, comparing exports, or recovering from a backup.",
+            "The packaged skill no longer treats `artifacts/` or `apex-exports/` as app source when finding apps, reading metadata, or generating pages.",
+            "Added regression tests to make sure generated support folders are ignored during normal app discovery."
+          ]
+        },
+        {
+          "title": "Agent Workflow & Generation Process",
+          "items": [
+            "These changes guide how drafting, critique, and revision agents should work.",
+            "Draft, critique, and revision agents now include the new validation evidence requirements.",
+            "Critique now checks for missing `problems.json`, missing target-build evidence, and missing VSCode Problems diagnostics.",
+            "Generation plans now include dashboard chart row planning where relevant.",
+            "Revision guidance now tells agents to fix only reported validation problems and rerun `runtime validate`."
+          ]
+        },
+        {
+          "title": "Documentation & Naming Consistency",
+          "items": [
+            "These changes make the repository and packaged skill easier to understand.",
+            "Repository and package docs now consistently use APEXlang.",
+            "All the missing template documentation files have been resolved.",
+            "README, AGENTS, governance, SQLcl, runtime-gate, and package docs were updated to match the new boundaries and command flow.",
+            "Docs now better explain when SQLcl/live DB context is required versus when offline drafting is enough."
+          ]
+        }
+      ]
+    }
+  ]
+}

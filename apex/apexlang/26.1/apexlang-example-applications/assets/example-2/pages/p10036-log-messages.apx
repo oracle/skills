@@ -1,0 +1,248 @@
+page 10036 (
+    name: Log Messages
+    alias: LOG-MESSAGES
+    title: Log Messages
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    region automation-execution (
+        name: Automation Execution
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region messages (
+        name: Messages
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select message_timestamp,
+                       message,
+                       message_type,
+                       pk_value
+                  from apex_automation_msg_log
+                 where automation_log_id = :P10036_LOG_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 50
+        }
+        messages {
+            whenNoDataFound: no data found
+        }
+
+        column MESSAGE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Message
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column MESSAGE_TIMESTAMP (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Timestamp
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                defaultSequence: 1
+                direction: desc
+            }
+        )
+
+        column MESSAGE_TYPE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Message Type
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column PK_VALUE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Primary Key Value
+            }
+            layout {
+                sequence: 4
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+    )
+
+    pageItem P10036_AUTOMATION_NAME (
+        type: displayOnly
+        label {
+            label: Automation
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @automation-execution
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10036_LOG_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @automation-execution
+            slot: regionBody
+        }
+        source {
+            used: always
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P10036_START_TIMESTAMP (
+        type: displayOnly
+        label {
+            label: Started
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @automation-execution
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P10036_STATUS (
+        type: displayOnly
+        label {
+            label: Status
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @automation-execution
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    process get-log-detail (
+        name: Get Log Detail
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                select automation_name,
+                       start_timestamp,
+                       status
+                  into :P10036_AUTOMATION_NAME,
+                       :P10036_START_TIMESTAMP,
+                       :P10036_STATUS
+                  from apex_automation_log
+                 where id = :P10036_LOG_ID;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 6202393138737444112
+        }
+    )
+
+)
+

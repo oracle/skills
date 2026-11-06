@@ -1,0 +1,95 @@
+regionTemplate interactive-report (
+    name: Interactive Report
+    templateClass: reportsRegion
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES# class="t-IRR-region #REGION_CSS_CLASSES#">#PREVIOUS##ORDER_BY_ITEM##BODY##SUB_REGIONS##NEXT#</div>
+            
+            ```
+    }
+    advanced {
+        identifier: INTERACTIVE_REPORT
+    }
+    subscription {
+        master: @interactive-report
+    }
+
+    templateOption removeborders (
+        name: Remove Borders
+        sequence: 10
+        appearance {
+            cssClasses: t-IRR-region--noBorders
+        }
+        help {
+            helpText: Removes borders around the Interactive Report
+        }
+        advanced {
+            identifier: REMOVEBORDERS
+        }
+    )
+
+    templateOption show-maximize-button (
+        name: Show Maximize Button
+        sequence: 20
+        appearance {
+            cssClasses: js-showMaximizeButton
+        }
+        help {
+            helpText: Displays a button in the Interactive Reports toolbar to maximize the report. Clicking this button will toggle the maximize state and stretch the report to fill the screen.
+        }
+        advanced {
+            identifier: SHOW_MAXIMIZE_BUTTON
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot sortOrder (
+        name: Sort Order
+        staticId: ORDER_BY_ITEM
+        supports {
+            regions: false
+            items: true
+            buttons: true
+        }
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

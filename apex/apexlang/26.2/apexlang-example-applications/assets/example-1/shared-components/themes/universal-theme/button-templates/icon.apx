@@ -1,0 +1,46 @@
+buttonTemplate icon (
+    name: Icon
+    templateClass: buttonAlternative2
+    button {
+        normal: <button class="t-Button t-Button--noLabel t-Button--icon #BUTTON_CSS_CLASSES#" #BUTTON_ATTRIBUTES# onclick="#JAVASCRIPT#" type="button" id="#BUTTON_ID#" title="#LABEL!ATTR#" aria-label="#LABEL!ATTR#"><span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span></button>
+        hot: <button class="t-Button t-Button--noLabel t-Button--icon #BUTTON_CSS_CLASSES# t-Button--hot" #BUTTON_ATTRIBUTES# onclick="#JAVASCRIPT#" type="button" id="#BUTTON_ID#" title="#LABEL!ATTR#" aria-label="#LABEL!ATTR#"><span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span></button>
+    }
+    advanced {
+        identifier: ICON
+    }
+    subscription {
+        master: @icon
+    }
+
+    templateOption push (
+        name: Push
+        group: @button/icon-hover-animation
+        sequence: 20
+        appearance {
+            cssClasses: t-Button--hoverIconPush
+        }
+        help {
+            helpText: The icon will animate to the right or left on button hover or focus.
+        }
+        advanced {
+            identifier: PUSH
+        }
+    )
+
+    templateOption spin (
+        name: Spin
+        group: @button/icon-hover-animation
+        sequence: 10
+        appearance {
+            cssClasses: t-Button--hoverIconSpin
+        }
+        help {
+            helpText: The icon will spin on button hover or focus.
+        }
+        advanced {
+            identifier: SPIN
+        }
+    )
+
+)
+

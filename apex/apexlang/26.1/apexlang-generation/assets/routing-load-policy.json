@@ -1,0 +1,114 @@
+{
+  "version": 2,
+  "package_profile": "public-product",
+  "description": "Compact public loading policies. Prefer JSON assets and resolved context records before Markdown.",
+  "defaults": {
+    "max_initial_documents": 3,
+    "max_follow_on_documents": 3,
+    "prefer_machine_readable_catalogs": true,
+    "prefer_narrow_reference_packages": true,
+    "prefer_context_records": true,
+    "model_context_asset_limit_bytes": 25000,
+    "large_assets_are_tool_only": true,
+    "model_context_exclusions": [
+      "raw grammar",
+      "full guard",
+      "full component registry",
+      "full repair catalog",
+      "complete template tree"
+    ]
+  },
+  "tool_contract_note": "All `node tools/apexctl.mjs ...` commands are package-root relative: run them from the packaged skill root, or invoke that script by explicit path.",
+  "policies": [
+    {
+      "intent": "local context discovery",
+      "open_order": [
+        "assets/workspace-intelligence.json",
+        "node tools/apexctl.mjs workspace probe",
+        "the temp-runtime `context-resolution.json` report under `APEXLANG_OUTPUT_ROOT`, when present"
+      ],
+      "max_documents": 3
+    },
+    {
+      "intent": "top-level routing",
+      "open_order": [
+        "assets/routing-catalog-main.json",
+        "assets/routing-load-policy.json",
+        "assets/apexlang/domains-catalog.json"
+      ],
+      "max_documents": 3
+    },
+    {
+      "intent": "create app from FR and model",
+      "open_order": [
+        "SKILL.md",
+        "assets/workspace-intelligence.json",
+        "references/workflows/apexlang/workflow-create-app-from-fr-and-model.md",
+        "references/workflows/apexlang/application-spec.template.md",
+        "freeze .apexlang/application-spec.md and .apexlang/app-ux-contract.json",
+        "node tools/apexctl.mjs context resolve --intent <normalized-intent> --phase draft"
+      ],
+      "required_decisions": [
+        "authoritative_requirements",
+        "authoritative_model_or_schema",
+        "application_spec",
+        "app_ux_contract"
+      ],
+      "max_documents": 3,
+      "validation_schedule": [
+        "unit-local checks",
+        "one full-app local integration and compiler-truth pass",
+        "one live validation after local pass; rerun only after repair"
+      ]
+    },
+    {
+      "intent": "apexlang generation",
+      "open_order": [
+        "node tools/apexctl.mjs context resolve --intent <normalized-intent> --phase draft",
+        "the emitted task-specific context capsule",
+        "one capsule source path only when the compact projection cannot answer a required decision"
+      ],
+      "required_decisions": [
+        "post_check_import_choice"
+      ],
+      "post_check_import_choice": {
+        "prompt": "Default to checking APEXlang code only. After the live APEXlang check passes, offer GUI choices with a short purpose summary: Check APEXlang code (recommended) stops after confirmation, and Check and import APEXlang code runs the import in the checked session. If GUI choices are unavailable, stop after checking the code and report import as a follow-up.",
+        "choices": [
+          "Check APEXlang code",
+          "Check and import APEXlang code"
+        ],
+        "unresolved": "check-only fallback"
+      },
+      "max_documents": 2,
+      "max_capsule_bytes": 12000
+    },
+    {
+      "intent": "validation repair",
+      "open_order": [
+        "problems.json",
+        "node tools/apexctl.mjs context repair --problems <problems-path>",
+        "one projected owning-guidance path only when the compact recipe is insufficient"
+      ],
+      "max_documents": 2
+    },
+    {
+      "intent": "runtime/import",
+      "open_order": [
+        "references/ops/sqlcl.md",
+        "references/ops/runtime-gates.md"
+      ],
+      "required_decisions": [
+        "post_check_import_choice"
+      ],
+      "post_check_import_choice": {
+        "prompt": "Default to checking APEXlang code only. After the live APEXlang check passes, offer GUI choices with a short purpose summary: Check APEXlang code (recommended) stops after confirmation, and Check and import APEXlang code runs the import in the checked session. If GUI choices are unavailable, stop after checking the code and report import as a follow-up.",
+        "choices": [
+          "Check APEXlang code",
+          "Check and import APEXlang code"
+        ],
+        "unresolved": "check-only fallback"
+      },
+      "max_documents": 3
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+popupLovTemplate search-dialog (
+    name: Search Dialog
+    templateClass: standard
+    searchField {
+        beforeField: <div class="t-PopupLOV-actions t-Form--large">
+        afterField: </div>
+        width: 20
+        maxWidth: 100
+        filterTextAttributes: class="apex-item-text"
+    }
+    findButton {
+        text: Search
+        attributes: class="t-Button t-Button--hot t-Button--padLeft"
+    }
+    closeButton {
+        text: Close
+        attributes: class="t-Button u-pullRight"
+    }
+    nextButton {
+        text: Next &gt;
+        attributes: class="t-Button t-PopupLOV-button"
+    }
+    previousButton {
+        text: &lt; Previous
+        attributes: class="t-Button t-PopupLOV-button"
+    }
+    window {
+        scrollBars: 1
+        resizable: 1
+        width: 380
+    }
+    pagination {
+        text: <div class="t-PopupLOV-pagination">Row(s) #FIRST_ROW# - #LAST_ROW#</div>
+        rowsPerPage: 100
+    }
+    resultSet {
+        before: <div class="t-PopupLOV-links">
+        after: </div>
+    }
+    page {
+        head:
+            ```html
+            <!DOCTYPE html>
+            <html lang="&BROWSER_LANGUAGE.">
+            <head>
+            <title>#TITLE#</title>
+            #APEX_CSS#
+            #THEME_CSS#
+            #THEME_STYLE_CSS#
+            #FAVICONS#
+            #APEX_JAVASCRIPT#
+            #THEME_JAVASCRIPT#
+            <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+            </head>
+            ```
+        bodyAttributes: onload="first_field()" class="t-Page t-Page--popupLOV"
+    }
+    advanced {
+        identifier: winlov
+    }
+    subscription {
+        master: @search-dialog
+    }
+)
+

@@ -1,0 +1,177 @@
+listTemplate links-list (
+    name: Links List
+    templateClass: verticalUnorderedListWithoutBullets
+    list {
+        beforeEntries: <ul class="t-LinksList #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-LinksList-item is-current #A03#" aria-current="page">
+              <a href="#LINK#" class="t-LinksList-link" #A02#>
+                <span class="t-LinksList-icon" aria-hidden="true"><span class="t-Icon #ICON_CSS_CLASSES#"></span></span>
+                <span class="t-LinksList-label">#TEXT#</span>
+                <span class="t-LinksList-badge">#A01#</span>
+              </a>
+            </li>
+            
+            ```
+        currentWithSublist:
+            ```html
+            <li class="t-LinksList-item is-current #A03#" aria-current="page">
+              <a href="#LINK#" class="t-LinksList-link" #A02#>
+                <span class="t-LinksList-icon" aria-hidden="true"><span class="t-Icon #ICON_CSS_CLASSES#"></span></span>
+                <span class="t-LinksList-label">#TEXT#</span>
+                <span class="t-LinksList-badge">#A01#</span>
+              </a>
+              #SUB_LISTS#
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-LinksList-item #A03#">
+              <a href="#LINK#" class="t-LinksList-link" #A02#>
+                <span class="t-LinksList-icon" aria-hidden="true"><span class="t-Icon #ICON_CSS_CLASSES#"></span></span>
+                <span class="t-LinksList-label">#TEXT#</span>
+                <span class="t-LinksList-badge">#A01#</span>
+              </a>
+            </li>
+            ```
+        noncurrentWithSublist:
+            ```html
+            <li class="t-LinksList-item #A03#">
+              <a href="#LINK#" class="t-LinksList-link" #A02#>
+                <span class="t-LinksList-icon" aria-hidden="true"><span class="t-Icon #ICON_CSS_CLASSES#"></span></span>
+                <span class="t-LinksList-label">#TEXT#</span>
+                <span class="t-LinksList-badge">#A01#</span>
+              </a>
+            </li>
+            ```
+    }
+    sublist {
+        beforeEntries: <ul class="t-LinksList-list">
+        afterEntries: </ul>
+    }
+    sublistEntry {
+        current:
+            ```html
+            <li class="t-LinksList-item is-current #A03#" aria-current="page">
+              <a href="#LINK#" class="t-LinksList-link" #A02#>
+                <span class="t-LinksList-icon" aria-hidden="true"><span class="t-Icon #ICON_CSS_CLASSES#"></span></span>
+                <span class="t-LinksList-label">#TEXT#</span>
+                <span class="t-LinksList-badge">#A01#</span>
+              </a>
+            </li>
+            
+            ```
+        noncurrent:
+            ```html
+            <li class="t-LinksList-item #A03#">
+              <a href="#LINK#" class="t-LinksList-link" #A02#>
+                <span class="t-LinksList-icon" aria-hidden="true"><span class="t-Icon #ICON_CSS_CLASSES#"></span></span>
+                <span class="t-LinksList-label">#TEXT#</span>
+                <span class="t-LinksList-badge">#A01#</span>
+              </a>
+            </li>
+            
+            ```
+    }
+    attributeDescriptions {
+        a01: Badge Value
+        a02: Link Attributes
+        a03: List Item CSS Classes
+    }
+    advanced {
+        identifier: LINKS_LIST
+    }
+    subscription {
+        master: @links-list
+    }
+
+    templateOption disabletextwrapping (
+        name: Disable Text Wrapping
+        sequence: 30
+        appearance {
+            cssClasses: t-LinksList--nowrap
+        }
+        help {
+            helpText: Do not allow link text to wrap to new lines. Truncate with ellipsis.
+        }
+        advanced {
+            identifier: DISABLETEXTWRAPPING
+        }
+    )
+
+    templateOption showbadges (
+        name: Show Badges
+        sequence: 10
+        appearance {
+            cssClasses: t-LinksList--showBadge
+        }
+        help {
+            helpText: Show badge to right of link (requires Attribute 1 to be populated)
+        }
+        advanced {
+            identifier: SHOWBADGES
+        }
+    )
+
+    templateOption showgotoarrow (
+        name: Show Right Arrow
+        sequence: 20
+        appearance {
+            cssClasses: t-LinksList--showArrow
+        }
+        help {
+            helpText: Show arrow to the right of link
+        }
+        advanced {
+            identifier: SHOWGOTOARROW
+        }
+    )
+
+    templateOption showicons (
+        name: For All Items
+        group: @list/display-icons
+        sequence: 20
+        appearance {
+            cssClasses: t-LinksList--showIcons
+        }
+        advanced {
+            identifier: SHOWICONS
+        }
+    )
+
+    templateOption showtopicons (
+        name: For Top Level Items Only
+        group: @list/display-icons
+        sequence: 10
+        appearance {
+            cssClasses: t-LinksList--showTopIcons
+        }
+        help {
+            helpText: This will show icons for top level items of the list only. It will not show icons for sub lists.
+        }
+        advanced {
+            identifier: SHOWTOPICONS
+        }
+    )
+
+    templateOption actions (
+        name: Actions
+        group: @list/style
+        sequence: 10
+        appearance {
+            cssClasses: t-LinksList--actions
+        }
+        help {
+            helpText: Render as actions to be placed on the right side column.
+        }
+        advanced {
+            identifier: ACTIONS
+        }
+    )
+
+)
+

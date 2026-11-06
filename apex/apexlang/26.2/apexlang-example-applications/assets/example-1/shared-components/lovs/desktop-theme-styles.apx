@@ -1,0 +1,24 @@
+lov desktop-theme-styles (
+    name: DESKTOP THEME STYLES
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select s.name d,
+                   s.theme_style_id r
+              from apex_application_theme_styles s,
+                   apex_application_themes t
+             where s.application_id = :app_id
+               and t.application_id = s.application_id
+               and t.theme_number   = s.theme_number
+               and t.ui_type_name   = 'DESKTOP'
+               and t.is_current     = 'Yes'
+             order by 1
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+

@@ -1,0 +1,30 @@
+list user-settings (
+    name: User Settings
+    config {
+        buildOption: @feature-user-settings
+    }
+
+    entry push-notifications (
+        label: Push Notifications
+        icon {
+            imageIconCssClasses: fa-bell-o
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20010
+            }
+        }
+        userDefinedAttributes {
+            1: Configure whether you want to receive push notifications on this device.
+            2: <span class="a-pwaPush--state"></span>
+        }
+        config {
+            buildOption: @feature-push-notifications
+        }
+    )
+
+)
+

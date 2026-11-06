@@ -1,0 +1,161 @@
+regionTemplate hero (
+    name: Hero
+    templateClass: custom2
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" class="t-HeroRegion #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>
+              <div class="t-HeroRegion-top">
+                <div class="t-HeroRegion-wrap">
+                  <div class="t-HeroRegion-col t-HeroRegion-col--left">#REGION_IMAGE#<span class="t-HeroRegion-icon t-Icon #ICON_CSS_CLASSES#"></span></div>
+                  <div class="t-HeroRegion-col t-HeroRegion-col--content">
+                    <h1 class="t-HeroRegion-title" data-apex-heading>#TITLE#</h1>
+                    #BODY#
+                  </div>
+                  <div class="t-HeroRegion-col t-HeroRegion-col--right"><div class="t-HeroRegion-form">#SUB_REGIONS#</div><div class="t-HeroRegion-buttons">#NEXT#</div></div>
+                </div>
+              </div>
+              <div class="t-HeroRegion-bottom">#SMART_FILTERS#</div>
+            </div>
+            
+            ```
+        image: <img class="t-HeroRegion-icon" src="#REGION_IMAGE_URL#" alt="" />
+    }
+    advanced {
+        identifier: HERO
+    }
+    subscription {
+        master: @hero
+    }
+
+    templateOption remove-body-padding (
+        name: Remove Body Padding
+        sequence: 10
+        appearance {
+            cssClasses: t-HeroRegion--noPadding
+        }
+        help {
+            helpText: Removes the padding around the hero region.
+        }
+        advanced {
+            identifier: REMOVE_BODY_PADDING
+        }
+    )
+
+    templateOption display-icon-no (
+        name: No
+        group: @region/display-icon
+        sequence: 10
+        appearance {
+            cssClasses: t-HeroRegion--hideIcon
+        }
+        help {
+            helpText: Hide the Hero Region icon.
+        }
+        advanced {
+            identifier: DISPLAY_ICON_NO
+        }
+    )
+
+    templateOption heading-font-alternative (
+        name: Alternative
+        group: @region/heading-font
+        sequence: 1
+        appearance {
+            cssClasses: t-HeroRegion--headingFontAlt
+        }
+        advanced {
+            identifier: HEADING_FONT_ALTERNATIVE
+        }
+    )
+
+    templateOption icons-circular (
+        name: Circle
+        group: @region/icon-shape
+        sequence: 10
+        appearance {
+            cssClasses: t-HeroRegion--iconsCircle
+        }
+        help {
+            helpText: The icons are displayed within a circle.
+        }
+        advanced {
+            identifier: ICONS_CIRCULAR
+        }
+    )
+
+    templateOption icons-square (
+        name: Square
+        group: @region/icon-shape
+        sequence: 20
+        appearance {
+            cssClasses: t-HeroRegion--iconsSquare
+        }
+        help {
+            helpText: The icons are displayed within a square.
+        }
+        advanced {
+            identifier: ICONS_SQUARE
+        }
+    )
+
+    templateOption featured (
+        name: Featured
+        group: @region/style
+        sequence: 10
+        appearance {
+            cssClasses: t-HeroRegion--featured
+        }
+        advanced {
+            identifier: FEATURED
+        }
+    )
+
+    templateOption stacked-featured (
+        name: Stacked Featured
+        group: @region/style
+        sequence: 20
+        appearance {
+            cssClasses: [
+                t-HeroRegion--featured
+                t-HeroRegion--centered
+            ]
+        }
+        advanced {
+            identifier: STACKED_FEATURED
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+    )
+
+    slot smartFilters (
+        name: Smart Filters
+        staticId: SMART_FILTERS
+    )
+
+    slot subRegions (
+        name: Sub Regions
+        staticId: SUB_REGIONS
+    )
+
+)
+

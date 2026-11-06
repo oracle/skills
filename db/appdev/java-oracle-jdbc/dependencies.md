@@ -24,7 +24,24 @@ Use the matching UCP artifact for the JDBC driver line:
 
 Keep `ojdbc` and `ucp` artifacts on the same version.
 
+## Dependency Versions
+
+Before generating a dependency, get the latest published version from
+`https://central.sonatype.com/artifact/com.oracle.database.jdbc/{artifact-id}`
+and use the latest version shown there. Do not assume a version shown in this
+skill is current.
+
 ## Maven
+
+The Maven snippets use a property so related artifacts remain aligned. Replace
+`RESOLVED_EXACT_VERSION` with the latest version shown on the Maven Central
+artifact page:
+
+```xml
+<properties>
+    <oracle.jdbc.version>RESOLVED_EXACT_VERSION</oracle.jdbc.version>
+</properties>
+```
 
 For modern JDK 17+ applications:
 
@@ -32,13 +49,13 @@ For modern JDK 17+ applications:
 <dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ojdbc17</artifactId>
-    <version>23.26.2.0.0</version>
+    <version>${oracle.jdbc.version}</version>
 </dependency>
 
 <dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ucp17</artifactId>
-    <version>23.26.2.0.0</version>
+    <version>${oracle.jdbc.version}</version>
 </dependency>
 ```
 
@@ -48,13 +65,13 @@ For JDK 11 applications:
 <dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ojdbc11</artifactId>
-    <version>23.26.2.0.0</version>
+    <version>${oracle.jdbc.version}</version>
 </dependency>
 
 <dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ucp11</artifactId>
-    <version>23.26.2.0.0</version>
+    <version>${oracle.jdbc.version}</version>
 </dependency>
 ```
 
@@ -64,25 +81,32 @@ For applications that intentionally use Oracle's production dependency bundle:
 <dependency>
     <groupId>com.oracle.database.jdbc</groupId>
     <artifactId>ojdbc17-production</artifactId>
-    <version>23.26.2.0.0</version>
+    <version>${oracle.jdbc.version}</version>
     <type>pom</type>
 </dependency>
 ```
 
 ## Gradle
 
+Set `oracleJdbcVersion` to the latest version shown on the Maven Central
+artifact page:
+
+```groovy
+def oracleJdbcVersion = 'RESOLVED_EXACT_VERSION'
+```
+
 For modern JDK 17+ applications:
 
 ```groovy
-implementation 'com.oracle.database.jdbc:ojdbc17:23.26.2.0.0'
-implementation 'com.oracle.database.jdbc:ucp17:23.26.2.0.0'
+implementation "com.oracle.database.jdbc:ojdbc17:${oracleJdbcVersion}"
+implementation "com.oracle.database.jdbc:ucp17:${oracleJdbcVersion}"
 ```
 
 For JDK 11 applications:
 
 ```groovy
-implementation 'com.oracle.database.jdbc:ojdbc11:23.26.2.0.0'
-implementation 'com.oracle.database.jdbc:ucp11:23.26.2.0.0'
+implementation "com.oracle.database.jdbc:ojdbc11:${oracleJdbcVersion}"
+implementation "com.oracle.database.jdbc:ucp11:${oracleJdbcVersion}"
 ```
 
 ## Dependency Practices
@@ -95,7 +119,7 @@ implementation 'com.oracle.database.jdbc:ucp11:23.26.2.0.0'
 
 ## Oracle Version Notes (19c vs 26ai)
 
-- The examples use the Oracle AI Database 26ai JDBC/UCP RU line.
+- Resolve the current compatible JDBC/UCP release line when generating examples.
 - Oracle Database 26ai JDBC drivers are certified with Oracle Database 26ai, 21c, and 19c servers.
 - Newer server features, such as JSON Relational Duality Views and `VECTOR`, require a compatible database release and a current JDBC driver line.
 

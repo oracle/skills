@@ -1,0 +1,66 @@
+page 7 (
+    name: Orders Calendar
+    alias: ORDERS-CALENDAR
+    title: Orders Calendar
+    appearance {
+        pageTemplate: @standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region orders-calendar (
+        name: Orders Calendar
+        type: calendar
+        source {
+            location: localDatabase
+            tableName: OEHR_ORDERS
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            displayColumn: ORDER_DATE
+            startDateColumn: ORDER_DATE
+            additionalCalendarViews: [
+                list
+                navigation
+            ]
+        }
+    )
+
+)
+

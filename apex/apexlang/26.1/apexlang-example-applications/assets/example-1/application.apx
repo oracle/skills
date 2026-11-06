@@ -1,0 +1,108 @@
+app PILOT83921 (
+    name: Demonstration - HR
+    logo {
+        type: text
+        text: Demonstration - HR
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            t-TreeNav--styleA
+            js-navCollapsed--hidden
+        ]
+        list: @navigation-menu
+    }
+    navigationBar {
+        list: @navigation-bar
+        listTemplate: @navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apex-accounts
+    }
+    authorization {
+        scheme: @reader-rights
+    }
+    security {
+        runtimeApiUsage: modifyThisApp
+    }
+    sessionStateProtection {
+        checksumSalt: 40ACB0916413E0771D12A103716D68895FC91CBBB406CAFA608646F1C885FCA0
+    }
+    sessionManagement {
+        sessionStateCommits: immediate
+    }
+    globalization {
+        documentDirection: leftToRight
+    }
+    progressiveWebApp {
+        installable: true
+    }
+    reportPrinting {
+        type: useInstanceSettings
+    }
+    runtime {
+        allowFeedback: true
+        compatibilityMode: 21.2
+        accessibleReadOnlyItems: false
+    }
+    advanced {
+        passEcid: false
+        modernizeApp: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: Demonstration - HR
+        }
+    )
+
+    appSetting ACCESS_CONTROL_SCOPE (
+        value {
+            staticValue: ACL_ONLY
+            onUpgradeKeepValue: true
+        }
+        validation {
+            validValues: ACL_ONLY, ALL_USERS
+        }
+        config {
+            buildOption: @feature-access-control
+        }
+        comments {
+            comments: The default access level given to authenticated users who are not in the access control list
+        }
+    )
+
+    appSetting FEEDBACK_ATTACHMENTS_YN (
+        value {
+            staticValue: Y
+            onUpgradeKeepValue: true
+        }
+        validation {
+            validValues: Y, N
+        }
+        config {
+            buildOption: @feature-feedback
+        }
+    )
+
+)
+

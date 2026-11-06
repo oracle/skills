@@ -1,0 +1,30 @@
+list user-interface (
+    name: User Interface
+    config {
+        buildOption: @feature-theme-style-selection
+    }
+
+    entry theme-style-selection (
+        label: Theme Style Selection
+        icon {
+            imageIconCssClasses: fa-paint-brush
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10020
+                clearCache: 10020
+            }
+        }
+        userDefinedAttributes {
+            1: Set the default application look and feel
+        }
+        config {
+            buildOption: @feature-theme-style-selection
+        }
+    )
+
+)
+
