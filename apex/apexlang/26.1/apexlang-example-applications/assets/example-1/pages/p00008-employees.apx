@@ -1,0 +1,492 @@
+page 8 (
+    name: Employees
+    alias: EMPLOYEES
+    title: Employees
+    appearance {
+        pageTemplate: @left-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region button-bar (
+        name: Button Bar
+        type: staticContent
+        source {
+            htmlCode: <div id="active_facets"></div>
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noPadding
+                t-ButtonRegion--noUI
+            ]
+        }
+    )
+
+    region employees (
+        name: Employees
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: OEHR_EMPLOYEES
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--inline
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 100000
+        }
+        messages {
+            whenNoDataFound: no data found
+        }
+
+        column COMMISSION_PCT (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: Commission Percent
+                alignment: end
+            }
+            layout {
+                sequence: 9
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999990D00
+            }
+        )
+
+        column DEPARTMENT_ID (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 11
+            }
+        )
+
+        column EMAIL (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Email
+            }
+            layout {
+                sequence: 4
+            }
+        )
+
+        column EMPLOYEE_ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: link
+            heading {
+                heading: <span class="u-VisuallyHidden">Edit</span>
+                alignment: center
+            }
+            layout {
+                sequence: 0
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 9
+                    items: {
+                        P9_EMPLOYEE_ID: \#EMPLOYEE_ID#\
+                    }
+                    action: resetPagination
+                }
+                linkText: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+            }
+            sorting {
+                sortable: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            security {
+                authorizationScheme: @contribution-rights
+            }
+        )
+
+        column FIRST_NAME (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: First Name
+            }
+            layout {
+                sequence: 2
+            }
+        )
+
+        column HIRE_DATE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Hire Date
+                alignment: center
+            }
+            layout {
+                sequence: 6
+                columnAlignment: center
+            }
+        )
+
+        column JOB_ID (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            type: plainTextBasedOnLov
+            heading {
+                heading: Job
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-jobs-job-title
+            }
+            layout {
+                sequence: 7
+            }
+        )
+
+        column LAST_NAME (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Last Name
+            }
+            layout {
+                sequence: 3
+            }
+        )
+
+        column MANAGER_ID (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            type: plainTextBasedOnLov
+            heading {
+                heading: Manager
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-employees-first-name
+            }
+            layout {
+                sequence: 10
+            }
+        )
+
+        column PHONE_NUMBER (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Phone Number
+            }
+            layout {
+                sequence: 5
+            }
+        )
+
+        column SALARY (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Salary
+                alignment: end
+            }
+            layout {
+                sequence: 8
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G999G999G999G990
+            }
+        )
+
+    )
+
+    region search (
+        name: Search
+        type: facetedSearch
+        source {
+            filteredRegion: @employees
+        }
+        layout {
+            sequence: 10
+            slot: leftColumn
+            columnSpan: 4
+        }
+        appearance {
+            template: @standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            compactNosThreshold: 10000
+            showCurrentFacets: selector
+            currentFacetsSelector: #active_facets
+            showTotalRowCount: true
+            displayChartForTopNValues: 10
+        }
+
+        facet P8_COMMISSION_PCT (
+            type: range
+            label {
+                label: Commission Percent
+            }
+            settings {
+                selectMultiple: true
+            }
+            lov {
+                type: staticValues
+                staticValues: STATIC2:<0#D#15;|.15,0#D#15 - 0#D#2;.15|.2,0#D#2 - 0#D#25;.2|.25,0#D#25 - 0#D#3;.25|.3,>=0#D#3;.3|
+            }
+            layout {
+                sequence: 50
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: COMMISSION_PCT
+                dataType: number
+            }
+        )
+
+        facet P8_DEPARTMENT_ID (
+            type: checkboxGroup
+            label {
+                label: Department
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-departments-department-name
+            }
+            layout {
+                sequence: 40
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: DEPARTMENT_ID
+                dataType: number
+            }
+        )
+
+        facet P8_FIRST_NAME (
+            type: checkboxGroup
+            label {
+                label: First Name
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 60
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: FIRST_NAME
+            }
+        )
+
+        facet P8_JOB_ID (
+            type: checkboxGroup
+            label {
+                label: Job
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-jobs-job-title
+            }
+            layout {
+                sequence: 20
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: JOB_ID
+            }
+        )
+
+        facet P8_MANAGER_ID (
+            type: checkboxGroup
+            label {
+                label: Manager
+            }
+            lov {
+                type: sharedComponent
+                lov: @oehr-employees-first-name
+            }
+            layout {
+                sequence: 30
+            }
+            listEntries {
+                maxDisplayedEntries: 7
+            }
+            source {
+                databaseColumn: MANAGER_ID
+                dataType: number
+            }
+        )
+
+        facet P8_SEARCH (
+            type: search
+            label {
+                label: Search
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dbColumns: FIRST_NAME,LAST_NAME,EMAIL,PHONE_NUMBER,JOB_ID,MANAGER_ID
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 10
+            region: @employees
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 9
+                clearCache: 9
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset (
+        buttonName: RESET
+        label: Reset
+        layout {
+            sequence: 10
+            region: @button-bar
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--noUI
+                t-Button--iconLeft
+            ]
+            icon: fa-undo
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 8
+                clearCache: 8
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @employees
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @employees
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

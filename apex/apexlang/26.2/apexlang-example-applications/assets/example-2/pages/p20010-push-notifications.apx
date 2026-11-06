@@ -1,0 +1,177 @@
+page 20010 (
+    name: Push Notifications
+    alias: PUSH-NOTIFICATIONS
+    title: Settings - Push Notifications
+    pageGroup: @user-settings
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            js-dialog-class-t-Drawer--pullOutEnd
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    javaScript {
+        executeWhenPageLoads: apex.pwa.initPushSubscriptionPage();
+    }
+    help {
+        helpText: This page contains the settings for controlling push notification subscription for the current user.
+    }
+    config {
+        buildOption: @feature-push-notifications
+    }
+
+    region push-notifications (
+        name: Push Notifications
+        type: staticContent
+        source {
+            htmlCode: Push notifications have to be enabled for each device you want to receive the notifications on. The first time you enable push notifications, you will have to grant permission to your browser. This setting can be changed at any time.
+        }
+        layout {
+            sequence: 30
+            slot: contentBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--colorBG
+                t-Alert--wizard
+                t-Alert--customIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                t-Form--xlarge
+            ]
+            cssClasses: a-pwaPush--subscriptionRegion
+            icon: fa-bell-o
+            renderComponents: belowContent
+        }
+    )
+
+    region push-notifications-not-supported (
+        name: Push Notifications Not Supported
+        type: staticContent
+        source {
+            htmlCode: Push notifications are not currently supported in your browser.
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--colorBG
+                t-Alert--wizard
+                t-Alert--customIcons
+                t-Alert--warning
+                t-Alert--removeHeading js-removeLandmark
+                t-Form--xlarge
+            ]
+            cssClasses: a-pwaPush--subscriptionRegion--not-supported
+            icon: fa-bell-slash-o
+            renderComponents: belowContent
+        }
+        advanced {
+            customAttributes: style="display:none;"
+        }
+    )
+
+    pageItem P20010_ENABLE_PUSH (
+        type: checkbox
+        label {
+            label: Enable push notifications on this device
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @push-notifications
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                margin-top-sm
+            ]
+        }
+    )
+
+    button back (
+        buttonName: BACK
+        label: Settings
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--link
+                t-Button--iconLeft
+            ]
+            cssClasses: t-Button--inlineLink
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 20000
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction change-p20010-enable-push (
+        name: Change P20010_ENABLE_PUSH
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P20010_ENABLE_PUSH
+        }
+        clientSideCondition {
+            type: item=value
+            item: P20010_ENABLE_PUSH
+            value: Y
+        }
+
+        action subscribe-to-push-notifications (
+            name: Subscribe to push notifications
+            action: executeJsCode
+            settings {
+                jsCode: apex.pwa.subscribePushNotifications();
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action unsubscribe-from-push-notifications (
+            name: Unsubscribe from push notifications
+            action: executeJsCode
+            settings {
+                jsCode: apex.pwa.unsubscribePushNotifications();
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

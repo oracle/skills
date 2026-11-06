@@ -1,0 +1,276 @@
+classicReportTemplate media-list (
+    name: Media List
+    templateClass: borderless
+    type: namedColumn
+    templateOptions {
+        preset: t-MediaList--stack
+        default: [
+            t-MediaList--showDesc
+            t-MediaList--showIcons
+        ]
+    }
+    reportTemplate {
+        top: <ul class="t-MediaList #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">
+        bottom:
+            ```html
+            </ul>
+            <table class="t-Report-pagination" role="presentation">#PAGINATION#</table>
+            ```
+    }
+    rowTemplate1 {
+        template:
+            ```html
+            <li class="t-MediaList-item #LIST_CLASS#">
+              <a href="#LINK#" class="t-MediaList-itemWrap #LINK_CLASS#" #LINK_ATTR#>
+                <div class="t-MediaList-iconWrap" aria-hidden"true">
+                  <span class="t-MediaList-icon u-color #ICON_COLOR_CLASS#"><span class="t-Icon #ICON_CLASS#"></span></span>
+                </div>
+                <div class="t-MediaList-body">
+                  <h3 class="t-MediaList-title">#LIST_TITLE#</h3>
+                  <p class="t-MediaList-desc">#LIST_TEXT#</p>
+                </div>
+                <div class="t-MediaList-badgeWrap">
+                  <span class="t-MediaList-badge">#LIST_BADGE#</span>
+                </div>
+              </a>
+            </li>
+            
+            ```
+        conditionType: plsqlExpression
+        plsqlExpression: :LINK is not null
+    }
+    rowTemplate2 {
+        template:
+            ```html
+            <li class="t-MediaList-item #LIST_CLASS#">
+              <div class="t-MediaList-itemWrap #LINK_CLASS#" #LINK_ATTR#>
+                <div class="t-MediaList-iconWrap" aria-hidden"true">
+                  <span class="t-MediaList-icon u-color #ICON_COLOR_CLASS#"><span class="t-Icon #ICON_CLASS#"></span></span>
+                </div>
+                <div class="t-MediaList-body">
+                  <h3 class="t-MediaList-title">#LIST_TITLE#</h3>
+                  <p class="t-MediaList-desc">#LIST_TEXT#</p>
+                </div>
+                <div class="t-MediaList-badgeWrap">
+                  <span class="t-MediaList-badge">#LIST_BADGE#</span>
+                </div>
+              </div>
+            </li>
+            
+            ```
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: MEDIA_LIST
+    }
+    subscription {
+        master: @media-list
+    }
+    comments {
+        comments: " (SELECT link_text, link_target, detail1, detail2, last_modified)"
+    }
+
+    templateOption apply-theme-colors (
+        name: Apply Theme Colors
+        sequence: 40
+        appearance {
+            cssClasses: u-colors
+        }
+        advanced {
+            identifier: APPLY_THEME_COLORS
+        }
+    )
+
+    templateOption show-badges (
+        name: Show Badges
+        sequence: 30
+        appearance {
+            cssClasses: t-MediaList--showBadges
+        }
+        advanced {
+            identifier: SHOW_BADGES
+        }
+    )
+
+    templateOption show-description (
+        name: Show Description
+        sequence: 20
+        appearance {
+            cssClasses: t-MediaList--showDesc
+        }
+        advanced {
+            identifier: SHOW_DESCRIPTION
+        }
+    )
+
+    templateOption show-icons (
+        name: Show Icons
+        sequence: 10
+        appearance {
+            cssClasses: t-MediaList--showIcons
+        }
+        advanced {
+            identifier: SHOW_ICONS
+        }
+    )
+
+    templateOption icons-rounded (
+        name: Rounded Corners
+        group: @report/icon-shape
+        sequence: 10
+        appearance {
+            cssClasses: t-MediaList--iconsRounded
+        }
+        help {
+            helpText: The icons are displayed within a square with rounded corners.
+        }
+        advanced {
+            identifier: ICONS_ROUNDED
+        }
+    )
+
+    templateOption icons-square (
+        name: Square
+        group: @report/icon-shape
+        sequence: 20
+        appearance {
+            cssClasses: t-MediaList--iconsSquare
+        }
+        help {
+            helpText: The icons are displayed within a square shape.
+        }
+        advanced {
+            identifier: ICONS_SQUARE
+        }
+    )
+
+    templateOption 2-column-grid (
+        name: 2 Column Grid
+        group: @report/layout
+        sequence: 10
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--2cols
+            ]
+        }
+        advanced {
+            identifier: 2_COLUMN_GRID
+        }
+    )
+
+    templateOption 3-column-grid (
+        name: 3 Column Grid
+        group: @report/layout
+        sequence: 20
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--3cols
+            ]
+        }
+        advanced {
+            identifier: 3_COLUMN_GRID
+        }
+    )
+
+    templateOption 4-column-grid (
+        name: 4 Column Grid
+        group: @report/layout
+        sequence: 30
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--4cols
+            ]
+        }
+        advanced {
+            identifier: 4_COLUMN_GRID
+        }
+    )
+
+    templateOption 5-column-grid (
+        name: 5 Column Grid
+        group: @report/layout
+        sequence: 40
+        appearance {
+            cssClasses: [
+                t-MediaList--cols
+                t-MediaList--5cols
+            ]
+        }
+        advanced {
+            identifier: 5_COLUMN_GRID
+        }
+    )
+
+    templateOption span-horizontal (
+        name: Span Horizontal
+        group: @report/layout
+        sequence: 50
+        appearance {
+            cssClasses: t-MediaList--horizontal
+        }
+        advanced {
+            identifier: SPAN_HORIZONTAL
+        }
+    )
+
+    templateOption stack (
+        name: Stack
+        group: @report/layout
+        sequence: 5
+        appearance {
+            cssClasses: t-MediaList--stack
+        }
+        advanced {
+            identifier: STACK
+        }
+    )
+
+    templateOption large (
+        name: Large
+        group: @report/size
+        sequence: 20
+        appearance {
+            cssClasses: [
+                t-MediaList--large
+                force-fa-lg
+            ]
+        }
+        help {
+            helpText: Increases the size of the text and icons in the list.
+        }
+        advanced {
+            identifier: LARGE
+        }
+    )
+
+)
+

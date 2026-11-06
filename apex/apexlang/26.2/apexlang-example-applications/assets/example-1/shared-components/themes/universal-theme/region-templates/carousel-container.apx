@@ -1,0 +1,517 @@
+regionTemplate carousel-container (
+    name: Carousel Container
+    templateClass: navigationRegion
+    templateOptions {
+        preset: t-Region--hiddenOverflow
+        default: t-Region--showCarouselControls
+    }
+    region {
+        template:
+            ```html
+            <div role="region" aria-label="#TITLE!ATTR#" class="t-Region t-Region--carousel #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>
+              <div class="t-Region-header">
+                <div class="t-Region-headerItems t-Region-headerItems--title">
+                  <span class="t-Region-headerIcon"><span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span></span>
+                  <h2 class="t-Region-title" id="#REGION_STATIC_ID#_heading" data-apex-heading>#TITLE#</h2>
+                </div>
+                <div class="t-Region-headerItems t-Region-headerItems--buttons">#COPY##EDIT#<span class="js-maximizeButtonContainer"></span></div>
+              </div>
+              <div role="region" aria-label="#TITLE#" class="t-Region-bodyWrap">
+                <div class="t-Region-buttons t-Region-buttons--top">
+                  <div class="t-Region-buttons-left">#PREVIOUS#</div>
+                  <div class="t-Region-buttons-right">#NEXT#</div>
+                </div>
+                <div class="t-Region-body">
+                  #BODY#
+                  <div class="t-Region-carouselRegions">#SUB_REGIONS#</div>
+                </div>
+                <div class="t-Region-buttons t-Region-buttons--bottom">
+                  <div class="t-Region-buttons-left">#CLOSE##HELP#</div>
+                  <div class="t-Region-buttons-right">#DELETE##CHANGE##CREATE#</div>
+                </div>
+              </div>
+            </div>
+            ```
+    }
+    subRegions {
+        template:
+            ```html
+            <div data-label="#SUB_REGION_TITLE#" id="SR_#SUB_REGION_ID#">
+              #SUB_REGION#
+            </div>
+            ```
+    }
+    javaScript {
+        fileUrls: [
+            #APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.apexTabs#MIN#.js?v=#APEX_VERSION#
+            #APEX_FILES#plugins/com.oracle.apex.carousel/1.1/com.oracle.apex.carousel#MIN#.js?v=#APEX_VERSION#
+        ]
+    }
+    advanced {
+        identifier: CAROUSEL_CONTAINER
+    }
+    subscription {
+        master: @carousel-container
+    }
+
+    templateOption nobodypadding (
+        name: Remove Body Padding
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--noPadding
+        }
+        help {
+            helpText: Removes padding from region body.
+        }
+        advanced {
+            identifier: NOBODYPADDING
+        }
+    )
+
+    templateOption remember-carousel-slide (
+        name: Remember Carousel Slide
+        sequence: 20
+        appearance {
+            cssClasses: js-useLocalStorage
+        }
+        advanced {
+            identifier: REMEMBER_CAROUSEL_SLIDE
+        }
+    )
+
+    templateOption show-maximize-button (
+        name: Show Maximize Button
+        sequence: 40
+        appearance {
+            cssClasses: js-showMaximizeButton
+        }
+        help {
+            helpText: Displays a button in the Region Header to maximize the region. Clicking this button will toggle the maximize state and stretch the region to fill the screen.
+        }
+        advanced {
+            identifier: SHOW_MAXIMIZE_BUTTON
+        }
+    )
+
+    templateOption show-next-and-previous-buttons (
+        name: Show Next and Previous Buttons
+        sequence: 30
+        appearance {
+            cssClasses: t-Region--showCarouselControls
+        }
+        advanced {
+            identifier: SHOW_NEXT_AND_PREVIOUS_BUTTONS
+        }
+    )
+
+    templateOption show-region-icon (
+        name: Show Region Icon
+        sequence: 50
+        appearance {
+            cssClasses: t-Region--showIcon
+        }
+        help {
+            helpText: Displays the region icon in the region header beside the region title
+        }
+        advanced {
+            identifier: SHOW_REGION_ICON
+        }
+    )
+
+    templateOption accent-1 (
+        name: Accent 1
+        group: @region/accent
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--accent1
+        }
+        advanced {
+            identifier: ACCENT_1
+        }
+    )
+
+    templateOption accent-2 (
+        name: Accent 2
+        group: @region/accent
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--accent2
+        }
+        advanced {
+            identifier: ACCENT_2
+        }
+    )
+
+    templateOption accent-3 (
+        name: Accent 3
+        group: @region/accent
+        sequence: 30
+        appearance {
+            cssClasses: t-Region--accent3
+        }
+        advanced {
+            identifier: ACCENT_3
+        }
+    )
+
+    templateOption accent-4 (
+        name: Accent 4
+        group: @region/accent
+        sequence: 40
+        appearance {
+            cssClasses: t-Region--accent4
+        }
+        advanced {
+            identifier: ACCENT_4
+        }
+    )
+
+    templateOption accent-5 (
+        name: Accent 5
+        group: @region/accent
+        sequence: 50
+        appearance {
+            cssClasses: t-Region--accent5
+        }
+        advanced {
+            identifier: ACCENT_5
+        }
+    )
+
+    templateOption slide (
+        name: Slide
+        group: @region/animation
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--carouselSlide
+        }
+        advanced {
+            identifier: SLIDE
+        }
+    )
+
+    templateOption spin (
+        name: Spin
+        group: @region/animation
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--carouselSpin
+        }
+        advanced {
+            identifier: SPIN
+        }
+    )
+
+    templateOption 240px (
+        name: 240px
+        group: @region/body-height
+        sequence: 10
+        appearance {
+            cssClasses: i-h240
+        }
+        help {
+            helpText: Sets region body height to 240px.
+        }
+        advanced {
+            identifier: 240PX
+        }
+    )
+
+    templateOption 320px (
+        name: 320px
+        group: @region/body-height
+        sequence: 20
+        appearance {
+            cssClasses: i-h320
+        }
+        help {
+            helpText: Sets region body height to 320px.
+        }
+        advanced {
+            identifier: 320PX
+        }
+    )
+
+    templateOption 480px (
+        name: 480px
+        group: @region/body-height
+        sequence: 30
+        appearance {
+            cssClasses: i-h480
+        }
+        advanced {
+            identifier: 480PX
+        }
+    )
+
+    templateOption 640px (
+        name: 640px
+        group: @region/body-height
+        sequence: 40
+        appearance {
+            cssClasses: i-h640
+        }
+        advanced {
+            identifier: 640PX
+        }
+    )
+
+    templateOption hideoverflow (
+        name: Hide
+        group: @region/body-overflow
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--hiddenOverflow
+        }
+        advanced {
+            identifier: HIDEOVERFLOW
+        }
+    )
+
+    templateOption scrollbody (
+        name: Scroll
+        group: @region/body-overflow
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--scrollBody
+        }
+        advanced {
+            identifier: SCROLLBODY
+        }
+    )
+
+    templateOption hiddenheadernoat (
+        name: Hidden
+        group: @region/header
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--removeHeader
+        }
+        advanced {
+            identifier: HIDDENHEADERNOAT
+        }
+    )
+
+    templateOption hideregionheader (
+        name: Hidden but accessible
+        group: @region/header
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--hideHeader
+        }
+        help {
+            helpText: This option will hide the region header.  Note that the region title will still be audible for Screen Readers. Buttons placed in the region header will be hidden and inaccessible.
+        }
+        advanced {
+            identifier: HIDEREGIONHEADER
+        }
+    )
+
+    templateOption noborder (
+        name: Remove Borders
+        group: @region/style
+        sequence: 10
+        appearance {
+            cssClasses: t-Region--noBorder
+        }
+        help {
+            helpText: Removes borders from the region.
+        }
+        advanced {
+            identifier: NOBORDER
+        }
+    )
+
+    templateOption stacked (
+        name: Stack Region
+        group: @region/style
+        sequence: 20
+        appearance {
+            cssClasses: t-Region--stacked
+        }
+        help {
+            helpText: Removes side borders and shadows, and can be useful for accordions and regions that need to be grouped together vertically.
+        }
+        advanced {
+            identifier: STACKED
+        }
+    )
+
+    templateOption 10-seconds (
+        name: 10 Seconds
+        group: @region/timer
+        sequence: 20
+        appearance {
+            cssClasses: js-cycle10s
+        }
+        advanced {
+            identifier: 10_SECONDS
+        }
+    )
+
+    templateOption 15-seconds (
+        name: 15 Seconds
+        group: @region/timer
+        sequence: 30
+        appearance {
+            cssClasses: js-cycle15s
+        }
+        advanced {
+            identifier: 15_SECONDS
+        }
+    )
+
+    templateOption 20-seconds (
+        name: 20 Seconds
+        group: @region/timer
+        sequence: 40
+        appearance {
+            cssClasses: js-cycle20s
+        }
+        advanced {
+            identifier: 20_SECONDS
+        }
+    )
+
+    templateOption 5-seconds (
+        name: 5 Seconds
+        group: @region/timer
+        sequence: 10
+        appearance {
+            cssClasses: js-cycle5s
+        }
+        advanced {
+            identifier: 5_SECONDS
+        }
+    )
+
+    slot change (
+        name: Change
+        staticId: CHANGE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot close (
+        name: Close
+        staticId: CLOSE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot copy (
+        name: Copy
+        staticId: COPY
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot create (
+        name: Create
+        staticId: CREATE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot delete (
+        name: Delete
+        staticId: DELETE
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot edit (
+        name: Edit
+        staticId: EDIT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot help (
+        name: Help
+        staticId: HELP
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot next (
+        name: Next
+        staticId: NEXT
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot previous (
+        name: Previous
+        staticId: PREVIOUS
+        supports {
+            regions: false
+            buttons: true
+        }
+        gridLayout {
+            gridSupport: false
+        }
+    )
+
+    slot regionBody (
+        name: Region Body
+        staticId: BODY
+        supports {
+            items: true
+            buttons: true
+        }
+        gridLayout {
+            maxFixedColumns: 12
+        }
+    )
+
+    slot slides (
+        name: Slides
+        staticId: SUB_REGIONS
+        gridLayout {
+            maxFixedColumns: 12
+        }
+    )
+
+)
+

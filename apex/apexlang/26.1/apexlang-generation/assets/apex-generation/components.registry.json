@@ -1,0 +1,3325 @@
+{
+  "version": 1,
+  "notes": "Maps natural-language keywords to canonical APEX components, required rule files, templates, and required inputs. Used by the root APEXlang router while loading references/workflows/apex-generation.md to build structured Message 2 without inventing attributes or UT classes.",
+  "defaults": {
+    "multiComponentTargetType": "page",
+    "alwaysRules": [
+      "00-guard/ai.guard.md",
+      "10-global/apex.global.md"
+    ],
+    "stylingRules": [],
+    "outputPath": "applications/",
+    "importGate": {
+      "appPathVar": "APP_PATH",
+      "appIdVar": "APPLICATION_ID",
+      "runtimeGateAgent": "references/ops/runtime-gates/02-direct-sqlcl-validate-gate.md",
+      "agent": "references/ops/runtime-gates/01-direct-sqlcl-import.md"
+    }
+  },
+  "components": [
+    {
+      "name": "cards",
+      "target_type": "page",
+      "synonyms": [
+        "visual summary",
+        "people cards",
+        "person cards",
+        "product cards",
+        "status cards",
+        "status tiles",
+        "entity cards",
+        "cards region",
+        "cards",
+        "dynamic cards refresh",
+        "cards refresh on change"
+      ],
+      "rules": [
+        "10-global/apex.global.md",
+        "30-pages/apex.cards-page.md",
+        "40-components/apex.region-data-source.md",
+        "40-components/apex.region-interactions.md",
+        "40-components/apex.region-media.md"
+      ],
+      "templates": [
+        "templates/region-components/cards/cards._index.md",
+        "templates/region-components/cards/cards._common.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "sql",
+            "sql query",
+            "sql source",
+            "sql-backed",
+            "local database"
+          ],
+          "templates": [
+            "templates/region-components/cards/cards.standard.md"
+          ]
+        },
+        {
+          "keywords": [
+            "rest",
+            "rest source",
+            "rest data source"
+          ],
+          "templates": [
+            "templates/region-components/cards/cards.rest-source.md"
+          ]
+        },
+        {
+          "keywords": [
+            "refresh on change",
+            "refresh when",
+            "cards refresh on change"
+          ],
+          "templates": [
+            "templates/region-components/cards/cards.refresh-on-change.md"
+          ]
+        },
+        {
+          "keywords": [
+            "refresh after dialog",
+            "dialog closes",
+            "dialog close refresh"
+          ],
+          "templates": [
+            "templates/region-components/cards/cards.refresh-after-dialog.md"
+          ]
+        }
+      ],
+      "requires": [
+        "SQL query or REST Data Source",
+        "title mapping",
+        "optional: subtitle, body, icon, media, badge, action, refresh, fixed grid columns"
+      ],
+      "excludes": [
+        "interactive-grid",
+        "da-refresh-region-on-change",
+        "da-refresh-region-after-dialog"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-checkbox",
+      "synonyms": [
+        "checkbox"
+      ],
+      "templates": [
+        "templates/items/checkbox/checkbox._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-color-picker",
+      "synonyms": [
+        "color picker"
+      ],
+      "templates": [
+        "templates/items/color-picker/standard.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-combobox",
+      "synonyms": [
+        "combobox"
+      ],
+      "templates": [
+        "templates/items/combobox/combobox._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-date-picker",
+      "synonyms": [
+        "date picker"
+      ],
+      "templates": [
+        "templates/items/date-picker/date-picker._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-display-only",
+      "synonyms": [
+        "display only"
+      ],
+      "templates": [
+        "templates/items/display-only/standard.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-file-upload",
+      "synonyms": [
+        "file upload"
+      ],
+      "templates": [
+        "templates/items/file-upload/file-upload._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-hidden-item",
+      "synonyms": [
+        "hidden item"
+      ],
+      "templates": [
+        "templates/items/hidden-item/hidden-item._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-number-field",
+      "synonyms": [
+        "number field"
+      ],
+      "templates": [
+        "templates/items/number-field/number-field._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-radio-group",
+      "synonyms": [
+        "radio group"
+      ],
+      "templates": [
+        "templates/items/radio-group/radio-group._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-rich-text-editor",
+      "synonyms": [
+        "rich text editor"
+      ],
+      "templates": [
+        "templates/items/rich-text-editor/rich-text-editor._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-select-list",
+      "synonyms": [
+        "select list"
+      ],
+      "templates": [
+        "templates/items/select-list/select-list._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-select-many",
+      "synonyms": [
+        "select many",
+        "multi select",
+        "multi-select"
+      ],
+      "templates": [
+        "templates/items/select-many/standard.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-select-one",
+      "synonyms": [
+        "select one"
+      ],
+      "templates": [
+        "templates/items/select-one/standard.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-shuttle",
+      "synonyms": [
+        "shuttle"
+      ],
+      "templates": [
+        "templates/items/shuttle/shuttle._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-star-rating",
+      "synonyms": [
+        "star rating"
+      ],
+      "templates": [
+        "templates/items/star-rating/standard.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-switch",
+      "synonyms": [
+        "switch"
+      ],
+      "templates": [
+        "templates/items/switch/switch._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-text-area",
+      "synonyms": [
+        "text area"
+      ],
+      "templates": [
+        "templates/items/text-area/text-area._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-text-autocomplete",
+      "synonyms": [
+        "text autocomplete"
+      ],
+      "templates": [
+        "templates/items/text-autocomplete/text-autocomplete._index.md"
+      ]
+    },
+    {
+      "target_type": "item",
+      "rules": [
+        "40-components/apex.items.md"
+      ],
+      "name": "item-text-field",
+      "synonyms": [
+        "text field",
+        "input text",
+        "native input"
+      ],
+      "templates": [
+        "templates/items/text-field/text-field._index.md"
+      ]
+    },
+    {
+      "name": "classic-report",
+      "synonyms": [
+        "classic report",
+        "classic report page",
+        "classic report region"
+      ],
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "30-pages/apex.classic-report.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/region-components/classic-report/classic-report._common.md",
+        "templates/page-examples/classic-report-page/classic-report-page._index.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "media list",
+            "media-list",
+            "@/media-list"
+          ],
+          "templates": [
+            "templates/region-components/classic-report/classic-report._common.md"
+          ]
+        }
+      ],
+      "requires": [
+        "db_connection_name",
+        "source object (table or view)",
+        "columns",
+        "sort column (order by)",
+        "sql or table"
+      ]
+    },
+    {
+      "name": "standalone-avatar",
+      "synonyms": [
+        "standalone avatar",
+        "standalone avatar region",
+        "avatar region",
+        "avatar report",
+        "avatar report region",
+        "avatar template component",
+        "theme template component avatar",
+        "themetemplatecomponent avatar"
+      ],
+      "target_type": "page",
+      "excludes": [
+        "classic-report",
+        "interactive-report"
+      ],
+      "rules": [
+        "10-global/apex.global.md",
+        "20-data/apex.sql.md",
+        "40-components/apex.templates.md",
+        "40-components/apex.region-data-source.md"
+      ],
+      "templates": [
+        "templates/template-components/avatar/avatar._common.md",
+        "templates/template-components/avatar/avatar._index.md",
+        "templates/template-components/avatar/avatar.report-initials.md",
+        "templates/template-components/avatar/avatar.report-icon.md",
+        "templates/template-components/avatar/avatar.report-image-url-column.md"
+      ],
+      "requires": [
+        "source object or SQL query",
+        "named projected columns using uppercase snake_case identifiers, source.databaseColumn, and source.dataType",
+        "direct initials source-column identifier without ampersand substitution syntax",
+        "deterministic order by",
+        "avatar type: initials, icon, or URL-column image",
+        "existing authorization scheme when access is restricted"
+      ]
+    },
+    {
+      "name": "interactive-report",
+      "synonyms": [
+        "data report",
+        "interactive data table",
+        "interactive list of records",
+        "interactive report",
+        "interactive report region",
+        "ir",
+        "report",
+        "report on table",
+        "report page",
+        "report region",
+        "report with filters",
+        "searchable report",
+        "table report",
+        "table view",
+        "tabular report"
+      ],
+      "target_type": "interactive-report",
+      "rules": [
+        "30-pages/apex.page.md",
+        "30-pages/apex.interactive-report.md"
+      ],
+      "templates": [
+        "templates/region-components/interactive-report/interactive-report._common.md",
+        "templates/page-examples/interactive-report-page/interactive-report-page._index.md"
+      ],
+      "requires": [
+        "db_connection_name",
+        "source object (table or view)",
+        "columns",
+        "sort column (order by)",
+        "sql or table"
+      ]
+    },
+    {
+      "name": "list-region",
+      "target_type": "page",
+      "synonyms": [
+        "list region",
+        "list",
+        "card list",
+        "list-region",
+        "list template"
+      ],
+      "rules": [
+        "30-pages/apex.page.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/region-components/list/list._index.md",
+        "templates/region-components/list/list._common.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "media list template",
+            "@/media-list",
+            "list-region media list"
+          ],
+          "templates": [
+            "templates/region-components/list/list.media-list.md"
+          ]
+        }
+      ],
+      "requires": [
+        "source.listReference (shared list alias)",
+        "qualifier: cards or mediaList"
+      ]
+    },
+    {
+      "name": "metric-card",
+      "target_type": "page",
+      "synonyms": [
+        "metric card",
+        "metric cards",
+        "metric-card",
+        "metric card region",
+        "metric card template component",
+        "kpi card",
+        "kpi cards",
+        "kpi",
+        "scorecard",
+        "scorecards"
+      ],
+      "rules": [
+        "30-pages/apex.page.md",
+        "40-components/apex.templates.md"
+      ],
+      "templates": [
+        "templates/template-components/metric-card/metric-card._index.md",
+        "templates/template-components/metric-card/metric-card._common.md",
+        "templates/template-components/metric-card/metric-card.report-minimal.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "partial metric card",
+            "single metric card partial",
+            "metric card partial mode"
+          ],
+          "templates": [
+            "templates/template-components/metric-card/metric-card.partial-minimal.md"
+          ]
+        },
+        {
+          "keywords": [
+            "metric card avatar",
+            "metric card badge",
+            "metric card avatar and badge",
+            "kpi avatar",
+            "kpi badge"
+          ],
+          "templates": [
+            "templates/template-components/metric-card/metric-card.report-avatar-badge.md"
+          ]
+        },
+        {
+          "keywords": [
+            "metric card link",
+            "metric card navigation",
+            "metric card drilldown",
+            "kpi navigation",
+            "kpi drilldown",
+            "row navigation"
+          ],
+          "templates": [
+            "templates/template-components/metric-card/metric-card.report-link.md"
+          ]
+        },
+        {
+          "keywords": [
+            "grouped metric card",
+            "grouped metric cards",
+            "metric card grouping",
+            "metric card selection",
+            "selectable metric card",
+            "selectable metric cards"
+          ],
+          "templates": [
+            "templates/template-components/metric-card/metric-card.report-grouping-selection.md"
+          ]
+        },
+        {
+          "keywords": [
+            "metric card permutations",
+            "metric card permutation app",
+            "metric card qa app",
+            "all metric card variants",
+            "all metric card combinations"
+          ],
+          "templates": [
+            "templates/template-components/metric-card/metric-card.permutations.md"
+          ]
+        }
+      ],
+      "requires": [
+        "partial or report display mode, with report-only attributes omitted in partial mode",
+        "report source and projected columns when report mode is used",
+        "settings.metric (required)",
+        "settings.title and settings.meta (optional)",
+        "valid nested Avatar/Badge payloads and projected selector columns when requested",
+        "valid dependencies for requested grouping, selection, and link behavior",
+        "action target and existing authorization scheme when requested"
+      ],
+      "routing": {
+        "explicitSelectors": [
+          "kpi card",
+          "metric card",
+          "metric-card",
+          "metricCard",
+          "scorecard",
+          "themeTemplateComponent/metricCard"
+        ],
+        "defaultMode": "report",
+        "partialTriggers": [
+          "partial",
+          "partial mode",
+          "partial template"
+        ],
+        "featureSignals": {
+          "avatar": [
+            "avatar",
+            "icon"
+          ],
+          "badge": [
+            "badge"
+          ],
+          "grouping": [
+            "group",
+            "grouped",
+            "grouping"
+          ],
+          "link": [
+            "drilldown",
+            "link",
+            "navigation"
+          ],
+          "selection": [
+            "select",
+            "selectable",
+            "selection"
+          ]
+        },
+        "semanticSignalGroups": {
+          "aggregate-source": [
+            "aggregate",
+            "average",
+            "avg",
+            "count",
+            "number",
+            "numeric",
+            "query",
+            "sum",
+            "total"
+          ],
+          "card-context": [
+            "card",
+            "cards",
+            "counter",
+            "summary",
+            "tile",
+            "tiles"
+          ],
+          "metric-context": [
+            "kpi",
+            "measure",
+            "metric",
+            "metrics",
+            "scorecard"
+          ]
+        },
+        "requiredSemanticSignalGroups": [
+          "aggregate-source",
+          "card-context",
+          "metric-context"
+        ],
+        "suppresses": [
+          "avatar",
+          "badge",
+          "dashboard",
+          "interactive-report"
+        ],
+        "sourceAdapters": {
+          "partial": [
+            {
+              "adapter": "jsonDualityView",
+              "signals": [
+                "duality view",
+                "json duality view"
+              ]
+            },
+            {
+              "adapter": "jsonSource",
+              "signals": [
+                "json collection",
+                "json source"
+              ]
+            },
+            {
+              "adapter": "localDatabase",
+              "signals": [
+                "local database",
+                "sql query",
+                "table"
+              ]
+            },
+            {
+              "adapter": "restEnabledSql",
+              "signals": [
+                "remote sql",
+                "rest enabled sql"
+              ]
+            },
+            {
+              "adapter": "restSource",
+              "signals": [
+                "rest source",
+                "web source"
+              ]
+            },
+            {
+              "adapter": "sampleData",
+              "signals": [
+                "sample data"
+              ]
+            }
+          ],
+          "report": [
+            {
+              "adapter": "jsonDualityView",
+              "signals": [
+                "duality view",
+                "json duality view"
+              ]
+            },
+            {
+              "adapter": "jsonSource",
+              "signals": [
+                "json collection",
+                "json source"
+              ]
+            },
+            {
+              "adapter": "localDatabase",
+              "signals": [
+                "local database",
+                "sql query",
+                "table"
+              ]
+            },
+            {
+              "adapter": "restEnabledSql",
+              "signals": [
+                "remote sql",
+                "rest enabled sql"
+              ]
+            },
+            {
+              "adapter": "restSource",
+              "signals": [
+                "rest source",
+                "web source"
+              ]
+            },
+            {
+              "adapter": "sampleData",
+              "signals": [
+                "sample data"
+              ]
+            }
+          ]
+        },
+        "placement": {
+          "default": "topLevel",
+          "topLevelSlots": [
+            "body"
+          ],
+          "nestedRequiresExistingParent": true
+        }
+      }
+    },
+    {
+      "name": "timeline",
+      "target_type": "region",
+      "synonyms": [
+        "timeline template component",
+        "timeline component",
+        "timeline region",
+        "activity timeline",
+        "event timeline"
+      ],
+      "rules": [
+        "30-pages/apex.page.md",
+        "20-data/apex.sql.md",
+        "40-components/apex.templates.md"
+      ],
+      "templates": [
+        "templates/template-components/timeline/timeline._index.md",
+        "templates/template-components/timeline/timeline._common.md",
+        "templates/template-components/timeline/timeline.report-sample-data.md",
+        "templates/template-components/timeline/timeline.permutations.md",
+        "templates/template-components/timeline/timeline._template_options.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "avatar"
+          ],
+          "templates": [
+            "templates/template-components/avatar/avatar._template_options.md"
+          ]
+        },
+        {
+          "keywords": [
+            "badge"
+          ],
+          "templates": [
+            "templates/template-components/badge/badge._template_options.md"
+          ]
+        }
+      ],
+      "workflow": "references/domains/template-components/timeline.md",
+      "requires": [
+        "source object (table or view), or an explicit supported source mode",
+        "verified source columns for date, title, and userName",
+        "sql or table when using localDatabase",
+        "optional: description, avatar, or badge"
+      ]
+    },
+    {
+      "name": "comments",
+      "target_type": "region",
+      "synonyms": [
+        "comments template component",
+        "comments component",
+        "comments region",
+        "comment feed",
+        "comments actions",
+        "comments action",
+        "comments grouping",
+        "grouped comments",
+        "comment grouping",
+        "comments column",
+        "comments interactive report column",
+        "comments ir column",
+        "partial comments column"
+      ],
+      "rules": [
+        "30-pages/apex.page.md",
+        "20-data/apex.sql.md",
+        "40-components/apex.templates.md"
+      ],
+      "templates": [
+        "templates/template-components/comments/comments._index.md",
+        "templates/template-components/comments/comments._common.md",
+        "templates/template-components/comments/comments.apex-task-comments.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "avatar",
+            "author icon",
+            "author initials",
+            "chat",
+            "icon avatar",
+            "image",
+            "image avatar",
+            "initials",
+            "initials avatar",
+            "no shape",
+            "partial",
+            "partial comment",
+            "partial comments",
+            "profile image",
+            "profile picture",
+            "rounded avatar",
+            "square avatar",
+            "user icon",
+            "user initials"
+          ],
+          "templates": [
+            "templates/template-components/comments/comments.permutations.md"
+          ]
+        },
+        {
+          "keywords": [
+            "comments column",
+            "comments interactive report column",
+            "comments ir column",
+            "partial comments column"
+          ],
+          "templates": [
+            "templates/template-components/comments/comments.partial-column.md"
+          ]
+        },
+        {
+          "keywords": [
+            "advanced",
+            "alignment",
+            "attributes",
+            "entity title",
+            "lazy loading",
+            "messages",
+            "pagination",
+            "row selection",
+            "settings",
+            "style",
+            "template options",
+            "theme colors"
+          ],
+          "templates": [
+            "templates/template-components/comments/comments._template_options.md"
+          ]
+        },
+        {
+          "keywords": [
+            "avatar",
+            "author icon",
+            "author initials",
+            "icon avatar",
+            "image",
+            "initials",
+            "no shape",
+            "profile image",
+            "profile picture",
+            "rounded avatar",
+            "user icon",
+            "user initials"
+          ],
+          "templates": [
+            "templates/template-components/avatar/avatar._template_options.md"
+          ]
+        }
+      ],
+      "workflow": "references/domains/template-components/comments.md",
+      "requires": [
+        "verified comment text and user name mappings",
+        "style mapping when display: report",
+        "sql or table when using localDatabase",
+        "optional: date and avatar mappings"
+      ]
+    },
+    {
+      "name": "badge",
+      "target_type": "page",
+      "synonyms": [
+        "badge template component",
+        "badge region",
+        "standalone badge",
+        "themeTemplateComponent/badge"
+      ],
+      "rules": [
+        "20-data/apex.sql.md",
+        "30-pages/apex.page.md",
+        "40-components/apex.region-data-source.md",
+        "40-components/apex.region-interactions.md",
+        "40-components/apex.templates.md"
+      ],
+      "templates": [
+        "templates/template-components/badge/badge._index.md",
+        "templates/template-components/badge/badge._common.md",
+        "templates/template-components/badge/badge.report-minimal.md",
+        "templates/template-components/badge/badge.report-link.md",
+        "templates/template-components/badge/badge._template_options.md"
+      ],
+      "requires": [
+        "verified data source",
+        "label",
+        "value column",
+        "explicit source columns",
+        "optional: allowlisted state",
+        "optional: resolved link target",
+        "optional: verified authorization scheme"
+      ]
+    },
+    {
+      "name": "media-list",
+      "target_type": "page",
+      "synonyms": [
+        "media list template component",
+        "media list region",
+        "standalone media list",
+        "theme template component media list",
+        "themeTemplateComponent/mediaList"
+      ],
+      "excludes": [
+        "list-region"
+      ],
+      "rules": [
+        "references/policies/memory-bank/10-global/apex.global.md",
+        "references/policies/memory-bank/20-data/apex.sql.md",
+        "references/policies/memory-bank/30-pages/apex.page.md",
+        "references/policies/memory-bank/40-components/apex.region-data-source.md",
+        "references/policies/memory-bank/40-components/apex.region-interactions.md",
+        "references/policies/memory-bank/40-components/apex.templates.md"
+      ],
+      "templates": [
+        "templates/template-components/media-list/media-list._common.md",
+        "templates/template-components/media-list/media-list.report-base.md"
+      ],
+      "conditionalTemplates": [
+        {
+          "keywords": [
+            "partial",
+            "single item"
+          ],
+          "templates": [
+            "templates/template-components/media-list/media-list.partial.md"
+          ]
+        },
+        {
+          "keywords": [
+            "avatar",
+            "initials",
+            "user initials",
+            "profile picture",
+            "profile pictures",
+            "profile image"
+          ],
+          "templates": [
+            "templates/template-components/media-list/media-list.report-avatar-badge.md",
+            "templates/template-components/avatar/avatar._template_options.md"
+          ],
+          "featureSignals": [
+            "avatar",
+            "image"
+          ]
+        },
+        {
+          "keywords": [
+            "badge",
+            "status indicator",
+            "status indicators",
+            "status value"
+          ],
+          "templates": [
+            "templates/template-components/media-list/media-list.report-avatar-badge.md",
+            "templates/template-components/badge/badge._template_options.md"
+          ],
+          "featureSignals": [
+            "badge"
+          ]
+        },
+        {
+          "keywords": [
+            "link",
+            "navigation",
+            "action"
+          ],
+          "templates": [
+            "templates/template-components/media-list/media-list.report-link.md"
+          ],
+          "featureSignals": [
+            "link"
+          ]
+        },
+        {
+          "keywords": [
+            "group",
+            "grouping",
+            "grouped"
+          ],
+          "templates": [
+            "templates/template-components/media-list/media-list.report-grouped.md"
+          ],
+          "featureSignals": [
+            "grouping"
+          ]
+        },
+        {
+          "keywords": [
+            "layout",
+            "responsive",
+            "grid",
+            "horizontal"
+          ],
+          "templates": [
+            "templates/template-components/media-list/media-list.report-layouts.md"
+          ],
+          "featureSignals": [
+            "layout"
+          ]
+        }
+      ],
+      "requires": [
+        "target-build-resolved report-column contract",
+        "verified source for report mode",
+        "title source column",
+        "deterministic order by for report mode",
+        "optional: Avatar, Badge, grouping, link action, and explicit layout only when exposed by the active target-build contract"
+      ],
+      "routing": {
+        "owner": "media-list",
+        "selectorGroups": {
+          "direct": [
+            "themeTemplateComponent/mediaList",
+            "Media List template component"
+          ],
+          "list-region": [
+            "list region",
+            "list-region",
+            "shared list"
+          ],
+          "classic-report": [
+            "classic report",
+            "classic report region",
+            "report template"
+          ]
+        },
+        "fallbackSelectorGroups": {
+          "list-region": [
+            "list template"
+          ]
+        },
+        "precedence": [
+          "direct",
+          "list-region",
+          "classic-report"
+        ],
+        "selectorWeights": {
+          "direct": 2,
+          "classic-report": 1,
+          "list-region": 0.5
+        },
+        "competingOrder": [
+          "cards",
+          "content-row",
+          "timeline",
+          "classic-report",
+          "interactive-report"
+        ],
+        "suppressedCandidates": {
+          "media-list": [
+            "list-region"
+          ],
+          "list-region": [
+            "media-list"
+          ],
+          "classic-report": [
+            "list-region",
+            "media-list"
+          ]
+        },
+        "aliases": [
+          "media list",
+          "media-list",
+          "themeTemplateComponent/mediaList",
+          "Media List template component"
+        ],
+        "semanticFallback": {
+          "requiredSignalGroups": [
+            "collection",
+            "compact",
+            "media"
+          ],
+          "requireRowEvidence": true
+        },
+        "mode": {
+          "default": "report",
+          "partialSignals": [
+            "partial",
+            "single item",
+            "one item",
+            "current item",
+            "individual item"
+          ]
+        },
+        "signalGroups": {
+          "collection": [
+            "list",
+            "feed",
+            "directory",
+            "rows",
+            "items",
+            "entries",
+            "records",
+            "results"
+          ],
+          "compact": [
+            "compact",
+            "scannable",
+            "recent",
+            "activity",
+            "people"
+          ],
+          "media": [
+            "image",
+            "images",
+            "thumbnail",
+            "thumbnails",
+            "avatar",
+            "avatars",
+            "profile picture",
+            "profile pictures",
+            "icon",
+            "icons",
+            "badge",
+            "badges",
+            "status",
+            "statuses",
+            "status indicator",
+            "status indicators"
+          ]
+        },
+        "rowEvidence": [
+          "list",
+          "feed",
+          "directory",
+          "row",
+          "rows",
+          "item",
+          "items",
+          "entry",
+          "entries",
+          "record",
+          "records",
+          "result",
+          "results"
+        ],
+        "competingSignals": {
+          "cards": [
+            "card",
+            "cards",
+            "cards region"
+          ],
+          "content-row": [
+            "content row",
+            "content rows",
+            "content-row"
+          ],
+          "timeline": [
+            "timeline",
+            "activity timeline",
+            "event timeline"
+          ],
+          "classic-report": [
+            "classic report",
+            "classic report region",
+            "report template"
+          ],
+          "interactive-report": [
+            "interactive report",
+            "interactive report region",
+            "interactive data table"
+          ],
+          "list-region": [
+            "list region",
+            "list-region",
+            "shared list",
+            "list template",
+            "@/media-list"
+          ]
+        },
+        "featureSignals": {
+          "avatar": [
+            "avatar",
+            "avatars",
+            "initials",
+            "profile image",
+            "profile images",
+            "profile picture",
+            "profile pictures"
+          ],
+          "badge": [
+            "badge",
+            "badges",
+            "status",
+            "status indicator",
+            "status indicators",
+            "status value",
+            "statuses"
+          ],
+          "grouping": [
+            "group",
+            "grouped",
+            "grouping",
+            "groups"
+          ],
+          "image": [
+            "icon",
+            "icons",
+            "image",
+            "images",
+            "thumbnail",
+            "thumbnails"
+          ],
+          "layout": [
+            "grid",
+            "horizontal",
+            "layout",
+            "responsive",
+            "three column",
+            "two column"
+          ],
+          "link": [
+            "action",
+            "actions",
+            "link",
+            "links",
+            "navigate",
+            "navigation"
+          ]
+        },
+        "sourceAdapters": {
+          "partial": [
+            {
+              "adapter": "sessionState",
+              "signals": [
+                "partial",
+                "session state"
+              ]
+            }
+          ],
+          "report": [
+            {
+              "adapter": "localDatabase/sqlQuery",
+              "signals": [
+                "local database",
+                "sql query"
+              ]
+            }
+          ]
+        },
+        "unsupportedFeatures": [
+          "grouping"
+        ],
+        "placement": {
+          "topLevel": {
+            "slot": "body"
+          },
+          "nested": {
+            "requiresParentRegion": true,
+            "defaultSlot": "regionBody",
+            "parentTemplates": {
+              "@/standard": [
+                "regionBody",
+                "subRegions"
+              ],
+              "@/content-block": [
+                "regionBody",
+                "subRegions"
+              ]
+            }
+          }
+        },
+        "semanticSupport": [
+          "references/policies/memory-bank/40-components/apex.region-contracts.md",
+          "templates/template-components/content-row/content-row._common.md"
+        ]
+      }
+    },
+    {
+      "name": "chart-area",
+      "extends": "chart",
+      "synonyms": [
+        "area chart",
+        "stacked area chart",
+        "area chart custom legend"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.area.md"
+      ]
+    },
+    {
+      "name": "chart-gantt",
+      "extends": "chart",
+      "synonyms": [
+        "gantt chart",
+        "project gantt",
+        "timeline chart"
+      ],
+      "requires": [
+        "sql or table",
+        "start date",
+        "end date"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.gantt.md"
+      ]
+    },
+    {
+      "name": "chart-pie",
+      "extends": "chart",
+      "synonyms": [
+        "pie chart",
+        "donut chart",
+        "chart with sql colors"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.pie.md"
+      ]
+    },
+    {
+      "name": "chart-status-meter-gauge",
+      "extends": "chart",
+      "synonyms": [
+        "status meter",
+        "gauge chart",
+        "circular gauge"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.status-meter-gauge.md"
+      ]
+    },
+    {
+      "name": "chart-dashboard-combination",
+      "extends": "chart",
+      "synonyms": [
+        "combination chart",
+        "combo chart"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.dashboard-combination.md"
+      ]
+    },
+    {
+      "name": "chart-stock",
+      "extends": "chart",
+      "synonyms": [
+        "stock chart",
+        "candlestick chart"
+      ],
+      "requires": [
+        "sql or table",
+        "open column",
+        "high column",
+        "low column",
+        "close column"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.stock.md"
+      ]
+    },
+    {
+      "name": "chart-scatter",
+      "extends": "chart",
+      "synonyms": [
+        "scatter chart",
+        "scatter plot",
+        "chart with axis range"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.scatter.md"
+      ]
+    },
+    {
+      "name": "chart-bar",
+      "extends": "chart",
+      "synonyms": [
+        "bar chart",
+        "stacked bar chart",
+        "dual axis bar chart"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.bar.md"
+      ]
+    },
+    {
+      "name": "chart-bubble",
+      "extends": "chart",
+      "synonyms": [
+        "bubble chart",
+        "bubble chart rds"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.bubble.md"
+      ]
+    },
+    {
+      "name": "chart-line",
+      "extends": "chart",
+      "synonyms": [
+        "line chart",
+        "stepped line chart",
+        "curved line chart"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.line.md"
+      ]
+    },
+    {
+      "name": "chart-line-with-area",
+      "extends": "chart",
+      "synonyms": [
+        "line with area",
+        "stacked area percent"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.line-with-area.md"
+      ]
+    },
+    {
+      "name": "chart-area-custom-legend",
+      "extends": "chart",
+      "synonyms": [
+        "area custom legend",
+        "area chart custom legend",
+        "legend images"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart.area-custom-legend.md"
+      ]
+    },
+    {
+      "name": "chart-feature-series-color",
+      "extends": "chart",
+      "synonyms": [
+        "series color feature",
+        "chart series color"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-series-color.md"
+      ]
+    },
+    {
+      "name": "chart-feature-chart-links",
+      "extends": "chart",
+      "synonyms": [
+        "chart links",
+        "link chart points"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-chart-links.md"
+      ]
+    },
+    {
+      "name": "chart-feature-custom-tooltip",
+      "extends": "chart",
+      "synonyms": [
+        "custom tooltip",
+        "tooltip labels"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-custom-tooltip.md"
+      ]
+    },
+    {
+      "name": "chart-feature-data-densification",
+      "extends": "chart",
+      "synonyms": [
+        "data densification",
+        "fill gaps",
+        "zero fill"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-data-densification.md"
+      ]
+    },
+    {
+      "name": "chart-feature-declarative-font",
+      "extends": "chart",
+      "synonyms": [
+        "declarative font",
+        "chart font formatting"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-declarative-font.md"
+      ]
+    },
+    {
+      "name": "chart-feature-zoom-scroll",
+      "extends": "chart",
+      "synonyms": [
+        "zoom scroll feature",
+        "chart zoom and scroll"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-zoom-scroll.md"
+      ]
+    },
+    {
+      "name": "chart-feature-3d-effect",
+      "extends": "chart",
+      "synonyms": [
+        "3d effect",
+        "chart shadows"
+      ],
+      "templates": [
+        "templates/region-components/chart/features/chart.feature-3d-effect.md"
+      ]
+    },
+    {
+      "name": "form",
+      "synonyms": [
+        "create form",
+        "create record",
+        "crud form",
+        "data entry",
+        "data entry page",
+        "dialog form",
+        "edit form",
+        "edit page",
+        "edit record",
+        "edit screen",
+        "entry form",
+        "form",
+        "form region",
+        "insert form",
+        "maintain record",
+        "maintenance form",
+        "modal data form",
+        "modal dialog",
+        "modal form",
+        "record editor",
+        "update form"
+      ],
+      "target_type": "form",
+      "rules": [
+        "30-pages/apex.page.md",
+        "30-pages/apex.form.md"
+      ],
+      "templates": [
+        "templates/page-examples/form-page/form-page._index.md"
+      ],
+      "requires": [
+        "table",
+        "pk",
+        "columns"
+      ]
+    },
+    {
+      "name": "dashboard",
+      "synonyms": [
+        "analytics summary",
+        "dashboard",
+        "dashboard page",
+        "dashboard region",
+        "executive summary page",
+        "home dashboard",
+        "home page metrics",
+        "insights dashboard",
+        "kpi",
+        "kpi dashboard",
+        "kpi overview",
+        "metrics",
+        "metrics dashboard",
+        "overview",
+        "summary dashboard",
+        "tile dashboard",
+        "dashboard tiles"
+      ],
+      "target_type": "dashboard",
+      "rules": [
+        "30-pages/apex.page.md",
+        "30-pages/apex.dashboard.md"
+      ],
+      "templates": [
+        "templates/region-components/cards/cards._common.md",
+        "templates/page-examples/dashboard-page/dashboard-page._index.md",
+        "templates/page-examples/classic-report-page/classic-report-page._index.md"
+      ],
+      "requires": [
+        "sql or table",
+        "optional: columns"
+      ]
+    },
+    {
+      "name": "content-row",
+      "synonyms": [
+        "content row",
+        "content row region",
+        "content row page",
+        "content-row",
+        "content-row region",
+        "content-row page"
+      ],
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "20-data/apex.sql.md",
+        "40-components/apex.templates.md"
+      ],
+      "templates": [
+        "templates/template-components/content-row/content-row._common.md",
+        "templates/template-components/content-row/content-row._index.md",
+        "templates/template-components/content-row/content-row.report-minimal.md",
+        "templates/template-components/content-row/content-row.report-avatar-badge.md",
+        "templates/template-components/content-row/content-row.partial-rich-content.md"
+      ],
+      "requires": [
+        "db_connection_name (online, unless explicit offline/mock request)",
+        "source object (table or view)",
+        "columns",
+        "primary key column",
+        "sql or table",
+        "optional: badge icon",
+        "optional: badge position"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "40-components/apex.region-interactions.md",
+        "40-components/apex.templates.md"
+      ],
+      "name": "calendar",
+      "synonyms": [
+        "calendar",
+        "calendar page",
+        "calendar region",
+        "calendar view",
+        "calendar view page",
+        "date calendar",
+        "events",
+        "events calendar",
+        "events schedule",
+        "planner",
+        "schedule"
+      ],
+      "templates": [
+        "templates/region-components/calendar/calendar._common.md",
+        "templates/page-examples/calendar-page/calendar-page._index.md"
+      ],
+      "requires": [
+        "sql or table",
+        "date column",
+        "primary key column"
+      ]
+    },
+    {
+      "name": "chart",
+      "synonyms": [
+        "area chart",
+        "bar chart",
+        "bubble chart",
+        "chart",
+        "chart dashboard",
+        "chart of results",
+        "chart page",
+        "chart region",
+        "charts",
+        "combo chart",
+        "data visualization",
+        "donut chart",
+        "dual axis",
+        "funnel",
+        "gauge",
+        "graph",
+        "graph view",
+        "jet chart",
+        "line chart",
+        "multi-axis",
+        "ojchart",
+        "pareto",
+        "pie chart",
+        "polar",
+        "radar",
+        "range chart",
+        "scatter chart",
+        "stacked chart",
+        "status meter",
+        "stock chart",
+        "visualization"
+      ],
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "30-pages/apex.chart-page.md"
+      ],
+      "templates": [
+        "templates/region-components/chart/chart._common.md"
+      ],
+      "requires": [
+        "sql or table",
+        "column mappings",
+        "optional: controlling page items"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "map",
+      "synonyms": [
+        "geo map",
+        "geographic map",
+        "geographic map view",
+        "geospatial",
+        "location map",
+        "locations map",
+        "map",
+        "map page",
+        "map region",
+        "map view",
+        "spatial map page"
+      ],
+      "templates": [
+        "templates/region-components/map/map._common.md",
+        "templates/region-components/map/map.layer.points.sql-query.md",
+        "templates/region-components/map/map.layer.points.function-body.md",
+        "templates/page-examples/map-page/map-page._index.md"
+      ],
+      "requires": [
+        "sql or table",
+        "lat column",
+        "lng column"
+      ]
+    },
+    {
+      "name": "interactive-grid",
+      "synonyms": [
+        "editable grid",
+        "grid",
+        "interactive grid",
+        "interactive grid region",
+        "ig",
+        "tabular edit grid"
+      ],
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/region-components/interactive-grid/interactive-grid._common.md",
+        "templates/region-components/interactive-grid/interactive-grid.standard.md",
+        "templates/region-components/interactive-grid/interactive-grid.region.md",
+        "templates/region-components/interactive-grid/interactive-grid._saved-report._common.md",
+        "templates/region-components/interactive-grid/interactive-grid._columns._common.md",
+        "templates/page-examples/interactive-grid/interactive-grid._index.md"
+      ],
+      "requires": [
+        "sql or table",
+        "primary key column"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "faceted-search",
+      "synonyms": [
+        "faceted search",
+        "faceted search page",
+        "faceted search region",
+        "filter panel",
+        "search facets"
+      ],
+      "templates": [
+        "templates/region-components/faceted-search/faceted-search._common.md",
+        "templates/region-components/faceted-search/faceted-search.standard.md",
+        "templates/page-examples/faceted-search/faceted-search._index.md"
+      ],
+      "requires": [
+        "results region source",
+        "facet column mappings"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "static-region",
+      "synonyms": [
+        "blank region",
+        "content region",
+        "html block",
+        "html region",
+        "info box",
+        "info region",
+        "information block",
+        "read only region",
+        "static content",
+        "static region",
+        "static text",
+        "text block",
+        "text explanation",
+        "text region"
+      ],
+      "templates": [
+        "templates/region-components/static-content/static-content._common.md",
+        "templates/region-components/static-content/static-content.accordion.md",
+        "templates/region-components/static-content/static-content.collapsible.md",
+        "templates/region-components/static-content/static-content.blank-with-attributes.md",
+        "templates/region-components/static-content/static-content.cards.md",
+        "templates/region-components/static-content/static-content.collection-toolbar.md",
+        "templates/region-components/static-content/static-content.dividers.md",
+        "templates/region-components/static-content/static-content.empty-state.md",
+        "templates/region-components/static-content/static-content.buttons.md",
+        "templates/page-examples/blank-page/blank-page._index.md"
+      ],
+      "requires": [
+        "title"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "breadcrumb-region",
+      "synonyms": [
+        "breadcrumb region",
+        "page breadcrumb",
+        "region breadcrumb"
+      ],
+      "templates": [
+        "templates/region-components/breadcrumb/breadcrumb._common.md",
+        "templates/region-components/breadcrumb/breadcrumb.standard.md",
+        "templates/region-components/breadcrumb/breadcrumb.page-header-nav.md"
+      ],
+      "requires": [
+        "breadcrumb shared component alias"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "collapsible-region",
+      "synonyms": [
+        "collapsible region",
+        "expand collapse region",
+        "expandable region",
+        "toggle region"
+      ],
+      "templates": [
+        "templates/region-components/collapsible-region/collapsible-region._common.md",
+        "templates/region-components/collapsible-region/collapsible-region.standard.md"
+      ],
+      "requires": [
+        "region title",
+        "content source"
+      ]
+    },
+    {
+      "name": "dynamic-content-region",
+      "synonyms": [
+        "dynamic content",
+        "dynamic content region",
+        "plsql content region",
+        "render html from plsql"
+      ],
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "20-data/apex.logic.md"
+      ],
+      "templates": [
+        "templates/region-components/dynamic-content/dynamic-content._common.md",
+        "templates/region-components/dynamic-content/dynamic-content.standard.md"
+      ],
+      "requires": [
+        "plsql function body"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "region-display-selector",
+      "synonyms": [
+        "region display selector",
+        "rds",
+        "switch between regions",
+        "toggle multiple regions"
+      ],
+      "templates": [
+        "templates/region-components/region-display-selector/region-display-selector._index.md",
+        "templates/region-components/region-display-selector/region-display-selector._common.md",
+        "templates/region-components/region-display-selector/region-display-selector.standard.md",
+        "templates/region-components/region-display-selector/region-display-selector.permutations.md"
+      ],
+      "workflow": "references/domains/page-components/regions/region-display-selector/workflow-region-display-selector.md",
+      "applicationSettings": [
+        {
+          "scope": "application",
+          "selector": "NATIVE_DISPLAY_SELECTOR",
+          "type": "region",
+          "name": "regionDisplaySelector",
+          "attribute": "includeSlider",
+          "path": "settings.attributes.includeSlider",
+          "contract": "assets/component-attributes.json#components.region.regionDisplaySelector.applicationSettings",
+          "optional": true
+        }
+      ],
+      "requires": [
+        "page target",
+        "at least two explicitly controlled sibling regions",
+        "mode: viewSingleRegion or scrollWindow",
+        "display region icons choice",
+        "Show All choice for viewSingleRegion",
+        "remember selection: byUser, bySession, or false"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "name": "search-region",
+      "synonyms": [
+        "search config",
+        "search configuration",
+        "search region",
+        "search source region"
+      ],
+      "templates": [
+        "templates/region-components/search-config/search-config._common.md",
+        "templates/region-components/search-config/search-config.standard.md"
+      ],
+      "requires": [
+        "search page item",
+        "shared search configuration alias"
+      ]
+    },
+    {
+      "target_type": "page",
+      "rules": [
+        "30-pages/apex.page.md",
+        "30-pages/apex.smart-filter-search.md"
+      ],
+      "name": "smart-filters-region",
+      "synonyms": [
+        "smart filter",
+        "smart filters",
+        "smart filter search",
+        "smart filters region"
+      ],
+      "templates": [
+        "templates/region-components/smart-filter-search/smart-filter-search._common.md",
+        "templates/region-components/smart-filter-search/smart-filter-search.standard.md"
+      ],
+      "requires": [
+        "filtered result region"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-refresh-region-after-dialog",
+      "synonyms": [
+        "after dialog close update the report",
+        "after dialog refresh",
+        "auto refresh report",
+        "dialog close refresh",
+        "refresh after dialog",
+        "refresh interactive report",
+        "refresh ir",
+        "refresh list after closing dialog",
+        "refresh region",
+        "refresh region after submit",
+        "refresh the report after the dialog closes",
+        "reload region",
+        "when the dialog closes refresh"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md"
+      ],
+      "requires": [
+        "source region identifier",
+        "target region identifier"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-refresh-region-on-change",
+      "synonyms": [
+        "auto refresh region",
+        "dynamic action refresh",
+        "dynamic cards refresh",
+        "cards refresh on change",
+        "filter refresh",
+        "refresh after filter",
+        "refresh on change",
+        "refresh region",
+        "refresh report",
+        "refresh the region when filters change",
+        "refresh this report when filters change",
+        "reload report",
+        "update the report as I change filters"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-on-change.md"
+      ],
+      "requires": [
+        "trigger items",
+        "target region identifier"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-show-hide-items",
+      "synonyms": [
+        "conditionally show fields",
+        "dynamic hide",
+        "dynamic show",
+        "hide items",
+        "hide these fields when",
+        "show hide items",
+        "show items",
+        "show or hide these fields",
+        "show these fields when",
+        "toggle visibility"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.show-hide-items.md"
+      ],
+      "requires": [
+        "controlling item",
+        "target items",
+        "comparison value"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-enable-disable-items",
+      "synonyms": [
+        "disable controls unless condition",
+        "disable items",
+        "dynamic enable",
+        "enable controls",
+        "enable items",
+        "enable these inputs when condition met",
+        "grey out these fields",
+        "toggle disable",
+        "toggle enable"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.enable-disable-items.md"
+      ],
+      "requires": [
+        "controlling item",
+        "target items",
+        "comparison value"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-add-remove-class",
+      "synonyms": [
+        "add class",
+        "apply validation styling",
+        "focus highlight",
+        "highlight item",
+        "remove class",
+        "show validation styling",
+        "toggle error highlight",
+        "validation highlight"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.add-remove-class.md"
+      ],
+      "requires": [
+        "target item",
+        "css class"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-focus-highlight-region",
+      "synonyms": [
+        "add a glow to whichever item is active",
+        "add focus glow",
+        "focus highlight",
+        "highlight focus",
+        "highlight whichever field is active",
+        "region focus highlight"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-focus-on-ready.md"
+      ],
+      "requires": [
+        "region identifier",
+        "css class"
+      ]
+    },
+    {
+      "name": "da-set-value-sql",
+      "synonyms": [
+        "get data via sql",
+        "look up extra details",
+        "lookup values",
+        "populate fields from sql results",
+        "populate items from sql",
+        "pull values from a query",
+        "set value sql"
+      ],
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-value-sql.md"
+      ],
+      "requires": [
+        "sql query",
+        "controlling item",
+        "target items"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-set-value-plsql",
+      "synonyms": [
+        "calculate value",
+        "call plsql to fill field",
+        "compute value with plsql logic",
+        "plsql dynamic action",
+        "plsql function set value",
+        "run some plsql to fill this",
+        "set value plsql"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-value-plsql-function.md"
+      ],
+      "requires": [
+        "plsql function body",
+        "controlling items",
+        "target item"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-set-value-js",
+      "synonyms": [
+        "copy value",
+        "js expression set value",
+        "keep another item in sync",
+        "mirror this value into another item",
+        "mirror value",
+        "set value javascript",
+        "set value with javascript expression"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-value-javascript-expression.md"
+      ],
+      "requires": [
+        "source item",
+        "target item"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-execute-api",
+      "synonyms": [
+        "call api",
+        "call backend process",
+        "call the delete procedure",
+        "execute api",
+        "execute server code",
+        "invoke api",
+        "run plsql",
+        "run the server api"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.execute-server-side-code.md"
+      ],
+      "requires": [
+        "button identifier",
+        "api package procedure",
+        "items to submit",
+        "target region (optional)"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-delete-with-notification",
+      "synonyms": [
+        "ajax delete",
+        "ajax delete with toast message",
+        "click the trash can to delete",
+        "confirm delete",
+        "delete a row from the report",
+        "delete and refresh",
+        "delete row dynamic action",
+        "delete with notification"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.delete-with-notification.md"
+      ],
+      "requires": [
+        "row identifier item",
+        "target region",
+        "api package procedure"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-alert-confirm-cancel",
+      "synonyms": [
+        "alert before action",
+        "ask the user before continuing",
+        "ask the user to confirm first",
+        "confirm action",
+        "confirm button",
+        "pop a confirmation dialog",
+        "prompt before submit"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.alert-confirm-cancel.md"
+      ],
+      "requires": [
+        "button identifier"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-timer-refresh",
+      "synonyms": [
+        "auto refresh",
+        "auto refresh every few seconds",
+        "refresh every n seconds",
+        "refresh on timer",
+        "refresh the report on a timer",
+        "scheduled refresh",
+        "timer refresh"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-on-change.md"
+      ],
+      "requires": [
+        "timer toggle item",
+        "target region",
+        "timer plugin static id"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-slider-style",
+      "synonyms": [
+        "change slider color when high",
+        "color slider",
+        "highlight slider",
+        "slider style",
+        "slider threshold",
+        "style slider threshold"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.add-remove-class-item.md"
+      ],
+      "requires": [
+        "slider item",
+        "threshold value",
+        "display dom object"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-slider-calc",
+      "synonyms": [
+        "calculate on slider",
+        "compute commission from slider",
+        "recalculate based on slider",
+        "slider calculation",
+        "slider commission"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-value-javascript-expression.md"
+      ],
+      "requires": [
+        "slider item",
+        "dependent item",
+        "plsql function body"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-set-focus",
+      "synonyms": [
+        "default focus",
+        "focus item",
+        "focus on username first",
+        "put cursor on this item",
+        "set focus"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-focus-on-ready.md"
+      ],
+      "requires": [
+        "primary item",
+        "secondary item (optional)"
+      ]
+    },
+    {
+      "name": "da-show-ai-assistant",
+      "synonyms": [
+        "open ai assistant",
+        "open chatbot",
+        "render ai chatbot",
+        "render chatbot",
+        "show ai assistant",
+        "show chatbot"
+      ],
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.show-ai-assistant.md"
+      ],
+      "requires": [
+        "button identifier (optional; if trigger is click)",
+        "ai agent reference",
+        "container selector (required for inline rendering)"
+      ]
+    },
+    {
+      "name": "da-execution-control",
+      "synonyms": [
+        "debounce",
+        "debounce the keystrokes",
+        "delay dynamic action",
+        "execution control",
+        "throttle",
+        "throttle the updates"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.execution-debounce-throttle.md"
+      ],
+      "requires": [
+        "source item",
+        "target items",
+        "execution.type (debounce|throttle)",
+        "execution.time (ms)",
+        "execution.immediate (optional)"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-plugin-stripe-report",
+      "synonyms": [
+        "add alternating row colors",
+        "alternate row color",
+        "apply striping to report rows",
+        "row highlight",
+        "row stripe",
+        "stripe report",
+        "striped rows"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.add-remove-class.md"
+      ],
+      "requires": [
+        "target region",
+        "plugin static id"
+      ]
+    },
+    {
+      "name": "da-batch-apply",
+      "synonyms": [
+        "apply this dynamic action to multiple pages",
+        "duplicate dynamic action across pages",
+        "batch dynamic action",
+        "copy dynamic action",
+        "apply da to many pages",
+        "reuse this da on several pages",
+        "same dynamic action on every page"
+      ],
+      "target_type": "dynamic-action-batch",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.enable-disable-items.md",
+        "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md",
+        "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-on-change.md",
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-value-plsql-function.md",
+        "templates/business-logic/dynamic-actions/dynamic-actions.set-value-sql.md",
+        "templates/business-logic/dynamic-actions/dynamic-actions.show-hide-items.md"
+      ],
+      "requires": [
+        "operation (apply)",
+        "targets (list of page descriptors)",
+        "target pages (legacy input, optional)",
+        "dynamic action archetype (template name)",
+        "per-page identifiers (items/regions/buttons as needed)",
+        "shared parameters (e.g., condition value, server API)"
+      ]
+    },
+    {
+      "name": "da-execute-api-batch",
+      "synonyms": [
+        "apply execute plsql dynamic action",
+        "batch execute server code",
+        "reuse this server action on many pages",
+        "copy api dynamic action",
+        "add invoke api dynamic action across pages"
+      ],
+      "target_type": "dynamic-action-plsql-batch",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.execute-server-side-code.md"
+      ],
+      "requires": [
+        "operation (apply)",
+        "targets (list of page descriptors)",
+        "target pages (legacy input, optional)",
+        "api package name",
+        "procedure or function name",
+        "items to submit",
+        "affected region or button identifiers",
+        "optional confirmation/notification text"
+      ]
+    },
+    {
+      "name": "lov-shared",
+      "synonyms": [
+        "lookup lov",
+        "dropdown values",
+        "dynamic lov",
+        "list of values",
+        "list of values definition",
+        "lookup list",
+        "lov",
+        "lov source",
+        "reusable lov definition",
+        "shared dropdown list",
+        "shared list of values",
+        "shared lov",
+        "shared value list",
+        "static lov",
+        "value list"
+      ],
+      "target_type": "items",
+      "rules": [
+        "40-components/apex.items.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/shared-components/lovs/lovs.dynamic.query.md"
+      ],
+      "requires": [
+        "source table/view",
+        "value column",
+        "display column"
+      ]
+    },
+    {
+      "name": "select-list-dynamic-lov-form",
+      "synonyms": [
+        "form combobox",
+        "form dropdown",
+        "form picklist",
+        "form select list",
+        "form select list lov",
+        "form select list using lov",
+        "select list form lov",
+        "select list in form",
+        "select list that queries table"
+      ],
+      "target_type": "items",
+      "rules": [
+        "40-components/apex.items.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/items/select-list/select-list._index.md"
+      ],
+      "requires": [
+        "source table/view",
+        "value column",
+        "display column"
+      ]
+    },
+    {
+      "name": "select-list-dynamic-lov-filter",
+      "synonyms": [
+        "filter dropdown",
+        "filter picklist",
+        "filter select list",
+        "interactive report filter select list",
+        "ir filter select list",
+        "report filter dropdown",
+        "report filter lov",
+        "report filter select list",
+        "select list filter lov"
+      ],
+      "target_type": "items",
+      "rules": [
+        "40-components/apex.items.md",
+        "20-data/apex.sql.md"
+      ],
+      "templates": [
+        "templates/items/select-list/select-list._index.md"
+      ],
+      "requires": [
+        "source table/view",
+        "value column",
+        "display column"
+      ]
+    },
+    {
+      "name": "plsql",
+      "synonyms": [
+        "plsql",
+        "pl/sql ops",
+        "analyze plsql for cleanup",
+        "apex plsql review",
+        "check plsql",
+        "consolidate pl/sql",
+        "consolidate plsql",
+        "consolidate plsql code",
+        "extract plsql",
+        "package consolidation",
+        "pl/sql maintenance",
+        "plsql maintenance",
+        "plsql scan",
+        "refactor plsql",
+        "review inline plsql",
+        "server-side code consolidation"
+      ],
+      "target_type": "workflow",
+      "rules": [
+        "00-guard/ai.guard.md",
+        "10-global/apex.global.md"
+      ],
+      "workflow": "external:oracle-db/plsql",
+      "requires": [
+        "apex_export_path"
+      ],
+      "defaults": {
+        "apex_export_path": "applications/",
+        "app_ids": [],
+        "db_connection_name": "",
+        "environment": "dev",
+        "dry_run": true
+      },
+      "templates": []
+    },
+    {
+      "name": "translation",
+      "synonyms": [
+        "add language support",
+        "add translations",
+        "add support for another language",
+        "apply translations to many languages",
+        "batch translation",
+        "bulk translations",
+        "configure my app to support a language",
+        "configure this app for another language",
+        "globalization",
+        "i18n",
+        "internationalization",
+        "language",
+        "languages",
+        "load text messages for languages",
+        "localise",
+        "localization",
+        "localize application text",
+        "localize my app",
+        "make my app another language",
+        "manage language strings",
+        "message bundle",
+        "messages",
+        "shared messages",
+        "text message",
+        "text messages",
+        "translate",
+        "translate app",
+        "translate my app",
+        "translate multiple languages",
+        "translation",
+        "translations",
+        "update many message keys"
+      ],
+      "target_type": "translations",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "templates": [
+        "templates/shared-components/translations/translations._index.md",
+        "templates/shared-components/translations/translations.text-messages._common.md"
+      ],
+      "requires": [
+        "target app or current app context",
+        "target language name or code",
+        "scope when user already states whole app or one page; otherwise ask",
+        "plain-language localization requests convert user-facing literals into shared text-message keys and substitution references",
+        "if the prompt also explicitly asks for a page control such as a button/menu/selector, clarify runtime language switching versus localization before routing"
+      ]
+    },
+    {
+      "name": "translation-batch",
+      "synonyms": [
+        "add a language to the whole app",
+        "apply these translations to multiple languages",
+        "apply translations bundle",
+        "apply translations to many keys",
+        "batch update translations",
+        "bulk upload translations",
+        "configure the whole app to support a language",
+        "make the whole app another language",
+        "import translation bundle",
+        "load translation spreadsheet",
+        "mass translate text messages",
+        "push translated messages to multiple languages",
+        "reuse translation set",
+        "same translation set across languages",
+        "translate the whole app",
+        "translate this app to a language"
+      ],
+      "target_type": "translations-batch",
+      "rules": [
+        "30-pages/apex.page.md"
+      ],
+      "templates": [
+        "templates/shared-components/translations/translations._index.md",
+        "templates/shared-components/translations/translations.text-messages._common.md"
+      ],
+      "requires": [
+        "target app or current app context",
+        "target language name or code",
+        "scope resolved as whole app or one page",
+        "translation bundle only when user provides one explicitly",
+        "whole-app or page localization runs must rewire component text to substitutions instead of leaving direct translated literals",
+        "if the prompt also explicitly asks for a page control such as a button/menu/selector, clarify runtime language switching versus localization before routing",
+        "auto translate flag (optional)",
+        "log path (optional)"
+      ]
+    },
+    {
+      "name": "process-invoke-api-batch",
+      "synonyms": [
+        "add invoke api process",
+        "batch page process",
+        "apply plsql process across pages",
+        "reuse consolidated process",
+        "create invoke api process on multiple pages"
+      ],
+      "target_type": "page-process-batch",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "templates": [
+        "templates/business-logic/processes/processes.invoke-api.md"
+      ],
+      "requires": [
+        "operation (apply)",
+        "targets (list of page descriptors)",
+        "target pages (legacy input, optional)",
+        "api package name",
+        "procedure or function name",
+        "button guard",
+        "parameters (items/expressions)",
+        "success message"
+      ]
+    },
+    {
+      "name": "server-side-condition-batch",
+      "synonyms": [
+        "apply server side condition across components",
+        "batch server side condition",
+        "add condition to many components",
+        "reuse feature flag condition",
+        "set server side condition on multiple pages",
+        "guard buttons with same condition",
+        "apply ssc token",
+        "add request value condition everywhere"
+      ],
+      "target_type": "server-side-condition-batch",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "requires": [
+        "operation (draft|apply|revert)",
+        "mode (token or explicit type)",
+        "ssc token or catalog type",
+        "required attributes (item/value/list/request/etc.)",
+        "list of target page/component identifiers"
+      ]
+    },
+    {
+      "name": "help-text-batch",
+      "synonyms": [
+        "apply help text",
+        "batch help text",
+        "add inline help",
+        "update page help",
+        "update item help",
+        "document region help",
+        "add field help",
+        "apply help messages"
+      ],
+      "target_type": "help-text-batch",
+      "rules": [
+        "10-global/apex.global.md",
+        "30-pages/apex.page.md",
+        "30-pages/apex.form.md",
+        "40-components/apex.items.md"
+      ],
+      "templates": [],
+      "requires": [
+        "operation (draft|apply|revert)",
+        "scope",
+        "targets",
+        "source type",
+        "text message key or reference",
+        "inline help (optional)",
+        "detailed help (optional)"
+      ]
+    },
+    {
+      "target_type": "dynamic-action",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "name": "da-view-document-inline",
+      "synonyms": [
+        "view document inline",
+        "inline document preview",
+        "preview blob inline",
+        "view file inline",
+        "inline download dynamic action"
+      ],
+      "templates": [
+        "templates/business-logic/dynamic-actions/dynamic-actions.view-document-inline.md"
+      ],
+      "requires": [
+        "page item for file id",
+        "table or source query",
+        "blob column",
+        "file name column",
+        "mime type column"
+      ]
+    },
+    {
+      "name": "computation-plsql-batch",
+      "synonyms": [
+        "batch computation",
+        "apply item computation",
+        "update computations across pages",
+        "reuse plsql computation",
+        "batch expression computation"
+      ],
+      "target_type": "computation-batch",
+      "rules": [
+        "20-data/apex.logic.md"
+      ],
+      "templates": [
+        "templates/business-logic/computations/computations.execute.md",
+        "templates/business-logic/computations/computations.expression.md",
+        "templates/business-logic/computations/computations.function-body.md",
+        "templates/business-logic/computations/computations.sql-multi.md",
+        "templates/business-logic/computations/computations.sql.md"
+      ],
+      "requires": [
+        "operation (apply)",
+        "computation type",
+        "execution point",
+        "sequence",
+        "logic body",
+        "targets (page + item descriptors)",
+        "target items (legacy input, optional)"
+      ]
+    },
+    {
+      "name": "button-actions-batch",
+      "synonyms": [
+        "batch button",
+        "apply button actions",
+        "remove button",
+        "delete button component",
+        "button removal",
+        "duplicate button",
+        "copy button configuration",
+        "menu button setup"
+      ],
+      "target_type": "button-actions-batch",
+      "rules": [
+        "40-components/apex.buttons.md"
+      ],
+      "templates": [
+        "templates/buttons/buttons._common.md",
+        "templates/buttons/buttons._index.md",
+        "templates/buttons/buttons.submit.md",
+        "templates/buttons/buttons.redirect-this-app.md",
+        "templates/buttons/buttons.redirect-other-app.md",
+        "templates/buttons/buttons.defined-by-da.md",
+        "templates/buttons/buttons.trigger-action.md",
+        "templates/buttons/buttons.menu.md",
+        "templates/buttons/buttons.confirmation.md",
+        "templates/buttons/buttons.server-side-condition.md",
+        "templates/buttons/buttons.appearance-icon.md"
+      ],
+      "requires": [
+        "operation (apply|remove)",
+        "targets (single or batch)",
+        "target_button/target_buttons (legacy input, optional)",
+        "action type (when operation=apply)",
+        "layout defaults (when operation=apply)",
+        "appearance defaults (when operation=apply)",
+        "behavior defaults (when operation=apply)",
+        "if the prompt requests a translation/language button, do not route to navigation/menu generation; clarify runtime language switching versus localization first"
+      ]
+    },
+    {
+      "name": "schema-modeling",
+      "synonyms": [
+        "schema modeling",
+        "ddl plan",
+        "er model",
+        "table design",
+        "normalize",
+        "normalization"
+      ],
+      "target_type": "workflow",
+      "rules": [
+        "00-guard/ai.guard.md",
+        "10-global/apex.global.md"
+      ],
+      "workflow": "external:oracle-db/schema-modeling",
+      "requires": [
+        "model_name",
+        "topic_prefix"
+      ]
+    },
+    {
+      "name": "utplsql",
+      "synonyms": [
+        "utplsql",
+        "unit tests",
+        "run tests",
+        "test coverage",
+        "junit",
+        "sonar",
+        "teamcity",
+        "scaffold tests"
+      ],
+      "target_type": "workflow",
+      "rules": [
+        "00-guard/ai.guard.md",
+        "10-global/apex.global.md"
+      ],
+      "workflow": "external:oracle-db/plsql",
+      "requires": [
+        "suite_path",
+        "db_connection_name"
+      ]
+    },
+    {
+      "name": "build-options-shared",
+      "synonyms": [
+        "build option",
+        "build options",
+        "build-option",
+        "build-options",
+        "shared build option",
+        "shared build options"
+      ],
+      "target_type": "shared-component",
+      "rules": [
+        "10-global/apex.global.md"
+      ],
+      "templates": [
+        "templates/shared-components/build-options.md"
+      ],
+      "requires": [
+        "build option name",
+        "status",
+        "default on export"
+      ]
+    }
+  ],
+  "composition": {
+    "rules": "If multiple components appear in the one-liner, set target_type = page and union-load all referenced 20-data, 30-pages, and 40-components rules.",
+    "examples": [
+      {
+        "input": "page with an interactive report and a form on {{source.table}}; use Lookup LOV for {{lookup.valueColumn}}; refresh the report after the dialog closes",
+        "components": [
+          "interactive-report",
+          "form",
+          "lov-shared",
+          "da-refresh-region-after-dialog"
+        ],
+        "target_type": "page",
+        "templates": [
+          "templates/page-examples/interactive-report-page/interactive-report-page._index.md",
+          "templates/page-examples/form-page/form-page._index.md",
+          "templates/shared-components/lovs/lovs.dynamic.query.md",
+          "templates/business-logic/dynamic-actions/dynamic-actions.refresh-region-after-dialog.md"
+        ],
+        "requires": {
+          "source table": [
+            "table",
+            "pk",
+            "columns"
+          ],
+          "lookup lov": [
+            "value column",
+            "display column"
+          ],
+          "dynamic action": [
+            "dialog region identifier",
+            "report region identifier"
+          ]
+        }
+      },
+      {
+        "input": "dashboard with cards summarizing record count by category",
+        "components": [
+          "dashboard"
+        ],
+        "target_type": "page",
+        "templates": [
+          "templates/page-examples/dashboard-page/dashboard-page._index.md"
+        ]
+      },
+      {
+        "input": "add a calendar of {{source.table}} events",
+        "components": [
+          "calendar"
+        ],
+        "target_type": "page",
+        "templates": [
+          "templates/page-examples/calendar-page/calendar-page._index.md"
+        ],
+        "requires": {
+          "source table": [
+            "date column (e.g., {{source.dateColumn}})"
+          ]
+        }
+      },
+      {
+        "input": "check entire app for all plsql code and see what can be packaged and consolidated",
+        "components": [
+          "plsql"
+        ],
+        "target_type": "workflow",
+        "workflow": "external:oracle-db/plsql",
+        "defaults": {
+          "apex_export_path": "applications/",
+          "dry_run": true,
+          "environment": "dev"
+        }
+      },
+      {
+        "input": "apply feature flag across save buttons",
+        "components": [
+          "server-side-condition-batch"
+        ],
+        "target_type": "server-side-condition-batch",
+        "requires": {
+          "server-side-condition-batch": [
+            "ssc token",
+            "targets"
+          ]
+        }
+      },
+      {
+        "input": "add inline help to form items",
+        "components": [
+          "help-text-batch"
+        ],
+        "target_type": "help-text-batch",
+        "requires": {
+          "help-text-batch": [
+            "scope",
+            "targets",
+            "text message key",
+            "inline help"
+          ]
+        }
+      }
+    ]
+  },
+  "defaultsImported": false,
+  "multiComponentCombos": [
+    {
+      "input": "translate this app into another language",
+      "components": [
+        "translation"
+      ],
+      "target_type": "translations",
+      "templates": [
+        "templates/shared-components/translations/translations._index.md"
+      ],
+      "requires": {
+        "app": [
+          "target app or current app context"
+        ],
+        "language": [
+          "language name or code"
+        ],
+        "scope": [
+          "whole app or one page; ask if unclear"
+        ]
+      }
+    },
+    {
+      "input": "batch apply feature flag to save buttons",
+      "components": [
+        "button",
+        "server-side-condition-batch"
+      ],
+      "target_type": "server-side-condition-batch",
+      "requires": {
+        "button": [
+          "primary button name",
+          "page number or alias"
+        ],
+        "server-side-condition-batch": [
+          "ssc token",
+          "targets"
+        ]
+      }
+    },
+    {
+      "input": "update help text for save button and form fields",
+      "components": [
+        "button",
+        "help-text-batch"
+      ],
+      "target_type": "help-text-batch",
+      "requires": {
+        "button": [
+          "button name",
+          "page number"
+        ],
+        "help-text-batch": [
+          "scope",
+          "targets",
+          "text message key",
+          "inline help"
+        ]
+      }
+    },
+    {
+      "input": "batch apply item computation",
+      "components": [
+        "item",
+        "computation-plsql-batch"
+      ],
+      "target_type": "computation-batch",
+      "requires": {
+        "item": [
+          "item name",
+          "page number"
+        ],
+        "computation-plsql-batch": [
+          "computation type",
+          "execution point",
+          "logic body"
+        ]
+      }
+    },
+    {
+      "input": "replicate button actions across pages",
+      "components": [
+        "button",
+        "button-actions-batch"
+      ],
+      "target_type": "button-actions-batch",
+      "requires": {
+        "button": [
+          "button name",
+          "page number"
+        ],
+        "button-actions-batch": [
+          "operation (apply|remove)",
+          "targets",
+          "action type (when operation=apply)",
+          "layout defaults (when operation=apply)",
+          "behavior defaults (when operation=apply)"
+        ]
+      }
+    },
+    {
+      "input": "remove only the cancel button from page 61 claim region",
+      "components": [
+        "button",
+        "button-actions-batch"
+      ],
+      "target_type": "button-actions-batch",
+      "requires": {
+        "button-actions-batch": [
+          "operation (remove)",
+          "target or targets (page + region + button name)"
+        ]
+      }
+    }
+  ],
+  "synonymPriority": [
+    {
+      "synonym": "area chart",
+      "prefer": "chart-area",
+      "candidates": [
+        "chart-area",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "area chart custom legend",
+      "prefer": "chart-area",
+      "candidates": [
+        "chart-area",
+        "chart-area-custom-legend"
+      ]
+    },
+    {
+      "synonym": "bar chart",
+      "prefer": "chart-bar",
+      "candidates": [
+        "chart-bar",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "bubble chart",
+      "prefer": "chart-bubble",
+      "candidates": [
+        "chart-bubble",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "combo chart",
+      "prefer": "chart-dashboard-combination",
+      "candidates": [
+        "chart-dashboard-combination",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "donut chart",
+      "prefer": "chart-pie",
+      "candidates": [
+        "chart-pie",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "focus highlight",
+      "prefer": "da-add-remove-class",
+      "candidates": [
+        "da-add-remove-class",
+        "da-focus-highlight-region"
+      ]
+    },
+    {
+      "synonym": "line chart",
+      "prefer": "chart-line",
+      "candidates": [
+        "chart-line",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "pie chart",
+      "prefer": "chart-pie",
+      "candidates": [
+        "chart-pie",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "refresh region",
+      "prefer": "da-refresh-region-after-dialog",
+      "candidates": [
+        "da-refresh-region-after-dialog",
+        "da-refresh-region-on-change"
+      ]
+    },
+    {
+      "synonym": "scatter chart",
+      "prefer": "chart-scatter",
+      "candidates": [
+        "chart-scatter",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "status meter",
+      "prefer": "chart-status-meter-gauge",
+      "candidates": [
+        "chart-status-meter-gauge",
+        "chart"
+      ]
+    },
+    {
+      "synonym": "stock chart",
+      "prefer": "chart-stock",
+      "candidates": [
+        "chart-stock",
+        "chart"
+      ]
+    }
+  ]
+}

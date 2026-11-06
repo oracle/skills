@@ -1,0 +1,133 @@
+page 20000 (
+    name: Settings
+    alias: SETTINGS
+    title: Settings
+    pageGroup: @user-settings
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            t-Dialog--noPadding
+            js-dialog-class-t-Drawer--pullOutEnd
+            js-dialog-class-t-Drawer--md
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: This page contains a list of settings applicable to the current application user.
+    }
+    config {
+        buildOption: @feature-user-settings
+    }
+
+    region app-user (
+        name: &APP_USER.
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/hero
+            templateOptions: [
+                #DEFAULT#
+                t-HeroRegion--hideIcon
+            ]
+        }
+        serverSideCondition {
+            type: noRowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                  from apex_application_auth 
+                 where application_id            = :APP_ID 
+                   and is_current_authentication = 'Y' 
+                   and scheme_type_code          = 'NATIVE_APEX_ACCOUNTS'
+                ```
+        }
+    )
+
+    region app-user-2 (
+        name: &APP_USER.
+        type: cards
+        source {
+            location: localDatabase
+            tableName: APEX_WORKSPACE_APEX_USERS
+            whereClause: user_name = :APP_USER
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/cards-container
+            templateOptions: [
+                #DEFAULT#
+                t-CardsRegion--styleB
+            ]
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1 
+                  from apex_application_auth 
+                 where application_id            = :APP_ID 
+                   and is_current_authentication = 'Y' 
+                   and scheme_type_code          = 'NATIVE_APEX_ACCOUNTS'
+                ```
+        }
+        componentAppearance {
+            layout: horizontal
+        }
+        card {
+            cssClasses: a-CardView--noUI
+        }
+        title {
+            column: USER_NAME
+        }
+        subtitle {
+            column: EMAIL
+        }
+        iconAndBadge {
+            iconSource: initials
+            iconColumn: EMAIL
+        }
+    )
+
+    region settings (
+        name: Settings
+        type: list
+        source {
+            list: @user-settings
+        }
+        layout {
+            sequence: 30
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                u-colors
+            ]
+        }
+    )
+
+)
+

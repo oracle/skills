@@ -1,0 +1,18 @@
+lov timeframe-4-weeks (
+    name: TIMEFRAME (4 WEEKS)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select disp,
+                   val as seconds
+              from table( apex_util.get_timeframe_lov_data )
+             order by insert_order
+            ```
+    }
+    columnMapping {
+        return: SECONDS
+        display: DISP
+    }
+)
+

@@ -1,0 +1,106 @@
+listTemplate wizard-progress (
+    name: Wizard Progress
+    templateClass: wizardProgressList
+    templateOptions {
+        preset: t-WizardSteps--displayLabels
+    }
+    list {
+        beforeEntries: <ul aria-label="#CURRENT_PROGRESS#" class="t-WizardSteps #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">
+        afterEntries: </ul>
+    }
+    entry {
+        current:
+            ```html
+            <li class="t-WizardSteps-step is-active" aria-current="step" id="#LIST_ITEM_ID#">
+              <div class="t-WizardSteps-wrap" data-link="#LINK#">
+                <span class="t-WizardSteps-marker" aria-hidden="true"></span>
+                <span class="t-WizardSteps-label">#TEXT# <span aria-hidden="true" class="t-WizardSteps-labelState"></span></span>
+              </div>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="t-WizardSteps-step" id="#LIST_ITEM_ID#">
+              <div class="t-WizardSteps-wrap" data-link="#LINK#">
+                <span class="t-WizardSteps-marker" aria-hidden="true"></span>
+                <span class="t-WizardSteps-label">#TEXT# <span aria-hidden="true" class="t-WizardSteps-labelState"></span></span>
+              </div>
+            </li>
+            ```
+    }
+    javaScript {
+        executeWhenPageLoads: apex.theme.initWizardProgressBar();
+    }
+    advanced {
+        identifier: WIZARD_PROGRESS
+    }
+    subscription {
+        master: @wizard-progress
+    }
+
+    templateOption vertical-list (
+        name: Vertical Orientation
+        sequence: 10
+        appearance {
+            cssClasses: t-WizardSteps--vertical
+        }
+        help {
+            helpText: Displays the wizard progress list in a vertical orientation and is suitable for displaying within a side column of a page.
+        }
+        advanced {
+            identifier: VERTICAL_LIST
+        }
+    )
+
+    templateOption wizard-progress-links (
+        name: Make Wizard Steps Clickable
+        sequence: 40
+        appearance {
+            cssClasses: js-wizardProgressLinks
+        }
+        help {
+            helpText: This option will make the wizard steps clickable links.
+        }
+        advanced {
+            identifier: WIZARD_PROGRESS_LINKS
+        }
+    )
+
+    templateOption allsteps (
+        name: All Steps
+        group: @list/label-display
+        sequence: 10
+        appearance {
+            cssClasses: t-WizardSteps--displayLabels
+        }
+        advanced {
+            identifier: ALLSTEPS
+        }
+    )
+
+    templateOption currentsteponly (
+        name: Current Step Only
+        group: @list/label-display
+        sequence: 20
+        appearance {
+            cssClasses: t-WizardSteps--displayCurrentLabelOnly
+        }
+        advanced {
+            identifier: CURRENTSTEPONLY
+        }
+    )
+
+    templateOption hidelabels (
+        name: Hide Labels
+        group: @list/label-display
+        sequence: 30
+        appearance {
+            cssClasses: t-WizardSteps--hideLabels
+        }
+        advanced {
+            identifier: HIDELABELS
+        }
+    )
+
+)
+

@@ -1,0 +1,7 @@
+{
+  "app" : {
+    "runtime" : {
+      "debugging" : true
+    }
+  }
+}

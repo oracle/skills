@@ -1,0 +1,12 @@
+lov oehr-departments-department-name (
+    name: OEHR_DEPARTMENTS.DEPARTMENT_NAME
+    source {
+        tableName: OEHR_DEPARTMENTS
+    }
+    columnMapping {
+        return: DEPARTMENT_ID
+        display: DEPARTMENT_NAME
+        defaultSort: DEPARTMENT_NAME
+    }
+)
+

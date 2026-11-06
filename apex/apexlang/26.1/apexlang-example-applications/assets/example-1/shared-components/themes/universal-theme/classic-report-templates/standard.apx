@@ -1,0 +1,195 @@
+classicReportTemplate standard (
+    name: Standard
+    templateClass: standard
+    type: genericColumns
+    templateOptions {
+        preset: [
+            t-Report--altRowsDefault
+            t-Report--rowHighlight
+        ]
+    }
+    reportTemplate {
+        top:
+            ```html
+            <div class="t-Report #COMPONENT_CSS_CLASSES#" id="report_#REGION_STATIC_ID#" #REPORT_ATTRIBUTES# data-region-id="#REGION_STATIC_ID#">
+              <div class="t-Report-wrap">
+                <table class="t-Report-pagination" role="presentation">#TOP_PAGINATION#</table>
+                <div class="t-Report-tableWrap">
+                <table class="t-Report-report" id="report_table_#REGION_STATIC_ID#" aria-label="#REGION_TITLE#">
+            ```
+        bottom:
+            ```html
+                  </tbody>
+                </table>
+                </div>
+                <div class="t-Report-links">#EXTERNAL_LINK##CSV_LINK#</div>
+                <table class="t-Report-pagination t-Report-pagination--bottom" role="presentation">#PAGINATION#</table>
+              </div>
+            </div>
+            ```
+    }
+    columnTemplates {
+        beforeHeading: <thead>
+        heading: <th class="t-Report-colHead" #ARIA_SORT# #ALIGNMENT# id="#COLUMN_HEADER_NAME#" #COLUMN_WIDTH#>#COLUMN_HEADER#</th>
+        afterHeading:
+            ```html
+            </thead>
+            <tbody>
+            ```
+        beforeEachRow: <tr>
+    }
+    columnTemplate1 {
+        template: <td class="t-Report-cell" #ALIGNMENT# #ACCESSIBLE_HEADERS#>#COLUMN_VALUE#</td>
+    }
+    rowTemplates {
+        afterEachRow: </tr>
+    }
+    pagination {
+        template: <span class="t-Report-paginationText">#TEXT#</span>
+        nextPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousPage:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS#
+            </a>
+            ```
+        nextSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">
+              #PAGINATION_NEXT_SET#<span class="a-Icon icon-right-arrow" aria-hidden="true"></span>
+            </a>
+            ```
+        previousSet:
+            ```html
+            <a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">
+              <span class="a-Icon icon-left-arrow" aria-hidden="true"></span>#PAGINATION_PREVIOUS_SET#
+            </a>
+            ```
+    }
+    advanced {
+        identifier: STANDARD
+    }
+    subscription {
+        master: @standard
+    }
+
+    templateOption stretchreport (
+        name: Stretch Report
+        sequence: 10
+        appearance {
+            cssClasses: t-Report--stretch
+        }
+        advanced {
+            identifier: STRETCHREPORT
+        }
+    )
+
+    templateOption altrowcolorsdisable (
+        name: Disable
+        group: @report/alternating-rows
+        sequence: 20
+        appearance {
+            cssClasses: t-Report--staticRowColors
+        }
+        advanced {
+            identifier: ALTROWCOLORSDISABLE
+        }
+    )
+
+    templateOption altrowcolorsenable (
+        name: Enable
+        group: @report/alternating-rows
+        sequence: 10
+        appearance {
+            cssClasses: t-Report--altRowsDefault
+        }
+        advanced {
+            identifier: ALTROWCOLORSENABLE
+        }
+    )
+
+    templateOption horizontalborders (
+        name: Horizontal Only
+        group: @report/report-border
+        sequence: 20
+        appearance {
+            cssClasses: t-Report--horizontalBorders
+        }
+        advanced {
+            identifier: HORIZONTALBORDERS
+        }
+    )
+
+    templateOption removeallborders (
+        name: No Borders
+        group: @report/report-border
+        sequence: 30
+        appearance {
+            cssClasses: t-Report--noBorders
+        }
+        advanced {
+            identifier: REMOVEALLBORDERS
+        }
+    )
+
+    templateOption removeouterborders (
+        name: No Outer Borders
+        group: @report/report-border
+        sequence: 40
+        appearance {
+            cssClasses: t-Report--inline
+        }
+        advanced {
+            identifier: REMOVEOUTERBORDERS
+        }
+    )
+
+    templateOption verticalborders (
+        name: Vertical Only
+        group: @report/report-border
+        sequence: 20
+        appearance {
+            cssClasses: t-Report--verticalBorders
+        }
+        advanced {
+            identifier: VERTICALBORDERS
+        }
+    )
+
+    templateOption enable (
+        name: Enable
+        group: @report/row-highlighting
+        sequence: 10
+        appearance {
+            cssClasses: t-Report--rowHighlight
+        }
+        help {
+            helpText: Enable row highlighting on mouse over
+        }
+        advanced {
+            identifier: ENABLE
+        }
+    )
+
+    templateOption rowhighlightdisable (
+        name: Disable
+        group: @report/row-highlighting
+        sequence: 20
+        appearance {
+            cssClasses: t-Report--rowHighlightOff
+        }
+        help {
+            helpText: Disable row highlighting on mouse over
+        }
+        advanced {
+            identifier: ROWHIGHLIGHTDISABLE
+        }
+    )
+
+)
+

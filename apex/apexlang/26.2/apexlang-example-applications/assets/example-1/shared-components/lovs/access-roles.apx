@@ -1,0 +1,17 @@
+lov access-roles (
+    name: ACCESS_ROLES
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select role_name d, role_id r
+            from APEX_APPL_ACL_ROLES where application_id = :APP_ID 
+            order by 1
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+

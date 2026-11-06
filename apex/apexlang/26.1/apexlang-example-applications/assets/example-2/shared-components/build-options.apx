@@ -1,0 +1,108 @@
+buildOption commented-out (
+    name: Commented Out
+)
+
+buildOption feature-about-page (
+    name: Feature: About Page
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_ABOUT_PAGE
+    }
+    comments {
+        comments: About this application page.
+    }
+)
+
+buildOption feature-access-control (
+    name: Feature: Access Control
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_ACCESS_CONTROL
+    }
+    comments {
+        comments: Incorporate role based user authentication within your application and manage username mappings to application roles.
+    }
+)
+
+buildOption feature-activity-reporting (
+    name: Feature: Activity Reporting
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_ACTIVITY_REPORTING
+    }
+    comments {
+        comments: Include numerous reports and charts on end user activity.
+    }
+)
+
+buildOption feature-configuration-options (
+    name: Feature: Configuration Options
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_CONFIGURATION
+    }
+    comments {
+        comments: Allow application administrators to enable or disable specific functionality, associated with an Oracle APEX build option, from within the application.
+    }
+)
+
+buildOption feature-feedback (
+    name: Feature: Feedback
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_FEEDBACK
+    }
+    comments {
+        comments: Provide a mechanism for end users to post general comments back to the application administrators and developers.
+    }
+)
+
+buildOption feature-push-notifications (
+    name: Feature: Push Notifications
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_PUSH_NOTIFICATIONS
+    }
+    comments {
+        comments: Allow users to subscribe to push notifications on their devices.
+    }
+)
+
+buildOption feature-theme-style-selection (
+    name: Feature: Theme Style Selection
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_THEME_STYLE_SELECTION
+    }
+    comments {
+        comments: "Allow administrators to select a default color scheme (theme style) for the application. Administrators can also choose to allow end users to choose their own theme style. "
+    }
+)
+
+buildOption feature-user-settings (
+    name: Feature: User Settings
+    status {
+        status: include
+    }
+    advanced {
+        featureIdentifier: APPLICATION_USER_SETTINGS
+    }
+    comments {
+        comments: The user settings page is a drawer that links to all user settings pages.
+    }
+)
+

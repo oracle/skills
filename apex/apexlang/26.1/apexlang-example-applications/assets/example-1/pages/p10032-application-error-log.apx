@@ -1,0 +1,257 @@
+page 10032 (
+    name: Application Error Log
+    alias: APPLICATION-ERROR-LOG
+    title: Application Error Log
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>This page provides an interactive report of all unexpected errors logged by this application.</p>
+            <p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+            ```
+    }
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    region application-error-log (
+        name: Application Error Log
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select step_id,
+                       userid,
+                       time_stamp err_time,
+                       sqlerrm,
+                       sqlerrm_component_type,
+                       sqlerrm_component_name
+                  from apex_activity_log
+                 where flow_id = :app_id
+                   and sqlerrm is not null
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        actionsMenu {
+            subscription: false
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748933322260376762
+        }
+
+        column ERR_TIME (
+            type: plainText
+            heading {
+                heading: Err Time
+                alignment: center
+            }
+            layout {
+                sequence: 3
+                columnAlignment: center
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column SQLERRM (
+            type: plainText
+            heading {
+                heading: Error
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column SQLERRM_COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Component Name
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column SQLERRM_COMPONENT_TYPE (
+            type: plainText
+            heading {
+                heading: Context
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column STEP_ID (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: end
+            }
+            layout {
+                sequence: 1
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column USERID (
+            type: plainText
+            heading {
+                heading: User
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Application Error Log
+        }
+
+        savedReport 357489382 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn ERR_TIME (
+                sequence: 3
+            )
+
+            displayColumn SQLERRM (
+                sequence: 4
+            )
+
+            displayColumn SQLERRM_COMPONENT_NAME (
+                sequence: 6
+            )
+
+            displayColumn SQLERRM_COMPONENT_TYPE (
+                sequence: 5
+            )
+
+            displayColumn STEP_ID (
+                sequence: 1
+            )
+
+            displayColumn USERID (
+                sequence: 2
+            )
+
+            sort (
+                column: ERROR_TIME
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset
+        layout {
+            sequence: 20
+            region: @application-error-log
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

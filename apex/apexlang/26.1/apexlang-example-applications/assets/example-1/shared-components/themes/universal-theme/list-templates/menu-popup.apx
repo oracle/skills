@@ -1,0 +1,86 @@
+listTemplate menu-popup (
+    name: Menu Popup
+    templateClass: pullDownMenu
+    list {
+        beforeEntries: <div id="#PARENT_STATIC_ID#_menu" class="#COMPONENT_CSS_CLASSES#" style="display:none;"><ul>
+        afterEntries: </ul></div>
+    }
+    entry {
+        current:
+            ```html
+            <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+            
+            ```
+        currentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+        noncurrent:
+            ```html
+            <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+            
+            ```
+        noncurrentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+    }
+    sublist {
+        beforeEntries: <ul>
+        afterEntries: </ul></li>
+    }
+    sublistEntry {
+        current: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        currentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+        noncurrent: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>
+        noncurrentWithSublist: <li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a>
+    }
+    javaScript {
+        executeWhenPageLoads:
+            ```javascript-browser
+            var e = apex.jQuery("##PARENT_STATIC_ID#_menu", apex.gPageContext$);
+            if (e.hasClass("js-addActions")) {
+              apex.actions.addFromMarkup( e );
+            }
+            e.menu({ iconType: 'fa', callout: e.hasClass("js-menu-callout")});
+            ```
+    }
+    attributeDescriptions {
+        a01: Menu Item ID / Action Name
+        a02: Disabled (True/False)
+        a03: Hidden (True/False)
+        a04: Title Attribute (Used By Actions Only)
+        a05: Shortcut
+        a06: Link Target
+    }
+    advanced {
+        identifier: MENU_POPUP
+    }
+    subscription {
+        master: @menu-popup
+    }
+
+    templateOption add-actions (
+        name: Add Actions
+        sequence: 10
+        appearance {
+            cssClasses: js-addActions
+        }
+        help {
+            helpText: Enables you to define a keyboard shortcut to activate the menu item.
+        }
+        advanced {
+            identifier: ADD_ACTIONS
+        }
+    )
+
+    templateOption display-menu-callout (
+        name: Display Menu Callout
+        sequence: 20
+        appearance {
+            cssClasses: js-menu-callout
+        }
+        help {
+            helpText: Use this option to add display a callout for the menu. Note that callout will only be displayed if the data-parent-element custom attribute is defined.
+        }
+        advanced {
+            identifier: DISPLAY_MENU_CALLOUT
+        }
+    )
+
+)
+

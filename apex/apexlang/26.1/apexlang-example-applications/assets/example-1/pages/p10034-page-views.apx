@@ -1,0 +1,415 @@
+page 10034 (
+    name: Page Views
+    alias: PAGE-VIEWS
+    title: Page Views
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authorizationScheme: @administration-rights
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>This page provides an interactive report of the most recent page views.</p>
+            <p>Select the reporting timeframe (Default = 1 day) at the top of the page as necessary.<br>
+            Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+            ```
+    }
+    config {
+        buildOption: @feature-activity-reporting
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noUI
+                t-Form--large
+            ]
+        }
+    )
+
+    region page-views (
+        name: Page Views
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                    step_id||'. '||(select page_name
+                                    from apex_application_pages p
+                                    where p.page_id = l.step_id
+                                        and p.application_id = :APP_ID) page_name,
+                    userid_lc     user_id,
+                    time_stamp    timestamp,
+                    elap          elapsed,
+                    step_id       page,
+                    decode(page_mode,'P','Partial','D','Full',page_mode) page_mode,
+                    component_name,
+                    num_rows,
+                    ir_search,
+                    sqlerrm  error
+                from apex_activity_log l
+                where flow_id = :app_id
+                    and time_stamp >= sysdate - ( 1/24/60/60 * :P10034_TIMEFRAME )
+                    and userid is not null
+                    and step_id is not null
+                order by time_stamp desc
+                ```
+            pageItemsToSubmit: P10034_TIMEFRAME
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        actionsMenu {
+            subscription: false
+        }
+        advanced {
+            savedReportMappingIdentifier: 35748908560286376737
+        }
+
+        column COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Component Name
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column ELAPSED (
+            type: plainText
+            heading {
+                heading: Elapsed
+                alignment: end
+            }
+            layout {
+                sequence: 4
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990D0000
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column ERROR (
+            type: plainText
+            heading {
+                heading: Error
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column IR_SEARCH (
+            type: plainText
+            heading {
+                heading: IR Search
+            }
+            layout {
+                sequence: 9
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column NUM_ROWS (
+            type: plainText
+            heading {
+                heading: Num Rows
+                alignment: end
+            }
+            layout {
+                sequence: 8
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G990
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column PAGE (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: end
+            }
+            layout {
+                sequence: 5
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column PAGE_MODE (
+            type: plainText
+            heading {
+                heading: Mode
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column PAGE_NAME (
+            type: plainText
+            heading {
+                heading: Page Name
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Timestamp
+            }
+            layout {
+                sequence: 3
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column USER_ID (
+            type: plainText
+            heading {
+                heading: User
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Page Views
+        }
+
+        savedReport 357489163 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn ELAPSED (
+                sequence: 4
+            )
+
+            displayColumn PAGE_MODE (
+                sequence: 5
+            )
+
+            displayColumn PAGE_NAME (
+                sequence: 1
+            )
+
+            displayColumn TIMESTAMP (
+                sequence: 3
+            )
+
+            displayColumn USER_ID (
+                sequence: 2
+            )
+
+            sort (
+                column: TIMESTAMP
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    pageItem P10034_TIMEFRAME (
+        type: selectList
+        label {
+            label: Timeframe
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            type: staticValue
+            staticValue: 900
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset
+        layout {
+            sequence: 20
+            region: @page-views
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @text-with-icon
+            templateOptions: t-Button--iconLeft
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction refresh-report (
+        name: Refresh Report
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P10034_TIMEFRAME
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @page-views
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

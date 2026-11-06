@@ -1,0 +1,35 @@
+lov feedback-rating (
+    name: FEEDBACK_RATING
+    source {
+        location: staticValues
+    }
+
+    entry negative (
+        sequence: 3
+        display: Negative
+        return: 1
+        globalization {
+            template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-frown-o fa-2x feedback-negative" aria-hidden="true" ></span></span>
+        }
+    )
+
+    entry neutral (
+        sequence: 2
+        display: Neutral
+        return: 2
+        globalization {
+            template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-emoji-neutral fa-2x feedback-neutral" aria-hidden="true" ></span></span>
+        }
+    )
+
+    entry positive (
+        sequence: 1
+        display: Positive
+        return: 3
+        globalization {
+            template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-smile-o fa-2x feedback-positive" aria-hidden="true" ></span></span>
+        }
+    )
+
+)
+

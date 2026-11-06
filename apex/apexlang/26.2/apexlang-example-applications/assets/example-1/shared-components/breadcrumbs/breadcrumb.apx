@@ -1,0 +1,96 @@
+breadcrumb breadcrumb (
+    name: Breadcrumb
+
+    entry administration (
+        name: Administration
+        pageNumber: 10000
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 10000
+            }
+        }
+    )
+
+    entry customers (
+        name: Customers
+        pageNumber: 3
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+    entry dashboard (
+        name: Dashboard
+        pageNumber: 2
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry employees (
+        name: Employees
+        pageNumber: 8
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 8
+            }
+        }
+    )
+
+    entry home (
+        name: Home
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry order-search (
+        name: Order Search
+        pageNumber: 5
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+    entry orders-calendar (
+        name: Orders Calendar
+        pageNumber: 7
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+    )
+
+)
+

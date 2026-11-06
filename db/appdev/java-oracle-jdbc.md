@@ -14,6 +14,7 @@ Start here when you need to choose the right `ojdbc` artifact, build a JDBC URL,
 | Build JDBC URLs; use Easy Connect, EZConnect+, TNS aliases, wallets, or TLS | [JDBC Connections](java-oracle-jdbc/connections.md) |
 | Run queries, DML, batch operations, binds, and PL/SQL calls | [JDBC SQL and PL/SQL](java-oracle-jdbc/sql.md) |
 | Configure UCP, Spring Boot datasource settings, security, and production practices | [JDBC Pooling and Production](java-oracle-jdbc/pooling-production.md) |
+| Load connections/secrets from a cloud provider, add tracing, or use Spring/Pkl extensions | [Oracle JDBC Driver Extensions](java-oracle-jdbc/providers.md) |
 
 ## Quick Defaults
 
@@ -38,3 +39,4 @@ Start here when you need to choose the right `ojdbc` artifact, build a JDBC URL,
 - [Oracle Net Services Administrator's Guide 26ai - Configuring the Easy Connect Naming Method](https://docs.oracle.com/en/database/oracle/oracle-database/26/netag/configuring-easy-connect-naming-method.html)
 - [Oracle JDBC Downloads](https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html)
 - [Spring Boot Oracle Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data)
+- [oracle/ojdbc-extensions](https://github.com/oracle/ojdbc-extensions)
