@@ -158,7 +158,7 @@ The OKE operational skills include deterministic helper tools under `oci/oke/scr
 - Route OCI networking Terraform configuration to `oci/oci-landing-zone-terraform-module/terraform-oci-modules-networking-skill/`; it supports only `oci-landing-zones/terraform-oci-modules-networking` and does not manage ZPR policies.
 - Route OCI IoT domain, digital twin, adapter, device publish, raw command, and Data API workflows to `oci/iot-platform/`.
 - Route Oracle Database-owned implementation details to `db/features/`.
-- Route APEX artifact generation to `apex/apexlang/`.
+- Route APEX artifact generation to `apex/apexlang-router/`.
 - Prefer official Oracle documentation for OCI service limits, IAM verbs, endpoint formats, regions, and pricing inputs because these change frequently.
 
 ## Sources

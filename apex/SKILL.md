@@ -9,45 +9,29 @@ This domain contains Oracle APEX skills for Oracle APEX application development.
 
 ## How to Use This Domain
 
-1. Start with the routing table below.
-2. For APEXlang work, open `apex/apexlang/SKILL.md` and route to the matching APEX version.
-3. Read only the specific file or category you need.
+1. Start with [APEXLang version router](apexlang-router/SKILL.md) and route to the matching APEX version.
+2. Read only the specific file or category you need.
 
-## Directory Structure
+## Skill Directory Structure
 
 ```text
 apex/
-└── apexlang/
-    ├── SKILL.md
-    ├── 26.1/
-    │   ├── SKILL.md
-    │   ├── apexlang-generation/
-    │   ├── apexlang-compile/
-    │   ├── apexlang-deploy/
-    │   ├── apexlang-inventory/
-    │   └── apexlang-example-applications/
-    └── 26.2/
-        ├── SKILL.md
-        ├── apexlang-compile/
-        ├── apexlang-deploy/
-        ├── apexlang-inventory/
-        └── apexlang-example-applications/
+├── SKILL.md
+├── apexlang-router/
+├── apexlang-compile/                           # shared; no release suffix
+├── apexlang-deploy/                            # shared; no release suffix
+├── apexlang-MAJOR-MINOR-inventory/             # one per supported release
+└── apexlang-MAJOR-MINOR-example-applications/  # when matching assets exist
 ```
 
-## Category Routing
-
-
-| Topic                                          | Directory            |
-| ---------------------------------------------- | -------------------- |
-| APEXlang version router                        | `apex/apexlang`      |
-| APEXlang skills for APEX 26.1                  | `apex/apexlang/26.1` |
-| APEXlang skills for APEX 26.2                  | `apex/apexlang/26.2` |
-
+In the tree, `MAJOR-MINOR` is a placeholder for the APEX release numbers joined by a hyphen; APEX 26.1 uses `apexlang-26-1-inventory`. The router selects release-specific skills, while compile and deploy have no version suffix and are shared across releases.
 
 ## Key Starting Points
 
-- `apex/apexlang/SKILL.md`
-- `apex/apexlang/26.1/SKILL.md`
-- `apex/apexlang/26.2/SKILL.md`
-- `apex/apexlang/26.1/apexlang-generation/references/workflows/apex-generation.md`
-- `apex/apexlang/26.1/apexlang-generation/references/domains/README.md`
+- `apex/apexlang-router/SKILL.md`
+- `apex/apexlang-compile/SKILL.md`
+- `apex/apexlang-deploy/SKILL.md`
+- `apex/apexlang-26-1-inventory/SKILL.md`
+- `apex/apexlang-26-1-example-applications/SKILL.md`
+- `apex/apexlang-26-2-inventory/SKILL.md`
+- `apex/apexlang-26-2-example-applications/SKILL.md`
