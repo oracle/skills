@@ -66,9 +66,9 @@ END process_invoices;
 
 ```sql
 -- Check optimization level of compiled objects
-SELECT object_name, object_type, plsql_optimize_level
+SELECT name, type, plsql_optimize_level
 FROM   user_plsql_object_settings
-WHERE  object_type IN ('PROCEDURE', 'FUNCTION', 'PACKAGE BODY');
+WHERE  type IN ('PROCEDURE', 'FUNCTION', 'PACKAGE BODY');
 
 -- Check session-level setting
 SELECT value FROM v$parameter WHERE name = 'plsql_optimize_level';
@@ -102,9 +102,9 @@ END number_crunch;
 /
 
 -- Check what each object uses
-SELECT object_name, object_type, plsql_code_type
+SELECT name, type, plsql_code_type
 FROM   user_plsql_object_settings
-ORDER BY object_type, object_name;
+ORDER BY type, name;
 ```
 
 ### When Native Compilation Helps
