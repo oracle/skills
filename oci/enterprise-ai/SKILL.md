@@ -62,14 +62,14 @@ oci/enterprise-ai/
 | Deploy a packaged agent runtime | `responses-api-agents` -> `hosted-applications` -> `cost-estimation` -> `private-endpoints-and-governance` |
 | Build RAG over files | `rag-and-search` -> `agent-tools` -> `cost-estimation` -> `responses-api-agents` |
 | Build RAG over Oracle Database | `rag-and-search` -> `db/features/vector-search.md` -> `db/features/dbms-vector.md` -> `db/features/select-ai.md` when in-database generation is needed |
-| Add AI to APEX or Autonomous Database apps | `oracle-platform-integrations` -> relevant `db/features/` or `apex/apexlang/` guidance |
+| Add AI to APEX or Autonomous Database apps | `oracle-platform-integrations` -> relevant `db/features/` or `apex/apexlang-router/` guidance |
 | Design production access controls | `private-endpoints-and-governance` -> `enterprise-ai-models` or `responses-api-agents` depending on workload |
 
 ## Scope Boundaries
 
 - Keep cloud-side model, agent, tool, endpoint, hosting, and governance decisions in this domain.
 - Use `db/features/select-ai.md`, `db/features/vector-search.md`, `db/features/dbms-vector.md`, and `db/features/ai-profiles.md` for Oracle Database-owned AI implementation.
-- Use `apex/apexlang/` for APEX application artifact generation and APEX AI agent component templates.
+- Use `apex/apexlang-router/` for APEX application artifact generation and APEX AI agent component templates.
 - Prefer official Oracle documentation for model availability, supported tools, IAM verbs, endpoint formats, and service limits because Enterprise AI services change frequently.
 
 ## Sources

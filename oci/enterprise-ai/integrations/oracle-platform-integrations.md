@@ -10,7 +10,7 @@ Use this file when the user's Enterprise AI journey crosses Oracle services. Rou
 |-----------|-------|
 | Natural-language SQL, database chat, or in-database AI profiles | `db/features/select-ai.md` and `db/features/ai-profiles.md` |
 | Vector search, embeddings, and RAG stored in Oracle Database | `db/features/vector-search.md` and `db/features/dbms-vector.md` |
-| APEX app generation or APEX AI agent component artifacts | `apex/apexlang/` |
+| APEX app generation or APEX AI agent component artifacts | `apex/apexlang-router/` |
 | OCR, document extraction, image analysis, language, or speech before GenAI | OCI AI Services documentation and service-specific SDKs |
 | Agent workflow that calls enterprise systems | `oci/enterprise-ai/agent-workflows/agent-tools.md` with Function Calling or MCP Calling |
 
