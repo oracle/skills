@@ -488,12 +488,25 @@ While 3NF is the target for OLTP, over-normalizing into dozens of tiny tables ca
 
 ### Mistake 5: Ignoring NULL Semantics in Unique Constraints
 
-Oracle treats `NULL` as distinct from all values **including other NULLs** in unique constraints. Multiple rows can have `NULL` in a unique-constrained column. If you need "unique or null" behavior with explicit NULL handling, use a unique function-based index.
+For a single-column unique constraint, rows with `NULL` in that column are not compared with each other, so any number of them is allowed; only non-NULL values must be unique.
+
+Composite unique keys are different. A row whose key columns are **all** `NULL` always satisfies the constraint, but two rows that have `NULL` in some key columns and the same values in the other key columns are duplicates, and the second insert fails with ORA-00001.
 
 ```sql
--- Allow multiple NULLs but enforce uniqueness for non-NULL values
-CREATE UNIQUE INDEX UX_EMP_NATIONAL_ID
-    ON EMPLOYEE (CASE WHEN national_id IS NOT NULL THEN national_id END);
+CREATE TABLE T (a NUMBER, b NUMBER, c VARCHAR2(1), CONSTRAINT T_UK UNIQUE (a, b, c));
+
+INSERT INTO T VALUES (7, NULL, 'X');        -- succeeds
+INSERT INTO T VALUES (7, NULL, 'X');        -- ORA-00001: b is NULL, a and c are equal
+INSERT INTO T VALUES (NULL, NULL, NULL);    -- succeeds
+INSERT INTO T VALUES (NULL, NULL, NULL);    -- succeeds: all key columns are NULL
+```
+
+A plain unique constraint already gives "unique or NULL" behavior for a single column. Use a unique function-based index only when you need different semantics, for example uniqueness over a subset of rows:
+
+```sql
+-- At most one ACTIVE row per national_id; other rows are not checked
+CREATE UNIQUE INDEX UX_EMP_ACTIVE_NATIONAL_ID
+    ON EMPLOYEE (CASE WHEN status = 'ACTIVE' THEN national_id END);
 ```
 
 ### Mistake 6: Using VARCHAR2 for Fixed-Format Codes
