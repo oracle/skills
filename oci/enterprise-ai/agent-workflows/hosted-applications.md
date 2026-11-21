@@ -14,6 +14,7 @@ Use this path when the workload needs:
 - Managed storage injected into the runtime.
 - Customer networking mode for private resource access.
 - OAuth integration through an OCI IAM identity-domain application.
+- OCI IAM-signed inbound access for clients using OCI SDKs or request signing.
 
 Keep `agent-workflows/responses-api-agents.md` as the default for API-first agents. Move to hosted applications when the user needs to operate an application runtime, not just call model and tool APIs.
 
@@ -36,6 +37,7 @@ Keep `agent-workflows/responses-api-agents.md` as the default for API-first agen
 | Customer networking mode | Routes outbound traffic through a customer subnet for private resources |
 | Public vs private endpoint | Controls how users and systems invoke the application |
 | Identity-domain application | Supports OAuth, SSO, identity propagation, and authorization |
+| OCI IAM authentication | Authorizes signed inbound requests using OCI IAM policies |
 
 ## Invocation and Networking
 
@@ -53,7 +55,14 @@ For outbound access, decide whether the runtime can use service-managed networki
 
 Managed storage can simplify agent state for memory, checkpoints, caching, and context storage. OCI documents managed storage options including PostgreSQL, OCI Cache, and Oracle Autonomous Database. Treat managed storage as application-scoped and lifecycle-coupled to the hosted application; if the user needs independent lifecycle, direct administration, custom tuning, or cross-application sharing, use customer-managed storage through customer networking mode.
 
-Hosted applications use OAuth through an OCI IAM identity-domain application for inbound authentication. For outbound access to OCI services, use resource-principal based authorization and IAM policies instead of long-lived credentials in the container.
+Choose inbound authentication when creating the application:
+
+- Identity-domain bearer tokens: use `CreateHostedApplication` with `InboundAuthConfig`; configure the identity-domain application, audience, and scopes.
+- OCI IAM signing: use `CreateHostedApplicationIam`; clients sign requests through standard OCI request-signature authentication and IAM policies authorize access.
+
+The July 2026 IAM release adds the second option. The older OAuth setup page's claim that OAuth is the only choice applies to the identity-domain path, not all current hosted applications. Use the current creation documentation and application-specific permissions page for the chosen type.
+
+For outbound access to OCI services, use resource-principal authorization and IAM policies instead of long-lived credentials in the container.
 
 ## Cost and Limits
 
@@ -71,6 +80,11 @@ Before recommending this path, check:
 
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/agents.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/applications.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/applications-deployments.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/create-deployment.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/prepare-artifacts.htm
+- https://docs.oracle.com/en-us/iaas/Content/generative-ai/application-with-iam-permissions.htm
+- https://docs.oracle.com/en-us/iaas/releasenotes/generative-ai/hosted-applications-iam.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/create-application.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/app-authentication.htm
 - https://docs.oracle.com/en-us/iaas/Content/generative-ai/aurthentication.htm
