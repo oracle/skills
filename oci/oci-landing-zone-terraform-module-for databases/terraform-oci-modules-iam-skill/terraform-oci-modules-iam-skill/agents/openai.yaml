@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build OCI IAM for DB Operations"
+  short_description: "Generate OCI IAM Terraform for DB operations"
+  default_prompt: "Use $build-oci-iam-main-tf to generate OCI IAM Terraform specifically for DB operations, checking DB intent before proceeding when the purpose is unclear."
