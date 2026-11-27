@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Database Security Zone Terraform"
+  short_description: "Security Zones Terraform for Database follow-on work"
+  default_prompt: "Use $build-oci-security-zones-main-tf only when I explicitly intend to perform a specific OCI Database Service operation after applying the configuration; create a database-focused custom Security Zone recipe and zone."
